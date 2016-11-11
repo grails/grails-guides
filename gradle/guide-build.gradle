@@ -9,6 +9,8 @@ buildscript {
     }
 }
 
+import groovy.json.*
+
 apply plugin:'base'
 
 task prepareResources() {
@@ -37,4 +39,33 @@ task publishGuide(type: grails.doc.gradle.PublishGuide, dependsOn:prepareResourc
         'gormapi': 'http://http://gorm.grails.org/latest/api/',         
         'springapi': 'https://docs.spring.io/spring/docs/current/javadoc-api/'
     ]
+}
+
+
+task updateGuidesJson() {
+    def jsonSlurper = new JsonSlurper()
+    def f = new File("gh-pages/guides.json")
+    def json = []
+    if(f.exists()) {
+        json = f.withReader {
+            jsonSlurper.parse(it)
+        }
+    }
+
+    def existing = json.find { it.title == project.title }
+    def data = [:]
+    if(existing) {
+        data = existing
+    }
+    else {
+        json.add(data)
+    }
+    data.putAll(
+        title: project.title,
+        subtitle: project.subtitle,
+        authors:project.authors,
+        githubSlug:project.githubSlug
+    )
+
+    f.text = JsonOutput.toJson(json)
 }
