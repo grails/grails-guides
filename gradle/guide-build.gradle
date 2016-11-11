@@ -1,0 +1,28 @@
+apply plugin:'base'
+
+task prepareResources() {
+    ant.get(src:"https://github.com/grails/grails-guides/archive/master.zip", dest:"${buildDir}/resources.zip")    
+    ant.unzip(src:"${buildDir}/resources.zip", dest:"${buildDir}/resources")
+}
+
+task publishGuide(type: grails.doc.gradle.PublishGuide, dependsOn:prepareResources) {
+    // No language setting because we want the English guide to be
+    // generated with a 'en' in the path, but the source is in 'en'
+    // so that it's easy to track with git.
+    targetDir = project.file("${buildDir}/docs")
+    sourceRepo = "https://github.com/${githubSlug}/edit/$githubBranch/src/main/asciidoc"
+    sourceDir = new File(projectDir, "src/main/docs")
+    propertiesFiles = [ new File(projectDir, "gradle.properties") ]
+    asciidoc = true
+    resourcesDir = project.file("${buildDir}/resources/grails-guides-master/src/main/resources")
+    properties = [   
+        'safe':'UNSAFE',
+        'sourceDir':project.file('complete').absolutePath,     
+        'javaee': 'https://docs.oracle.com/javaee/7/api/',
+        'javase': 'https://docs.oracle.com/javase/7/docs/api/',
+        'groovyapi': 'http://docs.groovy-lang.org/latest/html/gapi/',
+        'grailsapi': 'http://http://docs.grails.org/latest/api/',
+        'gormapi': 'http://http://gorm.grails.org/latest/api/',         
+        'springapi': 'https://docs.spring.io/spring/docs/current/javadoc-api/'
+    ]
+}
