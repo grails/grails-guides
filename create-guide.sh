@@ -11,6 +11,7 @@ if [[ -n $GUIDE_NAME ]]; then
     cp -rf initial/* complete/
     echo "include 'complete'" > settings.gradle
     cp -rf ../src/main/project/* .
+    cp ../src/main/project/.travis.yml .travis.yml
     gradle wrapper   
 
     echo "Guide created at location $GUIDE_NAME/" 
