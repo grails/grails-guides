@@ -33,3 +33,5 @@ travis encrypt GH_TOKEN=... --add
 travis encrypt GIT_NAME=myname
 travis encrypt GIT_EMAIL=myemail
 ``` 
+
+If the build is sucessfull the Guide will be published to http://guides.grails.org/my-new-guide 
