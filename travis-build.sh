@@ -14,7 +14,7 @@ if [[ $EXIT_STATUS -eq 0 && $TRAVIS_BRANCH == 'ui' && $TRAVIS_PULL_REQUEST == 'f
 
     git clone https://${GH_TOKEN}@github.com/grails/grails-guides.git -b gh-pages gh-pages --single-branch > /dev/null
     
-    cp -r dist/ gh-pages/
+    cp -r dist/* gh-pages/
 
     cd gh-pages
 
