@@ -34,4 +34,6 @@ travis encrypt GIT_NAME=myname
 travis encrypt GIT_EMAIL=myemail
 ``` 
 
+See https://docs.travis-ci.com/user/environment-variables/ for more details on encrypting environment variables for Travis.
+
 If the build is sucessful the Guide will be published to http://guides.grails.org/my-new-guide 
