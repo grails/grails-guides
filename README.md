@@ -12,17 +12,21 @@ The following describes the purpose of the various directories:
 
 ## Creating a Guide
 
-To create a new guide run the `create-guide.sh` script:
+To create a new guide first make sure you have `grails` and `gradle` installed and set to the appropriate versions you want to use for the guide. Then run the `create-guide.sh` script:
 
 ```groovy
 ./create-guide.sh my-new-guide
 ```
 
+The name of the guide should be in all lower case and hyphen separated as in the example above.
+
 ## Pubishing the Guide
 
-To publish the guide setup in the Grails guides organization: https://github.com/grails-guides
+To publish the guide create a new repository in the Grails guides organization: https://github.com/grails-guides
 
-And checkin the guide using Git. Then activate travis and use `travis encrypt` to encode the necessary tokens for the publishing to work:
+The repository name should match the name you used when running the `create-guide.sh` script in the previous step.
+
+And checkin the guide using Git. Then activate Travis for the repository and use `travis encrypt` to encrypt the necessary tokens for the publishing to work:
 
 ```bash
 travis encrypt GH_TOKEN=... --add
