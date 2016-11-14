@@ -3,7 +3,7 @@ set -e
 
 export EXIT_STATUS=0
 
-ng build || EXIT_STATUS=$?
+ng build --prod || EXIT_STATUS=$?
 
 if [[ $EXIT_STATUS -eq 0 && $TRAVIS_BRANCH == 'ui' && $TRAVIS_PULL_REQUEST == 'false' ]]; then
     echo "Publishing Documentation"
