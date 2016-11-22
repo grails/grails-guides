@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {Guide} from "../app.service";
 
 @Component({
@@ -9,6 +9,7 @@ import {Guide} from "../app.service";
 export class GuideComponent {
 
     @Input() guide: Guide;
+    @Output() tagClicked: EventEmitter<string> = new EventEmitter<string>();
 
     constructor() { }
 

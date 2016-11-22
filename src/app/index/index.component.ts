@@ -46,7 +46,12 @@ export class IndexComponent implements OnInit {
     } else {
       this.filteredGuides = this.guides;
     }
+  }
 
+  filterTag(tag: string): void {
+    this.filteredGuides = this.guides.filter((guide: Guide) => {
+      return guide.tags.indexOf(tag) > -1;
+    })
   }
 
   private strMatch(str1: string): boolean {
