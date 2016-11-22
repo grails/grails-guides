@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AppService, Guide} from "../app.service";
+import {FormControl} from "@angular/forms";
+import 'rxjs/add/operator/debounceTime';
 
 @Component({
   selector: 'app-index',
@@ -8,21 +10,47 @@ import {AppService, Guide} from "../app.service";
 })
 export class IndexComponent implements OnInit {
 
-  guides: Guide[];
-  tags: string[] = [];
+  guides: Guide[] = [];
+  filteredGuides: Guide[] = [];
+  filter: string = "";
+  filterControl: FormControl = new FormControl();
 
   constructor(private appService: AppService) { }
 
   ngOnInit(): void {
     this.appService.getGuides().subscribe((res: Guide[]) => {
       this.guides = res;
-      this.guides.forEach((guide: Guide) => {
-        guide.tags.forEach((tag: string) => {
-          this.tags.push(tag);
-        });
-      });
-      this.makeUnique(this.tags);
+      this.filteredGuides = res;
     });
+
+    this.filterControl.valueChanges
+        .debounceTime(300)
+        .subscribe((newValue: string) => {
+          console.log(newValue);
+          this.filter = newValue.toLowerCase();
+          this.filterGuides()
+        });
+  }
+
+  filterGuides(): void {
+    if (this.filter) {
+      this.filteredGuides = this.guides.filter((guide: Guide) => {
+        return guide.tags.filter((tag: string) => {
+              return this.strMatch(tag);
+            }).length > 0 ||
+            this.strMatch(guide.authors) ||
+            this.strMatch(guide.title) ||
+            this.strMatch(guide.subtitle);
+      })
+    } else {
+      this.filteredGuides = this.guides;
+    }
+
+  }
+
+  private strMatch(str1: string): boolean {
+    str1 = str1.toLowerCase();
+    return str1.indexOf(this.filter) > -1 || this.filter.indexOf(str1) > -1;
   }
 
   private makeUnique(arr: string[]) {

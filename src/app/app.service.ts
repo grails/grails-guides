@@ -14,7 +14,7 @@ export class AppService {
     }
 }
 
-export declare abstract class Guide {
+export abstract class Guide {
     authors: string;
     githubSlug: string;
     name: string;
