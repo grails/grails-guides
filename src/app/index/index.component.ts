@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AppService, Guide} from "../app.service";
 import {FormControl} from "@angular/forms";
 import 'rxjs/add/operator/debounceTime';
+import {async} from "rxjs/scheduler/async";
 
 @Component({
   selector: 'app-index',
@@ -24,7 +25,7 @@ export class IndexComponent implements OnInit {
     });
 
     this.filterControl.valueChanges
-        .debounceTime(300)
+        .debounceTime(300, async)
         .subscribe((newValue: string) => {
           console.log(newValue);
           this.filter = newValue.toLowerCase();
