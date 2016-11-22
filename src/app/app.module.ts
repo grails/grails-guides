@@ -11,12 +11,14 @@ import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { rootRouterConfig } from './app.routes';
 import { NavComponent } from './nav/nav.component';
+import {GuideComponent} from "./guide/guide.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
-    IndexComponent
+    IndexComponent,
+    GuideComponent
   ],
   imports: [
     BrowserModule,
