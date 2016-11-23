@@ -30,8 +30,8 @@ And checkin the guide using Git. Then activate Travis for the repository and use
 
 ```bash
 travis encrypt GH_TOKEN=... --add
-travis encrypt GIT_NAME=myname
-travis encrypt GIT_EMAIL=myemail
+travis encrypt GIT_NAME=myname --add
+travis encrypt GIT_EMAIL=myemail --add
 ``` 
 
 See https://docs.travis-ci.com/user/environment-variables/ for more details on encrypting environment variables for Travis.
