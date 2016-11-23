@@ -1,4 +1,4 @@
-import {Component, style, state, animate, transition, trigger} from '@angular/core';
+import {Component, style, state, animate, transition, trigger, HostListener} from '@angular/core';
 import {OnInit} from '@angular/core';
 
 @Component({
@@ -10,17 +10,17 @@ import {OnInit} from '@angular/core';
       state('out', style({right: -300})),
       state('in', style({right: 0})),
     ])
-  ],
+  ],/*
   host: {
     '(document:click)': 'documentClick($event)',
-  },
+  },*/
 })
 export class NavComponent {
   sidebar: Sidebar = new Sidebar("out");
 
   constructor() { }
 
-  documentClick(evt: MouseEvent) {
+  @HostListener('document:click', ['$event']) documentClick(evt: MouseEvent) {
     if (evt.srcElement.id != "sidebarToggle") {
       this.sidebar.state = "out";
     }

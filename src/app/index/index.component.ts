@@ -44,7 +44,7 @@ export class IndexComponent implements OnInit {
             this.strMatch(guide.subtitle);
       })
     } else {
-      this.filteredGuides = this.guides;
+      this.resetFilter();
     }
   }
 
@@ -52,6 +52,10 @@ export class IndexComponent implements OnInit {
     this.filteredGuides = this.guides.filter((guide: Guide) => {
       return guide.tags.indexOf(tag) > -1;
     })
+  }
+
+  resetFilter(): void {
+    this.filteredGuides = this.guides;
   }
 
   private strMatch(str1: string): boolean {
