@@ -1,0 +1,1113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Building a REST application with GORM and Hibernate 5</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <div class="navTitle">
+                
+                Grails Framework Guide 
+            </div>
+            <div class="navLinks">
+                <ul>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#writingTheApp"><strong>2</strong><span>Writing the Application</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#runningTheApp"><strong>3</strong><span>Running the Application</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <div class="project">
+                            <h1>Building a REST application with GORM and Hibernate 5</h1>
+                            <p></p>
+                            <p>This guide will demonstrate how you can use Grails, GORM and Hibernate 5 to build a REST application</p>
+                            <p><strong>Authors:</strong> Graeme Rocher</p>
+                            <p><strong>Grails Version:</strong> 3.2.3</p>
+                            
+                        </div>
+
+                        
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to build a <a href="http://grails.org">Grails application</a> that uses <a href="http://gorm.grails.org/latest/hibernate">GORM for Hibernate</a> to access a SQL database and produce a JSON response in a RESTful manner.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/rest-hibernate/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/rest-hibernate.git" class="bare">https://github.com/grails-guides/rest-hibernate.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/rest-hibernate/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/rest-hibernate/complete</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Alternatively, if you already have Grails 3.2.3 installed then you can create a new application using the following command in a Terminal window:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-app hibernate-example --profile rest-api
+$ cd hibernate-example</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the <code>create-app</code> command completes, Grails will create a <code>hibernate-example</code> directory with an application configured to create a REST application by default (using the <code>rest-api</code> profile) and configured to use the <code>hibernate</code> feature.</p>
+</div>
+
+
+<h1 id="writingTheApp">2 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now you are ready to start writing the application.</p>
+</div>
+
+
+<h2 id="configure">2.1 Configure the Application</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/configure.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default Grails will create an application that uses an <a href="http://h2database.com">H2 in-memory SQL database</a>, thus allowing your to develop Grails without the need to setup a database.</p>
+</div>
+<div class="paragraph">
+<p>However, if you do want to configure a database then you can do so by adding a runtime dependency to the corresponding JDBC driver to <code>build.gradle</code>. For example, for MySQL:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:6.0.5</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then altering the configuration found in <code>grails-app/conf/application.yml</code>. The default global configuration can be seen below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">jmxExport</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">org.h2.Driver</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">sa</span></span>
+    <span class="key">password</span>:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To alter this for MySQL you should specify the driver class name, username and password:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">com.mysql.jdbc.Driver</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">sa</span></span>
+    <span class="key">password</span>:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will notice that there is environment specific configuration to specify the JDBC URL:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE</span></span>
+    <span class="key">test</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: <span class="string"><span class="content">update</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Grails comes with three built in environments <code>development</code>, <code>test</code> and <code>production</code> corresponding to the different environments that the application will run in.</p>
+</div>
+<div class="paragraph">
+<p>To alter the configuration for the <code>development</code> environment for MySQL you can specify it under the <code>development</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">development</span>:
+    <span class="key">dataSource</span>:
+        <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
+        <span class="key">url</span>: <span class="string"><span class="content">jdbc:mysql://localhost/test</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="domainClass">2.2 Create a Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/domainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Each table in the SQL database is represented by a <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#domainClasses">GORM domain class</a>.</p>
+</div>
+<div class="paragraph">
+<p>To create a domain class you can use the <code>create-domain-class</code> CLI command from a Terminal window within the root of your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-domain-class Product
+| Created grails-app/domain/hibernate/example/Product.groovy
+| Created src/test/groovy/hibernate/example/ProductSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can equally create a domain class with your favourite text editor or IDE.</p>
+</div>
+<div class="paragraph">
+<p>A domain class is a simple Groovy class and you can represent each column of a table in the database using a property. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/hibernate/example/Product.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> hibernate.example
+
+<span class="type">class</span> <span class="class">Product</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Double</span> price
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each domain class defined in the application will be compiled to implement the <a href="http://gorm.grails.org/latest/hibernate/api/org/grails/datastore/gorm/GormEntity.html">GormEntity</a> trait. If you prefer you can define this explicitly:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/hibernate/example/Product.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.*</span>
+
+<span class="type">class</span> <span class="class">Product</span> <span class="directive">implements</span> GormEntity&lt;Product&gt; {
+    ..
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="applyConstraints">2.3 Apply Domain Constraints</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/applyConstraints.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you wish to define <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#constraints">validation constraints</a> on properties defined in a GORM domain class, you can do so using the <code>constraints</code> property:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/hibernate/example/Product.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> constraints = {
+    name <span class="key">blank</span>:<span class="predefined-constant">false</span>
+    price <span class="key">range</span>:<span class="float">0.0</span>..<span class="float">1000.00</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example applies two constraints:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>name</code> property is constrained so that it cannot be a blank string.</p>
+</li>
+<li>
+<p>The <code>price</code> property is constrained so that it must be greater than 0 and less than a thousand using the <code>range</code> constraint.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To verify these constraints work to our expectation you can write a test. If you used the <code>create-domain-class</code> a test called <code>src/test/groovy/hibernate/example/ProductSpec.groovy</code> was generated for you already. Otherwise simply creating an appropriately named test in <code>src/test/groovy</code> using your IDE or text editor will suffice.</p>
+</div>
+<div class="paragraph">
+<p>To effectively test interactions with Hibernate in a unit test it is recommended you use <code>grails.test.hibernate.HibernateSpec</code> which you can use combined with the H2 in-memory database.</p>
+</div>
+<div class="paragraph">
+<p>To achieve this first modify the imports of the <code>ProductSpec</code> class as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.*</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then ensure the <code>ProductSpec</code> extends the <code>HibernateSpec</code> base class:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@TestFor</span>(Product)
+<span class="type">class</span> <span class="class">ProductSpec</span> <span class="directive">extends</span> HibernateSpec {</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>HibernateSpec</code> super class will wrap each test method in a transaction that is rolled back at the end of the test ensuring cleanup between tests.</p>
+</div>
+<div class="paragraph">
+<p>With the test prepared you are ready to write a test. Tests in Grails are written with <a href="http://spockframework.org">Spock Framework</a>, which allows you to define much more readable tests including having spaces in the name:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test domain class validation</span><span class="delimiter">&quot;</span></span>() {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First lets write a test for the invalid case. You can do so using Spock <code>when</code> and <code>then</code> blocks to make the test more readable:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A domain class is saved with invalid data</span><span class="delimiter">&quot;</span></span>
+Product product = <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: -<span class="float">2.0d</span>)
+product.save()
+
+<span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">There were errors and the data was not saved</span><span class="delimiter">&quot;</span></span>
+product.hasErrors()
+product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">price</span><span class="delimiter">'</span></span>)
+product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+Product.count() == <span class="integer">0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example sets the <code>name</code> to a blank value and the <code>price</code> to a negative value and attempts to save the instance using the <a href="{mongodbGormApi}/org/grails/datastore/gorm/GormEntity.html#save()">save()</a> method.</p>
+</div>
+<div class="paragraph">
+<p>The <code>then</code> block asserts that the object is invalid and was not saved.</p>
+</div>
+<div class="paragraph">
+<p>To write a test for the valid case populate some valid data and try and assert that the object was saved:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A valid domain is saved</span><span class="delimiter">&quot;</span></span>
+product.name = <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>
+product.price = <span class="float">2.15d</span>
+product.save()
+
+<span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The product was saved successfully</span><span class="delimiter">&quot;</span></span>
+Product.count() == <span class="integer">1</span>
+Product.first().price == <span class="float">2.15d</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All done! Now to run the test you can run <code>./gradlew check</code> from a terminal window or run the test within your IDE if the IDE supports it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew check</code></pre>
+</div>
+</div>
+
+
+<h2 id="controller">2.4 Create a Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>With the data model defined now it time to write <a href="http://docs.grails.org/latest/guide/theWebLayer.html#controllers">a controller</a>.</p>
+</div>
+<div class="paragraph">
+<p>The quickest way to do that is with the <code>create-restful-controller</code> command from a terminal window:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-restful-controller hibernate.example.Product
+| Created grails-app/controllers/hibernate/example/ProductController.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, you can also simply create the controller with your favourite text editor or IDE.</p>
+</div>
+<div class="paragraph">
+<p>The contents of the controller should look like the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/hibernate/example/ProductController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.rest.*</span>
+<span class="keyword">import</span> <span class="include">grails.converters.*</span>
+
+<span class="type">class</span> <span class="class">ProductController</span> <span class="directive">extends</span> RestfulController {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">xml</span><span class="delimiter">'</span></span>]
+    ProductController() {
+        <span class="local-variable">super</span>(Product)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>RestfulController</code> super class will implement all the necessary operations to perform the common REST verbs such as <code>GET</code>, <code>POST</code>, <code>PUT</code> and <code>DELETE</code>. If is you wish to override or forbid certain verbs you can override the equivalent method from the super (for example the <code>delete</code> method for <code>DELETE</code>) to return an alternative or forbidden response.</p>
+</div>
+
+
+<h2 id="mapController">2.5 Map the Controller to a URI</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/mapController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default the controller will be exposed under the <code>/product</code> URI. This is due to the default <code>grails-app/conf/hibernate/example/UrlMappings.groovy</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/hibernate/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">delete <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">delete</span><span class="delimiter">&quot;</span></span>)
+get <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>)
+get <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">show</span><span class="delimiter">&quot;</span></span>)
+post <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span>)
+put <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">update</span><span class="delimiter">&quot;</span></span>)
+patch <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">patch</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see above each HTTP verb is mapped such that the controller name is established from the URI itself using the <code>$controller</code> syntax.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to use another name or be explicit about the URI used you can define an additional mapping uses the <code>resources</code> mapping:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/hibernate/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/products</span><span class="delimiter">&quot;</span></span>(<span class="key">resources</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">product</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case the controller will be mapped to <code>/products</code> instead of <code>/product</code>.</p>
+</div>
+
+
+<h2 id="searchEndpoint">2.6 Implement a Search Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/searchEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you wish to add an additional endpoint to your REST API then it is simply a matter of implementing the corresponding action.</p>
+</div>
+<div class="paragraph">
+<p>For example, say you wanted to be able to search for products using the <code>/products/search</code> URI and a query. To do so the first step is to implement a <code>search</code> action in the controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/hibernate/example/ProductController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">search</span>(<span class="predefined-type">String</span> q, <span class="predefined-type">Integer</span> max ) { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="keyword">if</span>(q) {
+        <span class="keyword">def</span> query = Product.where { <i class="conum" data-value="2"></i><b>(2)</b>
+            name ==~ <span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="inline"><span class="inline-delimiter">${</span>q<span class="inline-delimiter">}</span></span><span class="content">%</span><span class="delimiter">&quot;</span></span>
+        }
+        respond query.list(<span class="key">max</span>: <span class="predefined-type">Math</span>.min( max ?: <span class="integer">10</span>, <span class="integer">100</span>)) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    <span class="keyword">else</span> {
+        respond(<span class="type">[]</span>) <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>An action called <code>search</code> is defined that takes a query parameter, called <code>q</code>, and a <code>max</code> parameter</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#whereQueries">where</a> query is executed that uses a SQL <code>like</code> query.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>respond</code> method is used to respond with a list of results</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>For the case where no query is specified we <code>respond</code> with an empty list</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With the action written you now need to expose the <code>/products/search</code> endoint by defining the appropriate mapping in <code>grails-app/conf/hibernate/example/UrlMappings.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/hibernate/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/products</span><span class="delimiter">&quot;</span></span>(<span class="key">resources</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">product</span><span class="delimiter">&quot;</span></span>) {
+    collection {
+        <span class="string"><span class="delimiter">'</span><span class="content">/search</span><span class="delimiter">'</span></span>(<span class="key">controller</span>:<span class="string"><span class="delimiter">'</span><span class="content">product</span><span class="delimiter">'</span></span>, <span class="key">action</span>:<span class="string"><span class="delimiter">'</span><span class="content">search</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example uses the <code>collection</code> method to nest URIs directly underneath the <code>/products</code> URI (for example <code>/product/search</code>) instead of nesting it below the resource identifier (for example <code>/product/1/search</code>).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See the Grails user guide on <a href="http://docs.grails.org/latest/guide//theWebLayer.html#restfulMappings">Mapping REST Resources</a> for more information on controllering how URIs map to controllers.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="testing">2.7 Testing the Search Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/testing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To write a unit test for the <code>search</code> action your can use the <code>create-unit-test</code> command of the CLI to create one:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-unit-test hibernate.example.ProductController</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or alternatively just create a <code>src/test/groovy/hibernate/example/ProductControllerSpec.groovy</code> file using your favourite text editor or IDE.</p>
+</div>
+<div class="paragraph">
+<p>Like the previously implemented <code>ProductSpec</code> it should extend <code>HibernateSpec</code>, but this time the <code>TestFor</code> definition should be for <code>ProductController</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@TestFor</span>(ProductController)
+<span class="type">class</span> <span class="class">ProductControllerSpec</span> <span class="directive">extends</span> HibernateSpec {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, the test should define a <code>doWithSpring</code> block to enable JSON views:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> doWithSpring = {
+    jsonSmartViewResolver(JsonViewResolver)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>doWithSpring</code> block is used to register additional Spring configuration (beans) for the context of the test. In this case we wish to test the controller responds with JSON views, so a <code>jsonSmartViewResolver</code> bean is registered.</p>
+</div>
+<div class="paragraph">
+<p>Next in order to prepare the test we setup some test data using the <code>setup</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> setup() {
+    Product.saveAll(
+        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Apple</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: <span class="float">2.0</span>),
+        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Orange</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: <span class="float">3.0</span>),
+        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Banana</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: <span class="float">1.0</span>),
+        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cake</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: <span class="float">4.0</span>)
+    )
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>setup</code> method uses the <code>saveAll</code> method to save multiple domain classes to serve as test data.</p>
+</div>
+<div class="paragraph">
+<p>Finally, we are ready to implement the test and can perform a search by executing the <code>search</code> method, passing appropriate arguments and verifying the JSON written to the response:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test the search action finds results</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A query is executed that finds results</span><span class="delimiter">&quot;</span></span>
+        controller.search(<span class="string"><span class="delimiter">'</span><span class="content">pp</span><span class="delimiter">'</span></span>, <span class="integer">10</span>)
+
+        <span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The response is correct</span><span class="delimiter">&quot;</span></span>
+        response.json.size() == <span class="integer">1</span>
+        response.json[<span class="integer">0</span>].name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Apple</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see from the example above, we are asserting the value of the <code>json</code> property of the <code>response</code>. The resulting JSON rendered by Grails looks like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">[{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Apple</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>:<span class="float">2.0</span>}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s take a look at how we can customize this JSON.</p>
+</div>
+
+
+<h2 id="json">2.8 Customizing the JSON Output</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/json.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Grails uses <a href="http://views.grails.org">JSON Views</a> to represent render JSON responses. The idea being to continue the philosophy of separating the controller logic from the view logic.</p>
+</div>
+<div class="paragraph">
+<p>The default view rendered if no specific view is found is <code>grails-app/views/object/_object.gson</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/object/_object.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.*</span>
+
+<span class="annotation">@Field</span> <span class="predefined-type">Object</span> object
+
+json g.render(object)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default <code>_object.gson</code> view simply uses the <code>g.render(..)</code> method to automatically product a JSON representation of the object.</p>
+</div>
+<div class="paragraph">
+<p>If you want to alter the output of the JSON the way that is done in Grails is by creating a view. You can generate a starting point with the <code>generate-views</code> command of the CLI:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw generate-views hibernate.example.Product
+| Rendered template index.gson to destination grails-app/views/product/index.gson
+| Rendered template show.gson to destination grails-app/views/product/show.gson
+| Rendered template _domain.gson to destination grails-app/views/product/_product.gson</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see 3 templates were generated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>grails-app/views/product/index.gson</code> - This view will be used when a collection (typically a list of results from GORM) is rendered via the <code>respond</code> method in a controller.</p>
+</li>
+<li>
+<p><code>grails-app/views/product/show.gson</code> - This view will be rendered when a single <code>Product</code> instance is rendered via the <code>respond</code> method in a controller.</p>
+</li>
+<li>
+<p><code>grails-app/views/product/_product.gson</code> - This is the template used by both the <code>index.gson</code> and <code>show.gson</code> views to actually display the data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The contents of the <code>_product.gson</code> by default look like:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/_product.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">hibernate.example.Product</span>
+
+model {
+    Product product
+}
+
+json g.render(product)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The call to <code>g.render(product)</code> outputs all properties.</p>
+</div>
+<div class="paragraph">
+<p>However, the <code>json</code> property is an instance of Groovy&#8217;s <a href="http://docs.groovy-lang.org/2.4.7/html/gapi/groovy/json/StreamingJsonBuilder.html">StreamingJsonBuilder</a> and you can use it to alter the output as per your needs.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/_product.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">hibernate.example.Product</span>
+
+model {
+        Product product
+}
+
+<span class="predefined-type">Currency</span> currency = locale?.country ? <span class="predefined-type">Currency</span>.getInstance(locale) : <span class="predefined-type">Currency</span>.getInstance(<span class="string"><span class="delimiter">'</span><span class="content">USD</span><span class="delimiter">'</span></span>)
+json {
+    id product.id
+    name product.name
+    price <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>currency.symbol<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>product.price<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this trivialized example, we output the currency symbol based on the user&#8217;s locale. Now the resulting JSON will look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">[{<span class="error">i</span><span class="error">d</span>:<span class="integer">1</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Apple</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">$2.0</span><span class="delimiter">&quot;</span></span>}]</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+JSON Views are very flexible, for more information on customizing the output to your needs see <a href="http://views.grails.org">the documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">3 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+
+
+<h2 id="createData">3.1 Creating Data with POST</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/createData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Once the application has started up you can create a <code>Product</code> instance using your preferred HTTP client. In the following examples we will be using the <a href="https://curl.haxx.se">curl</a>.</p>
+</div>
+<div class="paragraph">
+<p>To submit a <code>POST</code> request use the following in a terminal window:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Content-Type:application/json&quot; -X POST localhost:8080/products -d '{&quot;name&quot;:&quot;Orange&quot;,&quot;price&quot;:2.0}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting output will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 201
+X-Application-Context: application:development
+Location: http://localhost:8080/products/2
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 23 Nov 2016 08:46:40 GMT
+
+{&quot;name&quot;:&quot;Orange&quot;,&quot;price&quot;:&quot;$2.0&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see an HTTP 201 status code is returned.</p>
+</div>
+
+
+<h2 id="readData">3.2 Reading Data with GET</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/readData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can read all of the <code>Product</code> instances back using a <code>GET</code> request:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i  localhost:8080/products</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or read only a single instance by <code>id</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i  localhost:8080/products/1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Which will return:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 23 Nov 2016 08:50:58 GMT
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Orange&quot;,&quot;price&quot;:&quot;$2.0&quot;}</code></pre>
+</div>
+</div>
+
+
+<h2 id="updateData">3.3 Updating Data with PUT</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/updateData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To update data you can use a <code>PUT</code> request with the id and in the URI and data you want to change:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Content-Type:application/json&quot; -X PUT localhost:8080/products/1 -d '{&quot;price&quot;:3.0}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case the resulting output will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 200
+X-Application-Context: application:development
+Location: http://localhost:8080/products/1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 23 Nov 2016 08:52:14 GMT
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Orange&quot;,&quot;price&quot;:&quot;$3.0&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you were to attempt update the data with an invalid value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Content-Type:application/json&quot; -X PUT localhost:8080/products/1 -d '{&quot;price&quot;:-2.0}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then an error response will be received:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 422
+X-Application-Context: application:development
+Location: http://localhost:8080/products/1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 23 Nov 2016 08:54:25 GMT
+
+{&quot;message&quot;:&quot;Property [price] of class [class hibernate.example.Product] with value [-2] does not fall within the valid range from [0] to [1,000]&quot;,&quot;path&quot;:&quot;&quot;,&quot;_links&quot;:{&quot;self&quot;:{&quot;href&quot;:&quot;http://localhost:8080/products/1&quot;}}}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The error response is rendered by the <code>grails-app/views/error.gson</code> view and the messages are obtained from the message bundles located at <code>grails-app/i18n</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="deleteData">3.4 Deleting Data with DELETE</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-hibernate/edit/master/src/main/docs/guide/deleteData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To delete a <code>Product</code> simply send a <code>DELETE</code> request:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -X DELETE localhost:8080/products/1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If deleting the instance was successful the output will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 204
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Date: Wed, 23 Nov 2016 08:57:27 GMT</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Congratulations! You have built your first REST application with Grails, GORM and Hibernate 5!</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Remember you can obtain the source code for the completed examples using the links on the right.
+</td>
+</tr>
+</table>
+</div>
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/rest-hibernate"><img src="https://travis-ci.org/grails-guides/rest-hibernate.svg?branch=master" /></a></div>            
+                        
+                <div class="local-title">
+                    <a href="https://github.com/grails-guides/rest-hibernate">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/rest-hibernate.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/rest-hibernate.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/rest-hibernate'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/rest-hibernate.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/rest-hibernate/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>2</strong><span>Writing the Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#configure"><strong>2.1</strong><span>Configure the Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#domainClass"><strong>2.2</strong><span>Create a Domain Class</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#applyConstraints"><strong>2.3</strong><span>Apply Domain Constraints</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#controller"><strong>2.4</strong><span>Create a Controller</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#mapController"><strong>2.5</strong><span>Map the Controller to a URI</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#searchEndpoint"><strong>2.6</strong><span>Implement a Search Endpoint</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#testing"><strong>2.7</strong><span>Testing the Search Endpoint</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#json"><strong>2.8</strong><span>Customizing the JSON Output</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3</strong><span>Running the Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#createData"><strong>3.1</strong><span>Creating Data with POST</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#readData"><strong>3.2</strong><span>Reading Data with GET</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#updateData"><strong>3.3</strong><span>Updating Data with PUT</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#deleteData"><strong>3.4</strong><span>Deleting Data with DELETE</span></a></div>
+                    
+                    <div style="clear:both" ></div>
+                </div>
+                                    
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+            
+        </div>
+
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+    </body>
+</html>
