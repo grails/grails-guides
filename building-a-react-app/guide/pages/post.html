@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.5 Posting data to the API</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingReactComponents.html"><strong>4</strong><span>Writing our React components</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/nextSteps.html"><strong>5</strong><span>Next Steps</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/nextSteps.html"><strong>5</strong><span>Next Steps</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="post">4.5 Posting data to the API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-react-app/edit/master/src/main/docs/guide/post.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our last step in this guide is to create a simple form for posting new <code>Vehicle</code> instances to our API.</p>
+</div>
+<div class="paragraph">
+<p>Create a new JavaScript file under <code>src/main/webapp</code> called <code>add-vehicle-form.js</code>, with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">class</span> AddVehicleForm <span class="reserved">extends</span> React.Component {
+
+  constructor(props) {
+    <span class="reserved">super</span>(props);
+    <span class="local-variable">this</span>.state = {  <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">make</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>},
+      <span class="key">model</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>},
+      <span class="key">driver</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>}};
+  }
+
+  handleSubmit = (event) =&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+    event.preventDefault();
+
+    const {name, make, model, driver} = <span class="local-variable">this</span>.state;
+
+    <span class="keyword">if</span> (!name || !make.id || !model.id || !driver.id) {
+      console.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">missing required field!</span><span class="delimiter">&quot;</span></span>);
+      <span class="keyword">return</span>;
+    }
+    <span class="local-variable">this</span>.props.onSubmit( {name, make, model, driver} );  <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="local-variable">this</span>.setState({ <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">make</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>}, <span class="key">model</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>}, <span class="key">driver</span>: {<span class="key">id</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>}});
+  };
+
+  handleNameChange = (event) =&gt; {  <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="local-variable">this</span>.setState({ <span class="key">name</span>: event.target.value });
+  };
+
+  handleMakeChange = (event) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="local-variable">this</span>.setState({ <span class="key">make</span>: {<span class="key">id</span>: event.target.value} });
+  };
+
+  handleModelChange = (event) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="local-variable">this</span>.setState({ <span class="key">model</span>: {<span class="key">id</span>: event.target.value} });
+  };
+
+  handleDriverChange = (event) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="local-variable">this</span>.setState({ <span class="key">driver</span>: {<span class="key">id</span>: event.target.value} });
+  };
+
+
+  render() {
+
+    <span class="keyword">function</span> <span class="function">renderSelectList</span>(item) { <i class="conum" data-value="5"></i><b>(5)</b>
+      <span class="keyword">return</span> <span class="tag">&lt;option</span> <span class="attribute-name">key</span>=<span class="error">{</span><span class="attribute-value">item.id</span><span class="error">}</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">item.id</span><span class="error">}</span><span class="tag">&gt;</span>{item.name}<span class="tag">&lt;/option&gt;</span>
+    }
+
+    <span class="keyword">return</span>(
+      <span class="tag">&lt;div&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>Add a Vehicle:<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;form</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form form-inline</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.handleSubmit</span><span class="error">}</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label&gt;</span>Name<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span> <span class="attribute-value">this.state.name</span> <span class="error">}</span> <span class="attribute-name">onChange</span>=<span class="error">{</span> <span class="attribute-value">this.handleNameChange</span> <span class="error">}</span> <span class="tag">/&gt;</span>
+
+          <span class="tag">&lt;label&gt;</span>Make<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">make</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.make.id</span><span class="error">}</span> <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleMakeChange</span><span class="error">}</span><span class="tag">&gt;</span> <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Make...<span class="tag">&lt;/option&gt;</span>
+            {this.props.makes.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+          <span class="tag">&lt;/select&gt;</span>
+
+          <span class="tag">&lt;label&gt;</span>Model<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">model</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.model.id</span><span class="error">}</span> <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleModelChange</span><span class="error">}</span><span class="tag">&gt;</span> <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Model...<span class="tag">&lt;/option&gt;</span>
+            {this.props.models.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+          <span class="tag">&lt;/select&gt;</span>
+
+          <span class="tag">&lt;label&gt;</span>Driver<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">driver</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.driver.id</span><span class="error">}</span> <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleDriverChange</span><span class="error">}</span><span class="tag">&gt;</span> <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Driver...<span class="tag">&lt;/option&gt;</span>
+            {this.props.drivers.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+          <span class="tag">&lt;/select&gt;</span>
+
+          <span class="tag">&lt;input</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn btn-success</span><span class="delimiter">&quot;</span></span>  <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Add to library</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    );
+
+  }
+}
+
+AddVehicleForm.propTypes = {
+  <span class="key">makes</span>: React.PropTypes.array,
+  <span class="key">models</span>: React.PropTypes.array,
+  <span class="key">drivers</span>: React.PropTypes.array,
+  <span class="key">onSubmit</span>: React.PropTypes.func
+};
+
+<span class="reserved">export</span> <span class="keyword">default</span> AddVehicleForm;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Initialize <code>state</code> object with all the properties needed to populate a new Vehicle</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Create event handler to handle form submission</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Pass the properties from <code>state</code> to the <code>onSubmit</code> callback function</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Event handlers to update <code>state</code> whenever user input is received</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Render options in <code>select</code> lists from the arrays in our props</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Call event handlers whenever user changes input value</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This is a fairly complex component, so don&#8217;t worry if you don&#8217;t understand it all immediately. The key points are that the <code>AddVehicleForm</code> component allows the user to set 4 properties needed to create a new Vehicle instance: <code>name</code>, <code>make</code>, <code>model</code> and <code>driver</code>. It takes a function prop called <code>onSubmit</code>, which is used when the form is submitted.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This pattern of passing functions (handlers) as props is a good practice in React. It allows components to be reused easily because specific functionality can be swapped by different callers (e.g., by passing a different function as the <code>onSubmit</code> prop). Similarly as with <code>state</code>, centralizing your functional logic in a few components, and passing down those functions as props to child components, is a good pattern when programming with React. For a more semantic version of this pattern, you might consider a <a href="https://facebook.github.io/flux/">Flux implementation</a> such as <a href="http://redux.js.org/">Redux</a> to externalize both your <code>state</code> and your logic.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Because <code>make</code>, <code>model</code>, and <code>driver</code> are associations, we need to allow the user to select an ID so that Grails can perform the assignment during databinding. <code>AddVehicleForm</code> takes 3 props which it expects to contain arrays of these associations. We&#8217;ll need to provide them in order to use <code>AddUserForm</code>, so let&#8217;s edit the <code>Garage</code> component to retrieve those lists.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>src/main/webapp/app/garage.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//..</span>
+<span class="reserved">import</span> AddVehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./add-vehicle-form</span><span class="delimiter">'</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
+
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">vehicles</span>: [],
+      <span class="key">makes</span>: [],            <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">models</span>: [],
+      <span class="key">drivers</span>: []
+    }
+  }
+
+  componentDidMount() {
+    fetch(<span class="string"><span class="delimiter">'</span><span class="content">/vehicle</span><span class="delimiter">'</span></span>)
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="string"><span class="delimiter">'</span><span class="content">/make</span><span class="delimiter">'</span></span>)                  <i class="conum" data-value="3"></i><b>(3)</b>
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="string"><span class="delimiter">'</span><span class="content">/model</span><span class="delimiter">'</span></span>)                 <i class="conum" data-value="3"></i><b>(3)</b>
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="string"><span class="delimiter">'</span><span class="content">/driver</span><span class="delimiter">'</span></span>)                <i class="conum" data-value="3"></i><b>(3)</b>
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+
+  }
+
+  render() {
+    const {vehicles, makes, models, drivers} = <span class="local-variable">this</span>.state;  <i class="conum" data-value="4"></i><b>(4)</b>
+
+    <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;AddVehicleForm</span> <span class="attribute-name">makes</span>=<span class="error">{</span><span class="attribute-value">makes</span><span class="error">}</span> <span class="attribute-name">models</span>=<span class="error">{</span><span class="attribute-value">models</span><span class="error">}</span> <span class="attribute-name">drivers</span>=<span class="error">{</span><span class="attribute-value">drivers</span><span class="error">}</span><span class="tag">/&gt;</span> <i class="conum" data-value="5"></i><b>(5)</b>
+      <span class="tag">&lt;Vehicles</span> <span class="attribute-name">vehicles</span>=<span class="error">{</span><span class="attribute-value">vehicles</span><span class="error">}</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>;
+  }
+}
+<span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Import <code>AddVehicleForm</code> component</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add <code>makes</code>, <code>models</code>, and <code>drivers</code> to <code>state</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Retrieve data from API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Retrieve vehicles, makes, models, drivers from this.state using ES6 destructuring syntax</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Pass <code>makes</code>, <code>models</code>, and <code>drivers</code> to AddVehicleForm</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The final step is to implement the function that we will pass in to <code>AddVehicleForm</code> via the <code>onSubmit</code> prop. This function needs to do two things:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Post the new vehicle details to the API, and retrieve the result from the API</p>
+</li>
+<li>
+<p>Update the <code>state</code> so that we can display the newly created vehicle in the <code>Vehicles</code> table</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s implement this function. Edit <code>src/main/webapp/app/garage.js</code> one more time:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//..</span>
+
+<span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
+
+  <span class="comment">//...</span>
+
+  submitNewVehicle = (vehicle) =&gt; {   <i class="conum" data-value="1"></i><b>(1)</b>
+    fetch(<span class="string"><span class="delimiter">'</span><span class="content">/vehicle</span><span class="delimiter">'</span></span>, {
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: { <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span> },
+      <span class="key">body</span>: JSON.stringify(vehicle)
+    }).then(r =&gt; r.json())
+      .then(json =&gt; {
+        let vehicles = <span class="local-variable">this</span>.state.vehicles;
+        vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
+        <span class="local-variable">this</span>.setState({vehicles});
+      })
+      .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
+  };
+
+
+  render() {
+    const {vehicles, makes, models, drivers} = <span class="local-variable">this</span>.state;
+
+    <span class="keyword">return</span> <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;AddVehicleForm</span> <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.submitNewVehicle</span><span class="error">}</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="attribute-name">makes</span>=<span class="error">{</span><span class="attribute-value">makes</span><span class="error">}</span> <span class="attribute-name">models</span>=<span class="error">{</span><span class="attribute-value">models</span><span class="error">}</span> <span class="attribute-name">drivers</span>=<span class="error">{</span><span class="attribute-value">drivers</span><span class="error">}</span><span class="tag">/&gt;</span>
+      <span class="tag">&lt;Vehicles</span> <span class="attribute-name">vehicles</span>=<span class="error">{</span><span class="attribute-value">vehicles</span><span class="error">}</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>;
+  }
+}
+
+
+ReactDOM.render(&lt;Garage /&gt;, document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>));
+<span class="comment">//...</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create <code>submitNewVehicle</code> function</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pass function as <code>onSubmit</code> prop to <code>AddVehicleForm</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Again, we&#8217;re using the <code>fetch</code> API, this time for a POST request to the <code>/vehicle</code> endpoint.  We call <code>JSON.stringify</code> to convert the parameters received from <code>AddVehicleForm</code> into a JSON string, which we can then post to our Grails API. The API will return the newly created vehicle instance, which we can then parse and insert into our <code>state</code> object with <code>this.setState</code>.</p>
+</div>
+<div class="paragraph">
+<p>Restart the app, or re-run webpack, and you should be able to create new Vehicle instances and see them added to the table. Refresh the page to confirm the new instance was persisted to the database.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/nextSteps.html"><strong>5</strong><span>Next Steps</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-a-react-app"><img src="https://travis-ci.org/grails-guides/building-a-react-app.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-a-react-app">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-a-react-app.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-a-react-app.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-a-react-app'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-a-react-app.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-a-react-app/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
