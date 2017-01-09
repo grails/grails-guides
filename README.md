@@ -20,7 +20,7 @@ To create a new guide first make sure you have `grails` and `gradle` installed a
 
 The name of the guide should be in all lower case and hyphen separated as in the example above.
 
-## Pubishing the Guide
+## Publishing the Guide
 
 To publish the guide create a new repository in the Grails guides organization: https://github.com/grails-guides
 
