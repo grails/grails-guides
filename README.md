@@ -31,7 +31,7 @@ If you would like to use a profile for your guide's project, simply specifiy the
 ### Images
 
 Images are resolved from `src/main/resources/img`. You can reference images
-from that directory using accidoc's `image` directivez 
+from that directory using accidoc's `image` directive.
 
 ```
 image::screenshot.png[]
