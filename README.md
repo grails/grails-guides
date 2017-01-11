@@ -20,6 +20,23 @@ To create a new guide first make sure you have `grails` and `gradle` installed a
 
 The name of the guide should be in all lower case and hyphen separated as in the example above.
 
+### Profiles
+
+If you would like to use a profile for your guide's project, simply specifiy the profile name after the guide name.
+
+```
+./create-guide.sh my-new-guide -profile angular
+```
+
+### Images
+
+Images are resolved from `src/main/resources/img`. You can reference images
+from that directory using accidoc's `image` directivez 
+
+```
+image::screenshot.png[]
+```
+
 ## Publishing the Guide
 
 To publish the guide create a new repository in the Grails guides organization: https://github.com/grails-guides
