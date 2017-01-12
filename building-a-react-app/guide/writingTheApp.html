@@ -89,18 +89,20 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">~ grails create-domain-class com.example.Vehicle
-~ grails create-domain-class com.example.Driver
-~ grails create-domain-class com.example.Make
-~ grails create-domain-class com.example.Model</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-domain-class com.example.Vehicle
+$ grails create-domain-class com.example.Driver
+$ grails create-domain-class com.example.Make
+$ grails create-domain-class com.example.Model</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Now let&#8217;s edit our domain class under <code>grails-app/domain/com/example/</code>. We&#8217;ll add some properties and the <code>@Resource</code> annotation.</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/grails-app/domain/com/example/Vehicle.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
 <span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
 
 <span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/vehicle</span><span class="delimiter">'</span></span>)
@@ -119,8 +121,10 @@ function addJsClass() {
 </div>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/grails-app/domain/com/example/Driver.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
 <span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
 
 <span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/driver</span><span class="delimiter">'</span></span>)
@@ -128,16 +132,19 @@ function addJsClass() {
 
     <span class="predefined-type">String</span> name
 
-    <span class="directive">static</span> hasMany = [ <span class="key">vehicle</span>: Vehicle ]
+    <span class="directive">static</span> hasMany = [ <span class="key">vehicles</span>: Vehicle ]
 
     <span class="directive">static</span> constraints = {
+        vehicles <span class="key">nullable</span>: <span class="predefined-constant">true</span>
     }
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/grails-app/domain/com/example/Make.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
 <span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
 
 <span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/make</span><span class="delimiter">'</span></span>)
@@ -151,8 +158,10 @@ function addJsClass() {
 </div>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/grails-app/domain/com/example/Model.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
 <span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
 
 <span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/model</span><span class="delimiter">'</span></span>)
@@ -169,14 +178,16 @@ function addJsClass() {
 <p>Since we&#8217;ve added the <code>@Resource</code> annotation to our domain classes, Grails will generate RESTful URL mappings for each of them. Let&#8217;s preload some data:</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/init/building/a/react/app/BootStrap.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> building.a.react.app
+
 <span class="keyword">import</span> <span class="include">com.example.*</span>
 
 <span class="type">class</span> <span class="class">BootStrap</span> {
 
     <span class="keyword">def</span> init = { servletContext -&gt;
-        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
         <span class="keyword">def</span> driver1 = <span class="keyword">new</span> <span class="predefined-type">Driver</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>).save()
         <span class="keyword">def</span> driver2 = <span class="keyword">new</span> <span class="predefined-type">Driver</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Pedro</span><span class="delimiter">&quot;</span></span>).save()
 
@@ -193,7 +204,8 @@ function addJsClass() {
 
     }
     <span class="keyword">def</span> destroy = {
-    }</code></pre>
+    }
+}</code></pre>
 </div>
 </div>
 
