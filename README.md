@@ -20,6 +20,26 @@ To create a new guide first make sure you have `grails` and `gradle` installed a
 
 The name of the guide should be in all lower case and hyphen separated as in the example above.
 
+## Working on a Guide
+
+Your next step will probably be to move your guide out of the grails-guide root repository and init a git repository
+
+```
+$ mv  my-new-guide my-git-folder/my-new-guide
+$ cd my-git-folder/my-new-guide
+$ git init
+$ git add --all
+$ git commit -m "Initial version of the guide. Output of create-guide.sh script"
+```
+
+Publish locally. Run: 
+
+```
+$ ./gradlew publishGuide
+```
+
+and a local version of the guide will be published to your build folder. The command output will tell you where to find it. 
+
 ### Profiles
 
 If you would like to use a profile for your guide's project, simply specifiy the profile name after the guide name.
