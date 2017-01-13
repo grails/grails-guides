@@ -239,6 +239,7 @@ in the <code>grails-app/controllers/demo</code> directory. Update the <code>inde
 the <code>show</code> action to look like this:</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -301,6 +302,7 @@ command line; it is running and ready when you see:</p>
 action.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">create</span>() {
         respond <span class="keyword">new</span> Player(params)
@@ -308,7 +310,7 @@ action.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>While this action does make use of the <code>Player</code> class, <code>player</code> <strong>is not</strong> a command object
+<p>While this action does make use of the <code>Player</code> class, the instance of <code>Player</code> <strong>is not</strong> a command object
 since it is not an argument to the action. This should make sense: since the intent of the
 action is to create a new player object, there is no form or input handling necessary.</p>
 </div>
@@ -375,6 +377,7 @@ the <code>&lt;form&gt;</code> tag:</p>
 <p>The <code>&lt;input&gt;</code> tag names match exactly the properties of the domain class <code>Player</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/domain/demo/Player.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -418,6 +421,7 @@ add simple error-checking. Near the top of <code>PlayerController.groovy</code>,
 <p>Then update the <code>save</code> action of <code>PlayerController</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">save</span>(Player player) {
         <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
@@ -459,6 +463,87 @@ using <code>curl</code>. On the command line (while the Grails application is ru
          "message": "Property [game] of class [class demo.Player] cannot be null"}
 ]}</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>We are going to verify this with a Functional Test.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">Functional Tests</a> involve making HTTP
+requests against the running application and verifying the resultant behaviour.</p>
+</div>
+<div class="paragraph">
+<p>We use the <a href="https://github.com/grails-plugins/grails-rest-client-builder">Rest Client Builder Grails Plugin</a>.
+This plugin is added for you if you create a Grails app with the <em>rest-api</em> profile.</p>
+</div>
+<div class="paragraph">
+<p>We created the app with the web profile but it is easy to add the testCompile dependency to our build file. Add the next
+line to the dependencies block.</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/demo/PlayerControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">PlayerControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${local.server.port}</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Integer</span> serverPort
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test save validation</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span>) {
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            json {
+                name = <span class="string"><span class="delimiter">'</span><span class="content">Bob Smith</span><span class="delimiter">'</span></span>
+                wins = <span class="integer">42</span>
+                losses = <span class="string"><span class="delimiter">'</span><span class="content">abc</span><span class="delimiter">'</span></span>
+            }
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">422</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        resp.json.errors.size() == <span class="integer">2</span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">losses</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property losses is type-mismatched</span><span class="delimiter">'</span></span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property [game] of class [class demo.Player] cannot be null</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This annotation ensures serverPort contains the random port where the grails application started</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If your client accepts JSON it is always a good idea to set the Accept Http Header</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If your are sending a JSON Payload, you should set the Content-Type Http Header to application/json</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Since command object validation failed, the server returns the Http Status - 422 Unprocessable Entity</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Now that data binding, validation, and error-checking is done, update the <code>save</code> action
@@ -668,6 +753,7 @@ a related command object class and made the class able to be validated. Change <
 and add constraints.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">PlayerInfo</span> {
     <span class="predefined-type">String</span> name
@@ -686,16 +772,16 @@ and add constraints.</p>
 <p>Revise the <code>update</code> action once more, returning error checking prior to the attempt to save.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">update</span>(PlayerInfo info) {
+        <span class="keyword">if</span> (info.hasErrors()) {
+            respond info.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span>
+        }
         Player player = Player.get(params.id)
         <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
             render <span class="key">status</span>: HttpStatus.NOT_FOUND
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">if</span> (info.hasErrors()) {
-            respond info.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
             <span class="keyword">return</span>
         }
 
@@ -715,9 +801,9 @@ They need not be in the same file as the controller using them. This might be us
 a separation of concerns, or simply to make a command object class available to multiple controllers.</p>
 </div>
 <div class="paragraph">
-<p>If your command object class is defined in the same source file as the controller using it, Grails
+<p><strong>If your command object class is defined in the same source file as the controller using it, Grails
 will automatically make it <code>Validateable</code>, permitting the use of a static <code>constraints</code> block. If
-you define the class elsewhere and need <code>constraints</code>, you need to add an <code>implements</code> clause.</p>
+you define the class elsewhere and need <code>constraints</code>, you need to add an <code>implements</code> clause</strong> as displayed next:</p>
 </div>
 <div class="listingblock">
 <div class="content">

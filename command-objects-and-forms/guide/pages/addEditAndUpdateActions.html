@@ -223,6 +223,7 @@ a related command object class and made the class able to be validated. Change <
 and add constraints.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">PlayerInfo</span> {
     <span class="predefined-type">String</span> name
@@ -241,16 +242,16 @@ and add constraints.</p>
 <p>Revise the <code>update</code> action once more, returning error checking prior to the attempt to save.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">update</span>(PlayerInfo info) {
+        <span class="keyword">if</span> (info.hasErrors()) {
+            respond info.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span>
+        }
         Player player = Player.get(params.id)
         <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
             render <span class="key">status</span>: HttpStatus.NOT_FOUND
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">if</span> (info.hasErrors()) {
-            respond info.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
             <span class="keyword">return</span>
         }
 
@@ -270,9 +271,9 @@ They need not be in the same file as the controller using them. This might be us
 a separation of concerns, or simply to make a command object class available to multiple controllers.</p>
 </div>
 <div class="paragraph">
-<p>If your command object class is defined in the same source file as the controller using it, Grails
+<p><strong>If your command object class is defined in the same source file as the controller using it, Grails
 will automatically make it <code>Validateable</code>, permitting the use of a static <code>constraints</code> block. If
-you define the class elsewhere and need <code>constraints</code>, you need to add an <code>implements</code> clause.</p>
+you define the class elsewhere and need <code>constraints</code>, you need to add an <code>implements</code> clause</strong> as displayed next:</p>
 </div>
 <div class="listingblock">
 <div class="content">
