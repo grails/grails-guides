@@ -59,11 +59,15 @@ image::screenshot.png[]
 
 ## Publishing the Guide
 
-To publish the guide create a new repository in the Grails guides organization: https://github.com/grails-guides
+To publish the guide 
+
+**1.** Create a new repository in the Grails guides organization: https://github.com/grails-guides
 
 The repository name should match the name you used when running the `create-guide.sh` script in the previous step.
 
-And checkin the guide using Git. Then activate Travis for the repository and use `travis encrypt` to encrypt the necessary tokens for the publishing to work. You will need the following tokens:
+**2.** Checkin the guide using Git. 
+
+**3.** Activate Travis for the repository and use `travis encrypt` to encrypt the necessary tokens for the publishing to work. You will need the following tokens:
 
 1. `GH_TOKEN` - Generate a Personal Access Token from your Github Settings: https://github.com/settings/tokens/new - Select the "Repo" scope and copy the generated token
 2. `GIT_NAME` - Your Git username
@@ -79,7 +83,7 @@ travis encrypt GIT_EMAIL=myemail --add
 
 The encrypted tokens will be saved to `.travis.yml`. Commit the updated file to your guide repo.
 
-Finally, activate the Travis Service from your Github repo setting: https://github.com/grails-guides/[your-guide]/settings/installations. Select Travis CI from the "Add Service" list, and supply the following parameters:
+**4.** Activate the Travis Service from your Github repo setting: https://github.com/grails-guides/[your-guide]/settings/installations. Select Travis CI from the "Add Service" list, and supply the following parameters:
 
 1. Username: Your Github username
 2. Token: The Personal Access Token you generated above
