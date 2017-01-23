@@ -1,0 +1,633 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Domain Classes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/creatingTheApp.html"><strong>2</strong><span>Creating your Grails App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/domainClasses.html"><strong>4</strong><span>Domain Classes</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/controllers.html"><strong>5</strong><span>Controllers</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/views.html"><strong>6</strong><span>Views</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/services.html"><strong>7</strong><span>Services</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>8</strong><span>Testing your App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/deployment.html"><strong>9</strong><span>Deploying your App</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the App</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/controllers.html"><strong>5</strong><span>Controllers</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#creatingDomainClass"><strong>4.1</strong><span>Creating a Domain Class</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#databaseConsole"><strong>4.2</strong><span>DB Console</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#expandDomain"><strong>4.3</strong><span>Expanding the Domain Model</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bootstrap"><strong>4.4</strong><span>Bootstrapping Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#datasource"><strong>4.5</strong><span>Datasources</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#mysqlAsDatasource"><strong>4.6</strong><span>Configure MySQL Datasource</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#console"><strong>4.7</strong><span>Grails Console</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="domainClasses">4 Domain Classes</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/domainClasses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Grails is an <a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model View Controller</a> (MVC) framework, based upon the Spring Boot project. Typically an MVC application divides the responsibilities of the app into three categories:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Model - code that defines and manages the data</p>
+</li>
+<li>
+<p>View - code that manages the presentation of data (e.g, HTML page)</p>
+</li>
+<li>
+<p>Controller - code that defines the logic of the web application, and manages the communication between the model and the view. Controllers respond to requests, obtain data from the model, and pass it along to the view.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Typically an object-oriented MVC framework requires the developer to configure which classes correspond to each of the three categories above. However, Grails goes farther than most frameworks by following a <a href="https://en.wikipedia.org/wiki/Convention_over_configuration">"Convention over Configuration"</a> approach to development. This means that for many artefact types in Grails (controllers, views, etc), you simply create a file in a particular directory in your project, and Grails will automatically wire it into your application without any additional configuration on your part.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Handling the mapping of domain classes to database tables (and other persistent stores) is the job of <a href="http://gorm.grails.org/latest/">GORM</a>, the Grails Object Relational Mapper. GORM is a powerful tool in the Grails framework, and can even be used standalone outside of a Grails project. It supports relational databases (via Hibernate) as well as MongoDb, Neo4j, Redis and Cassandra datasources. Please see the <a href="http://gorm.grails.org/latest/hibernate/manual/index.html">GORM documentation</a> for more information.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When building a MVC application, it is typical to start with the "M" (Model), also known as the "Domain model". In Grails, your domain model is defined with Groovy classes under <code>grails-app/domain</code>. Let&#8217;s create a domain class.</p>
+</div>
+
+
+<h2 id="creatingDomainClass">4.1 Creating a Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/creatingDomainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Domain classes can be generated by Grails (in which case Grails will helpfully create a unit test automatically), or you can simply create the file yourself.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-domain-class com.example.Vehicle
+
+| Created grails-app/domain/com/example/Vehicle.groovy
+| Created src/test/groovy/com/example/VehicleSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will generate two Groovy files, one being our domain class, and the other a unit test. Let&#8217;s see what our domain class looks like.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="directive">static</span> constraints = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Right now our domain class has no properties, and no constraints. That&#8217;s not very interesting, but it&#8217;s worth noting that this is all that&#8217;s needed to wire up a persistent domain class in our application. By default, Hibernate will be used to configure a datasource (an in-memory H2 database by default) and create tables and associations for all Groovy classes under <code>grails-app/domain</code>. Let&#8217;s add some properties to this domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="predefined-type">String</span> name <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="predefined-type">String</span> make
+    <span class="predefined-type">String</span> model
+
+    <span class="directive">static</span> constraints = { <i class="conum" data-value="2"></i><b>(2)</b>
+        name <span class="key">maxSize</span>: <span class="integer">255</span>
+        make <span class="key">inList</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Ford</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Chevrolet</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Nissan</span><span class="delimiter">'</span></span>]
+        model <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Properties will be used to create columns in the database (assuming a relational database is used)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Constraints are used to enforce valid data in each field - Grails provides a rich set of constraints for common scenarios, and you can define custom constraints as well</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Please see the Grails documentation for a complete list and documentation of how to use <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html">domain classes</a> and <a href="https://docs.grails.org/latest/ref/Constraints/Usage.html">constraints</a></p>
+</div>
+
+
+<h2 id="databaseConsole">4.2 DB Console</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/databaseConsole.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you run the app again, you should see the same page as before. However, you can login to the DB Console and view your new database table.</p>
+</div>
+<div class="paragraph">
+<p>Browse to <code><a href="http://localhost:8080/dbconsole" class="bare">http://localhost:8080/dbconsole</a></code> and login. The default username is <code>sa</code>, without a password. The default JDBC URL is: <code>jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dbconsole.png" alt="DB Console">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can view the JDBC url in <code>application.yml</code>, under <code>environments</code> <code>development</code> <code>dataSource</code> <code>url</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once you&#8217;ve logged in to the DB Console, you should see your new <code>VEHICLES</code> table in the left-hand sidebar. Click the <code>+</code> icon to expand the table - you should see a list of columns, including the three <code>String</code> fields we just defined, <code>name</code>, <code>make,</code> and <code>model</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dbconsole-2.png" alt="DB Console">
+</div>
+</div>
+
+
+<h2 id="expandDomain">4.3 Expanding the Domain Model</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/expandDomain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For our <code>Vehicle</code> class, it doesn&#8217;t really make sense that <code>make</code> and <code>model</code> are plain Strings, since models should actually be associated with makes. Let&#8217;s update our domain model to be more robust.</p>
+</div>
+<div class="paragraph">
+<p>Create two new domain classes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-domain-class com.example.Make
+
+| Created grails-app/domain/com/example/Make.groovy
+| Created src/test/groovy/com/example/Make.groovy
+
+$ ./grailsw create-domain-class com.example.Model
+
+| Created grails-app/domain/com/example/Model.groovy
+| Created src/test/groovy/com/example/Model.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit these two files with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Make.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Make</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+    }
+
+    <span class="predefined-type">String</span> toString() {
+        name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Model.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Model</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> belongsTo = [ <span class="key">make</span>: Make ]
+
+    <span class="directive">static</span> constraints = {
+    }
+
+    <span class="predefined-type">String</span> toString() {
+        name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>belongsTo</code> property is one of several properties that GORM uses to determine associations between domain classes. Others include <code>hasMany</code> and <code>hasOne</code>. For more information please see the <a href="http://gorm.grails.org/6.0.x/hibernate/manual/#gormAssociation">GORM documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, update <code>Vehicle.groovy</code> to use the new <code>Make</code> and <code>Model</code> classes instead of <code>String</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="predefined-type">Integer</span> year
+
+    <span class="predefined-type">String</span> name
+    Model model
+    Make make
+
+    <span class="directive">static</span> constraints = {
+        year <span class="key">min</span>: <span class="integer">1900</span>
+        name <span class="key">maxSize</span>: <span class="integer">255</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> vehicle = Vehicle.findByName(<span class="string"><span class="delimiter">'</span><span class="content">pickup</span><span class="delimiter">'</span></span>)
+<span class="keyword">if</span>(vehicle) {
+    println vehicle.model <span class="comment">// e.g, 'Titan'</span>
+    println vehicle.make <span class="comment">// e.g, 'Nissan'</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Grails (via GORM) will now create three tables in our database, for our three domain classes, and create the necessary associations between the tables. Run the app again and open the DB Console to view the new tables.</p>
+</div>
+
+
+<h2 id="bootstrap">4.4 Bootstrapping Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/bootstrap.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Every Grails project includes a <code>BootStrap.groovy</code> file under <code>grails-app/init</code>. This file can be used for any custom logic you want to happen during application startup. One excellent use of the file is to preload some data in our database. Let&#8217;s create a few instances of our three domain classes.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>grails-app/init/BootStrap.groovy</code>, as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Make.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> creating.a.grails.application
+
+<span class="keyword">import</span> <span class="include">com.example.Make</span>
+<span class="keyword">import</span> <span class="include">com.example.Model</span>
+<span class="keyword">import</span> <span class="include">com.example.Vehicle</span>
+
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+
+        <span class="keyword">def</span> nissan = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>).save()
+        <span class="keyword">def</span> ford = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span>).save()
+
+        <span class="keyword">def</span> titan = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Titan</span><span class="delimiter">&quot;</span></span>, <span class="key">make</span>: nissan).save()
+        <span class="keyword">def</span> leaf = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Leaf</span><span class="delimiter">&quot;</span></span>, <span class="key">make</span>: nissan).save()
+        <span class="keyword">def</span> windstar = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Windstar</span><span class="delimiter">&quot;</span></span>, <span class="key">make</span>: ford).save()
+
+        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>,  <span class="key">make</span>: nissan, <span class="key">model</span>: titan, <span class="key">year</span>: <span class="integer">2012</span>).save()
+        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Economy</span><span class="delimiter">&quot;</span></span>, <span class="key">make</span>: nissan, <span class="key">model</span>: leaf, <span class="key">year</span>: <span class="integer">2014</span>).save()
+        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Minivan</span><span class="delimiter">&quot;</span></span>, <span class="key">make</span>: ford, <span class="key">model</span>: windstar, <span class="key">year</span>: <span class="integer">1990</span>).save()
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now restart the application, and browse to the DBConsole, you should be able to expand the three tables and see our newly created data.</p>
+</div>
+
+
+<h2 id="datasource">4.5 Datasources</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/datasource.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default, Grails configures an in-memory H2 database, which is dropped and recreated every time the app is restarted. This will be sufficient for our purposes in this guide, however, you can easily change this to a local database instance by configuring your own datasource. We&#8217;ll use MySQL as an example.</p>
+</div>
+
+
+<h2 id="mysqlAsDatasource">4.6 Configure MySQL Datasource</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/mysqlAsDatasource.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Edit <code>build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    <span class="comment">//...</span>
+
+    runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:5.1.40</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add the MySQL JDBC driver as a dependency</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Be sure to add the dependency to the <code>dependencies</code> section of the <code>build.gradle</code> file, and not the <code>buildscript</code>/<code>dependencies</code> section. The former is for application dependencies (needed for at compile time, runtime, or testing), whereas the <code>buildscript</code> <code>dependencies</code> is for those needed as part of the Gradle build process (managing static assets, for example).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">jmxExport</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">com.mysql.jdbc.Driver   </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.MySQL5InnoDBDialect</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">sa</span></span>
+    <span class="key">password</span>: <span class="string"><span class="content">testing</span></span>
+<span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: <span class="string"><span class="content">update</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">jdbc:mysql://127.0.0.1:3306/myapp </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Change the <code>driverClassName</code> and <code>dialect</code> to MySQL settings</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This assumes you have a local MySQL instance with a database named <code>myapp</code></td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="console">4.7 Grails Console</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/master/src/main/docs/guide/console.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Right now we don&#8217;t have any controllers or views set up to play with our domain model. We&#8217;ll get there shortly, but for now, let&#8217;s fire up the <a href="http://docs.grails.org/latest/ref/Command%20Line/console.html">Grails Console</a> so we can explore what Grails and GORM have to offer.</p>
+</div>
+<div class="paragraph">
+<p>If the application is still running, shut it down with either kbd:[Ctrl+C], or (if running Grails in <a href="http://docs.grails.org/latest/guide/commandLine.html#interactiveMode">Interactive Mode</a>, the <code>stop-app</code> command).</p>
+</div>
+<div class="paragraph">
+<p>Launch the Grails Console:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw console</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Grails Console application will launch. This application is based on the <a href="http://groovy-lang.org/groovyconsole.html">Groovy Console</a>, but has the added benefit that our entire Grails application is up and running in the background, so we can access our domain classes and even persist to the database from the Console.</p>
+</div>
+<div class="paragraph">
+<p>Try playing with our new domain model from the Console. Here&#8217;s a simple script to get you started - again, refer to the <a href="http://gorm.grails.org/6.0.x/hibernate/manual">GORM documentation</a> for more details on querying, persistence, configuration and more.</p>
+</div>
+<div class="listingblock">
+<div class="title">docs/console.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.*</span>
+
+<span class="keyword">def</span> vehicles = Vehicle.list()
+
+println vehicles.size()
+
+<span class="keyword">def</span> pickup = Vehicle.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>)
+
+println pickup.name
+println pickup.make.name
+println pickup.model.name
+
+<span class="keyword">def</span> nissan = Make.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> nissans = Vehicle.findAllByMake(nissan)
+
+println nissans.size()</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the App</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/controllers.html"><strong>5</strong><span>Controllers</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/creating-your-first-grails-app"><img src="https://travis-ci.org/grails-guides/creating-your-first-grails-app.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/creating-your-first-grails-app">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/creating-your-first-grails-app.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/creating-your-first-grails-app.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/creating-your-first-grails-app/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
