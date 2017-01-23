@@ -269,7 +269,38 @@ line to the dependencies block.</p>
 <div class="listingblock">
 <div class="title">/src/integration-test/groovy/demo/demo/PlayerControllerSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/command-objects-and-forms/complete/src/integration-test/groovy/demo/PlayerControllerSpec.groovy<span class="type">[]</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">PlayerControllerFuncSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test save validation</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            json {
+                name = <span class="string"><span class="delimiter">'</span><span class="content">Bob Smith</span><span class="delimiter">'</span></span>
+                wins = <span class="integer">42</span>
+                losses = <span class="string"><span class="delimiter">'</span><span class="content">abc</span><span class="delimiter">'</span></span>
+            }
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">422</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        resp.json.errors.size() == <span class="integer">2</span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">losses</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property losses is type-mismatched</span><span class="delimiter">'</span></span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property [game] of class [class demo.Player] cannot be null</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
