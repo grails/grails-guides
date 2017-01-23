@@ -488,38 +488,7 @@ line to the dependencies block.</p>
 <div class="listingblock">
 <div class="title">/src/integration-test/groovy/demo/demo/PlayerControllerSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
-
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
-<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-
-<span class="annotation">@Integration</span>
-<span class="type">class</span> <span class="class">PlayerControllerSpec</span> <span class="directive">extends</span> Specification {
-
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test save validation</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-
-        <span class="key">when</span>:
-        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
-            json {
-                name = <span class="string"><span class="delimiter">'</span><span class="content">Bob Smith</span><span class="delimiter">'</span></span>
-                wins = <span class="integer">42</span>
-                losses = <span class="string"><span class="delimiter">'</span><span class="content">abc</span><span class="delimiter">'</span></span>
-            }
-        }
-
-        <span class="key">then</span>:
-        resp.status == <span class="integer">422</span> <i class="conum" data-value="4"></i><b>(4)</b>
-        resp.json.errors.size() == <span class="integer">2</span>
-        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">losses</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property losses is type-mismatched</span><span class="delimiter">'</span></span>
-        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property [game] of class [class demo.Player] cannot be null</span><span class="delimiter">'</span></span>
-    }
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/command-objects-and-forms/complete/src/integration-test/groovy/demo/PlayerControllerSpec.groovy<span class="type">[]</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -739,6 +708,62 @@ $ curl --request GET "http://localhost:8080/player/show/4.json"
 submission.</p>
 </div>
 <div class="paragraph">
+<p>Create a Unit Test to validate this behaviour</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/PlayerControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@TestFor</span>(PlayerController)
+<span class="annotation">@Mock</span>([Player])
+<span class="type">class</span> <span class="class">PlayerControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test update</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span>  player = <span class="keyword">new</span> Player(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>,
+                <span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="content">XCOM: Enemy Unkown</span><span class="delimiter">'</span></span>,
+                <span class="key">region</span>: <span class="string"><span class="delimiter">'</span><span class="content">Spain</span><span class="delimiter">'</span></span>,
+                <span class="key">wins</span>: <span class="integer">3</span>,
+                <span class="key">losses</span>: <span class="integer">2</span>
+        )
+        player.save()
+        params.id = player.id
+        params.name = <span class="string"><span class="delimiter">'</span><span class="content">Sergio del Amo</span><span class="delimiter">'</span></span>
+        params.game = <span class="string"><span class="delimiter">'</span><span class="content">XCOM 2</span><span class="delimiter">'</span></span>
+        params.region = <span class="string"><span class="delimiter">'</span><span class="content">USA</span><span class="delimiter">'</span></span>
+        params.wins = <span class="integer">4</span>
+        controller.update() <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">respond model has no errors</span><span class="delimiter">'</span></span>
+        !model.player.hasErrors()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">player properties have been updated correctly</span><span class="delimiter">'</span></span>
+        model.player.name == <span class="string"><span class="delimiter">'</span><span class="content">Sergio del Amo</span><span class="delimiter">'</span></span>
+        model.player.game == <span class="string"><span class="delimiter">'</span><span class="content">XCOM 2</span><span class="delimiter">'</span></span>
+        model.player.region == <span class="string"><span class="delimiter">'</span><span class="content">USA</span><span class="delimiter">'</span></span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">non existing properties in the command object have not been modified</span><span class="delimiter">'</span></span>
+        model.player.wins == <span class="integer">3</span>
+        model.player.losses == <span class="integer">2</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Call a no argument version of the update method. Put the values in the <code>params</code> map. Databinding
+will map those values to the Command Object. This emulates what happens at runtime.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>The current solution is lacking, though. Because <code>PlayerInfo</code> is now the command object and
 not <code>Player</code>, validation is not done until the call to <code>player.save</code>. It would be better if
 validation was done earlier, as it had been done when <code>Player</code> was the command object.</p>
@@ -761,6 +786,57 @@ and add constraints.</p>
         name <span class="key">blank</span>: <span class="predefined-constant">false</span>
         game <span class="key">blank</span>: <span class="predefined-constant">false</span>
         region <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a unit test to validate the constraints defined in the command object.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/PlayerInfoSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">PlayerInfoSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.region can be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        <span class="keyword">new</span> PlayerInfo(<span class="key">region</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">region</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.name can be blank</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">blank</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">name</span>: <span class="predefined-constant">null</span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.game can be blank</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">blank</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">game</span>: <span class="predefined-constant">null</span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
     }
 }</code></pre>
 </div>
