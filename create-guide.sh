@@ -1,3 +1,4 @@
+#!/bin/bash
 
 GUIDE_NAME="$1"
 PROFILE="$2"
