@@ -14,7 +14,7 @@ The following describes the purpose of the various directories:
 
 To create a new guide first make sure you have `grails` and `gradle` installed and set to the appropriate versions you want to use for the guide. Then run the `create-guide.sh` script:
 
-```groovy
+```bash
 ./create-guide.sh my-new-guide
 ```
 
@@ -24,7 +24,7 @@ The name of the guide should be in all lower case and hyphen separated as in the
 
 Your next step will probably be to move your guide out of the grails-guide root repository and init a git repository
 
-```
+```bash
 $ mv  my-new-guide my-git-folder/my-new-guide
 $ cd my-git-folder/my-new-guide
 $ git init
@@ -34,7 +34,7 @@ $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 
 Publish locally. Run: 
 
-```
+```bash
 $ ./gradlew publishGuide
 ```
 
@@ -44,7 +44,7 @@ and a local version of the guide will be published to your build folder. The com
 
 If you would like to use a profile for your guide's project, simply specifiy the profile name after the guide name.
 
-```
+```bash
 ./create-guide.sh my-new-guide -profile angular
 ```
 
@@ -53,7 +53,7 @@ If you would like to use a profile for your guide's project, simply specifiy the
 Images are resolved from `src/main/resources/img`. You can reference images
 from that directory using accidoc's `image` directive.
 
-```
+```asciidoc
 image::screenshot.png[]
 ```
 
