@@ -25,7 +25,7 @@ The name of the guide should be in all lower case and hyphen separated as in the
 Your next step will probably be to move your guide out of the grails-guide root repository and init a git repository
 
 ```bash
-$ mv  my-new-guide my-git-folder/my-new-guide
+$ mv my-new-guide my-git-folder/my-new-guide
 $ cd my-git-folder/my-new-guide
 $ git init
 $ git add --all
