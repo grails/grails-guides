@@ -10,7 +10,7 @@ import {async} from "rxjs/scheduler/async";
   styleUrls: ['./index.component.css']
 })
 export class IndexComponent implements OnInit {
-
+  categories: string[] = ["Grails Apprentice", "Advanced Grails", "Grails + Javascript", "Grails + iOS", "Grails + Android"];
   guides: Guide[] = [];
   filteredGuides: Guide[] = [];
   filter: string = "";
@@ -46,6 +46,22 @@ export class IndexComponent implements OnInit {
     } else {
       this.resetFilter();
     }
+  }
+
+  nonEmptyCategories(): string[] {
+    var nonEmptyCategories: string[] = [];
+    for ( var category of this.categories ) {
+      if ( this.guidesByCategory(category).length > 0 ) {
+         nonEmptyCategories.push(category)
+      }
+    }
+    return nonEmptyCategories;
+  }
+
+  guidesByCategory(category: string): Guide[] {
+      return this.filteredGuides.filter((guide: Guide) => {
+        return guide.category == category
+      })
   }
 
   filterTag(tag: string): void {

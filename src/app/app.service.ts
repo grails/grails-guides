@@ -21,4 +21,5 @@ export abstract class Guide {
     subtitle: string;
     tags: string[];
     title: string;
+    category: string;
 }
