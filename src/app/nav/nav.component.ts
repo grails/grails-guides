@@ -17,6 +17,7 @@ import {OnInit} from '@angular/core';
 })
 export class NavComponent {
   sidebar: Sidebar = new Sidebar("out");
+  navExpanded: boolean = true;
 
   constructor() { }
 
