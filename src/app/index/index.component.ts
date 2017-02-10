@@ -49,12 +49,14 @@ export class IndexComponent implements OnInit {
   }
 
   filterTag(tag: string): void {
+    this.filter = tag;
     this.filteredGuides = this.guides.filter((guide: Guide) => {
       return guide.tags.indexOf(tag) > -1;
     })
   }
 
   resetFilter(): void {
+    this.filter = "";
     this.filteredGuides = this.guides;
   }
 
