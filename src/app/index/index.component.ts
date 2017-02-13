@@ -22,6 +22,11 @@ export class IndexComponent implements OnInit {
     this.appService.getGuides().subscribe((res: Guide[]) => {
       this.guides = res;
       this.filteredGuides = res;
+      for ( var guide of res ) {
+        if ( this.categories.indexOf(guide.category) == -1 ) {
+          this.categories.push(guide.category);
+        }
+      }
     });
 
     this.filterControl.valueChanges
