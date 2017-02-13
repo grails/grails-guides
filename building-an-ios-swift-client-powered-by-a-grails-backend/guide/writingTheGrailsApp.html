@@ -1,0 +1,604 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Grails Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/overview.html"><strong>2</strong><span>Overview</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheGrailsApp.html"><strong>3</strong><span>Writing the Grails Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/version2.html"><strong>5</strong><span>API version 2.0</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>6</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/overview.html">&lt;&lt; <strong>2</strong><span>Overview</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#domainClass"><strong>3.1</strong><span>Create a Domain Class - Persistent Entities</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#domainClassTest"><strong>3.2</strong><span>Domain Class Unit Testing</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#versioning"><strong>3.3</strong><span>Versioning</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#v1Controller"><strong>3.4</strong><span>Create a Controller</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bootstrap"><strong>3.5</strong><span>Loading test data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#v1FunctionalTests"><strong>3.6</strong><span>Functional tests</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3.7</strong><span>Running the Application</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheGrailsApp">3 Writing the Grails Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/writingTheGrailsApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now you are ready to start writing the Grails application.</p>
+</div>
+
+
+<h2 id="domainClass">3.1 Create a Domain Class - Persistent Entities</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/domainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We need to create persistent entities to store company announcements. Grails handles persistence with the use of <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html">Grails Domain Classes</a>:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A domain class fulfills the M in the Model View Controller (MVC) pattern and represents a persistent entity that is
+mapped onto an underlying database table. In Grails a domain is a class that lives in the grails-app/domain directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Grails simplifies the creation of domain classes with the <a href="http://docs.grails.org/latest/ref/Command%20Line/create-domain-class.html">create-domain-class command</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash"> ./grailsw create-domain-class Announcement
+| Resolving Dependencies. Please wait...
+CONFIGURE SUCCESSFUL
+Total time: 4.53 secs
+| Created grails-app/grails/company/intranet/Announcement.groovy
+| Created src/test/groovy/grails/company/intranet/AnnouncementSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Just to keep it simple, we assume the company announcements just contain a <em>title</em> and a <em>HTML body</em>.
+We are going to modify the domain class generated in the previous step to store that information.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/intranet/backend/Announcement.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="type">class</span> <span class="class">Announcement</span> {
+
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> body
+
+    <span class="directive">static</span> constraints = {
+        title <span class="key">size</span>: <span class="integer">0</span>..<span class="integer">255</span>
+        body <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        body <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>it enables us to store strings with more than 255 characters in the <em>body</em>.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="domainClassTest">3.2 Domain Class Unit Testing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/domainClassTest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html">Grails makes testing easier</a> from low level unit testing to high
+level functional tests.</p>
+</div>
+<div class="paragraph">
+<p>We are going to test the constraints we defined in the Announcement domain Class in constraints property. In particular
+nullability and length of both title and body properties.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/intranet/backend/AnnouncementSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@TestFor</span>(Announcement)
+<span class="type">class</span> <span class="class">AnnouncementSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body can be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        <span class="keyword">new</span> Announcement(<span class="key">body</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">body</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test title can not be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        !<span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body can have a more than 255 characters</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">body validation passes</span><span class="delimiter">'</span></span>
+        <span class="keyword">new</span> Announcement(<span class="key">body</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">body</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test title can have a maximum of 255 characters</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">title validation fails</span><span class="delimiter">'</span></span>
+        !<span class="keyword">new</span> Announcement(<span class="key">title</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">255</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">title validation passes</span><span class="delimiter">'</span></span>
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can run the every test, including the one we just created, with the command test_app</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash"> ./grailsw test-app
+ | Resolving Dependencies. Please wait...
+ CONFIGURE SUCCESSFUL
+ Total time: 2.534 secs
+ :complete:compileJava UP-TO-DATE
+ :complete:compileGroovy
+ :complete:buildProperties
+ :complete:processResources
+ :complete:classes
+ :complete:compileTestJava UP-TO-DATE
+ :complete:compileTestGroovy
+ :complete:processTestResources UP-TO-DATE
+ :complete:testClasses
+ :complete:test
+ :complete:compileIntegrationTestJava UP-TO-DATE
+ :complete:compileIntegrationTestGroovy UP-TO-DATE
+ :complete:processIntegrationTestResources UP-TO-DATE
+ :complete:integrationTestClasses UP-TO-DATE
+ :complete:integrationTest UP-TO-DATE
+ :complete:mergeTestReports
+
+ BUILD SUCCESSFUL
+
+ | Tests PASSED</code></pre>
+</div>
+</div>
+
+
+<h2 id="versioning">3.3 Versioning</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/versioning.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is important to think about API versioning from the beginning, especially when you create an API
+consumed by mobile phone applications. Users will run different versions of the app, and you will need to version
+your API to create advanced functionality but keep supporting legacy versions.</p>
+</div>
+<div class="paragraph">
+<p>Grails allows multiple ways to <a href="http://docs.grails.org/latest/guide/webServices.html#versioningResources">Version REST Resources</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using the URI</p>
+</li>
+<li>
+<p>Using the Accept-Version Header</p>
+</li>
+<li>
+<p>Using Hypermedia/Mime Types</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this guide we are going to version the API using the Accept-Version header.</p>
+</div>
+<div class="paragraph">
+<p>Devices running version 1.0 will invoke the <em>announcements</em> enpoint passing the 1.0 in the <code>Accept Version</code> HTTP Header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Accept-Version: 1.0&quot; -X GET http://localhost:8080/announcements</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Devices running version 2.0 will invoke the <em>announcements</em> enpoint passing the 2.0 in the Accept Version Header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Accept-Version: 2.0&quot; -X GET http://localhost:8080/announcements</code></pre>
+</div>
+</div>
+
+
+<h2 id="v1Controller">3.4 Create a Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v1Controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We create a <em>Controller</em> for the <em>Domain class</em> we previously created. Our Controller extends  <a href="http://docs.grails.org/latest/guide/webServices.html#restfulControllers">RestfulController</a>. This
+will provide us RESTful functionality to list, create, update and delete <code>Announcement</code> resources using
+different HTTP  Methods.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/intranet/backend/v1/AnnouncementController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend.v1
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+<span class="keyword">import</span> <span class="include">intranet.backend.Announcement</span>
+
+<span class="type">class</span> <span class="class">AnnouncementController</span> <span class="directive">extends</span> RestfulController&lt;Announcement&gt; {
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">v1</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>] <i class="conum" data-value="2"></i><b>(2)</b>
+
+    AnnouncementController() {
+        <span class="local-variable">super</span>(Announcement)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>this controller will handle v1 of our api</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>we want to respond only JSON Payloads</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_url_mapping">Url Mapping</h3>
+<div class="paragraph">
+<p>We want our endpoint to listen in /announcements instead of /announcement. Moreover, we want previous controller for
+which we declared a namespace of v1 to handle the requests with the Accept-Version Http Header set to 1.0.</p>
+</div>
+<div class="paragraph">
+<p>Grails enables powerful <a href="http://docs.grails.org/latest/guide/theWebLayer.html#urlmappingss">URL mapping</a> configuration to
+do that. Add the next line to the mappings closure:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/intranet/backend/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">1.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v1</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="bootstrap">3.5 Loading test data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/bootstrap.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to populate the database with several announcements when the application startups.</p>
+</div>
+<div class="paragraph">
+<p>In order to do that, we edit <em>grails-app/init/grails/company/intranet/BootStrap.groovy</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.company.intranet
+
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        announcements().each { <span class="local-variable">it</span>.save() }
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+
+    <span class="directive">static</span> <span class="predefined-type">List</span>&lt;Announcement&gt; announcements() {
+        [
+                <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #1: Grails Interceptors</span><span class="delimiter">'</span></span>),
+                <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #2: JSON Views</span><span class="delimiter">'</span></span>)
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Announcements in the previous code snippet don&#8217;t contain <em>body</em> content
+to keep the code sample small. Checkout <code>grails-app/init/intranet/backend/BootStrap.groovy</code> to see the complete code.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="v1FunctionalTests">3.6 Functional tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v1FunctionalTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">Functional Tests</a> involve making HTTP
+requests against the running application and verifying the resultant behavior.</p>
+</div>
+<div class="paragraph">
+<p>We use the <a href="https://github.com/grails-plugins/grails-rest-client-builder">Rest Client Builder Grails Plugin</a> whose
+dependency is added when we create an app with the <em>rest-api</em> profile.</p>
+</div>
+<div class="paragraph">
+<p>/home/travis/build/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/intranet/backend/AnnouncementControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
+
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is present in announcements json payload of Api 1.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 1.0</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">1.0</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
+        resp.status == HttpServletResponse.SC_OK <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
+        resp.headers.get(<span class="string"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>) == [<span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>]
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title and body</span><span class="delimiter">'</span></span>
+        resp.json.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.body <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is NOT present in announcements json payload of Api 2.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>serverPort property is automatically injected. It contains the random port where the Grails app runs during the functional test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pass the api version as an Http header</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verify the response code is 200; OK</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Body is present in the JSON paylod</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails command <em>test-app</em> runs unit, integration and functional tests.</p>
+</div>
+
+
+<h2 id="runningTheApp">3.7 Running the Application</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/overview.html">&lt;&lt; <strong>2</strong><span>Overview</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend"><img src="https://travis-ci.org/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

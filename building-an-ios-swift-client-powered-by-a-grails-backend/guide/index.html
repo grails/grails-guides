@@ -1,0 +1,1789 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Building a Swift iOS Client powered by a Grails backend</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <div class="navTitle">
+                
+                Grails Framework Guide 
+            </div>
+            <div class="navLinks">
+                <ul>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#overview"><strong>2</strong><span>Overview</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#writingTheGrailsApp"><strong>3</strong><span>Writing the Grails Application</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#writingTheiOSApp"><strong>4</strong><span>Writing the iOS Application</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#version2"><strong>5</strong><span>API version 2.0</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#conclusion"><strong>6</strong><span>Conclusion</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <div class="project">
+                            <h1>Building a Swift iOS Client powered by a Grails backend</h1>
+                            <p></p>
+                            <p>This guide demonstrates how you can use Grails as a backend for an iOS app built with Swift</p>
+                            <p><strong>Authors:</strong> Sergio del Amo</p>
+                            <p><strong>Grails Version:</strong> 3.2.6</p>
+                            
+                        </div>
+
+                        
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to build a <a href="http://grails.org">Grails application</a> which will serve as a company intranet backend.
+It exposes a JSON API of company announcements.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, you are going to build an <a href="https://developer.apple.com/ios/">iOS App</a>, the intranet client, which
+consumes the JSON API offered by the backend.</p>
+</div>
+<div class="paragraph">
+<p>The guide explores the support of diffent API versions.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>The latest stable version of <a href="https://developer.apple.com/xcode/">Xcode</a>.
+This guide was written with Xcode 8.2.1</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git" class="bare">https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_to_follow_the_grails_part">To follow the Grails part:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Alternatively, if you already have Grails installed then you can create a new application using the
+following command in a Terminal window:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>$ grails create-app intranet.backend.grails-app --profile rest-api
+$ cd grails-app</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the create-app command completes, Grails will create a grails-app directory with an
+application configured to create a REST application (due to the use of the parameter profile=rest-api )
+and configured to use the hibernate feature with an H2 database.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed Grails example if you <code>cd</code> into <code>grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_to_follow_the_ios_part">To follow the iOS part:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/initial-swift-ios</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can create an iOS app using the New Project Wizard of
+Xcode Studio as illustrated in the next screenshots.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/create_new_project.png" alt="create new project">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/choose_master-detail-application.png" alt="choose master detail application">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/choose_swift.png" alt="choose swift">
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed version 1 of the iOS example if you <code>cd</code> into <code>grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete-swift-ios-v1</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed version 2 of the iOS example if you <code>cd</code> into <code>grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete-swift-ios-v2</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h1 id="overview">2 Overview</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/overview.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The next image illustrates the behavior of iOS app version 1.
+The iOS app is composed by two View Controllers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When the iOS application initial screen loads, it requests an announcements list.</p>
+</li>
+<li>
+<p>The Grails app sends a JSON payload which includes a list of announcements. For each announcement a unique identifier, a title and a HTML body is included.</p>
+</li>
+<li>
+<p>The iOS app renders the JSON Payload in a <em>UITableView</em></p>
+</li>
+<li>
+<p>The user taps an announcement&#8217;s title and the app segues to a detail screen. The initial screen sends the
+detail screen the announcement identiifer, title and HTML body.
+The latter will be rendered in a <em>UIWebView</em></p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/overview.jpeg" alt="overview">
+</div>
+</div>
+
+
+<h1 id="writingTheGrailsApp">3 Writing the Grails Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/writingTheGrailsApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now you are ready to start writing the Grails application.</p>
+</div>
+
+
+<h2 id="domainClass">3.1 Create a Domain Class - Persistent Entities</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/domainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We need to create persistent entities to store company announcements. Grails handles persistence with the use of <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html">Grails Domain Classes</a>:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A domain class fulfills the M in the Model View Controller (MVC) pattern and represents a persistent entity that is
+mapped onto an underlying database table. In Grails a domain is a class that lives in the grails-app/domain directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Grails simplifies the creation of domain classes with the <a href="http://docs.grails.org/latest/ref/Command%20Line/create-domain-class.html">create-domain-class command</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash"> ./grailsw create-domain-class Announcement
+| Resolving Dependencies. Please wait...
+CONFIGURE SUCCESSFUL
+Total time: 4.53 secs
+| Created grails-app/grails/company/intranet/Announcement.groovy
+| Created src/test/groovy/grails/company/intranet/AnnouncementSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Just to keep it simple, we assume the company announcements just contain a <em>title</em> and a <em>HTML body</em>.
+We are going to modify the domain class generated in the previous step to store that information.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/intranet/backend/Announcement.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="type">class</span> <span class="class">Announcement</span> {
+
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> body
+
+    <span class="directive">static</span> constraints = {
+        title <span class="key">size</span>: <span class="integer">0</span>..<span class="integer">255</span>
+        body <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        body <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>it enables us to store strings with more than 255 characters in the <em>body</em>.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="domainClassTest">3.2 Domain Class Unit Testing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/domainClassTest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html">Grails makes testing easier</a> from low level unit testing to high
+level functional tests.</p>
+</div>
+<div class="paragraph">
+<p>We are going to test the constraints we defined in the Announcement domain Class in constraints property. In particular
+nullability and length of both title and body properties.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/intranet/backend/AnnouncementSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@TestFor</span>(Announcement)
+<span class="type">class</span> <span class="class">AnnouncementSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body can be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        <span class="keyword">new</span> Announcement(<span class="key">body</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">body</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test title can not be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        !<span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body can have a more than 255 characters</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">body validation passes</span><span class="delimiter">'</span></span>
+        <span class="keyword">new</span> Announcement(<span class="key">body</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">body</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test title can have a maximum of 255 characters</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">title validation fails</span><span class="delimiter">'</span></span>
+        !<span class="keyword">new</span> Announcement(<span class="key">title</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+        str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        <span class="integer">255</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">title validation passes</span><span class="delimiter">'</span></span>
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>])
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can run the every test, including the one we just created, with the command test_app</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash"> ./grailsw test-app
+ | Resolving Dependencies. Please wait...
+ CONFIGURE SUCCESSFUL
+ Total time: 2.534 secs
+ :complete:compileJava UP-TO-DATE
+ :complete:compileGroovy
+ :complete:buildProperties
+ :complete:processResources
+ :complete:classes
+ :complete:compileTestJava UP-TO-DATE
+ :complete:compileTestGroovy
+ :complete:processTestResources UP-TO-DATE
+ :complete:testClasses
+ :complete:test
+ :complete:compileIntegrationTestJava UP-TO-DATE
+ :complete:compileIntegrationTestGroovy UP-TO-DATE
+ :complete:processIntegrationTestResources UP-TO-DATE
+ :complete:integrationTestClasses UP-TO-DATE
+ :complete:integrationTest UP-TO-DATE
+ :complete:mergeTestReports
+
+ BUILD SUCCESSFUL
+
+ | Tests PASSED</code></pre>
+</div>
+</div>
+
+
+<h2 id="versioning">3.3 Versioning</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/versioning.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is important to think about API versioning from the beginning, especially when you create an API
+consumed by mobile phone applications. Users will run different versions of the app, and you will need to version
+your API to create advanced functionality but keep supporting legacy versions.</p>
+</div>
+<div class="paragraph">
+<p>Grails allows multiple ways to <a href="http://docs.grails.org/latest/guide/webServices.html#versioningResources">Version REST Resources</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using the URI</p>
+</li>
+<li>
+<p>Using the Accept-Version Header</p>
+</li>
+<li>
+<p>Using Hypermedia/Mime Types</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this guide we are going to version the API using the Accept-Version header.</p>
+</div>
+<div class="paragraph">
+<p>Devices running version 1.0 will invoke the <em>announcements</em> enpoint passing the 1.0 in the <code>Accept Version</code> HTTP Header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Accept-Version: 1.0&quot; -X GET http://localhost:8080/announcements</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Devices running version 2.0 will invoke the <em>announcements</em> enpoint passing the 2.0 in the Accept Version Header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Accept-Version: 2.0&quot; -X GET http://localhost:8080/announcements</code></pre>
+</div>
+</div>
+
+
+<h2 id="v1Controller">3.4 Create a Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v1Controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We create a <em>Controller</em> for the <em>Domain class</em> we previously created. Our Controller extends  <a href="http://docs.grails.org/latest/guide/webServices.html#restfulControllers">RestfulController</a>. This
+will provide us RESTful functionality to list, create, update and delete <code>Announcement</code> resources using
+different HTTP  Methods.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/intranet/backend/v1/AnnouncementController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend.v1
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+<span class="keyword">import</span> <span class="include">intranet.backend.Announcement</span>
+
+<span class="type">class</span> <span class="class">AnnouncementController</span> <span class="directive">extends</span> RestfulController&lt;Announcement&gt; {
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">v1</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>] <i class="conum" data-value="2"></i><b>(2)</b>
+
+    AnnouncementController() {
+        <span class="local-variable">super</span>(Announcement)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>this controller will handle v1 of our api</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>we want to respond only JSON Payloads</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_url_mapping">Url Mapping</h3>
+<div class="paragraph">
+<p>We want our endpoint to listen in /announcements instead of /announcement. Moreover, we want previous controller for
+which we declared a namespace of v1 to handle the requests with the Accept-Version Http Header set to 1.0.</p>
+</div>
+<div class="paragraph">
+<p>Grails enables powerful <a href="http://docs.grails.org/latest/guide/theWebLayer.html#urlmappingss">URL mapping</a> configuration to
+do that. Add the next line to the mappings closure:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/intranet/backend/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">1.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v1</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="bootstrap">3.5 Loading test data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/bootstrap.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to populate the database with several announcements when the application startups.</p>
+</div>
+<div class="paragraph">
+<p>In order to do that, we edit <em>grails-app/init/grails/company/intranet/BootStrap.groovy</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.company.intranet
+
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        announcements().each { <span class="local-variable">it</span>.save() }
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+
+    <span class="directive">static</span> <span class="predefined-type">List</span>&lt;Announcement&gt; announcements() {
+        [
+                <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #1: Grails Interceptors</span><span class="delimiter">'</span></span>),
+                <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #2: JSON Views</span><span class="delimiter">'</span></span>)
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Announcements in the previous code snippet don&#8217;t contain <em>body</em> content
+to keep the code sample small. Checkout <code>grails-app/init/intranet/backend/BootStrap.groovy</code> to see the complete code.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="v1FunctionalTests">3.6 Functional tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v1FunctionalTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">Functional Tests</a> involve making HTTP
+requests against the running application and verifying the resultant behavior.</p>
+</div>
+<div class="paragraph">
+<p>We use the <a href="https://github.com/grails-plugins/grails-rest-client-builder">Rest Client Builder Grails Plugin</a> whose
+dependency is added when we create an app with the <em>rest-api</em> profile.</p>
+</div>
+<div class="paragraph">
+<p>/home/travis/build/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/intranet/backend/AnnouncementControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
+
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is present in announcements json payload of Api 1.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 1.0</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">1.0</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
+        resp.status == HttpServletResponse.SC_OK <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
+        resp.headers.get(<span class="string"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>) == [<span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>]
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title and body</span><span class="delimiter">'</span></span>
+        resp.json.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.body <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is NOT present in announcements json payload of Api 2.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>serverPort property is automatically injected. It contains the random port where the Grails app runs during the functional test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pass the api version as an Http header</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verify the response code is 200; OK</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Body is present in the JSON paylod</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails command <em>test-app</em> runs unit, integration and functional tests.</p>
+</div>
+
+
+<h2 id="runningTheApp">3.7 Running the Application</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+
+
+<h1 id="writingTheiOSApp">4 Writing the iOS Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/writingTheiOSApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="ios-overview">4.1 Fetching the Announcements</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/ios-overview.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next image illustrates the classes involved in the fetching and rendering of the
+announcements exposed by the Grails application.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/ios-announcements-overview.jpeg" alt="ios announcements overview">
+</div>
+</div>
+
+
+<h2 id="iosModel">4.2 Model</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/iosModel.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The announcements sent by the server are gonna be rendered into an object:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/Announcement.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">class Announcement {
+    let primaryKey: Int
+    let title: String
+    var body: String?
+
+    init(primaryKey: Int, title: String) {
+        self.primaryKey = primaryKey
+        self.title = title
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="iosJsonToModel">4.3 Json to Model</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/iosJsonToModel.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To build a Model object from Data, for example a network request, we use a builder class</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-v1/IntranetClient/AnnouncementBuilder.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import Foundation
+
+class AnnouncementBuilder {
+
+    func announcementsFromJSON(_ data: Data?) -&gt; [Announcement] {
+        let json = try? JSONSerialization.jsonObject(with: data!, options: [])
+        var announcements = [Announcement]()
+        if let array = json as? [Any] {
+            for object in array {
+                if let dict = object as? Dictionary&lt;String, AnyObject&gt; {
+                    if let title = dict[&quot;title&quot;] as? String, let primaryKey = dict[&quot;id&quot;]  as? Int {
+                        let announcement = Announcement(primaryKey: primaryKey, title: title)
+                        if let body = dict[&quot;body&quot;]  as? String {
+                            announcement.body = body
+                        }
+                        announcements.append(announcement)
+                    }
+                }
+            }
+        }
+        return announcements
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="networkingCode">4.4 Networking code</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/networkingCode.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We use <em>NSURLSession</em> to connect to the Grails API. Several constants are set in <em>GrailsFetcher</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/GrailsFetcher.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">struct GrailsApi {
+    static let serverUrl = &quot;http://192.168.1.40:8080&quot; <i class="conum" data-value="1"></i><b>(1)</b>
+    struct Announcements {
+        static let Path = &quot;announcements&quot; <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+    static let version = &quot;1.0&quot; <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Grails App server url.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The path we configured in the Grails app in <em>UrlMappings.groovy</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The version of the API</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You may need to change the ip address to match your local machine.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/AnnouncementsFetcher.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import Foundation
+
+class AnnouncementsFetcher : NSObject, URLSessionDelegate {
+
+    weak var delegate:AnnouncementsFetcherDelegate?
+    let builder = AnnouncementBuilder()
+
+    func fetchAnnouncements() {
+        let url = URL(string: &quot;\(GrailsApi.serverUrl)/\(GrailsApi.Announcements.Path)&quot;)!
+        let req = NSMutableURLRequest(url:url)
+        req.setValue(GrailsApi.version, forHTTPHeaderField: &quot;Accept-Version&quot;) <i class="conum" data-value="1"></i><b>(1)</b>
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
+
+        let task = session.dataTask(with: req as URLRequest) { (data, response, error) in
+            if error != nil {
+                if let delegate = self.delegate {
+                    delegate.announcementsFetchingFailed()
+                }
+                return
+            }
+            let announcements = self.builder.announcementsFromJSON(data)
+            if let delegate = self.delegate {
+                delegate.announcementsFetched(announcements)
+            }
+
+        }
+        task.resume()
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We set the <em>Accept-Version</em> Http header for every request.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once we get a list of announcements, we communicate the response to classes implementing the delegate</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/AnnouncementsFetcherDelegate.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">protocol AnnouncementsFetcherDelegate: class {
+
+    func announcementsFetchingFailed()
+
+    func announcementsFetched(_ announcements: [Announcement])
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <em>MasterViewController</em> implements fetcher delegate protocol, thus it receives the announcements</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/MasterViewController.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import UIKit
+
+class MasterViewController: UITableViewController, AnnouncementsFetcherDelegate {
+
+    var detailViewController: DetailViewController? = nil
+    var objects = [Any]()
+
+    var tableViewDataSource = AnnouncementsTableViewDataSource()
+    var tableViewDelegate = AnnouncementsTableViewDelegate()
+    let fetcher = AnnouncementsFetcher()
+
+    // MARK: - LifeCycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.tableView.dataSource = self.tableViewDataSource
+        self.tableView.delegate = self.tableViewDelegate
+        self.fetcher.delegate = self
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        self.clearsSelectionOnViewWillAppear = self.splitViewController!.isCollapsed
+        super.viewWillAppear(animated)
+        self.registerNotifications()
+        self.fetchAnnouncements() <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.unregisterNotifications()
+    }
+
+    // MARK: - Notifications
+
+    func registerNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.announcementTapped),
+            name: Notification.Name(&quot;AnnouncementTappedNotification&quot;),
+            object: nil)
+    }
+
+    func unregisterNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: Notification.Name(&quot;AnnouncementTappedNotification&quot;),
+            object: nil)
+    }
+
+    // MARK: - Private Methods
+
+    @objc func announcementTapped(notification: NSNotification){
+
+        let announcement = notification.object as! Announcement
+        self.performSegue(withIdentifier: &quot;showDetail&quot;, sender: announcement)
+    }
+
+    func fetchAnnouncements() {
+        self.setNetworkActivityIndicator(true)
+        self.fetcher.fetchAnnouncements()
+    }
+
+    func setNetworkActivityIndicator(_ visible: Bool) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = visible
+    }
+
+    // MARK: - Segues
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == &quot;showDetail&quot; {
+            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+            if let announcement = sender as? Announcement {
+                controller.announcement = announcement
+            }
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
+        }
+    }
+
+    // MARK: - AnnouncementsFetcherDelegate
+
+    func announcementsFetchingFailed() {
+        self.setNetworkActivityIndicator(false)
+    }
+
+    func announcementsFetched(_ announcements: [Announcement]) {  <i class="conum" data-value="2"></i><b>(2)</b>
+        self.setNetworkActivityIndicator(false)
+
+        self.tableViewDataSource.announcements = announcements
+        self.tableViewDelegate.announcements = announcements
+        self.tableView.reloadData()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Triggers announcements fetching</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Refreshes the UI once we get a list of announcements</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>MasterViewController sets its UITableView&#8217;s data source and delegate to the next classes:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/AnnouncementsTableViewDataSource.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import UIKit
+
+class AnnouncementsTableViewDataSource : NSObject, UITableViewDataSource {
+
+    var announcements = [Announcement]()
+
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int {
+        return announcements.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: &quot;Cell&quot;, for: indexPath)
+
+        let announcement = announcements[indexPath.row]
+        cell.textLabel!.text = announcement.title
+        return cell
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/AnnouncementsTableViewDelegate.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import UIKit
+
+class AnnouncementsTableViewDelegate : NSObject, UITableViewDelegate {
+
+    var announcements = [Announcement]()
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let announcement = announcements[indexPath.row]
+        NotificationCenter.default.post(name: Notification.Name(&quot;AnnouncementTappedNotification&quot;), object: announcement) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>When the user taps an announcement a <em>Notification</em> is raised. It is captured in <em>MasterViewController</em> and
+initiates the segue to the DetailViewController</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="detailViewController">4.5 Detail View Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/detailViewController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When the user taps an announcement, a <em>Notification</em> is posted which contains
+the tapped announcement. In the method <em>prepareForSegue:sender</em> of <em>MasterViewController</em>
+we set the announcement property of <em>DetailViewController</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/MasterViewController.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == &quot;showDetail&quot; {
+            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+            if let announcement = sender as? Announcement {
+                controller.announcement = announcement
+            }
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
+        }</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/segue.jpeg" alt="segue">
+</div>
+</div>
+<div class="paragraph">
+<p>To render the announcement we use a UILabel and UIWebView which we wire up to IBOutlets in the StoryBoard as illustrated below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/connect_detail_iboutlets.png" alt="connect detail iboutlets">
+</div>
+</div>
+<div class="paragraph">
+<p>This is the complete <em>DetailViewController</em> code. There is no networking code involved.</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v1/IntranetClient/DetailViewController.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import UIKit
+
+class DetailViewController: UIViewController, UIWebViewDelegate {
+
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var webView: UIWebView!
+    @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
+
+    func configureView() {
+        // Update the user interface for the detail item.
+        if let announcement = self.announcement {
+            if let label = self.titleLabel {
+                label.text = announcement.title
+            }
+            if let webView = self.webView, let body = announcement.body {
+                self.hideActivityIndicator()
+                webView.loadHTMLString(body, baseURL: nil)
+            } else {
+                self.hideActivityIndicator()
+            }
+        } else {
+            self.hideActivityIndicator()
+        }
+    }
+
+    func hideActivityIndicator() {
+        if let activityIndicatorView  = self.activityIndicatorView {
+            activityIndicatorView.stopAnimating()
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        self.configureView()
+    }
+
+    var announcement: Announcement? {
+        didSet {
+            // Update the view.
+            self.configureView()
+        }
+    }
+
+
+    // MARK: - UIWebViewDelegate
+
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        self.hideActivityIndicator()
+    }
+
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        self.hideActivityIndicator()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="version2">5 API version 2.0</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/version2.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The problem with the first version of the API is that we include every announcement
+body in the payload used to displayed the list. An announcement&#8217;s body can be a large block of HTML.
+A user will probably just wants to check a couple of announcements. It will save bandwidth and
+make the app faster if we don&#8217;t send the announcement body in the initial request. Instead, we will ask
+the API for a complete announcement (including <code>body</code>) once the user taps the announcement.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/version2overview.jpeg" alt="version2overview">
+</div>
+</div>
+
+
+<h2 id="v2Controller">5.1 Grails V2 Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2Controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to use create a new Controller to handle the version 2 of the API. We are going to use a Criteria
+query with a projection to fetch only the id and title of the announcements.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/intranet/backend/v2/AnnouncementController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend.v2
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+<span class="keyword">import</span> <span class="include">intranet.backend.Announcement</span>
+
+<span class="type">class</span> <span class="class">AnnouncementController</span> <span class="directive">extends</span> RestfulController&lt;Announcement&gt; {
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    <span class="keyword">def</span> announcementService
+
+    AnnouncementController() {
+        <span class="local-variable">super</span>(Announcement)
+    }
+
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+        <span class="keyword">def</span> announcements = announcementService.findAllIdAndTitleProjections(params)
+        respond announcements, <span class="key">model</span>: [(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>resourceName<span class="inline-delimiter">}</span></span><span class="content">Count</span><span class="delimiter">&quot;</span></span>.toString()): countResources()]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We encapsulate the querying in a service</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/intranet/backend/AnnouncementService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="type">class</span> <span class="class">AnnouncementService</span> {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; findAllIdAndTitleProjections(<span class="predefined-type">Map</span> params) {
+        <span class="keyword">def</span> c = Announcement.createCriteria()
+        <span class="keyword">def</span> announcements = c.list(params) {
+            projections {
+                property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+                property(<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>)
+            }
+        }.collect { [<span class="key">id</span>: <span class="local-variable">it</span>[<span class="integer">0</span>], <span class="key">title</span>: <span class="local-variable">it</span>[<span class="integer">1</span>]] } <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and we test it:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/intranet/backend/AnnouncementServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+
+<span class="annotation">@TestFor</span>(AnnouncementService)
+<span class="type">class</span> <span class="class">AnnouncementServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test criteria query with projection returns a list of maps</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Save some announcements</span><span class="delimiter">'</span></span>
+        [<span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #1: Grails Interceptors</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #2: JSON Views</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #3: Multi-Project Builds</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #4: Angular Scaffolding</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Retrieving Runtime Config Values In Grails 3</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Developing Grails 3 Applications With IntelliJ IDEA</span><span class="delimiter">'</span></span>)].each {
+            <span class="local-variable">it</span>.save()
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcements are saved</span><span class="delimiter">'</span></span>
+        Announcement.count() == <span class="integer">6</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">fetching the projection</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = service.findAllIdAndTitleProjections([:])
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">there are six maps in the response</span><span class="delimiter">'</span></span>
+        resp
+        resp.size() == <span class="integer">6</span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the maps contain only id and title</span><span class="delimiter">'</span></span>
+        resp.each {
+            <span class="local-variable">it</span>.keySet() == [<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>] <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;<span class="predefined-type">String</span>&gt;
+         }
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">non empty values</span><span class="delimiter">'</span></span>
+        resp.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+        }
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_url_mapping">Url Mapping</h3>
+<div class="paragraph">
+<p>We need to map the version <em>2.0</em> of the Accept-Header to the namespace <em>v2</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/intranet/backend/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">2.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>)
+        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">2.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="v2FunctionalTests">5.2 Api 2.0 Functional tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2FunctionalTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We want to test the Api version 2.0 does not include the body property when receiving a GET request to the <em>announcements</em>
+endpoint. The next functional test verifies that behaviour.</p>
+</div>
+<div class="paragraph">
+<p>/home/travis/build/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/complete</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/intranet/backend/AnnouncementControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
+
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is present in announcements json payload of Api 1.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 2.0</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>) {
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
+        resp.status == HttpServletResponse.SC_OK
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
+        resp.headers.get(<span class="string"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>) == [<span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>]
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title</span><span class="delimiter">'</span></span>
+        resp.json.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> !<span class="local-variable">it</span>.body <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test detail of an announcement contains body in both version 1.0 and 2.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>serverPort property is automatically injected. It contains the random port where the Grails app runs during the functional test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Body is not present in the JSON paylod</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails command <em>test-app</em> runs unit, integration and functional tests.</p>
+</div>
+
+
+<h2 id="v2iOS">5.3 iOS V2 Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2iOS.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>First we need to change the Api version constant defined in <em>GrailsFetcher.h</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/GrailsApi.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">struct GrailsApi {
+    static let serverUrl = &quot;http://192.168.1.40:8080&quot;
+    static let version = &quot;2.0&quot; <i class="conum" data-value="1"></i><b>(1)</b>
+    struct Announcements {
+        static let Path = &quot;announcements&quot;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>uses Api version 2.0</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In version 2.0 the Api does not return the body of the announcements. Instead of setting
+an announcement property we are going to set just the resource identifier(primary
+key) in the <em>DetailViewController</em>. We have changed the <em>prepareForSegue:sender</em> method
+in <em>MasterViewController</em> as illustrated below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/MasterViewController.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == &quot;showDetail&quot; {
+            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+            if let announcement = sender as? Announcement {
+                controller.announcementPrimaryKey = announcement.primaryKey
+            }
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Instead of setting an object, we set an <em>Int</em></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>DetailViewController</em> asks the server for a complete announcement; body included.</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/DetailViewController.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import UIKit
+
+class DetailViewController: UIViewController, UIWebViewDelegate, AnnouncementFetcherDelegate {
+
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var webView: UIWebView!
+    @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
+
+    let fetcher = AnnouncementFetcher()
+
+    // MARK: - LifeCycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.fetcher.delegate = self
+        self.configureView()
+    }
+
+    func configureView() {
+        // Update the user interface for the detail item.
+        if let announcement = self.announcement {
+            if let label = self.titleLabel {
+                label.text = announcement.title
+            }
+            if let webView = self.webView, let body = announcement.body {
+                self.hideActivityIndicator()
+                webView.loadHTMLString(body, baseURL: nil)
+            } else {
+                self.hideActivityIndicator()
+            }
+        }
+    }
+
+    var announcement: Announcement? {
+        didSet {
+            self.configureView()
+        }
+    }
+
+    var announcementPrimaryKey: Int? {
+        didSet {
+            self.showActivityIndicator()
+            self.fetcher.fetchAnnouncement(self.announcementPrimaryKey!)
+        }
+    }
+
+    // MARK: - Private Methods
+    func showActivityIndicator() {
+        if let activityIndicatorView  = self.activityIndicatorView {
+            activityIndicatorView.startAnimating()
+        }
+    }
+
+    func hideActivityIndicator() {
+        if let activityIndicatorView  = self.activityIndicatorView {
+            activityIndicatorView.stopAnimating()
+        }
+    }
+
+
+    // MARK: - UIWebViewDelegate
+
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        self.hideActivityIndicator()
+    }
+
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        self.hideActivityIndicator()
+    }
+
+    // Mark: - AnnouncementFetcherDelegate
+
+    func announcementFetchingFailed() {
+
+    }
+
+    func announcementFetched(_ announcement: Announcement) {
+        self.announcement = announcement
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It uses a new fetcher:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/AnnouncementFetcher.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">import Foundation
+
+class AnnouncementFetcher : NSObject, URLSessionDelegate {
+
+    weak var delegate: AnnouncementFetcherDelegate?
+    let builder = AnnouncementBuilder()
+
+    func fetchAnnouncement(_ primaryKey: Int) {
+        let url = URL(string: &quot;\(GrailsApi.serverUrl)/\(GrailsApi.Announcements.Path)/\(primaryKey)&quot;)!
+        let req = NSMutableURLRequest(url:url)
+        req.setValue(GrailsApi.version, forHTTPHeaderField: &quot;Accept-Version&quot;) <i class="conum" data-value="1"></i><b>(1)</b>
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
+
+        let task = session.dataTask(with: req as URLRequest) { (data, response, error) in
+            if error != nil {
+                if let delegate = self.delegate {
+                    delegate.announcementFetchingFailed()
+                }
+                return
+            }
+            if let announcement = self.builder.announcementFromJSON(data) {
+                if let delegate = self.delegate {
+                    delegate.announcementFetched(announcement)
+                }
+            } else {
+                if let delegate = self.delegate {
+                    delegate.announcementFetchingFailed()
+                }
+            }
+
+        }
+        task.resume()
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We added a method to the builder to convert nework data to a single Announcement object</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/AnnouncementBuilder.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">    func announcementFromJSON(_ data: Data?) -&gt; Announcement? {
+        let json = try? JSONSerialization.jsonObject(with: data!, options: [])
+        if let dict = json as? Dictionary&lt;String, AnyObject&gt; {
+            if let title = dict[&quot;title&quot;] as? String, let primaryKey = dict[&quot;id&quot;]  as? Int {
+                let announcement = Announcement(primaryKey: primaryKey, title: title)
+                if let body = dict[&quot;body&quot;]  as? String {
+                    announcement.body = body
+                }
+                return announcement
+
+            }
+        }
+        return nil
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And a delegate protocol to indicate if the announcement has been fetched</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-swift-ios-v2/IntranetClient/AnnouncementFetcherDelegate.swift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">protocol AnnouncementFetcherDelegate: class {
+
+    func announcementFetchingFailed()
+
+    func announcementFetched(_ announcement: Announcement)
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="conclusion">6 Conclusion</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/conclusion.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Thanks to Grails ease of API versioning we can now support two iOS applications running different versions.</p>
+</div>
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend"><img src="https://travis-ci.org/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.svg?branch=master" /></a></div>            
+                        
+                <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-an-ios-swift-client-powered-by-a-grails-backend/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#overview"><strong>2</strong><span>Overview</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingTheGrailsApp"><strong>3</strong><span>Writing the Grails Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#domainClass"><strong>3.1</strong><span>Create a Domain Class - Persistent Entities</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#domainClassTest"><strong>3.2</strong><span>Domain Class Unit Testing</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#versioning"><strong>3.3</strong><span>Versioning</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#v1Controller"><strong>3.4</strong><span>Create a Controller</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#bootstrap"><strong>3.5</strong><span>Loading test data</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#v1FunctionalTests"><strong>3.6</strong><span>Functional tests</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#runningTheApp"><strong>3.7</strong><span>Running the Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingTheiOSApp"><strong>4</strong><span>Writing the iOS Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#ios-overview"><strong>4.1</strong><span>Fetching the Announcements</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#iosModel"><strong>4.2</strong><span>Model</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#iosJsonToModel"><strong>4.3</strong><span>Json to Model</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#networkingCode"><strong>4.4</strong><span>Networking code</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#detailViewController"><strong>4.5</strong><span>Detail View Controller</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#version2"><strong>5</strong><span>API version 2.0</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#v2Controller"><strong>5.1</strong><span>Grails V2 Changes</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#v2FunctionalTests"><strong>5.2</strong><span>Api 2.0 Functional tests</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#v2iOS"><strong>5.3</strong><span>iOS V2 Changes</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#conclusion"><strong>6</strong><span>Conclusion</span></a></div>
+                    
+                    <div style="clear:both" ></div>
+                </div>
+                                    
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+            
+        </div>
+
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+    </body>
+</html>
