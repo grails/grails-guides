@@ -1,0 +1,397 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.3 Json to Model</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/overview.html"><strong>2</strong><span>Overview</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheGrailsApp.html"><strong>3</strong><span>Writing the Grails Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/conclusion.html"><strong>6</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheGrailsApp.html">&lt;&lt; <strong>3</strong><span>Writing the Grails Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="iosJsonToModel">4.3 Json to Model</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/iosJsonToModel.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To build a Model object from a JSON String we use several builder classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementBuilder.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+
+#import &quot;ElementBuilder.h&quot;
+
+extern NSString *kAnnouncementBuilderErrorDomain;
+
+enum {
+    kAnnouncementBuilderInvalidJSONError,
+    kAnnouncementBuilderMissingDataError,
+};
+
+@interface AnnouncementBuilder : ElementBuilder
+
+- (NSArray *)announcementsFromJSON:(NSString *)objectNotation
+                             error:(NSError **)error;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementBuilder.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;AnnouncementBuilder.h&quot;
+#import &quot;Announcement.h&quot;
+
+static NSString *kJSONKeyId = @&quot;id&quot;;
+static NSString *kJSONKeyTitle = @&quot;title&quot;;
+static NSString *kJSONKeyBody = @&quot;body&quot;;
+
+@implementation AnnouncementBuilder
+
+- (NSArray *)announcementsFromJSON:(NSString *)objectNotation
+                             error:(NSError **)error {
+
+    return [super arrayFromJSON:objectNotation
+                            key:nil
+                          error:error
+           invalidJSONErrorCode:kAnnouncementBuilderInvalidJSONError
+          missingDataErrorCode:kAnnouncementBuilderMissingDataError
+                   errorDomain:kAnnouncementBuilderErrorDomain];
+}
+
+- (id)newElementWithDictionary:(NSDictionary *)dict
+                         error:(NSError **)error
+          invalidJSONErrorCode:(NSInteger)invalidJSONErrorCode
+          missingDataErrorCode:(NSInteger)missingDataErrorCode
+                   errorDomain:(NSString *)errorDomain {
+
+    Announcement *announcement = [[Announcement alloc] init];
+
+    if([[dict objectForKey:kJSONKeyId] isKindOfClass:[NSNumber class]]) {
+        announcement.primaryKey = (NSNumber *)[dict objectForKey:kJSONKeyId];
+    } else {
+        if(error != NULL) {
+            *error = [self invalidJsonError];
+        }
+        return nil;
+    }
+
+    if([[dict objectForKey:kJSONKeyTitle] isKindOfClass:[NSString class]]) {
+        announcement.title = (NSString *)[dict objectForKey:kJSONKeyTitle];
+    } else {
+        if(error != NULL) {
+            *error = [self invalidJsonError];
+        }
+        return nil;
+    }
+
+    if([[dict objectForKey:kJSONKeyBody] isKindOfClass:[NSString class]]) {
+        announcement.body = (NSString *)[dict objectForKey:kJSONKeyBody];
+    }
+
+    return announcement;
+
+}
+
+- ( NSError *)invalidJsonError {
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
+    return [NSError errorWithDomain:kAnnouncementBuilderErrorDomain
+                               code:kAnnouncementBuilderInvalidJSONError
+                           userInfo:userInfo];
+}
+
+@end
+
+NSString *kAnnouncementBuilderErrorDomain = @&quot;kAnnouncementBuilderErrorDomain&quot;;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/ElementBuilder.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+
+@interface ElementBuilder : NSObject
+
+- (NSArray *)arrayFromJSON:(NSString *)objectNotation
+                       key:(NSString *)key
+                     error:(NSError **)error
+      invalidJSONErrorCode:(NSInteger)invalidJSONErrorCode
+      missingDataErrorCode:(NSInteger)missingDataErrorCode
+               errorDomain:(NSString *)errorDomain;
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/ElementBuilder.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;ElementBuilder.h&quot;
+
+@implementation ElementBuilder
+
+
+- (NSArray *)arrayFromJSON:(NSString *)objectNotation
+                       key:(NSString *)key
+                     error:(NSError **)error
+      invalidJSONErrorCode:(NSInteger)invalidJSONErrorCode
+      missingDataErrorCode:(NSInteger)missingDataErrorCode
+               errorDomain:(NSString *)errorDomain {
+
+    id parsedObject = [self parseJSON:objectNotation
+                                error:error
+                 invalidJSONErrorCode:invalidJSONErrorCode
+                          errorDomain:errorDomain];
+
+    NSArray *elements = nil;
+    if ( [parsedObject isKindOfClass:[NSDictionary class]]) {
+        elements = [((NSDictionary *)parsedObject) objectForKey:key];
+
+    } else if ( [parsedObject isKindOfClass:[NSArray class]] ) {
+        elements = (NSArray *)parsedObject;
+    }
+
+    if (elements == nil) {
+        if (error != NULL) {
+            *error = [NSError errorWithDomain:errorDomain code:missingDataErrorCode userInfo:nil];
+        }
+        return nil;
+    }
+
+    NSMutableArray *results = [NSMutableArray arrayWithCapacity:[elements count]];
+    for (NSDictionary *parsedEl in elements) {
+        id el = [self newElementWithDictionary:parsedEl
+                                         error:error
+                          invalidJSONErrorCode:invalidJSONErrorCode
+                          missingDataErrorCode:missingDataErrorCode
+                                   errorDomain:errorDomain];
+        // Return nil becuase there has been an error in the previous method call
+        if(!el) {
+            return nil;
+        }
+
+        if([self isElementValid:el]) {
+            [results addObject:el];
+        }
+    }
+    return [results copy];
+}
+
+
+- (BOOL)isElementValid:(id)el {
+    // This may be overriden in a subclass
+    return YES;
+}
+
+- (id)newElementWithDictionary:(NSDictionary *)dict
+                         error:(NSError **)error
+          invalidJSONErrorCode:(NSInteger)invalidJSONErrorCode
+          missingDataErrorCode:(NSInteger)missingDataErrorCode
+                   errorDomain:(NSString *)errorDomain {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@&quot;You must override %@ in a subclass&quot;, NSStringFromSelector(_cmd)]
+                                 userInfo:nil];
+}
+
+
+- (id)parseJSON:(NSString *)objectNotation
+          error:(NSError **)error
+invalidJSONErrorCode:(NSInteger)invalidJSONErrorCode
+    errorDomain:(NSString *)errorDomain  {
+
+    NSParameterAssert(objectNotation != nil);
+    id jsonObject;
+
+    NSError *localError = nil;
+    if(objectNotation != nil) {
+        NSData *unicodeNotation = [objectNotation dataUsingEncoding:NSUTF8StringEncoding];
+        jsonObject = [NSJSONSerialization JSONObjectWithData:unicodeNotation
+                                                     options:0
+                                                       error:&amp;localError];
+    }
+    if (jsonObject == nil) {
+        if (error != NULL) {
+            NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
+            if (localError != nil) {
+                [userInfo setObject:localError forKey:NSUnderlyingErrorKey];
+            }
+            *error = [NSError errorWithDomain:errorDomain code:invalidJSONErrorCode userInfo:userInfo];
+        }
+        return nil;
+    }
+    return jsonObject;
+}
+
++ (id)objectOrNull:(id)object {
+    if (!object || object == [NSNull null]) return nil;
+    return object;
+}
+
++ (BOOL)isNotNilAndNotArrayTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    return [self isNotNilTheKey:key atDict:dict] &amp;&amp; ![self isArrayTheKey:key atDict:dict];
+}
+
++ (BOOL)isNotNilAndNotNumberTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    return [self isNotNilTheKey:key atDict:dict] &amp;&amp; ![self isNumberTheKey:key atDict:dict];
+}
+
++ (BOOL)isNotNilAndNotStringTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+
+    return [self isNotNilTheKey:key atDict:dict] &amp;&amp; ![self isStringTheKey:key atDict:dict];
+}
+
++ (BOOL)isNotNilTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    if(dict[key] != (id)[NSNull null]  &amp;&amp; dict[key]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)isStringTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    if(dict[key] != (id)[NSNull null]  &amp;&amp; dict[key] &amp;&amp; [dict[key] isKindOfClass:[NSString class]]) {
+        return YES;
+    }
+    return NO;
+}
+
++ (BOOL)isNumberTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    if(dict[key] != (id)[NSNull null]  &amp;&amp; dict[key] &amp;&amp; [dict[key] isKindOfClass:[NSNumber class]]) {
+        return YES;
+    }
+    return NO;
+}
++ (BOOL)isArrayTheKey:(NSString *)key atDict:(NSDictionary *)dict {
+    if(dict[key] != (id)[NSNull null]  &amp;&amp; dict[key] &amp;&amp; [dict[key] isKindOfClass:[NSArray class]]) {
+        return YES;
+    }
+    return NO;
+}
+
+@end</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheGrailsApp.html">&lt;&lt; <strong>3</strong><span>Writing the Grails Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend"><img src="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

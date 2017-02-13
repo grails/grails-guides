@@ -1,0 +1,665 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>5 API version 2.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/overview.html"><strong>2</strong><span>Overview</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheGrailsApp.html"><strong>3</strong><span>Writing the Grails Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/version2.html"><strong>5</strong><span>API version 2.0</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>6</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheiOSApp.html">&lt;&lt; <strong>4</strong><span>Writing the iOS Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>6</strong><span>Conclusion</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#v2Controller"><strong>5.1</strong><span>Grails V2 Changes</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#v2FunctionalTests"><strong>5.2</strong><span>Api 2.0 Functional tests</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#v2iOS"><strong>5.3</strong><span>iOS V2 Changes</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="version2">5 API version 2.0</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/version2.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The problem with the first version of the API is that we include every announcement
+body in the payload used to displayed the list. An announcement&#8217;s body can be a large block of HTML.
+A user will probably just wants to check a couple of announcements. It will save bandwidth and
+make the app faster if we don&#8217;t send the announcement body in the initial request. Instead, we will ask
+the API for a complete announcement (including <code>body</code>) once the user taps the announcement.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/version2overview.jpeg" alt="version2overview">
+</div>
+</div>
+
+
+<h2 id="v2Controller">5.1 Grails V2 Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2Controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to use create a new Controller to handle the version 2 of the API. We are going to use a Criteria
+query with a projection to fetch only the id and title of the announcements.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/intranet/backend/v2/AnnouncementController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend.v2
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+<span class="keyword">import</span> <span class="include">intranet.backend.Announcement</span>
+
+<span class="type">class</span> <span class="class">AnnouncementController</span> <span class="directive">extends</span> RestfulController&lt;Announcement&gt; {
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    <span class="keyword">def</span> announcementService
+
+    AnnouncementController() {
+        <span class="local-variable">super</span>(Announcement)
+    }
+
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+        <span class="keyword">def</span> announcements = announcementService.findAllIdAndTitleProjections(params)
+        respond announcements, <span class="key">model</span>: [(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>resourceName<span class="inline-delimiter">}</span></span><span class="content">Count</span><span class="delimiter">&quot;</span></span>.toString()): countResources()]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We encapsulate the querying in a service</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/intranet/backend/AnnouncementService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="type">class</span> <span class="class">AnnouncementService</span> {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; findAllIdAndTitleProjections(<span class="predefined-type">Map</span> params) {
+        <span class="keyword">def</span> c = Announcement.createCriteria()
+        <span class="keyword">def</span> announcements = c.list(params) {
+            projections {
+                property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+                property(<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>)
+            }
+        }.collect { [<span class="key">id</span>: <span class="local-variable">it</span>[<span class="integer">0</span>], <span class="key">title</span>: <span class="local-variable">it</span>[<span class="integer">1</span>]] } <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and we test it:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/intranet/backend/AnnouncementServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+
+<span class="annotation">@TestFor</span>(AnnouncementService)
+<span class="type">class</span> <span class="class">AnnouncementServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test criteria query with projection returns a list of maps</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Save some announcements</span><span class="delimiter">'</span></span>
+        [<span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #1: Grails Interceptors</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #2: JSON Views</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #3: Multi-Project Builds</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grails Quickcast #4: Angular Scaffolding</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Retrieving Runtime Config Values In Grails 3</span><span class="delimiter">'</span></span>),
+        <span class="keyword">new</span> Announcement(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Developing Grails 3 Applications With IntelliJ IDEA</span><span class="delimiter">'</span></span>)].each {
+            <span class="local-variable">it</span>.save()
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcements are saved</span><span class="delimiter">'</span></span>
+        Announcement.count() == <span class="integer">6</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">fetching the projection</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = service.findAllIdAndTitleProjections([:])
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">there are six maps in the response</span><span class="delimiter">'</span></span>
+        resp
+        resp.size() == <span class="integer">6</span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the maps contain only id and title</span><span class="delimiter">'</span></span>
+        resp.each {
+            <span class="local-variable">it</span>.keySet() == [<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>] <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;<span class="predefined-type">String</span>&gt;
+         }
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">non empty values</span><span class="delimiter">'</span></span>
+        resp.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+        }
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_url_mapping">Url Mapping</h3>
+<div class="paragraph">
+<p>We need to map the version <em>2.0</em> of the Accept-Header to the namespace <em>v2</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/intranet/backend/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">2.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>)
+        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>(<span class="key">version</span>:<span class="string"><span class="delimiter">'</span><span class="content">2.0</span><span class="delimiter">'</span></span>, <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">announcement</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>, <span class="key">namespace</span>:<span class="string"><span class="delimiter">'</span><span class="content">v2</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="v2FunctionalTests">5.2 Api 2.0 Functional tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2FunctionalTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We want to test the Api version 2.0 does not include the body property when receiving a GET request to the <em>announcements</em>
+endpoint. The next functional test verifies that behaviour.</p>
+</div>
+<div class="paragraph">
+<p>/home/travis/build/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/complete</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/intranet/backend/AnnouncementControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
+
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is present in announcements json payload of Api 1.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 2.0</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>) {
+            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
+        resp.status == HttpServletResponse.SC_OK
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
+        resp.headers.get(<span class="string"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>) == [<span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>]
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title</span><span class="delimiter">'</span></span>
+        resp.json.each {
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.id
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.title
+            <span class="keyword">assert</span> !<span class="local-variable">it</span>.body <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test detail of an announcement contains body in both version 1.0 and 2.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>serverPort property is automatically injected. It contains the random port where the Grails application runs during the functional test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Body is not present in the JSON paylod</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails command <em>test-app</em> runs unit, integration and functional tests.</p>
+</div>
+
+
+<h2 id="v2iOS">5.3 iOS V2 Changes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/v2iOS.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>First we need to change the Api version constant defined in <em>GrailsFetcher.h</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v2/IntranetClient/GrailsFetcher.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+
+static NSString *kServerUrl = @&quot;http://192.168.1.40:8080&quot;;
+static NSString *kApiVersion = @&quot;2.0&quot;; <i class="conum" data-value="1"></i><b>(1)</b>
+static NSString *kAnnouncementsResourcePath = @&quot;announcements&quot;;
+static NSInteger FAST_TIME_INTERVAL = 5.0;
+
+@interface GrailsFetcher : NSObject
+
+@property (nonatomic, strong) NSURLSession *session;
+
+- (NSURLRequest *)getURLRequestWithUrlString:(NSString *)urlString
+                                 cachePolicy:(NSURLRequestCachePolicy)cachePolicy
+                             timeoutInterval:(NSTimeInterval)timeoutInterval;
+
+@end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>uses Api version 2.0</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In version 2.0 the Api does not return the body of the announcements. Instead of setting
+an announcement property we are going to set just the resource identifier(primary
+key) in the <em>DetailViewController</em>. We have changed the <em>prepareForSegue:sender</em> method
+in <em>MasterViewController</em> as illustrated below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/MasterViewController.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([[segue identifier] isEqualToString:kSegueShowDetail]) {
+        DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
+        if([sender isKindOfClass:[Announcement class]]) {
+            Announcement *announcement = (Announcement *)sender;
+            controller.announcementPrimaryKey = announcement.primaryKey; <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+        controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Instead of setting an object, we set an <em>NSNumber</em></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>DetailViewController</em> asks the server for a complete announcement; body included.</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/DetailViewController.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;UIKit/UIKit.h&gt;
+#import &quot;Announcement.h&quot;
+
+@interface DetailViewController : UIViewController
+
+@property (nonatomic, assign) NSNumber *announcementPrimaryKey;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/DetailViewController.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;DetailViewController.h&quot;
+#import &quot;Announcement.h&quot;
+#import &quot;AnnouncementFetcher.h&quot;
+
+@interface DetailViewController () &lt;UIWebViewDelegate, AnnouncementFetcherDelegate&gt;
+
+@property ( nonatomic, weak) IBOutlet UILabel *titleLabel;
+@property ( nonatomic, weak) IBOutlet UIWebView *webView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
+
+@property ( nonatomic, strong ) AnnouncementFetcher *fetcher;
+
+@property (nonatomic, strong) Announcement *announcement;
+
+@end
+
+@implementation DetailViewController
+
+- (void)configureView {
+    // Update the user interface for the detail item.
+    if (self.announcement) {
+        self.titleLabel.text = self.announcement.title;
+        [[self activityIndicatorView] startAnimating];
+        [self.webView loadHTMLString:self.announcement.body baseURL:nil];
+    }
+}
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.webView.delegate = self;
+    // Do any additional setup after loading the view, typically from a nib.
+    [self configureView];
+
+    if ( self.announcementPrimaryKey ) {
+        [self.fetcher fetchAnnouncement:self.announcementPrimaryKey];
+    }
+}
+
+#pragma mark - Managing the detail item
+
+- (void)setAnnouncement:(Announcement *)announcement {
+    if (_announcement != announcement) {
+        _announcement = announcement;
+
+        // Update the view.
+        [self configureView];
+    }
+}
+
+#pragma mark - UIWebViewDelegate
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [[self activityIndicatorView] stopAnimating];
+}
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    [[self activityIndicatorView] stopAnimating];
+}
+
+#pragma mark - AnnouncementFetcherDelegate
+
+- (void)announcementFetchingFailed {
+    [[self activityIndicatorView] stopAnimating];
+}
+
+- (void)announcementFetched:(Announcement *)announcement {
+    [[self activityIndicatorView] stopAnimating];
+    self.announcement = announcement;
+}
+
+
+#pragma mark - Lazy
+
+- (AnnouncementFetcher *)fetcher {
+    if(!_fetcher) {
+        _fetcher = [[AnnouncementFetcher alloc] initWithDelegate:self];
+    }
+    return _fetcher;
+}
+
+@end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It uses a new fetcher:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementFetcher.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+#import &quot;GrailsFetcher.h&quot;
+#import &quot;AnnouncementFetcherDelegate.h&quot;
+
+@interface AnnouncementFetcher : GrailsFetcher
+
+- (id)initWithDelegate:(id&lt;AnnouncementFetcherDelegate&gt;)delegate;
+
+- (void)fetchAnnouncement:(NSNumber *)primaryKey;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementFetcher.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;AnnouncementFetcher.h&quot;
+#import &quot;AnnouncementFetcherDelegate.h&quot;
+#import &quot;AnnouncementBuilder.h&quot;
+
+@interface AnnouncementFetcher ()
+
+@property ( nonatomic, weak )id&lt;AnnouncementFetcherDelegate&gt; delegate;
+@property ( nonatomic, strong )AnnouncementBuilder *builder;
+
+@end
+
+@implementation AnnouncementFetcher
+
+#pragma mark - LifeCycle
+
+- (id)initWithDelegate:(id&lt;AnnouncementFetcherDelegate&gt;)delegate {
+    if(self = [super init]) {
+        self.delegate = delegate;
+        self.builder = [[AnnouncementBuilder alloc] init];
+    }
+    return self;
+}
+
+#pragma mark - Public Methods
+
+- (void)fetchAnnouncement:(NSNumber *)primaryKey {
+
+    [self fetchAnnouncement:primaryKey completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(error) {
+            if ( self.delegate ) {
+                [self.delegate announcementFetchingFailed];
+            }
+            return;
+        }
+
+        NSInteger statusCode = [((NSHTTPURLResponse*)response) statusCode];
+        if(statusCode != 200) {
+            if ( self.delegate ) {
+                [self.delegate announcementFetchingFailed];
+            }
+            return;
+        }
+
+        NSString *objectNotation = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSError *builderError;
+        Announcement *announcement = [self.builder announcementFromJSON:objectNotation error:&amp;builderError];
+        if(builderError) {
+            if ( self.delegate ) {
+                [self.delegate announcementFetchingFailed];
+            }
+            return;
+        }
+        if ( self.delegate ) {
+            [self.delegate announcementFetched:announcement];
+        }
+    }];
+
+}
+
+#pragma mark - Private Methods
+
+- (void)fetchAnnouncement:(NSNumber *)primaryKey completionHandler:(void (^)(NSData * data, NSURLResponse * response, NSError * error))completionHandler {
+    NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:[self announcementURLRequest:primaryKey] completionHandler:completionHandler];
+    [dataTask resume];
+}
+
+- (NSURLRequest *)announcementURLRequest:(NSNumber *)primaryKey {
+    NSString *urlStr = [self announcementURLString:primaryKey];
+    return [super getURLRequestWithUrlString:urlStr
+                                 cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                             timeoutInterval:FAST_TIME_INTERVAL];
+}
+
+- (NSString *)announcementURLString:(NSNumber *)primaryKey {
+    return [NSString stringWithFormat:@&quot;%@/%@/%@&quot;, kServerUrl, kAnnouncementsResourcePath, primaryKey];
+}
+
+@end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And a delegate protocol to indicate if the announcement has been fetched</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementFetcherDelegate.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+@class Announcement;
+
+@protocol AnnouncementFetcherDelegate &lt;NSObject&gt;
+
+- (void)announcementFetchingFailed;
+
+- (void)announcementFetched:(Announcement *)announcement;
+
+@end</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheiOSApp.html">&lt;&lt; <strong>4</strong><span>Writing the iOS Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>6</strong><span>Conclusion</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend"><img src="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

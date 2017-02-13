@@ -1,0 +1,616 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.5 Networking code</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/overview.html"><strong>2</strong><span>Overview</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheGrailsApp.html"><strong>3</strong><span>Writing the Grails Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheiOSApp.html"><strong>4</strong><span>Writing the iOS Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/conclusion.html"><strong>6</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheGrailsApp.html">&lt;&lt; <strong>3</strong><span>Writing the Grails Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="networkingCode">4.5 Networking code</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/edit/master/src/main/docs/guide/networkingCode.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We use <em>NSURLSession</em> to connect to the Grails API. Several constants are set in <em>GrailsFetcher</em></p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/GrailsFetcher.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+
+static NSString *kServerUrl = @&quot;http://192.168.1.40:8080&quot;;
+static NSString *kApiVersion = @&quot;1.0&quot;;
+static NSString *kAnnouncementsResourcePath = @&quot;announcements&quot;;
+static NSInteger FAST_TIME_INTERVAL = 5.0;
+
+@interface GrailsFetcher : NSObject
+
+@property (nonatomic, strong) NSURLSession *session;
+
+- (NSURLRequest *)getURLRequestWithUrlString:(NSString *)urlString
+                                 cachePolicy:(NSURLRequestCachePolicy)cachePolicy
+                             timeoutInterval:(NSTimeInterval)timeoutInterval;
+
+@end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Grails App server url</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The path we configured in the Grails app in <em>UrlMappings.groovy</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The version of the API</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You may need to change the ip address to match your local machine.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/GrailsFetcher.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;GrailsFetcher.h&quot;
+
+@interface GrailsFetcher () &lt;NSURLSessionDelegate&gt;
+
+@end
+
+@implementation GrailsFetcher
+
+#pragma mark - LifeCycle
+
+- (id)init {
+    if(self = [super init]) {
+        NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        self.session = [NSURLSession sessionWithConfiguration:configuration
+                                                     delegate:self
+                                                delegateQueue:[NSOperationQueue mainQueue]];
+    }
+    return self;
+}
+
+
+#pragma mark - Public
+
+
+- (NSURLRequest *)getURLRequestWithUrlString:(NSString *)urlString
+                                 cachePolicy:(NSURLRequestCachePolicy)cachePolicy
+                             timeoutInterval:(NSTimeInterval)timeoutInterval {
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url
+                                                              cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                                                          timeoutInterval:FAST_TIME_INTERVAL];
+    [urlRequest setHTTPMethod:@&quot;GET&quot;];
+
+    [[self headers] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL * stop) {
+        [urlRequest setValue:obj forHTTPHeaderField:key];
+    }];
+    return urlRequest;
+}
+
+#pragma mark - Private
+
+- (NSDictionary *)headers {
+    return @{@&quot;Accept-Version&quot;: kApiVersion}; <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
+@end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We set the <em>Accept-Version</em> Http header for every request.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsFetcher.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+#import &quot;GrailsFetcher.h&quot;
+
+@protocol AnnouncementsFetcherDelegate;
+
+@interface AnnouncementsFetcher : GrailsFetcher
+
+- (id)initWithDelegate:(id&lt;AnnouncementsFetcherDelegate&gt;)delegate;
+
+- (void)fetchAnnouncements;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsFetcher.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;AnnouncementsFetcher.h&quot;
+#import &quot;AnnouncementsFetcherDelegate.h&quot;
+#import &quot;AnnouncementBuilder.h&quot;
+
+
+@interface AnnouncementsFetcher ()
+
+@property ( nonatomic, weak) id&lt;AnnouncementsFetcherDelegate&gt; delegate;
+
+@property ( nonatomic, strong) AnnouncementBuilder *builder;
+
+@end
+
+@implementation AnnouncementsFetcher
+
+- (id)initWithDelegate:(id&lt;AnnouncementsFetcherDelegate&gt;)delegate {
+    if(self = [super init]) {
+        self.delegate = delegate;
+        self.builder = [[AnnouncementBuilder alloc] init];
+    }
+    return self;
+}
+
+- (void)fetchAnnouncements {
+
+    [self fetchAnnouncementsWithCompletionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(error) {
+            if ( self.delegate ) {
+                [self.delegate announcementsFetchingFailed];
+            }
+            return;
+        }
+
+        NSInteger statusCode = [((NSHTTPURLResponse*)response) statusCode];
+        if(statusCode != 200) {
+            if ( self.delegate ) {
+                [self.delegate announcementsFetchingFailed];
+            }
+            return;
+        }
+
+        NSString *objectNotation = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSError *builderError;
+        NSArray *announcements = [self.builder announcementsFromJSON:objectNotation error:&amp;builderError];
+        if(builderError) {
+            if ( self.delegate ) {
+                [self.delegate announcementsFetchingFailed];
+            }
+            return;
+        }
+        if ( self.delegate ) {
+            [self.delegate announcementsFetched:announcements];
+        }
+
+    }];
+}
+
+- (void)fetchAnnouncementsWithCompletionHandler:(void (^)(NSData * data, NSURLResponse * response, NSError * error))completionHandler {
+    NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:[self announcementsURLRequest] completionHandler:completionHandler];
+    [dataTask resume];
+}
+
+- (NSURLRequest *)announcementsURLRequest {
+    NSString *urlStr = [self announcementsURLString];
+    return [super getURLRequestWithUrlString:urlStr
+                                 cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+                             timeoutInterval:FAST_TIME_INTERVAL];
+}
+
+- (NSString *)announcementsURLString {
+    return [NSString stringWithFormat:@&quot;%@/%@&quot;, kServerUrl, kAnnouncementsResourcePath];
+}
+
+@end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once we get a list of announcements, we communicate the response to classes implementing the delegate</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsFetcherDelegate.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;Foundation/Foundation.h&gt;
+
+@protocol AnnouncementsFetcherDelegate &lt;NSObject&gt;
+
+- (void)announcementsFetchingFailed;
+
+- (void)announcementsFetched:(NSArray *)announcements;
+
+
+@end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <em>MasterViewController</em> implements fetcher delegate protocol, thus it receives the announcements</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/MasterViewController.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;UIKit/UIKit.h&gt;
+
+@class DetailViewController;
+
+@interface MasterViewController : UITableViewController
+
+@property (strong, nonatomic) DetailViewController *detailViewController;
+
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/MasterViewController.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;MasterViewController.h&quot;
+#import &quot;DetailViewController.h&quot;
+#import &quot;AnnouncementsFetcherDelegate.h&quot;
+#import &quot;AnnouncementsFetcher.h&quot;
+#import &quot;AnnouncementsTableViewDataSource.h&quot;
+#import &quot;AnnouncementsTableViewDelegate.h&quot;
+#import &quot;Announcement.h&quot;
+
+static NSString *kSegueShowDetail = @&quot;showDetail&quot;;
+
+@interface MasterViewController () &lt;AnnouncementsFetcherDelegate&gt;
+
+@property NSMutableArray *objects;
+
+@property ( nonatomic, strong ) AnnouncementsFetcher *fetcher;
+
+@property ( nonatomic, strong) id&lt;UITableViewDataSource&gt; tableViewDataSource;
+@property ( nonatomic, strong) id&lt;UITableViewDelegate&gt; tableViewDelegate;
+
+@end
+
+@implementation MasterViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.tableViewDataSource = [[AnnouncementsTableViewDataSource alloc] init];
+    self.tableViewDelegate = [[AnnouncementsTableViewDelegate alloc] init];
+    self.tableView.dataSource = self.tableViewDataSource;
+    self.tableView.delegate = self.tableViewDelegate;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    self.clearsSelectionOnViewWillAppear = self.splitViewController.isCollapsed;
+    [super viewWillAppear:animated];
+
+    [self registerNotifications];
+    [self fetchAnnouncements]; <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self unregisterNotifications];
+}
+
+#pragma mark - Notifications
+
+-(void)registerNotifications {
+
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(announcementTapped:) name:kAnnouncementTappedNotification object:nil];
+}
+
+- (void)unregisterNotifications {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc removeObserver:self name:kAnnouncementTappedNotification object:nil];
+}
+
+#pragma mark - Segues
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([[segue identifier] isEqualToString:kSegueShowDetail]) {
+        DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
+        if([sender isKindOfClass:[Announcement class]]) {
+            Announcement *announcement = (Announcement *)sender;
+            controller.announcement = announcement;
+        }
+        controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+        controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}
+
+#pragma mark - Private Methods
+
+- (void)announcementTapped:(NSNotification *)notification {
+    if([[notification object] isKindOfClass:[Announcement class]]) {
+        Announcement *announcement = (Announcement *)[notification object];
+        [self performSegueWithIdentifier:kSegueShowDetail sender:announcement];
+    }
+}
+
+- (void)setNetworkActivityIndicator:(BOOL)visible {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:visible];
+}
+
+- (void)fetchAnnouncements {
+    [self setNetworkActivityIndicator:YES];
+    [self.fetcher fetchAnnouncements];
+}
+
+#pragma mark - AnnouncementsFetcherDelegate
+
+- (void)announcementsFetchingFailed {
+    [self setNetworkActivityIndicator:NO];
+}
+
+- (void)announcementsFetched:(NSArray *)announcements {
+    [self setNetworkActivityIndicator:NO];
+
+    if ( [self.tableViewDataSource isKindOfClass:[AnnouncementsTableViewDataSource class]]) {
+        ((AnnouncementsTableViewDataSource *)self.tableViewDataSource).announcements = announcements;
+    }
+    if ( [self.tableViewDelegate isKindOfClass:[AnnouncementsTableViewDelegate class]]) {
+        ((AnnouncementsTableViewDelegate *)self.tableViewDelegate).announcements = announcements;
+    }
+    [self.tableView reloadData];  <i class="conum" data-value="2"></i><b>(2)</b>
+}
+
+#pragma mark - Lazy
+
+- (AnnouncementsFetcher *)fetcher {
+    if(!_fetcher) {
+        _fetcher = [[AnnouncementsFetcher alloc] initWithDelegate:self];
+    }
+    return _fetcher;
+}
+
+@end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Triggers announcements fetching</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Refreshes the UI once we get a list of announcements</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>MasterViewController sets its UITableView&#8217;s data source and delegate to the next classes:</p>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsTableViewDataSource.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;UIKit/UIKit.h&gt;
+
+@interface AnnouncementsTableViewDataSource : NSObject &lt;UITableViewDataSource&gt;
+
+@property (nonatomic, strong) NSArray *announcements;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsTableViewDataSource.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;AnnouncementsTableViewDataSource.h&quot;
+#import &quot;Announcement.h&quot;
+
+@implementation AnnouncementsTableViewDataSource
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [self.announcements count];
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;Cell&quot; forIndexPath:indexPath];
+
+    if ( [self.announcements count] &gt; indexPath.row ) {
+        id obj = self.announcements[indexPath.row];
+        if ( [obj isKindOfClass:[Announcement class]]) {
+            Announcement *announcement = (Announcement *)obj;
+            cell.textLabel.text = announcement.title;
+        }
+    }
+
+    return cell;
+}
+
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsTableViewDelegate.h</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &lt;UIKit/UIKit.h&gt;
+
+static NSString *kAnnouncementTappedNotification = @&quot;AnnouncementTappedNotification&quot;;
+
+@interface AnnouncementsTableViewDelegate : NSObject &lt;UITableViewDelegate&gt;
+
+@property (nonatomic, strong) NSArray *announcements;
+
+@end</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/complete-objectivec-ios-v1/IntranetClient/AnnouncementsTableViewDelegate.m</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="objectivec">#import &quot;AnnouncementsTableViewDelegate.h&quot;
+#import &quot;Announcement.h&quot;
+
+@implementation AnnouncementsTableViewDelegate
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    if ( [self.announcements count] &gt; indexPath.row ) {
+        id obj = self.announcements[indexPath.row];
+        if ( [obj isKindOfClass:[Announcement class]]) {
+            Announcement *announcement = (Announcement *)obj;
+            [[NSNotificationCenter defaultCenter] postNotificationName:kAnnouncementTappedNotification <i class="conum" data-value="1"></i><b>(1)</b>
+                                                                object:announcement
+                                                              userInfo:nil];
+        }
+    }
+}
+
+
+@end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>When the user taps an announcement a <em>NSNotification</em> is raised. It is captured in <em>MasterViewController</em> and
+initiates the segue to the DetailViewController</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheGrailsApp.html">&lt;&lt; <strong>3</strong><span>Writing the Grails Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/version2.html"><strong>5</strong><span>API version 2.0</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend"><img src="https://travis-ci.org/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-an-ios-objectc-client-powered-by-a-grails-backend/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
