@@ -81,6 +81,13 @@ export class IndexComponent implements OnInit {
     this.filteredGuides = this.guides;
   }
 
+  slugify(text: string): string {
+    return text.toLowerCase()
+      .replace(/[^\w\s-]/g, '') // remove non-word [a-z0-9_], non-whitespace, non-hyphen characters
+      .replace(/[\s_-]+/g, '-') // swap any length of whitespace, underscore, hyphen characters with a single -
+      .replace(/^-+|-+$/g, ''); // remove leading, trailing -
+  }
+
   private strMatch(str1: string): boolean {
     str1 = str1.toLowerCase();
     return str1.indexOf(this.filter) > -1 || this.filter.indexOf(str1) > -1;
