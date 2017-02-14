@@ -1,5 +1,5 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {Guide} from "../app.service";
+import {Guide} from '../app.service';
 
 @Component({
     selector: 'app-guide',
