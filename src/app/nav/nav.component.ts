@@ -10,19 +10,17 @@ import {OnInit} from '@angular/core';
       state('out', style({right: -300})),
       state('in', style({right: 0})),
     ])
-  ],/*
-  host: {
-    '(document:click)': 'documentClick($event)',
-  },*/
+  ]
 })
 export class NavComponent {
-  sidebar: Sidebar = new Sidebar("out");
+  sidebar: Sidebar = new Sidebar('out');
+  navExpanded = true;
 
   constructor() { }
 
   @HostListener('document:click', ['$event']) documentClick(evt: MouseEvent) {
-    if (evt.srcElement.id != "sidebarToggle") {
-      this.sidebar.state = "out";
+    if (evt.srcElement.id !== 'sidebarToggle') {
+      this.sidebar.state = 'out';
     }
   }
 }
@@ -32,10 +30,10 @@ class Sidebar {
   constructor(public state: string) {}
 
   toggleState() {
-    if (this.state == "in") {
-      this.state = "out";
+    if (this.state === 'in') {
+      this.state = 'out';
     } else {
-      this.state = "in";
+      this.state = 'in';
     }
   }
 }
