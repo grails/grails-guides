@@ -107,3 +107,30 @@ task copyLocalGuideImgResources(type: Copy) {
 }
 publishGuide.dependsOn copyLocalGuideImgResources
 copyLocalGuideImgResources.mustRunAfter prepareResources
+
+def isPropertyUndefined = { propertyName ->
+    !project.hasProperty(propertyName) || project.getProperty(propertyName) == 'TODO'
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(":publishGuide")) {
+        if ( isPropertyUndefined('title') ) {
+            throw new GradleException("Set project property `title` in gradle.properties")
+        }
+        if ( isPropertyUndefined('subtitle') ) {        
+            throw new GradleException("Set project property `subtitle` in gradle.properties")
+        }
+        if ( isPropertyUndefined('authors') ) {                
+            throw new GradleException("Set project property `authors` in gradle.properties")
+        }
+        if ( isPropertyUndefined('githubSlug') || !project.getProperty("githubSlug").startsWith('grails-guides/') ) {
+            throw new GradleException("Set project property `githubSlug` in gradle.properties. It must start with grails-guides/")
+        }
+        if ( isPropertyUndefined('tags') ) {        
+            throw new GradleException("Set project property `tags` in gradle.properties")
+        }
+        if ( isPropertyUndefined('category') ) {        
+            throw new GradleException("Set project property `category` in gradle.properties")
+        }
+    }    
+}
