@@ -34,7 +34,7 @@ $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 ### Start your guide's documentation
 
 Documentation for your guide is located in `src/main/docs/guide/` and driven by `toc.yml`
-Guides are written in asciidoc http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
+Guides are written in [asciidoc](http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/)
 
 ### Publish Locally
 
