@@ -1,0 +1,677 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Deploy a Grails 3 App to Pivotal Web Services (PWS)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <div class="navTitle">
+                
+                Grails Framework Guide 
+            </div>
+            <div class="navLinks">
+                <ul>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#setupPWS"><strong>2</strong><span>Setup PWS Account and install cf CLI</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#login"><strong>3</strong><span>Deploy on PWS with cf CLI</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#deployWithGradle"><strong>4</strong><span>Deploy on PWS with Gradle</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <div class="project">
+                            <h1>Deploy a Grails 3 App to Pivotal Web Services (PWS)</h1>
+                            <p></p>
+                            <p>Learn how to deploy a Grails 3 application on Pivotal Web Services (PWS), which is powered by the Cloud Foundry Platform as a Service (PaaS).</p>
+                            <p><strong>Authors:</strong> Sergio del Amo</p>
+                            <p><strong>Grails Version:</strong> 3.2.6</p>
+                            
+                        </div>
+
+                        
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to deploy a Grails 3 application to Pivotal Web Services (PWS). First we deploy the app with <strong>cf CLI</strong>. Later we deploy with a Gradle task.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you want to start from scratch, create a new Grails 3 app:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">grails create-app grailsguidepws</code></pre>
+</div>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-deploy-pws/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-deploy-pws.git" class="bare">https://github.com/grails-guides/grails-deploy-pws.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-deploy-pws/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-deploy-pws/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="setupPWS">2 Setup PWS Account and install cf CLI</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/setupPWS.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Follow the instructions to <a href="https://docs.run.pivotal.io/starting/index.html">set up your PWS account and download the cf CLI</a>.
+You can create a free trial for your organization .</p>
+</div>
+
+
+<h1 id="login">3 Deploy on PWS with cf CLI</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/login.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Once you have the <strong>cf CLI</strong> installed you will be able to login from your terminal.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cf login
+API endpoint: https://api.run.pivotal.io
+
+Email&gt; john@email.com
+
+Password&gt;
+Authenticating...
+OK
+
+Select an org (or press enter to skip):
+1. guides-grails-org
+
+Org&gt; 1
+Targeted org guides-grails-org
+
+Targeted space development
+
+API endpoint:   https://api.run.pivotal.io (API version: 2.69.0)
+User:           john@email.com
+Org:            guides-grails-org
+Space:          development</code></pre>
+</div>
+</div>
+
+
+<h2 id="createService">3.1 Create a MySQL Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/createService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can see a list of every available service with the next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cf marketplace</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create a MySQL database-as-a-service for our Grails application.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+cleardb is database-as-a-service for MySQL-powered apps
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cf create-service cleardb spark grailsguidesmysql
+Creating service instance grailsguidesmysql in org guides-grails-org / space development as john@email.com...
+OK</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In production we are going to use the MySQL service which we just created.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create a production configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application-production.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> uri = <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="predefined-type">System</span>.env.DATABASE_URL)
+
+dataSources {
+    dataSource {
+        driverClassName = <span class="string"><span class="delimiter">&quot;</span><span class="content">com.mysql.jdbc.Driver</span><span class="delimiter">&quot;</span></span>
+        dialect = <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate.dialect.MySQL5InnoDBDialect</span><span class="delimiter">&quot;</span></span>
+        username = uri.userInfo ? uri.userInfo.split(<span class="string"><span class="delimiter">&quot;</span><span class="content">:</span><span class="delimiter">&quot;</span></span>)[<span class="integer">0</span>] : <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>
+        password = uri.userInfo ? uri.userInfo.split(<span class="string"><span class="delimiter">&quot;</span><span class="content">:</span><span class="delimiter">&quot;</span></span>)[<span class="integer">1</span>] : <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>
+        url = <span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://</span><span class="delimiter">&quot;</span></span> + uri.host + uri.path
+        properties {
+            jmxEnabled = <span class="predefined-constant">true</span>
+            initialSize = <span class="integer">5</span>
+            maxActive = <span class="integer">50</span>
+            minIdle = <span class="integer">5</span>
+            maxIdle = <span class="integer">25</span>
+            maxWait = <span class="integer">10000</span>
+            maxAge = <span class="integer">600000</span>
+            timeBetweenEvictionRunsMillis = <span class="integer">5000</span>
+            minEvictableIdleTimeMillis = <span class="integer">60000</span>
+            validationQuery = <span class="string"><span class="delimiter">'</span><span class="content">SELECT 1</span><span class="delimiter">'</span></span>
+            validationQueryTimeout = <span class="integer">3</span>
+            validationInterval = <span class="integer">15000</span>
+            testOnBorrow = <span class="predefined-constant">true</span>
+            testWhileIdle = <span class="predefined-constant">true</span>
+            testOnReturn = <span class="predefined-constant">false</span>
+            jdbcInterceptors = <span class="string"><span class="delimiter">'</span><span class="content">ConnectionState</span><span class="delimiter">'</span></span>
+            defaultTransactionIsolation = <span class="integer">2</span> <span class="comment">//# TRANSACTION_READ_COMMITTED</span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Remove from <code>application.yml</code> the environment production datasource block. We define production datasource configuration in <code>application-production.groovy</code></p>
+</div>
+<div class="paragraph">
+<p>That it is to say:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="predefined-constant">true</span>
+    <span class="key">jmxExport</span>: <span class="predefined-constant">true</span>
+    <span class="key">driverClassName</span>: org.h2.Driver
+    <span class="key">username</span>: sa
+    <span class="key">password</span>:
+
+<span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: create-drop
+            <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:devDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE
+    <span class="key">test</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: update
+            <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:testDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add MySQL as a runtime dependency to Gradle dependencies block.</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:5.1.40</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="cfManifest">3.2 Create CF Manifest file</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/cfManifest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We create a configuration file which we will use to push the application to PWS. The configuration file
+references the MySQL service which we created in the previous section.</p>
+</div>
+<div class="listingblock">
+<div class="title">/manifest.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">applications</span>:
+  - <span class="key">name</span>: grailsguidepws
+    <span class="key">memory</span>: <span class="integer">1G</span>
+    <span class="key">instances</span>: <span class="integer">1</span>
+    <span class="key">path</span>: build/libs/complete-<span class="float">0.1</span>.war
+    <span class="key">buildpack</span>: java_buildpack
+    <span class="key">services</span>:
+      - grailsguidesmysql</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You war name maybe different, make sure you configure the correct path
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="cfPush">3.3 Deploy the app</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/cfPush.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Generate a war file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./grailsw war</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Run <code>cf push</code>. If everything is successful you should see an output such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ cf push
+Using manifest file /Users/grails/git/grailsguidepws/manifest.yml
+
+Creating app grailsguidepws in org guides-grails-org / space development as john@email.com...
+OK
+
+Creating route grailsguidepws.cfapps.io...
+OK
+
+Binding grailsguidepws.cfapps.io to grailsguidepws...
+OK
+
+Uploading grailsguidepws...
+Uploading app files from: /var/folders/j3/_bh_nnt96g3737jvnfcvnwcc0000gn/T/unzipped-app735681719
+Uploading 1.8M, 254 files
+Done uploading
+OK
+Binding service grailsguidesmysql to app grailsguidepws in org guides-grails-org / space development as john@email.com...
+OK
+
+Starting app grailsguidepws in org guides-grails-org / space development as john@email.com...
+Downloading java_buildpack...
+Downloaded java_buildpack
+Creating container
+Successfully created container
+Downloading app package...
+Downloaded app package (62.1M)
+Staging...
+-----&gt; Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
+-----&gt; Downloading Open Jdk JRE 1.8.0_121 from https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-1.8.0_121.tar.gz (found in cache)
+       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.1s)
+-----&gt; Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
+       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
+-----&gt; Downloading Container Certificate Trust Store 1.0.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-certificate-trust-store/container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)
+       Adding certificates to .java-buildpack/container_certificate_trust_store/truststore.jks (1.2s)
+-----&gt; Downloading Container Customizer 1.1.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-customizer/container-customizer-1.1.0_RELEASE.jar (found in cache)
+-----&gt; Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https://java-buildpack.cloudfoundry.org/auto-reconfiguration/auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)
+Exit status 0
+Uploading droplet, build artifacts cache...
+Staging complete
+Uploading build artifacts cache...
+Uploading droplet...
+Uploaded build artifacts cache (109B)
+Uploaded droplet (107.3M)
+Uploading complete
+Destroying container
+Successfully destroyed container
+
+0 of 1 instances running, 1 starting
+0 of 1 instances running, 1 starting
+0 of 1 instances running, 1 starting
+0 of 1 instances running, 1 starting
+0 of 1 instances running, 1 starting
+1 of 1 instances running
+
+App started
+
+
+OK
+
+App grailsguidepws was started using this command `CALCULATED_MEMORY=$($PWD/.java-buildpack/open_jdk_jre/bin/java-buildpack-memory-calculator-2.0.2_RELEASE -memorySizes=metaspace:64m..,stack:228k.. -memoryWeights=heap:65,metaspace:10,native:15,stack:10 -memoryInitials=heap:100%,metaspace:100% -stackThreads=300 -totMemory=$MEMORY_LIMIT) &amp;&amp; JAVA_OPTS="-Djava.io.tmpdir=$TMPDIR -XX:OnOutOfMemoryError=$PWD/.java-buildpack/open_jdk_jre/bin/killjava.sh $CALCULATED_MEMORY -Djavax.net.ssl.trustStore=$PWD/.java-buildpack/container_certificate_trust_store/truststore.jks -Djavax.net.ssl.trustStorePassword=java-buildpack-trust-store-password" &amp;&amp; SERVER_PORT=$PORT eval exec $PWD/.java-buildpack/open_jdk_jre/bin/java $JAVA_OPTS -cp $PWD/. org.springframework.boot.loader.WarLauncher`
+
+Showing health and status for app grailsguidepws in org guides-grails-org / space development as john@email.com...
+OK
+
+requested state: started
+instances: 1/1
+usage: 1G x 1 instances
+urls: grailsguidepws.cfapps.io
+last uploaded: Fri Feb 3 09:35:52 UTC 2017
+stack: cflinuxfs2
+buildpack: java_buildpack
+
+     state     since                    cpu      memory         disk           details
+#0   running   2017-02-03 10:37:26 AM   260.5%   485.8M of 1G   194.7M of 1G</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can check your app status in the PWS console:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/apprunning.png" alt="apprunning">
+</div>
+</div>
+
+
+<h1 id="deployWithGradle">4 Deploy on PWS with Gradle</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/deployWithGradle.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is possible to <a href="https://docs.run.pivotal.io/buildpacks/java/build-tool-int.html#gradle">integrate your PWS deployment with Gradle</a></p>
+</div>
+<div class="paragraph">
+<p>Create a <code>gradle.properties</code> file outside your project with your cf credentials:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cat ~/.gradle/gradle.properties
+cfUsername=john@email.com
+cfPassword=secret</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the Gradle CloudFoundry plugin</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">'</span><span class="content">org.cloudfoundry:cf-gradle-plugin:1.1.2</span><span class="delimiter">'</span></span>
+    }
+}
+apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">cloudfoundry</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configure your app services:</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">cloudfoundry {
+    target = <span class="string"><span class="delimiter">&quot;</span><span class="content">https://api.run.pivotal.io</span><span class="delimiter">&quot;</span></span>
+    organization = <span class="string"><span class="delimiter">&quot;</span><span class="content">guides-grails-org</span><span class="delimiter">&quot;</span></span>
+    application = <span class="string"><span class="delimiter">&quot;</span><span class="content">grailsguidepws</span><span class="delimiter">&quot;</span></span>
+    space = <span class="string"><span class="delimiter">&quot;</span><span class="content">development</span><span class="delimiter">&quot;</span></span>
+    file = file(<span class="string"><span class="delimiter">&quot;</span><span class="content">build/libs/complete-0.1.war</span><span class="delimiter">&quot;</span></span>)
+    memory = <span class="integer">1024</span>
+    instances = <span class="integer">1</span>
+    buildpack = <span class="string"><span class="delimiter">&quot;</span><span class="content">java_buildpack</span><span class="delimiter">&quot;</span></span>
+    services {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">mysql</span><span class="delimiter">&quot;</span></span> {
+            label = <span class="string"><span class="delimiter">&quot;</span><span class="content">grailsguidesmysql</span><span class="delimiter">&quot;</span></span>
+            plan = <span class="string"><span class="delimiter">&quot;</span><span class="content">spark</span><span class="delimiter">&quot;</span></span>
+            bind = <span class="predefined-constant">true</span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Generate a war file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./grailsw war</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deploy with gradle</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./gradlew cfPush</pre>
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-deploy-pws/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several Grails services:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3 style="color: #333;">OCI Grails Team includes Grails co-founder and the core development team.
+Gain access to the engineers who developed, matured and maintain Grails</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px;" alt="Grails OCI Team">
+
+<hr/>
+
+<div id="wufoo-z17zxj9n0k6uwsa"><iframe id="wufooFormz17zxj9n0k6uwsa" class="wufoo-form-container" height="536" allowtransparency="true" frameborder="0" scrolling="no" style="width:100%;border:none" src="https://ociweb.wufoo.com/embed/z17zxj9n0k6uwsa/def/embedKey=z17zxj9n0k6uwsa927976&amp;entsource=&amp;referrer=https%3Awuslashwuslashwww.ociweb.comwuslash">&lt;a href="https://ociweb.wufoo.com/forms/z17zxj9n0k6uwsa/" title="html form"&gt;Fill out my Wufoo form!&lt;/a&gt;</iframe></div>
+<script type="text/javascript">var z17zxj9n0k6uwsa;(function(d, t) {
+var s = d.createElement(t), options = {
+'userName':'ociweb',
+'formHash':'z17zxj9n0k6uwsa',
+'autoResize':true,
+'height':'771',
+'async':true,
+'host':'wufoo.com',
+'header':'show',
+'ssl':true};
+s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'www.wufoo.com/scripts/embed/form.js';
+s.onload = s.onreadystatechange = function() {
+var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+try { z17zxj9n0k6uwsa = new WufooForm();z17zxj9n0k6uwsa.initialize(options);z17zxj9n0k6uwsa.display(); } catch (e) {}};
+var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+})(document, 'script');</script>
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-deploy-pws"><img src="https://travis-ci.org/grails-guides/grails-deploy-pws.svg?branch=master" /></a></div>            
+                        
+                <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-deploy-pws">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-deploy-pws.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-deploy-pws.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-deploy-pws'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-deploy-pws.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-deploy-pws/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#setupPWS"><strong>2</strong><span>Setup PWS Account and install cf CLI</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#login"><strong>3</strong><span>Deploy on PWS with cf CLI</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#createService"><strong>3.1</strong><span>Create a MySQL Service</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#cfManifest"><strong>3.2</strong><span>Create CF Manifest file</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#cfPush"><strong>3.3</strong><span>Deploy the app</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#deployWithGradle"><strong>4</strong><span>Deploy on PWS with Gradle</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+                    
+                    <div style="clear:both" ></div>
+                </div>
+                                    
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+            
+        </div>
+
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+    </body>
+</html>
