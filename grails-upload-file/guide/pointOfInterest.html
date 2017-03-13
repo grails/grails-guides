@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Point of Interest - Upload and transfer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/restaurant.html"><strong>3</strong><span>Restaurant - Upload and save as byte[]</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/pointOfInterest.html"><strong>4</strong><span>Point of Interest - Upload and transfer</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/awsS3.html"><strong>5</strong><span>Hotel - Upload to AWS S3</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>6</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/restaurant.html">&lt;&lt; <strong>3</strong><span>Restaurant - Upload and save as byte[]</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/awsS3.html"><strong>5</strong><span>Hotel - Upload to AWS S3</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#pointOfInterestDomainClass"><strong>4.1</strong><span>Point of Interest Domain Class</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#pointOfInterestScaffolding"><strong>4.2</strong><span>Point of Interest Static Scaffolding</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#pointOfInterestView"><strong>4.3</strong><span>Point of Interest  Views</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#pointOfInterestUploadFeaturedImageService"><strong>4.4</strong><span>Upload Featured Image Service</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="pointOfInterest">4 Point of Interest - Upload and transfer</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this part of this guide, we have separated the Grails application from the uploaded images.
+We use <a href="https://www.mamp.info">MAMP</a> to run a local apache server at port 8888 pointing to the folder data.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/transfer.png" alt="transfer">
+</div>
+</div>
+
+
+<h2 id="pointOfInterestDomainClass">4.1 Point of Interest Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestDomainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-domain-class PointOfInterest
+| Created grails-app/domain/demo/PointOfInterest.groovy
+| Created src/test/groovy/demo/PointOfInterestSpec.groovy</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/PointOfInterest.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">PointOfInterest</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> featuredImageUrl
+
+    <span class="directive">static</span> constraints = {
+        featuredImageUrl <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="pointOfInterestScaffolding">4.2 Point of Interest Static Scaffolding</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestScaffolding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We have used static scaffolding to generate the CRUD ( Create, Read, Update, Delete) functionality.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw generate-all PointOfInterest</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Moreover, we have done a code refactoring of the generated controller <code>PointOfInterestController</code> and we have extracted
+the transactional GORM behavior to a service <code>PointOfInterestGormService</code>.</p>
+</div>
+<div class="paragraph">
+<p>In order to keep this guide code listings short, we don&#8217;t include those code snippets. However,
+you can <a href="https://github.com/grails-guides/grails-upload-file/archive/master.zip">download</a> and unzip the source or clone this guide repository <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-upload-file.git" class="bare">https://github.com/grails-guides/grails-upload-file.git</a></code>
+You can find the finished guide with all the project code at <code>grails-guides/grails-upload-file/complete</code></p>
+</div>
+
+
+<h2 id="pointOfInterestView">4.3 Point of Interest  Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestView.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to modify the generated views slightly to include functionality which enables to upload a featured image.</p>
+</div>
+<div class="paragraph">
+<p>In Point of Interest&#8217;s listing, display only the hotel&#8217;s name in the table. Checkout the <a href="http://grails3-plugins.github.io/fields/snapshot/ref/Tags/table.html">Fields Plugin f:table</a> documentation.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/pointOfInterest/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:table collection=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>pointOfInterestList<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> properties=<span class="string"><span class="delimiter">&quot;</span><span class="content">['name']</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit and create form will not allow users to set featured image&#8217;s url</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/pointOfInterest/create.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">pointOfInterest</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/pointOfInterest/edit.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">pointOfInterest</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Instead we add a button which takes the user to a featured image edit page.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/pointOfInterest/show.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">edit</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">editFeaturedImage</span><span class="delimiter">&quot;</span></span> resource=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.pointOfInterest<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">pointOfInterest.featuredImageUrl.edit.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Edit Featured Image</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>editFeaturedImage</code> Controller&#8217;s action is identical to edit action:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PointOfInterestController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(PointOfInterest pointOfInterest) {
+    respond pointOfInterest
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>editFeaturedImage</code> GSP is identical to <code>edit</code> GSP but it uses an <code>g:uploadForm</code> instead of a <code>g:form</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/pointOfInterest/editFeaturedImage.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">g</span>:uploadForm name=<span class="string"><span class="delimiter">&quot;</span><span class="content">uploadFeaturedImage</span><span class="delimiter">&quot;</span></span> action=<span class="string"><span class="delimiter">&quot;</span><span class="content">uploadFeaturedImage</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;<span class="key">g</span>:hiddenField name=<span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.pointOfInterest?.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;<span class="key">g</span>:hiddenField name=<span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.pointOfInterest?.version<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">file</span><span class="delimiter">&quot;</span></span> name=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageFile</span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">buttons</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">input</span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span> <span class="class">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">pointOfInterest.featuredImage.upload.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Upload</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:uploadForm&gt;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="pointOfInterestUploadFeaturedImageService">4.4 Upload Featured Image Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestUploadFeaturedImageService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>uploadFeatureImage</code> controller&#8217;s action uses the previously described command
+object to validate the upload form submission. If it does not find validation errors, it invokes a service.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PointOfInterestController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.*</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+<span class="type">class</span> <span class="class">PointOfInterestController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>,
+                             <span class="key">update</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>,
+                             <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+                             <span class="key">delete</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>]
+
+    <span class="keyword">def</span> uploadPointOfInterestFeaturedImageService
+
+    <span class="keyword">def</span> pointOfInterestGormService
+
+    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
+
+        <span class="keyword">if</span> (cmd.hasErrors()) {
+            respond(cmd, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+            <span class="keyword">return</span>
+        }
+
+        <span class="keyword">def</span> pointOfInterest = uploadPointOfInterestFeaturedImageService.uploadFeatureImage(cmd)
+        <span class="keyword">if</span> (pointOfInterest == <span class="predefined-constant">null</span>) {
+            notFound()
+            <span class="keyword">return</span>
+        }
+
+        <span class="keyword">if</span> (pointOfInterest.hasErrors()) {
+            respond(pointOfInterest, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: pointOfInterest], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+            <span class="keyword">return</span>
+        }
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">pointOfInterest.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Point of Interest</span><span class="delimiter">'</span></span>), pointOfInterest.id])
+                redirect pointOfInterest
+            }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ respond pointOfInterest, [<span class="key">status</span>: OK] }
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We configure the local server url which will host the uploaded images and the local
+folder path where we are going to save the images to.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">grails</span>:
+    <span class="key">guides</span>:
+        <span class="key">cdnFolder</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">Users</span><span class="delimiter">/</span></span>sdelamo/Sites/GrailsGuides/UploadFiles
+        <span class="key">cdnRootUrl</span>: <span class="key">http</span>:<span class="comment">//localhost:8888</span>
+---</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Service uses the <code>transferTo</code> method to transfer the file to a local file path.
+In case of error, the service deletes the file it has previously transfered</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/UploadHotelFeaturedImageService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+
+<span class="type">class</span> <span class="class">UploadPointOfInterestFeaturedImageService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    <span class="predefined-type">String</span> cdnFolder
+    <span class="predefined-type">String</span> cdnRootUrl
+
+    <span class="keyword">def</span> pointOfInterestGormService
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        cdnFolder = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">grails.guides.cdnFolder</span><span class="delimiter">'</span></span>)
+        cdnRootUrl = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">grails.guides.cdnRootUrl</span><span class="delimiter">'</span></span>)
+    }
+
+    PointOfInterest uploadFeatureImage(FeaturedImageCommand cmd) {
+
+        <span class="predefined-type">String</span> filename = cmd.featuredImageFile.originalFilename
+        <span class="keyword">def</span> folderPath = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cdnFolder<span class="inline-delimiter">}</span></span><span class="content">/pointOfInterest/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <span class="keyword">as</span> <span class="predefined-type">String</span>
+        <span class="keyword">def</span> folder = <span class="keyword">new</span> <span class="predefined-type">File</span>(folderPath)
+        <span class="keyword">if</span> ( !folder.exists() ) {
+            folder.mkdirs()
+        }
+        <span class="keyword">def</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>folderPath<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>filename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <span class="keyword">as</span> <span class="predefined-type">String</span>
+        cmd.featuredImageFile.transferTo(<span class="keyword">new</span> <span class="predefined-type">File</span>(path))
+
+        <span class="predefined-type">String</span> featuredImageUrl = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cdnRootUrl<span class="inline-delimiter">}</span></span><span class="content">//pointOfInterest/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>filename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+        <span class="keyword">def</span> poi = pointOfInterestGormService.updateFeaturedImageUrl(cmd.id, cmd.version, featuredImageUrl)
+
+        <span class="keyword">if</span> ( !poi || poi.hasErrors() ) {
+            <span class="keyword">def</span> f = <span class="keyword">new</span> <span class="predefined-type">File</span>(path)
+            f.delete()
+        }
+        poi
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/PointOfInterestGormService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
+    PointOfInterest updateFeaturedImageUrl(<span class="predefined-type">Long</span> pointOfInterestId, <span class="predefined-type">Integer</span> version, <span class="predefined-type">String</span> featuredImageUrl) {
+        PointOfInterest poi = PointOfInterest.get(pointOfInterestId)
+        <span class="keyword">if</span> ( !poi ) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        poi.version = version
+        poi.featuredImageUrl = featuredImageUrl
+        poi.save()
+    }</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/restaurant.html">&lt;&lt; <strong>3</strong><span>Restaurant - Upload and save as byte[]</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/awsS3.html"><strong>5</strong><span>Hotel - Upload to AWS S3</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-upload-file"><img src="https://travis-ci.org/grails-guides/grails-upload-file.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-upload-file">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-upload-file.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-upload-file.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-upload-file'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-upload-file.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-upload-file/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
