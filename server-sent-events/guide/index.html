@@ -58,7 +58,7 @@ function addJsClass(el) {
                             <p></p>
                             <p>This guide walks you through how to send Server Sent Events using Grails and RxJava.</p>
                             <p><strong>Authors:</strong> Graeme Rocher</p>
-                            <p><strong>Grails Version:</strong> 3.2.3</p>
+                            <p><strong>Grails Version:</strong> 3.2.7</p>
                             
                         </div>
 
@@ -242,8 +242,9 @@ The first time you run the <code>grails</code> command, application dependencies
 <div class="listingblock">
 <div class="title">grails-app/controllers/example/TickTockController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.Subscriber</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
 <span class="keyword">import</span> <span class="include">grails.rx.web.*</span>
+<span class="keyword">import</span> <span class="include">java.util.concurrent.TimeUnit</span>
 <span class="comment">/**
  * Demo Server Sent Events Controller
  */</span>
@@ -263,16 +264,16 @@ The first time you run the <code>grails</code> command, application dependencies
 <div class="title">grails-app/controllers/example/TickTockController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>() {
-    rx.stream { Subscriber subscriber -&gt;
+    rx.stream { <span class="predefined-type">Observer</span> observer -&gt;
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>stream</code> method accepts a closure that receives a <a href="http://reactivex.io/RxJava/javadoc/rx/Subscriber.html">rx.Subscriber</a> instance which you can use to send events to the client when the data is ready to be sent via the <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">rx.Observer</a> interface.</p>
+<p>The <code>stream</code> method accepts a closure that receives a <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">rx.Observer</a> instance which you can use to send events to the client when the data is ready to be sent via the <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">rx.Observer</a> interface.</p>
 </div>
 <div class="paragraph">
-<p>By using the <code>rx</code> helper&#8217;s various method you can pass values to the Subscriber&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onNext(T)">onNext</a> method. For example:</p>
+<p>By using the <code>rx</code> helper&#8217;s various method you can pass values to the Observer&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onNext(T)">onNext</a> method. For example:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/controllers/example/TickTockController.groovy</div>
@@ -296,12 +297,12 @@ The first time you run the <code>grails</code> command, application dependencies
 <p>In this example we loop through values between 0 and 5 and call <code>rx.render(..)</code> for odd and even values in order to output "Tick" or "Tock" respectively. The call to <code>sleep(..)</code> is there to simulate a slow request like for example if the values were being obtained from an external web service.</p>
 </div>
 <div class="paragraph">
-<p>Once you are done sending events you can use the Subscriber&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onCompleted()">onCompleted</a> event to finish-up:</p>
+<p>Once you are done sending events you can use the Observer&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onCompleted()">onCompleted</a> event to finish-up:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/controllers/example/TickTockController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">subscriber.onCompleted()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">observer.onCompleted()</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -311,7 +312,7 @@ The first time you run the <code>grails</code> command, application dependencies
 <div class="title">grails-app/controllers/example/TickTockController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>() {
-    rx.stream { Subscriber subscriber -&gt;
+    rx.stream { <span class="predefined-type">Observer</span> observer -&gt;
         <span class="keyword">for</span>(i <span class="keyword">in</span> (<span class="integer">0</span>..<span class="integer">5</span>)) {
             <span class="keyword">if</span>(i % <span class="integer">2</span> == <span class="integer">0</span>) {
                 subscriber.onNext(
@@ -325,8 +326,30 @@ The first time you run the <code>grails</code> command, application dependencies
             }
             sleep <span class="integer">1000</span>
         }
-        subscriber.onCompleted()
+        observer.onCompleted()
     }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if the call to <code>sleep(1000)</code> was actually a concrete requirement for the application a more idiomatic way to write that would be with the <code>interval</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">example</span>() {
+    <span class="type">int</span> i = <span class="integer">0</span>
+    rx.stream(<span class="predefined-type">Observable</span>
+                .interval(<span class="integer">1</span>, <span class="predefined-type">TimeUnit</span>.SECONDS)
+                .map {
+        i++
+        <span class="keyword">if</span>(i % <span class="integer">2</span> == <span class="integer">0</span>) {
+            rx.render(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tick</span><span class="delimiter">&quot;</span></span>)
+        }
+        <span class="keyword">else</span> {
+            rx.render(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tock</span><span class="delimiter">&quot;</span></span>)
+        }
+    })
 }</code></pre>
 </div>
 </div>
