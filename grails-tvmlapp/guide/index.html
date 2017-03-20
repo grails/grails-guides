@@ -1,0 +1,1242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Build a TVML App with Grails</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <div class="navTitle">
+                
+                Grails Framework Guide 
+            </div>
+            <div class="navLinks">
+                <ul>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#writingTheTvOSApp"><strong>2</strong><span>Writing the TVML Client</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#writingTheApp"><strong>3</strong><span>Writing the TVML Grails Application</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <div class="project">
+                            <h1>Build a TVML App with Grails</h1>
+                            <p></p>
+                            <p>Build an app for Apple TV with Grails. Leverage markup views, asset-pipeline and internazionalization capabilities of Grails to streamline TVML development</p>
+                            <p><strong>Authors:</strong> Sergio del Amo</p>
+                            <p><strong>Grails Version:</strong> 3.2.7</p>
+                            
+                        </div>
+
+                        
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you will write a <a href="https://developer.apple.com/library/prerelease/content/documentation/TVMLKitJS/Conceptual/TVMLProgrammingGuide/index.html#//apple_ref/doc/uid/TP40016718-CH6-SW1">TVML application</a>.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>TVML apps provide you with a way to create apps for Apple TV using TVMLKit JavaScript (TVMLKit JS), the Apple TV Markup Language (TVML), and the TVMLKit framework. Every template has a specific design that follows Apple style guidelines, allowing you to quickly create gorgeous looking apps.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The TVML App, built during this guide, displays an <a href="https://developer.apple.com/library/prerelease/content/documentation/LanguagesUtilities/Conceptual/ATV_Template_Guide/StackTemplate.html#//apple_ref/doc/uid/TP40015064-CH21-SW4">Apple TVML Stack Template</a> of Grails Quickcasts.
+Grails Quickcasts are short videos of pure Grails coding. When the user selects one, an <a href="https://developer.apple.com/library/prerelease/content/documentation/LanguagesUtilities/Conceptual/ATV_Template_Guide/ProductTemplate.html#//apple_ref/doc/uid/TP40015064-CH8-SW4">Apple TVML Product Template</a> shows the Quickcast detail. The user can reproduce the video
+by selecting the play button.</p>
+</div>
+
+
+<h2 id="architecture">1.1 Architecture</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/architecture.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This guide features a client-server architecture. The client is a tvOS application. The server is a Grails application. The client connects to the server, which responds with TVMLKit JS and TVML documents.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/architecture.png" alt="architecture">
+</div>
+</div>
+<div class="paragraph">
+<p>We have separated the Grails application from the data ( mp4 files and Png files ); videos and thumbnails.
+We use <a href="https://www.mamp.info">MAMP</a> to run a local apache server at port 8888 pointing to the folder data.
+During this guide you will see references to mp4 files such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/grails-tvmlapp/complete/grails-app/init/com/ociweb/quickcasts/Bootstrap.groovy[indent=<span class="integer">0</span>,lines=<span class="string"><span class="delimiter">&quot;</span><span class="content">12</span><span class="delimiter">&quot;</span></span>]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a Production environment, you may want to host
+those files in a service such as <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/Welcome.html">Amazon Simple Store Service - AWS S3</a></p>
+</div>
+
+
+<h2 id="requirements">1.2 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Latest stable version of <a href="https://developer.apple.com/xcode/">XCode</a>. We wrote this guide with Xcode 8.2.1.</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.3 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete the Grails application developed in this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-tvmlapp/archive/master.zip">Download</a> and unzip
+the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-tvmlapp.git" class="bare">https://github.com/grails-guides/grails-tvmlapp.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-tvmlapp/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-tvmlapp/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheTvOSApp">2 Writing the TVML Client</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/writingTheTvOSApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To create a TVML application and connect it to a Grails Server we need to modify the variables <code>tvBaseURL</code> and <code>tvBootURL</code>.</p>
+</div>
+<div class="paragraph">
+<p>Create a TvOS project with the TVML application template.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/tvOSProjectTemplateTvml.png" alt="tvOSProjectTemplateTvml">
+</div>
+</div>
+<div class="paragraph">
+<p>Choose Swift as the language.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/projectOptions.png" alt="projectOptions">
+</div>
+</div>
+<div class="paragraph">
+<p>Add a new value <em>App Transport Security Settings</em> (case sensitive), and as its child, add <em>Allow Arbitrary Loads</em>, and set that value to YES.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/appTransportSecurity.png" alt="appTransportSecurity">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Adding this key to your Info.plist is necessary because as of iOS 9, your app will prevent linking to non-HTTPS servers to encourage best practices. In this tutorial, you’ll be testing against a local server without HTTPS enabled, so you’ll disable the default behavior.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Modify <code>AppDelegate.swift</code> and set the static variables <code>tvBaseURL</code> and <code>tvBootURL</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="swift">static let tvBaseURL = &quot;http://localhost:8080/&quot;
+static let tvBootURL = &quot;\(AppDelegate.tvBaseURL)/assets/application.js&quot;</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/tvBaseUrl.png" alt="tvBaseUrl">
+</div>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the TVML Grails Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The initial Grails application, which you can find in the <em>initial</em> folder, was created with the command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">grails create-app --profile rest-api -features=hibernate5,markup-views,asset-pipeline</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Did you know you can download a complete Grails project without installing any additional tools? Go to <a href="http://start.grails.org">start.grails.org</a> and use the <strong>Grails Application Forge</strong> to generate your Grails project. You can choose your project type (Application or Plugin), pick a version of Grails, and choose a Profile - then click "Generate Project" to download a ZIP file. No Grails installation necessary!</p>
+</div>
+<div class="paragraph">
+<p>You can even download your project from the command line using a HTTP tool like <code>curl</code> (see <a href="http://start.grails.org">start.grails.org</a> for API documentation):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -O start.grails.org/myapp.zip -d version=3.2.4 -d profile=angular</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="tvmlUtils">3.1 TVMLKit JS Utils</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/tvmlUtils.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://developer.apple.com/reference/tvmljs">TVMLKit JS</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>TVMLKit JS is a JavaScript API framework specifically designed to work with Apple TV and TVML. TVMLKit JS incorporates the basic functionality found in JavaScript along with specialized APIs designed for Apple TV. Using TVMLKit JS, you are able to load and display TVML templates, play media streams, load customized content, and control the flow of your app. For more information, see TVJS Framework Reference.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Add a JavaScript file to our project. It defines a series of methods nearly identical as those described in the section Playing Media of
+<a href="https://developer.apple.com/library/prerelease/content/documentation/TVMLKitJS/Conceptual/TVMLProgrammingGuide/PlayingVideo.html">TVML Programming Guide</a>.</p>
+</div>
+<div class="paragraph">
+<p>These methods allow to push pages into the navigation stack, fetch documents and play media.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/assets/javascripts/tvmlkit.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">function</span> <span class="function">loadingTemplate</span>() {
+    <span class="keyword">var</span> template = <span class="string"><span class="delimiter">'</span><span class="content">&lt;document&gt;&lt;loadingTemplate&gt;&lt;activityIndicator&gt;&lt;text&gt;Loading&lt;/text&gt;&lt;/activityIndicator&gt;&lt;/loadingTemplate&gt;&lt;/document&gt;</span><span class="delimiter">'</span></span>;
+    <span class="keyword">var</span> templateParser = <span class="keyword">new</span> DOMParser();
+    <span class="keyword">var</span> parsedTemplate = templateParser.parseFromString(template, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/xml</span><span class="delimiter">&quot;</span></span>);
+    navigationDocument.pushDocument(parsedTemplate);
+}
+
+<span class="keyword">function</span> <span class="function">getDocument</span>(extension) {
+    <span class="keyword">var</span> templateXHR = <span class="keyword">new</span> XMLHttpRequest();
+    <span class="keyword">var</span> url = baseURL + extension;
+
+    loadingTemplate();
+    templateXHR.responseType = <span class="string"><span class="delimiter">&quot;</span><span class="content">document</span><span class="delimiter">&quot;</span></span>;
+    templateXHR.addEventListener(<span class="string"><span class="delimiter">&quot;</span><span class="content">load</span><span class="delimiter">&quot;</span></span>, <span class="keyword">function</span>() {pushPage(templateXHR.responseXML);}, <span class="predefined-constant">false</span>);
+    templateXHR.open(<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>, url, <span class="predefined-constant">true</span>);
+    templateXHR.send();
+}
+
+<span class="keyword">function</span> <span class="function">pushPage</span>(document) {
+    <span class="keyword">var</span> currentDoc = getActiveDocument();
+    <span class="keyword">if</span> (currentDoc.getElementsByTagName(<span class="string"><span class="delimiter">&quot;</span><span class="content">loadingTemplate</span><span class="delimiter">&quot;</span></span>).item(<span class="integer">0</span>) == <span class="predefined-constant">null</span>) {
+        navigationDocument.pushDocument(document);
+    } <span class="keyword">else</span> {
+        navigationDocument.replaceDocument(document, currentDoc);
+    }
+}
+
+<span class="keyword">function</span> <span class="function">playMedia</span>(videourl, mediaType) {
+    <span class="keyword">var</span> singleVideo = <span class="keyword">new</span> MediaItem(mediaType, videourl);
+    <span class="keyword">var</span> videoList = <span class="keyword">new</span> Playlist();
+    videoList.push(singleVideo);
+    <span class="keyword">var</span> myPlayer = <span class="keyword">new</span> Player();
+    myPlayer.playlist = videoList;
+    myPlayer.play();
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="tvBootURL">3.2 TV Boot Url</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/tvBootURL.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This guide uses <a href="https://github.com/bertramdev/asset-pipeline">Asset Pipeline</a> Plugin</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The Asset-Pipeline is a plugin used for managing and processing static assets in JVM applications primarily via Gradle (however not mandatory). Asset-Pipeline functions include processing and minification of both CSS and JavaScript files</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Create a javascript file which will be the entry to our TVML Grails App:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/assets/javascripts/application.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">// This is a manifest file that'll be compiled into application.js.</span>
+<span class="comment">//</span>
+<span class="comment">// Any JavaScript file within this directory can be referenced here using a relative path.</span>
+<span class="comment">//</span>
+<span class="comment">// You're free to add application-wide JavaScript to this file, but it's generally better</span>
+<span class="comment">// to create separate JavaScript files as needed.</span>
+<span class="comment">//</span>
+<span class="comment">//= require tvmlkit.js</span>
+<span class="comment">//= require_self</span>
+<span class="keyword">var</span> baseURL;
+
+App.<span class="function">onLaunch</span> = <span class="keyword">function</span>(options) {
+    baseURL = options.BASEURL;
+    <span class="keyword">var</span> extension = <span class="string"><span class="delimiter">&quot;</span><span class="content">quickcast</span><span class="delimiter">&quot;</span></span>;
+    getDocument(extension);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please note, how the line displayed in the next Listing includes the TVMLKit JS file discussed in the previous section.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/assets/javascripts/application.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//= require tvmlkit.js</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The initial TVML document is the XML rendered at <code><a href="http://localhost:8080/quickcast" class="bare">http://localhost:8080/quickcast</a></code>.</p>
+</div>
+<div class="paragraph">
+<p>The next line designates the initial document:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/assets/javascripts/application.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">getDocument(extension);</code></pre>
+</div>
+</div>
+
+
+<h2 id="domainClass">3.3 Domain class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/domainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a persistent entity to store Quickcasts. Most common way to handle persistence in Grails is the use of <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html">Grails Domain Classes</a>:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A domain class fulfills the M in the Model View Controller (MVC) pattern and represents a persistent entity that is
+mapped onto an underlying database table. In Grails a domain is a class that lives in the grails-app/domain directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-domain-class Quickcast</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Quickcast</code> domain class is our data model. We define different properties to store the <code>Quickcast</code> characteristics.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/com/ociweb/quickcasts/Quickcast.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> com.ociweb.quickcasts
+
+<span class="reserved">class</span> Quickcast {
+    String title
+    String subtitle
+    String description
+    <span class="reserved">int</span> durationMinutes
+    <span class="reserved">int</span> durationSeconds
+    <span class="reserved">int</span> releaseYear
+    String heroImg
+    String videoUrl
+    <span class="reserved">static</span> hasMany = [authors: String]
+
+    <span class="reserved">static</span> constraints = {
+        description nullable: <span class="predefined-constant">true</span>
+    }
+
+    <span class="reserved">static</span> mapping = {
+        description type: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With a <a href="http://docs.grails.org/latest/guide/testing.html">Unit Test</a>, we test the property body is optional.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/com/ociweb/quickcasts/QuickcastSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="comment">/**
+ * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
+ */</span>
+<span class="annotation">@TestFor</span>(Quickcast)
+<span class="type">class</span> <span class="class">QuickcastSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test description is optional</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+            <span class="keyword">new</span> Quickcast(<span class="key">description</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">description</span><span class="delimiter">'</span></span>])
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We then load some test data in <code>BootStrap.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/init/com/ociweb/quickcasts/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> com.ociweb.quickcasts
+
+<span class="reserved">class</span> BootStrap {
+
+    def init = { servletContext -&gt;
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Interceptors - Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#1 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">17</span>,
+                <span class="key">durationSeconds</span>: <span class="octal">01</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_interceptor.png</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_1_interceptors.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>],
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">This Quickcast assumes only basic familiarity with Groovy (which is pretty darn expressive anyway) and the MVC concept (which you already know). Also serves as an excellent introduction to the interceptor pattern in any language, because Grails</span><span class="char">\'</span><span class="content"> behind-the-scenes legwork lets you focus on the logic of the pattern.</span><span class="delimiter">'</span></span>
+        ).save()
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">JSON Views - Grails 3 </span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#2 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_jsonviews.png</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">15</span>,
+                <span class="key">durationSeconds</span>: <span class="integer">40</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
+n a delightful and informative 15 minutes, Brown probes JSON views. Beginning with a Grails 3.1.1 application, created with a standard web profile, Brown added a few custom domain classes. The artist class has albums associated with it, and is annotated with grails.rest.Resource.
+
+The ultimate goal is publishing a REST API under /artists for managing instances of the artist class, and to support the JSON and XML formats.
+
+Brown uses music examples, including Space Oddity by David Bowie (RIP), and Close to the Edge by Yes. Sending a request to /artists gives a list of artists all of whom have albums associated with them. While the app is running in development mode, the JSON files can be altered and the effects of those changes can be seen real-time in the application. For example, switching &quot;ArtistName&quot;: &quot;Riverside&quot; to &quot;theArtistName&quot;: &quot;Riverside&quot;.
+
+This Quickcast assumes basic knowledge of Grails, JSON, and REST APIs. Check out Brown’s neat intro to JSON views!
+</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Multi-Project Builds - Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#3 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_multiprojectbuilds.png</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">14</span>,
+                <span class="key">durationSeconds</span>: <span class="integer">28</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
+In this Quickcast, Graeme Rocher, Head of Grails Development at OCI, walks you through multi-project builds in Grails. Grails does a few handy things with multi-project builds and plugins, not the least of which being that Grails compiles your plugins first and puts the class and resources of those plugins directly in the classpath. This lets you make changes to your plugins and instantly see those changes in your build.
+</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Graeme Rocher</span><span class="delimiter">'</span></span>]).save()
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Angular Scaffolding - Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#4 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_angularscaffolding.png</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">9</span>,
+                <span class="key">durationSeconds</span>: <span class="integer">27</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
+In this Quickcast, OCI Engineer James Kleeh walks you through using the Angular Scaffolding for Grails to build a fully functional web app, using a simple blog format for demonstration. The tutorial explains how to have Grails set up a REST endpoint and all the Angular modules needed to get the web app running.
+</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">James Kleeh</span><span class="delimiter">'</span></span>]).save()
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Retrieving Runtime Config Values - Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#5 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_retrievingruntimeconfigvalues.png</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">17</span>,
+                <span class="key">durationSeconds</span>: <span class="integer">51</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
+In the fifth Grails QuickCast, Grails co-founder, Jeff Scott Brown, highlights some of the great features of the Grails framework.  In less than 18 minutes, Jeff describes several techniques for retrieving configuration values at runtime, and discusses the pros and cons of these different techniques. For this Quickcast, you’ll need no more than a basic understanding of Grails. The Grails Quickcast series is brought to you from OCI and DZone.
+
+Grails leverages the “Convention Over Configuration” design paradigm, which functions to decrease the number of decisions that a developer using the framework is required to make without losing flexibility. This is one of the main reasons why Grails significantly increases developer productivity!
+
+While Grails applications often involve considerably less configuration than similar applications built with other frameworks, some configuration may still be necessary. In this short video, Jeff shares a number of mechanisms that make it easy for Grails developers to define configuration values, and to gain access to those configuration values at runtime.
+</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
+
+
+        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Developing Grails Application with IntelliJ IDEA - Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#6 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
+                <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_developinggrailsappswithintellij.png</span><span class="delimiter">'</span></span>,
+                <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
+                <span class="key">durationMinutes</span>: <span class="integer">22</span>,
+                <span class="key">durationSeconds</span>: <span class="integer">42</span>,
+                <span class="key">releaseYear</span>: <span class="integer">2016</span>,
+                <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
+In the sixth Grails QuickCast, Grails co-founder, Jeff Scott Brown, introduces several tips and tricks related to building Grails 3 applications in IDEA. The Grails Quickcast series is brought to you from OCI and DZone.
+
+Grails 3 is a high productivity framework for building web applications for the JVM. IntelliJ IDEA is a high productivity Integrated Development Environment (IDE) for building a variety of types of applications. IDEA has always had really great support for building Grails applications and, in particular, has the very best support of any IDE for doing development with Grails 3.
+</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
+
+
+    }
+    def destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="controllerIndex">3.4 Stack Template</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/controllerIndex.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We show first an <a href="https://developer.apple.com/library/prerelease/content/documentation/LanguagesUtilities/Conceptual/ATV_Template_Guide/StackTemplate.html">Apple TVML Stack Template</a>
+with the Grails Quickcasts:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/stackTemplate.png" alt="stackTemplate">
+</div>
+</div>
+<div class="paragraph">
+<p>Create a <a href="http://docs.grails.org/latest/guide/theWebLayer.html#controllers">Grails Controller</a> to handle requests</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A controller fulfills the C in the Model View Controller (MVC) pattern and is responsible for handling web requests. In Grails a controller is a class with a name that ends in the convention "Controller" and lives in the grails-app/controllers directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-controller com.ociweb.quickcasts.Quickcast</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A request to <em><a href="http://localhost:8080/quickcast" class="bare">http://localhost:8080/quickcast</a></em> executes the <code>index</code> action of <code>QuickcastController</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/com/ociweb/quickcasts/QuickcastController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="type">class</span> <span class="class">QuickcastController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">xml</span><span class="delimiter">'</span></span>]
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">quickcasts</span>: Quickcast.findAll()]
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>QuickcastController</code> index method renders every <code>Quickcast</code> using the next <a href="http://views.grails.org/latest/#_markup_views">Markup View</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Markup views allow rendering of XML responses using <a href="http://docs.groovy-lang.org/latest/html/gapi/groovy/text/markup/MarkupTemplateEngine.html">Groovy&#8217;s MarkupTemplateEngine</a></p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/quickcast/index.gml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.ociweb.quickcasts.Quickcast</span>
+
+model {
+    <span class="predefined-type">Iterable</span>&lt;Quickcast&gt; quickcasts
+}
+
+document {
+    stackTemplate {
+        banner {
+            title <span class="local-variable">this</span>.g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">quickcasts.title</span><span class="delimiter">'</span></span>)
+        }
+        collectionList {
+            shelf {
+                section {
+                    quickcasts.each { quickcast -&gt;
+                        lockup(<span class="key">onselect</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">getDocument('quickcast/</span><span class="inline"><span class="inline-delimiter">${</span>quickcast.id<span class="inline-delimiter">}</span></span><span class="content">')</span><span class="delimiter">&quot;</span></span>) {
+                            img(<span class="key">src</span>: quickcast.heroImg, <span class="key">width</span>: <span class="integer">150</span>, <span class="key">height</span>: <span class="integer">226</span>)
+                            title quickcast.title
+                        }
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Markup Views are written in Groovy, end with the file extension <code>gml</code> and reside in the <code>grails-app/views</code> directory.</p>
+</div>
+<div class="paragraph">
+<p>Write a <a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">functional test</a> to test the XML generated is what we expect.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/com/ociweb/quickcasts/QuickcastControllerIndexSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">groovy.xml.XmlUtil</span>
+<span class="keyword">import</span> <span class="include">org.custommonkey.xmlunit.XMLUnit</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+
+<span class="annotation">@Rollback</span>
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">QuickcastControllerIndexSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test stack template is rendered correctly</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">given</span>:
+        <span class="keyword">def</span> expected = <span class="string"><span class="delimiter">'''</span><span class="content">&lt;document&gt;
+    &lt;stackTemplate&gt;
+        &lt;banner&gt;
+            &lt;title&gt;Grails Quickcasts&lt;/title&gt;
+        &lt;/banner&gt;
+        &lt;collectionList&gt;
+            &lt;shelf&gt;
+                &lt;section&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/1')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_interceptor.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;Interceptors - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/2')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_jsonviews.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;JSON Views - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/3')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_multiprojectbuilds.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;Multi-Project Builds - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/4')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_angularscaffolding.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;Angular Scaffolding - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/5')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_retrievingruntimeconfigvalues.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;Retrieving Runtime Config Values - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                    &lt;lockup onselect=&quot;getDocument('quickcast/6')&quot;&gt;
+                        &lt;img src=&quot;http://localhost:8888/quickcast_developinggrailsappswithintellij.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                        &lt;title&gt;Developing Grails Application with IntelliJ IDEA - Grails 3&lt;/title&gt;
+                    &lt;/lockup&gt;
+                &lt;/section&gt;
+            &lt;/shelf&gt;
+        &lt;/collectionList&gt;
+    &lt;/stackTemplate&gt;
+&lt;/document&gt;
+</span><span class="delimiter">'''</span></span>
+        <span class="key">when</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/quickcast</span><span class="delimiter">&quot;</span></span>)
+
+        XMLUnit.setIgnoreWhitespace(<span class="predefined-constant">true</span>)
+        XMLUnit.setNormalizeWhitespace(<span class="predefined-constant">true</span>)
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        XMLUnit.compareXML(XmlUtil.serialize(resp.xml), expected).identical()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To facilitate XML comparison in the tests, we include <code>XMLUnit</code> as a dependency.</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">xmlunit:xmlunit:1.6</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="controllerShow">3.5 Product Template</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/controllerShow.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When we select the first Quickcast, the document residing in <code><a href="http://localhost:8080/quickast/1" class="bare">http://localhost:8080/quickast/1</a></code> is pushed into the navigation stack</p>
+</div>
+<div class="paragraph">
+<p>To render a Quickcast, we use the
+<a href="https://developer.apple.com/library/prerelease/content/documentation/LanguagesUtilities/Conceptual/ATV_Template_Guide/ProductTemplate.html">Apple TVML Product Template</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/productTemplate.png" alt="productTemplate">
+</div>
+</div>
+<div class="paragraph">
+<p>A request to <code><a href="http://localhost:8080/quickcast/1" class="bare">http://localhost:8080/quickcast/1</a></code> executes the <code>show</code> action of <code>QuickcastController</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/com/ociweb/quickcasts/QuickcastController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="type">class</span> <span class="class">QuickcastController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">xml</span><span class="delimiter">'</span></span>]
+
+    <span class="keyword">def</span> relatedQuickcastsService
+    <span class="keyword">def</span> <span class="function">show</span>() {
+        <span class="keyword">def</span> quickcast = Quickcast.get(params.id)
+        <span class="keyword">def</span> relatedQuickcasts = relatedQuickcastsService.findAllRelatedQuickcasts(quickcast)
+        [<span class="key">quickcast</span>: quickcast, <span class="key">relatedQuickcasts</span>: relatedQuickcasts]
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The model passed to our view is the requested Quickcast and a series of related videos.</p>
+</div>
+<div class="paragraph">
+<p>In <code>application.yml</code>, we configure how many related Quickcasts we want to show.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="head"><span class="head">---</span></span>
+<span class="key">ociweb</span>:
+    <span class="key">quickcasts</span>:
+        <span class="key">numberOfRelatedQuickcasts</span>: <span class="string"><span class="content">3</span></span>
+<span class="head"><span class="head">---</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Fetching of related quickcasts is encapsulated in a Service.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/com/ociweb/quickcasts/RelatedQuickcastsService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">RelatedQuickcastsService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    <span class="type">int</span> numberOfRelatedQuickcasts
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        numberOfRelatedQuickcasts = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">ociweb.quickcasts.numberOfRelatedQuickcasts</span><span class="delimiter">'</span></span>, <span class="predefined-type">Integer</span>)
+    }
+
+    <span class="predefined-type">List</span>&lt;Quickcast&gt; findAllRelatedQuickcasts(Quickcast quickcast) {
+        <span class="keyword">def</span> criteria = Quickcast.createCriteria()
+        criteria.list {
+            ne(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, quickcast?.id)
+            maxResults(numberOfRelatedQuickcasts)
+        } <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;Quickcast&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>QuickcastController</code> index method renders a <code>Quickcast</code> using the next <a href="http://views.grails.org/latest/#_markup_views">Markup View</a></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/quickcast/show.gml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.ociweb.quickcasts.Quickcast</span>
+
+model {
+    Quickcast quickcast
+    <span class="predefined-type">Iterable</span>&lt;Quickcast&gt; relatedQuickcasts
+}
+
+document {
+    productTemplate {
+        banner {
+            infoList {
+                info {
+                    header {
+                        title <span class="local-variable">this</span>.g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">quickcast.authors.header</span><span class="delimiter">'</span></span>)
+                    }
+                    quickcast.authors.each { author -&gt;
+                        text <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="delimiter">&quot;</span></span>
+                    }
+                }
+            }
+            stack {
+                title quickcast.title
+                subtitle quickcast.subtitle
+                row {
+                    text <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>quickcast.durationMinutes<span class="inline-delimiter">}</span></span><span class="content">min </span><span class="inline"><span class="inline-delimiter">${</span>quickcast.durationSeconds<span class="inline-delimiter">}</span></span><span class="content">sec</span><span class="delimiter">&quot;</span></span>
+                    text quickcast.releaseYear
+                }
+                description(<span class="key">allowsZooming</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">moreLabel</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">more</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>quickcast.description<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                row {
+                    buttonLockup(<span class="key">onselect</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">playMedia('</span><span class="inline"><span class="inline-delimiter">${</span>quickcast.videoUrl<span class="inline-delimiter">}</span></span><span class="content">', 'video')</span><span class="delimiter">&quot;</span></span>) {
+                        badge(<span class="key">src</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">resource://button-play</span><span class="delimiter">&quot;</span></span>)
+                        title <span class="string"><span class="delimiter">&quot;</span><span class="content">Play</span><span class="delimiter">&quot;</span></span>
+                    }
+                }
+            }
+            heroImg(<span class="key">src</span>: quickcast.heroImg)
+        }
+
+        shelf {
+            header {
+                title <span class="local-variable">this</span>.g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">quickcast.cross.sell.header</span><span class="delimiter">'</span></span>)
+            }
+            section {
+                relatedQuickcasts.each { relatedQuickcast -&gt;
+                    lockup(<span class="key">onselect</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">getDocument('quickcast/</span><span class="inline"><span class="inline-delimiter">${</span>quickcast.id<span class="inline-delimiter">}</span></span><span class="content">')</span><span class="delimiter">&quot;</span></span>) {
+                        img(<span class="key">src</span>: relatedQuickcast.heroImg, <span class="key">width</span>: <span class="integer">150</span>, <span class="key">height</span>: <span class="integer">226</span>)
+                        title relatedQuickcast.title
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With a functional test, we test the XML rendered is what we expected.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/com/ociweb/quickcasts/QuickcastControllerShowSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">groovy.xml.XmlUtil</span>
+<span class="keyword">import</span> <span class="include">org.custommonkey.xmlunit.XMLUnit</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+
+<span class="annotation">@Rollback</span>
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">QuickcastControllerShowSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test product template is rendered correctly</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="keyword">def</span> expected = <span class="string"><span class="delimiter">'''</span><span class="content">&lt;document&gt;
+    &lt;productTemplate&gt;
+        &lt;banner&gt;
+            &lt;infoList&gt;
+                &lt;info&gt;
+                    &lt;header&gt;
+                        &lt;title&gt;Authors&lt;/title&gt;
+                    &lt;/header&gt;
+                    &lt;text&gt;Jeff Scott Brown&lt;/text&gt;
+                &lt;/info&gt;
+            &lt;/infoList&gt;
+            &lt;stack&gt;
+                &lt;title&gt;Interceptors - Grails 3&lt;/title&gt;
+                &lt;subtitle&gt;#1 - Grails Quickcast from OCI&lt;/subtitle&gt;
+                &lt;row&gt;
+                    &lt;text&gt;17min 1sec&lt;/text&gt;
+                    &lt;text&gt;2016&lt;/text&gt;
+                &lt;/row&gt;
+                &lt;description allowsZooming=&quot;true&quot; moreLabel=&quot;more&quot;&gt;This Quickcast assumes only basic familiarity with Groovy (which is pretty darn expressive anyway) and the MVC concept (which you already know). Also serves as an excellent introduction to the interceptor pattern in any language, because Grails' behind-the-scenes legwork lets you focus on the logic of the pattern.&lt;/description&gt;
+                &lt;row&gt;
+                    &lt;buttonLockup onselect=&quot;playMedia('http://localhost:8888/grails_quickcast_1_interceptors.mp4', 'video')&quot;&gt;
+                        &lt;badge src=&quot;resource://button-play&quot;/&gt;
+                        &lt;title&gt;Play&lt;/title&gt;
+                    &lt;/buttonLockup&gt;
+                &lt;/row&gt;
+            &lt;/stack&gt;
+            &lt;heroImg src=&quot;http://localhost:8888/quickcast_interceptor.png&quot;/&gt;
+        &lt;/banner&gt;
+        &lt;shelf&gt;
+            &lt;header&gt;
+                &lt;title&gt;Viewers also Watched&lt;/title&gt;
+            &lt;/header&gt;
+            &lt;section&gt;
+                &lt;lockup onselect=&quot;getDocument('quickcast/1')&quot;&gt;
+                    &lt;img src=&quot;http://localhost:8888/quickcast_jsonviews.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                    &lt;title&gt;JSON Views - Grails 3&lt;/title&gt;
+                &lt;/lockup&gt;
+                &lt;lockup onselect=&quot;getDocument('quickcast/1')&quot;&gt;
+                    &lt;img src=&quot;http://localhost:8888/quickcast_multiprojectbuilds.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                    &lt;title&gt;Multi-Project Builds - Grails 3&lt;/title&gt;
+                &lt;/lockup&gt;
+                &lt;lockup onselect=&quot;getDocument('quickcast/1')&quot;&gt;
+                    &lt;img src=&quot;http://localhost:8888/quickcast_angularscaffolding.png&quot; width=&quot;150&quot; height=&quot;226&quot;/&gt;
+                    &lt;title&gt;Angular Scaffolding - Grails 3&lt;/title&gt;
+                &lt;/lockup&gt;
+            &lt;/section&gt;
+        &lt;/shelf&gt;
+    &lt;/productTemplate&gt;
+&lt;/document&gt;
+</span><span class="delimiter">'''</span></span>
+        <span class="key">when</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/quickcast/1</span><span class="delimiter">&quot;</span></span>)
+
+        XMLUnit.setIgnoreWhitespace(<span class="predefined-constant">true</span>)
+        XMLUnit.setNormalizeWhitespace(<span class="predefined-constant">true</span>)
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        XMLUnit.compareXML(XmlUtil.serialize(resp.xml), expected).identical()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="internationalization">3.6 Internationalization</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/internationalization.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/i18n.html">Internationalization</a> is a first-class citizen in Grails.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Grails supports Internationalization (i18n) out of the box by leveraging the underlying Spring MVC internationalization support. With Grails you are able to customize the text that appears in a view based on the user’s Locale.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>To render such a snippet:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    &lt;title&gt;Authors&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">header&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We use this code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">header {
+    title <span class="local-variable">this</span>.g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">quickcast.authors.header</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Define message codes and default values in <code>messages.properties</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/i18n/messages.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code>resouce.button.play=Play
+quickcast.authors.header=Authors
+quickcast.cross.sell.header=Viewers also Watched
+quickcasts.title=Grails Quickcasts</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Including a Spanish localization is easy. Include the localized message codes in
+<code>messages_es.properties</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/i18n/messages_es.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code>resouce.button.play=Reproducir
+quickcast.authors.header=Autores
+quickcast.cross.sell.header=Otros usuarios también vieron
+quickcasts.title=Grails Quickcasts</code></pre>
+</div>
+</div>
+
+
+<h1 id="runningTheApp">4 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the Grails application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+<div class="paragraph">
+<p>Run the Xcode project and your Apple TvOS app will connect to your Grails Backend.</p>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several Grails services:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3 style="color: #333;">OCI Grails Team includes Grails co-founder and the core development team.
+Gain access to the engineers who developed, matured and maintain Grails</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px;" alt="Grails OCI Team">
+
+<hr/>
+
+<div id="wufoo-z17zxj9n0k6uwsa"><iframe id="wufooFormz17zxj9n0k6uwsa" class="wufoo-form-container" height="536" allowtransparency="true" frameborder="0" scrolling="no" style="width:100%;border:none" src="https://ociweb.wufoo.com/embed/z17zxj9n0k6uwsa/def/embedKey=z17zxj9n0k6uwsa927976&amp;entsource=&amp;referrer=https%3Awuslashwuslashwww.ociweb.comwuslash">&lt;a href="https://ociweb.wufoo.com/forms/z17zxj9n0k6uwsa/" title="html form"&gt;Fill out my Wufoo form!&lt;/a&gt;</iframe></div>
+<script type="text/javascript">var z17zxj9n0k6uwsa;(function(d, t) {
+var s = d.createElement(t), options = {
+'userName':'ociweb',
+'formHash':'z17zxj9n0k6uwsa',
+'autoResize':true,
+'height':'771',
+'async':true,
+'host':'wufoo.com',
+'header':'show',
+'ssl':true};
+s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'www.wufoo.com/scripts/embed/form.js';
+s.onload = s.onreadystatechange = function() {
+var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+try { z17zxj9n0k6uwsa = new WufooForm();z17zxj9n0k6uwsa.initialize(options);z17zxj9n0k6uwsa.display(); } catch (e) {}};
+var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+})(document, 'script');</script>
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-tvmlapp"><img src="https://travis-ci.org/grails-guides/grails-tvmlapp.svg?branch=master" /></a></div>            
+                        
+                <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-tvmlapp">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-tvmlapp.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-tvmlapp.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-tvmlapp'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-tvmlapp.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-tvmlapp/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#architecture"><strong>1.1</strong><span>Architecture</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.2</strong><span>What you will need</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.3</strong><span>How to complete the guide</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingTheTvOSApp"><strong>2</strong><span>Writing the TVML Client</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the TVML Grails Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#tvmlUtils"><strong>3.1</strong><span>TVMLKit JS Utils</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#tvBootURL"><strong>3.2</strong><span>TV Boot Url</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#domainClass"><strong>3.3</strong><span>Domain class</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#controllerIndex"><strong>3.4</strong><span>Stack Template</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#controllerShow"><strong>3.5</strong><span>Product Template</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#internationalization"><strong>3.6</strong><span>Internationalization</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+                    
+                    <div style="clear:both" ></div>
+                </div>
+                                    
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+            
+        </div>
+
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+    </body>
+</html>
