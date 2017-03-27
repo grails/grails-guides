@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.2.1 The Find By Title Endpoint</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/setupData.html"><strong>2</strong><span>Populating the Data Model</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/configuration.html"><strong>3</strong><span>Configure GORM for Neo4j</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>4</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/configuration.html">&lt;&lt; <strong>3</strong><span>Configure GORM for Neo4j</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="byTitleEndpoint">4.2.1 The Find By Title Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/neo4j-movies/edit/master/src/main/docs/guide/byTitleEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The implement finding a <code>Movie</code> by title we&#8217;re first going to create a <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#dataServices">GORM Data Service</a> called <code>MovieService</code> to encapsulate the data access logic and interaction with Neo4j.</p>
+</div>
+<div class="paragraph">
+<p>You can do so with the <code>grails</code> CLI or via your favourite text editor or IDE by creating a class within the <code>grails-app/services/neo4j/movies</code> directory whose name ends with <code>Service</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-service neo4j.movies.MovieService</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make the service <code>abstract</code> and add the <code>@Service</code> annotation to it to tell GORM that the service should be implemented automatically:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/neo4j/movies/MovieService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Movie)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">MovieService</span> {
+   ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now add an <code>abstract</code> method called <code>find</code> to the <code>MovieService</code> that takes the <code>title</code> as an argument:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/neo4j/movies/MovieService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">cast</span><span class="delimiter">'</span></span>)
+<span class="directive">abstract</span> Movie find(<span class="predefined-type">String</span> title)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The method will be automatically implemented for you by GORM, but note that we use the <code>@Join</code> annotation to indicate we want to fetch the <code>cast</code> association using the same query.</p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s implement the controller action that will invoke this method. First inject the service into the <code>MovieController</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/neo4j/movies/MovieController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">MovieService movieService</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This uses Spring to inject the dependency and make the service implementation available. Next add an action called <code>show</code> that invokes the <code>find</code> method and responds with the result:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/neo4j/movies/MovieController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">String</span> title) {
+    respond movieService.find(title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you now run the application and go to <code><a href="http://localhost:8080/movie/The%20Matrix%20Reloaded" class="bare">http://localhost:8080/movie/The%20Matrix%20Reloaded</a></code> you will see a response as follows (shortened for brevity):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">cast</span><span class="delimiter">&quot;</span></span>: [<span class="error">.</span><span class="error">.</span><span class="error">.</span>],
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">9</span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">released</span><span class="delimiter">&quot;</span></span>: <span class="integer">2003</span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">tagline</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Free your mind</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix Reloaded</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you wish to debug the Cypher query GORM executed then enable debug logging for the <code>org.grails.datastore.gorm.neo4j</code> package in <code>grails-app/conf/logback.groovy</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Although valid JSON, unfortunately this is not the exact format required to implement the Neo4j example application.</p>
+</div>
+<div class="paragraph">
+<p>To customize the JSON create a <code>grails-app/views/movie/_movie.gson</code> <a href="http://views.grails.org/latest/">JSON View</a> and populate it with the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/movie/_movie.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.Field</span>
+<span class="keyword">import</span> <span class="include">neo4j.movies.Movie</span>
+
+<span class="annotation">@Field</span> Movie movie <i class="conum" data-value="1"></i><b>(1)</b>
+
+json {
+    title movie.title <i class="conum" data-value="2"></i><b>(2)</b>
+    cast tmpl.cast( <span class="string"><span class="delimiter">'</span><span class="content">castMember</span><span class="delimiter">'</span></span>, movie.cast ) <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define the <code>movie</code> to be rendered in the model</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Output the <code>Movie</code> title as JSON</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Render another template for each member of the cast</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The call to <code>tmpl.cast(..)</code> requires the definition of a second template. The template namespace uses the method name to invoke a template of the same of name. So in this case we need to create a <code>grails-app/views/movies/_cast.gson</code> template.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/movie/_cast.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.Field</span>
+<span class="keyword">import</span> <span class="include">neo4j.movies.CastMember</span>
+
+<span class="annotation">@Field</span> CastMember castMember
+
+json {
+    job castMember.type.split(<span class="string"><span class="delimiter">&quot;</span><span class="content">_</span><span class="delimiter">&quot;</span></span>)[<span class="integer">0</span>].toLowerCase()
+    name castMember.from.name
+    role castMember.roles
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>_cast.gson</code> template formats the <code>CastMember</code> relationship as JSON in the required format. Now if you run the application and visit the same URL as previously described, the resulting output is in the correct JSON format (shortened for brevity):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix Reloaded</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">cast</span><span class="delimiter">&quot;</span></span>: [
+    {
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">job</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">acted</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Carrie-Anne Moss</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">role</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Trinity</span><span class="delimiter">&quot;</span></span>
+      ]
+    },
+    {
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">job</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">acted</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu Reeves</span><span class="delimiter">&quot;</span></span>,
+      <span class="key"><span class="delimiter">&quot;</span><span class="content">role</span><span class="delimiter">&quot;</span></span>: [
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>
+      ]
+    },
+    <span class="error">.</span><span class="error">.</span><span class="error">.</span>
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the first endpoint done, let&#8217;s implement search!</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/configuration.html">&lt;&lt; <strong>3</strong><span>Configure GORM for Neo4j</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/neo4j-movies"><img src="https://travis-ci.org/grails-guides/neo4j-movies.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/neo4j-movies">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/neo4j-movies.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/neo4j-movies.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/neo4j-movies'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/neo4j-movies.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/neo4j-movies/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
