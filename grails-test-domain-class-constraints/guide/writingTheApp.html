@@ -326,8 +326,7 @@ want this property to be required and with a max length of 255 characters.</p>
 
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test name can have a maximum of 255 characters</span><span class="delimiter">&quot;</span></span>() {
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
-    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">256</span>
     <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: str)
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation fails</span><span class="delimiter">'</span></span>
@@ -335,8 +334,7 @@ want this property to be required and with a max length of 255 characters.</p>
     hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
-    str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    <span class="integer">255</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+    str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">255</span>
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation passes</span><span class="delimiter">'</span></span>
     <span class="keyword">new</span> Hotel(<span class="key">name</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
@@ -357,8 +355,7 @@ want this property to be either a valid url or a null or blank value.</p>
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> urlprefifx = <span class="string"><span class="delimiter">'</span><span class="content">http://</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> urlsufifx = <span class="string"><span class="delimiter">'</span><span class="content">.com</span><span class="delimiter">'</span></span>
-    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    (<span class="integer">256</span> - (urlprefifx.size() + urlsufifx.size())).times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*(<span class="integer">256</span> - (urlprefifx.size() + urlsufifx.size()))
     str = urlprefifx + str + urlsufifx
     <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">url</span>: str)
 
@@ -367,9 +364,7 @@ want this property to be either a valid url or a null or blank value.</p>
     hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
-    str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    (<span class="integer">255</span> - (urlprefifx.size() + urlsufifx.size())).times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
-    str = urlprefifx + str + urlsufifx
+    str = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>urlprefifx<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span><span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*(<span class="integer">255</span> - (urlprefifx.size() + urlsufifx.size()))<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>urlsufifx<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">url validation passes</span><span class="delimiter">'</span></span>
     <span class="keyword">new</span> Hotel(<span class="key">url</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
@@ -466,8 +461,7 @@ to 255 characters. We used the <code>mapping</code> block in our domain class to
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test about can have a more than 255 characters</span><span class="delimiter">&quot;</span></span>() {
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
-    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-    <span class="integer">256</span>.times { str += <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> }
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">256</span>
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">about validation passes</span><span class="delimiter">'</span></span>
     <span class="keyword">new</span> Hotel(<span class="key">about</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
