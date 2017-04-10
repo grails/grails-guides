@@ -1,0 +1,65 @@
+ext {
+    grailsNavRepo = 'https://raw.githubusercontent.com/grails/grails-navbar/master'    
+}
+
+task downloadNavbarStylesheets {
+    ext {
+        grailsNavStylesheets = ['font-awesome.min.css', 'navbar.css', 'stMenu.css']
+        resourceStylesheets = 'src/main/resources/css'
+    }
+    doLast {
+        for(String stylesheet : grailsNavStylesheets) {
+            ant.get(src: "${grailsNavRepo}/assets/stylesheets/${stylesheet}", dest: file("${resourceStylesheets}/${stylesheet}"))
+        }
+    }
+}
+
+task downloadNavbarImages {
+    ext {
+        resourceImages = 'src/main/resources/img'
+        grailsNavImages = ['grails-cupsonly-logo-white.svg']
+    }
+    doLast {
+        for(String image : grailsNavImages) {
+             ant.get(src: "${grailsNavRepo}/assets/images/${image}", dest: file("${resourceImages}/${image}"))
+        }
+    }
+}
+
+task downloadNavbarJavascripts {
+    ext {
+        resourceJavascripts = 'src/main/resources/js'
+        grailsNavJavascripts = ['classie.js', 'navbar.js', 'sidebarEffects.js']
+    }
+    doLast {
+        for(String js : grailsNavJavascripts) {
+             ant.get(src: "${grailsNavRepo}/assets/javascripts/${js}", dest: file("${resourceJavascripts}/${js}"))
+        }
+    }
+}
+
+task downloadNavbarFonts {
+    ext {
+        resourceFonts = 'src/main/resources/fonts'
+        grailsNavFonts = [
+            'FontAwesome.otf', 
+            'fontawesome-webfont.eot', 
+            'fontawesome-webfont.svg', 
+            'fontawesome-webfont.ttf', 
+            'fontawesome-webfont.woff',                         
+            'fontawesome-webfont.woff2',                                 
+        ]
+    }
+    doLast {
+        for(String font : grailsNavFonts) {
+             ant.get(src: "${grailsNavRepo}/assets/fonts/${font}", dest: file("${resourceFonts}/${font}"))
+        }
+    }
+}
+
+task downloadNavbarAssets {
+    dependsOn 'downloadNavbarStylesheets'
+    dependsOn 'downloadNavbarImages'
+    dependsOn 'downloadNavbarJavascripts'
+    dependsOn 'downloadNavbarFonts'
+}
