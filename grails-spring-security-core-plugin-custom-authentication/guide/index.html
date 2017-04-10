@@ -1,0 +1,1216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Grails Spring Security Core Plugin Custom Authentication</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+
+        <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />        
+        <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+        <link rel="stylesheet" type="text/css" href="../css/stMenu.css" />      
+
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <a href="https://github.com/grails/grails-core" target="_blank">
+            <div id="fork-me">
+                <p>Fork me on Github</p>
+            </div>
+        </a> 
+        <div id="st-container" class="st-container st-effect-9">
+            <nav class="st-menu st-effect-9" id="menu-12">
+                <h2 class="icon icon-lab">Socialize</h2><ul>
+                    <li>
+                        <a href="mailing-lists.html" class="icon"><span class="fa fa-envelope"></span> Discuss on the Mailing List</a>
+                    </li>
+                    <li>
+                        <a href="http://slack-signup.grails.org" class="icon"><span class="fa fa-slack"></span> Discuss on Slack</a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/grailsframework" class="icon"><span class="fa fa-twitter"></span> Grails on Twitter</a>
+                    </li>
+                    <li>
+                        <a href="events.html" class="icon"><span class="fa fa-calendar"></span> Events and conferences</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/grails/grails-core" class="icon"><span class="fa fa-github"></span> Source code on GitHub</a>
+                    </li>
+                    <li>
+                        <a href="contribute.html#reporting-issues" class="icon"><span class="fa fa-bug"></span> Report issues on Github</a>
+                    </li>
+                    <li>
+                        <a href="http://stackoverflow.com/questions/tagged/grails" class="icon"><span class="fa fa-stack-overflow"></span> Stack Overflow questions</a>
+                    </li>
+                </ul>
+            </nav>
+                <div class="st-pusher">
+                <div class="st-content">
+                    <div class="st-content">
+                        <div>
+                            <div class="navbar navbar-default navbar-static-top" role="navigation">
+                                <div class="container">
+                                    <div class="navbar-header">
+                                        <a class="navbar-brand" href="http://grails.org/index.html"><i class="fa grails-icon"><img src="../img/grails-cupsonly-logo-white.svg"></i> Grails</a>
+                                    </div>
+                                    <a id="nav-icon" href="javascript:toggleNavIcon();">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </a>
+                                    <div class="navbar-collapse collapse">
+                                        <ul id="navbar-nav" class="nav navbar-nav navbar-right closemobile">
+                                            <li><a href="http://grails.org/learn.html">Learn</a></li>
+                                            <li><a href="http://guides.grails.org">Guides</a></li>
+                                            <li><a href="http://grails.org/documentation.html">Documentation</a></li>
+                                            <li><a href="http://grails.org/download.html">Download</a></li>
+                                            <li><a href="http://plugins.grails.org">Plugins</a></li>
+                                            <li><a href="http://grails.org/community.html">Community</a></li>
+                                            <li><a href="http://grails.org/support.html">Support</a></li>
+                                            <li><a data-effect="st-effect-9" class="st-trigger" href="#">Socialize</a></li>
+                                            <li><a href="http://grails.org/search.html"><i class="fa fa-search"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>    
+                            </div>    
+    
+                            <table id="colset" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="col1">
+                                        <div id="main" class="corner-all">
+
+                                            <div class="project">
+                                                <h1>Grails Spring Security Core Plugin Custom Authentication</h1>
+                                                <p></p>
+                                                <p>Shows how to create a custom authentication with Spring Security Core Plugin</p>
+                                                <p><strong>Authors:</strong> Sergio del Amo</p>
+                                                <p><strong>Grails Version:</strong> 3.2.8</p>
+
+                                            </div>
+
+                                            
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you are going to write a custom authentication mechanism.
+Spring Security Plugin allows for a significant degree of customization which we are going to explore next.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication.git" class="bare">https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-spring-security-core-plugin-custom-authentication/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-spring-security-core-plugin-custom-authentication/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">2 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When we talk about two-factor authentication we often think about two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Something the user knows (e.g. username/password)</p>
+</li>
+<li>
+<p>Something the user has.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For the latter, in Spain, banks often issue a <a href="https://es.wikipedia.org/wiki/Tarjeta_de_coordenadas">Coordinate Card</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/caja_espagna_coordenadas.jpg" alt="caja espagna coordenadas">
+</div>
+</div>
+<div class="paragraph">
+<p>Users need to enter username, password and a coordinate to login into their bank.</p>
+</div>
+<div class="paragraph">
+<p>We are going to customize <a href="https://grails-plugins.github.io/grails-spring-security-core/v3/index.html">Spring Security Core Plugin</a>
+to achieve such a login in a Grails 3 application.</p>
+</div>
+<div class="paragraph">
+<p>First, We need to add Spring Security Core Plugin as a dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.1.1</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="domainClasses">2.1 Domain Classes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/domainClasses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Use <code>s2-quickstart</code> to generate the default Spring Security Core domain classes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">grails s2-quickstart demo User Role</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>Role</code> and <code>UserRole</code>. Service injection in GORM entities is disabled by default since Grails 3.2.8. Because of that, if you want the service <code>springSecurityService</code> to get injected
+in the <code>User</code> domain class you would need to turn on <code>autowire</code>.  Another option would be to move the password encoding logic outside of the domain class.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="error">#</span> Whether to autowire entities.
+        <span class="error">#</span> Disabled by <span class="keyword">default</span> <span class="keyword">for</span> performance reasons.
+        autowire: <span class="predefined-constant">true</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each user is going to have a coordinate card. Thus we have modified the User domain class slightly:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/User.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+        <span class="directive">transient</span> springSecurityService
+
+        <span class="predefined-type">String</span> username
+        <span class="predefined-type">String</span> password
+        <span class="type">boolean</span> enabled = <span class="predefined-constant">true</span>
+        <span class="type">boolean</span> accountExpired
+        <span class="type">boolean</span> accountLocked
+        <span class="type">boolean</span> passwordExpired
+        <span class="directive">static</span> hasMany = [<span class="key">coordinates</span>: SecurityCoordinate]
+
+        <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt; getAuthorities() {
+                UserRole.findAllByUser(<span class="local-variable">this</span>)*.role
+        }
+
+        <span class="keyword">def</span> <span class="function">beforeInsert</span>() {
+                encodePassword()
+        }
+
+        <span class="keyword">def</span> <span class="function">beforeUpdate</span>() {
+                <span class="keyword">if</span> (isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)) {
+                        encodePassword()
+                }
+        }
+
+        <span class="directive">protected</span> <span class="type">void</span> encodePassword() {
+                password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+        }
+
+        <span class="directive">static</span> transients = [<span class="string"><span class="delimiter">'</span><span class="content">springSecurityService</span><span class="delimiter">'</span></span>]
+
+        <span class="directive">static</span> constraints = {
+                password <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">password</span>: <span class="predefined-constant">true</span>
+                username <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        }
+
+        <span class="directive">static</span> mapping = {
+                password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/SecurityCoordinate.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">SecurityCoordinate</span> {
+    <span class="predefined-type">String</span> position
+    <span class="predefined-type">String</span> value
+    <span class="directive">static</span> belongsTo = [<span class="key">user</span>: User]
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="securedController">2.2 Secured Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/securedController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This controller is restricted to users with role <code>ROLE_CLIENT</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BankController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+
+<span class="type">class</span> <span class="class">BankController</span> {
+
+    <span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>])
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        render <span class="string"><span class="delimiter">'</span><span class="content">Welcome to your bank</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="seedData">2.3 Seed Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/seedData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to populate our database with some seed data:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="directive">static</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; BANKCARD =
+            [<span class="string"><span class="delimiter">'</span><span class="content">A1</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">10</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A2</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">84</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A3</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">93</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A4</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">12</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A5</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">92</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">A6</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">58</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A7</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">38</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A8</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">28</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A9</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">36</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A10</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">02</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">B1</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">99</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B2</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">29</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B3</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">10</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B4</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">23</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B5</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">33</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">B6</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">47</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B7</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">58</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B8</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">39</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B9</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">34</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">B10</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">18</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">C1</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">28</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C2</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">05</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C3</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">29</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C4</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">03</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C5</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">94</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">C6</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">14</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C7</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">41</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C8</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">33</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C9</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">11</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">C10</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">39</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">D1</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">01</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D2</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">49</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D3</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">39</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D4</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">79</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D5</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">53</span><span class="delimiter">'</span></span>,
+             <span class="string"><span class="delimiter">'</span><span class="content">D6</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">38</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D7</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">17</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D8</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">88</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D9</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">70</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">D10</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">12</span><span class="delimiter">'</span></span>
+            ]
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="keyword">def</span> authorities = [<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>]
+        authorities.each {
+            <span class="keyword">if</span> ( !<span class="predefined-type">Role</span>.findByAuthority(<span class="local-variable">it</span>) ) {
+                <span class="keyword">new</span> <span class="predefined-type">Role</span>(<span class="key">authority</span>: <span class="local-variable">it</span>).save()
+            }
+        }
+        <span class="keyword">if</span> ( !User.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>) ) {
+            <span class="keyword">def</span> u = <span class="keyword">new</span> User(<span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+            BANKCARD.each { k, v -&gt;
+                u.addToCoordinates(<span class="keyword">new</span> SecurityCoordinate(<span class="key">position</span>: k, <span class="key">value</span>: v, <span class="key">user</span>: u))
+            }
+            u.save()
+            <span class="keyword">def</span> ur = <span class="keyword">new</span> UserRole(<span class="key">user</span>: u, <span class="key">role</span>:  <span class="predefined-type">Role</span>.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>))
+            ur.save()
+        }
+    }
+
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="customLoginForm">2.4 Custom Login Form</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/customLoginForm.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We override, both <a href="https://github.com/grails-plugins/grails-spring-security-core/blob/master/grails-app/controllers/grails/plugin/springsecurity/LoginController.groovy">LoginController</a> and <a href="https://github.com/grails-plugins/grails-spring-security-core/blob/master/grails-app/views/login/auth.gsp">auth.gsp</a>, to display a random
+coordinate field each time the user is directed to the login form.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/LoginController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+
+<span class="type">class</span> <span class="class">LoginController</span> <span class="directive">extends</span> grails.plugin.springsecurity.LoginController <span class="directive">implements</span> GrailsConfigurationAware {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; coordinatePositions
+
+    <span class="keyword">def</span> <span class="function">auth</span>() {
+
+        <span class="keyword">def</span> conf = getConf()
+
+        <span class="keyword">if</span> (springSecurityService.isLoggedIn()) {
+            redirect <span class="key">uri</span>: conf.successHandler.defaultTargetUrl
+            <span class="keyword">return</span>
+        }
+
+        <span class="predefined-type">Collections</span>.shuffle(coordinatePositions)
+        <span class="keyword">def</span> position = coordinatePositions.first()
+
+        <span class="predefined-type">String</span> postUrl = request.contextPath + conf.apf.filterProcessesUrl
+        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">auth</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">postUrl</span>: postUrl,
+                                     <span class="key">rememberMeParameter</span>: conf.rememberMe.parameter,
+                                     <span class="key">usernameParameter</span>: conf.apf.usernameParameter,
+                                     <span class="key">passwordParameter</span>: conf.apf.passwordParameter,
+                                     <span class="key">gspLayout</span>: conf.gsp.layoutAuth,
+                                     <span class="key">position</span>: position]
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        coordinatePositions = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">security.coordinate.positions</span><span class="delimiter">'</span></span>, <span class="predefined-type">List</span>, <span class="type">[]</span>) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have a list of valid positions as a configuration list in <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">security</span>:
+    <span class="key">coordinate</span>:
+        <span class="key">positions</span>:
+            - A1
+            - A2
+            - A3
+            - A4
+            - A5
+            - A6
+            - A7
+            - A8
+            - A9
+            - A10
+            - B1
+            - B2
+            - B3
+            - B4
+            - B5
+            - A6
+            - A7
+            - B8
+            - B9
+            - B10
+            - C1
+            - C2
+            - C3
+            - C4
+            - C5
+            - C6
+            - C7
+            - C8
+            - C9
+            - C10
+            - D1
+            - D2
+            - D3
+            - D4
+            - D5
+            - D6
+            - D7
+            - D8
+            - D9
+            - D10</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The overriden GSP file displays the coordinate position input field</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/login.png" alt="login">
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/login/auth.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+&lt;head&gt;
+    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>gspLayout ?: <span class="string"><span class="delimiter">'</span><span class="content">main</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+    &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.title</span><span class="delimiter">'</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;style type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text/css</span><span class="delimiter">&quot;</span></span> media=<span class="string"><span class="delimiter">&quot;</span><span class="content">screen</span><span class="delimiter">&quot;</span></span>&gt;
+    <span class="error">#</span>login {
+        <span class="key">margin</span>: <span class="integer">15</span>px <span class="integer">0</span>px;
+        <span class="key">padding</span>: <span class="integer">0</span>px;
+        text-<span class="key">align</span>: center;
+    }
+
+    <span class="error">#</span>login .inner {
+        <span class="key">width</span>: <span class="integer">340</span>px;
+        padding-<span class="key">bottom</span>: <span class="integer">6</span>px;
+        <span class="key">margin</span>: <span class="integer">60</span>px auto;
+        text-<span class="key">align</span>: left;
+        <span class="key">border</span>: <span class="integer">1</span>px solid <span class="error">#</span>aab;
+        background-<span class="key">color</span>: <span class="error">#</span>f0f0fa;
+        -moz-box-<span class="key">shadow</span>: <span class="integer">2</span>px <span class="integer">2</span>px <span class="integer">2</span>px <span class="error">#</span>eee;
+        -webkit-box-<span class="key">shadow</span>: <span class="integer">2</span>px <span class="integer">2</span>px <span class="integer">2</span>px <span class="error">#</span>eee;
+        -khtml-box-<span class="key">shadow</span>: <span class="integer">2</span>px <span class="integer">2</span>px <span class="integer">2</span>px <span class="error">#</span>eee;
+        box-<span class="key">shadow</span>: <span class="integer">2</span>px <span class="integer">2</span>px <span class="integer">2</span>px <span class="error">#</span>eee;
+    }
+
+    <span class="error">#</span>login .inner .fheader {
+        <span class="key">padding</span>: <span class="integer">18</span>px <span class="integer">26</span>px <span class="integer">14</span>px <span class="integer">26</span>px;
+        background-<span class="key">color</span>: <span class="error">#</span>f7f7ff;
+        <span class="key">margin</span>: <span class="integer">0</span>px <span class="integer">0</span> <span class="integer">14</span>px <span class="integer">0</span>;
+        <span class="key">color</span>: <span class="error">#</span><span class="float">2e3741</span>;
+        font-<span class="key">size</span>: <span class="integer">18</span>px;
+        font-<span class="key">weight</span>: bold;
+    }
+
+    <span class="error">#</span>login .inner .cssform p {
+        <span class="key">clear</span>: left;
+        <span class="key">margin</span>: <span class="integer">0</span>;
+        <span class="key">padding</span>: <span class="integer">4</span>px <span class="integer">0</span> <span class="integer">3</span>px <span class="integer">0</span>;
+        padding-<span class="key">left</span>: <span class="integer">105</span>px;
+        margin-<span class="key">bottom</span>: <span class="integer">20</span>px;
+        <span class="key">height</span>: <span class="integer">1</span>%;
+    }
+
+    <span class="error">#</span>login .inner .cssform input[type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>] {
+        <span class="key">width</span>: <span class="integer">120</span>px;
+    }
+
+    <span class="error">#</span>login .inner .cssform label {
+        font-<span class="key">weight</span>: bold;
+        <span class="type">float</span>: left;
+        text-<span class="key">align</span>: right;
+        margin-<span class="key">left</span>: -<span class="integer">105</span>px;
+        <span class="key">width</span>: <span class="integer">110</span>px;
+        padding-<span class="key">top</span>: <span class="integer">3</span>px;
+        padding-<span class="key">right</span>: <span class="integer">10</span>px;
+    }
+
+    <span class="error">#</span>login <span class="error">#</span>remember_me_holder {
+        padding-<span class="key">left</span>: <span class="integer">120</span>px;
+    }
+
+    <span class="error">#</span>login <span class="error">#</span>submit {
+        margin-<span class="key">left</span>: <span class="integer">15</span>px;
+    }
+
+    <span class="error">#</span>login <span class="error">#</span>remember_me_holder label {
+        <span class="type">float</span>: none;
+        margin-<span class="key">left</span>: <span class="integer">0</span>;
+        text-<span class="key">align</span>: left;
+        <span class="key">width</span>: <span class="integer">200</span>px
+    }
+
+    <span class="error">#</span>login .inner .login_message {
+        <span class="key">padding</span>: <span class="integer">6</span>px <span class="integer">25</span>px <span class="integer">20</span>px <span class="integer">25</span>px;
+        <span class="key">color</span>: <span class="error">#</span>c33;
+    }
+
+    <span class="error">#</span>login .inner .text_ {
+        <span class="key">width</span>: <span class="integer">120</span>px;
+    }
+
+    <span class="error">#</span>login .inner .chk {
+        <span class="key">height</span>: <span class="integer">12</span>px;
+    }
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">style&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>
+&lt;body&gt;
+&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">login</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">inner</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">div</span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">fheader</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="class">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.header</span><span class="delimiter">'</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>
+        &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">'</span><span class="content">${flash.message}</span><span class="delimiter">'</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">login_message</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>
+        &lt;form action=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>postUrl ?: <span class="string"><span class="delimiter">'</span><span class="content">/login/authenticate</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> method=<span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">loginForm</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">cssform</span><span class="delimiter">&quot;</span></span> <span class="class">autocomplete</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">off</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;p&gt;
+                &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.username.label</span><span class="delimiter">'</span></span>/&gt;:&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text_</span><span class="delimiter">&quot;</span></span> <span class="class">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>usernameParameter ?: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>
+            &lt;p&gt;
+                &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.password.label</span><span class="delimiter">'</span></span>/&gt;:&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text_</span><span class="delimiter">&quot;</span></span> <span class="class">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>passwordParameter ?: <span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>
+            &lt;p&gt;
+                &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">coordinateValue</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{position}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">hidden</span><span class="delimiter">&quot;</span></span> name=<span class="string"><span class="delimiter">&quot;</span><span class="content">coordinatePosition</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">coordinatePosition</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>position<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text_</span><span class="delimiter">&quot;</span></span> <span class="class">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">coordinateValue</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">coordinateValue</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>
+            &lt;p id=<span class="string"><span class="delimiter">&quot;</span><span class="content">remember_me_holder</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">checkbox</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">chk</span><span class="delimiter">&quot;</span></span> <span class="class">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>rememberMeParameter ?: <span class="string"><span class="delimiter">'</span><span class="content">remember-me</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">remember_me</span><span class="delimiter">&quot;</span></span> &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">'</span><span class="content">${hasCookie}</span><span class="delimiter">'</span></span>&gt;checked=<span class="string"><span class="delimiter">&quot;</span><span class="content">checked</span><span class="delimiter">&quot;</span></span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span><span class="delimiter">/</span></span>&gt;
+                &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">remember_me</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.remember.me.label</span><span class="delimiter">'</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>
+            &lt;p&gt;
+                &lt;input type=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.button</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">form&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;script&gt;
+    (function() {
+        document.forms[<span class="string"><span class="delimiter">'</span><span class="content">loginForm</span><span class="delimiter">'</span></span>].elements[<span class="string"><span class="delimiter">'</span><span class="content">${usernameParameter ?: </span><span class="delimiter">'</span></span>username<span class="string"><span class="delimiter">'</span><span class="content">}</span><span class="delimiter">'</span></span>].focus();
+    })();
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">script&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="authenticationProvider">2.5 Authentication Provider</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/authenticationProvider.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a Custom <code>AuthenticationProvider</code> implementation. That it is a class which implements:</p>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.security.authentication.AuthenticationProvider</code></p>
+</div>
+<div class="paragraph">
+<p>You will normally:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Either extend one that it is similar. For example, <code>DaoAuthenticationProvider</code> which comes with the plugin.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.security.authentication.dao.DaoAuthenticationProvider</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Or directly implement the <code>AuthenticationProvider</code> interface</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this guide, we choose the first option.</p>
+</div>
+<div class="paragraph">
+<p>However, Let&#8217;s start with the artifact we are going to use to validate the coordinate supplied by the user.
+In this guide, we use a Grails Service.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/CoordinateValidator.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">interface</span> CoordinateValidator {
+
+    <span class="type">boolean</span> isValidValueForPositionAndUserName(<span class="predefined-type">String</span> value, <span class="predefined-type">String</span> position, <span class="predefined-type">String</span> username)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/CoordinateValidatorService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CoordinateValidatorService</span> <span class="directive">implements</span> CoordinateValidator {
+
+    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> isValidValueForPositionAndUserName(<span class="predefined-type">String</span> v, <span class="predefined-type">String</span> p, <span class="predefined-type">String</span> name) {
+        SecurityCoordinate.where {
+            position == p &amp;&amp; value == v &amp;&amp; user.username == name
+        }.count() <span class="keyword">as</span> <span class="type">boolean</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to inject this service as a bean in our custom authentication provider. In order to do that, we register the bean first</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">coordinateValidator(CoordinateValidatorService)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We extend the <code>DaoAuthenticationProvider</code> to add our extra check.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/TwoFactorAuthenticationProvider.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.authentication.BadCredentialsException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.authentication.UsernamePasswordAuthenticationToken</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.authentication.dao.DaoAuthenticationProvider</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.AuthenticationException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TwoFactorAuthenticationProvider</span> <span class="directive">extends</span> DaoAuthenticationProvider {
+
+    CoordinateValidator coordinateValidator
+
+    <span class="directive">protected</span> <span class="type">void</span> additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication)
+            <span class="directive">throws</span> <span class="exception">AuthenticationException</span> {
+
+        <span class="local-variable">super</span>.additionalAuthenticationChecks(userDetails, authentication)
+
+        <span class="predefined-type">Object</span> details = authentication.details
+
+        <span class="keyword">if</span> ( !(details <span class="keyword">instanceof</span> TwoFactorAuthenticationDetails) ) {
+            logger.debug(<span class="string"><span class="delimiter">&quot;</span><span class="content">Authentication failed: authenticationToken principal is not a TwoFactorPrincipal</span><span class="delimiter">&quot;</span></span>);
+            <span class="keyword">throw</span> <span class="keyword">new</span> BadCredentialsException(messages.getMessage(
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">AbstractUserDetailsAuthenticationProvider.badCredentials</span><span class="delimiter">&quot;</span></span>,
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">Bad credentials</span><span class="delimiter">&quot;</span></span>));
+        }
+        <span class="keyword">def</span> twoFactorAuthenticationDetails = details <span class="keyword">as</span> TwoFactorAuthenticationDetails
+
+
+        <span class="keyword">if</span> ( !coordinateValidator.isValidValueForPositionAndUserName(twoFactorAuthenticationDetails.coordinateValue, twoFactorAuthenticationDetails.coordinatePosition, authentication.name) ) {
+            logger.debug(<span class="string"><span class="delimiter">&quot;</span><span class="content">Authentication failed: coordiante note valid</span><span class="delimiter">&quot;</span></span>);
+            <span class="keyword">throw</span> <span class="keyword">new</span> BadCredentialsException(messages.getMessage(
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">AbstractUserDetailsAuthenticationProvider.badCredentials</span><span class="delimiter">&quot;</span></span>,
+                    <span class="string"><span class="delimiter">&quot;</span><span class="content">Bad credentials</span><span class="delimiter">&quot;</span></span>));
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We need to register our custom <code>AuthenticationProvider</code> as a bean.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">twoFactorAuthenticationProvider(TwoFactorAuthenticationProvider) {
+    coordinateValidator = ref(<span class="string"><span class="delimiter">'</span><span class="content">coordinateValidator</span><span class="delimiter">'</span></span>)
+    userDetailsService = ref(<span class="string"><span class="delimiter">'</span><span class="content">userDetailsService</span><span class="delimiter">'</span></span>)
+    passwordEncoder = ref(<span class="string"><span class="delimiter">'</span><span class="content">passwordEncoder</span><span class="delimiter">'</span></span>)
+    userCache = ref(<span class="string"><span class="delimiter">'</span><span class="content">userCache</span><span class="delimiter">'</span></span>)
+    saltSource = ref(<span class="string"><span class="delimiter">'</span><span class="content">saltSource</span><span class="delimiter">'</span></span>)
+    preAuthenticationChecks = ref(<span class="string"><span class="delimiter">'</span><span class="content">preAuthenticationChecks</span><span class="delimiter">'</span></span>)
+    postAuthenticationChecks = ref(<span class="string"><span class="delimiter">'</span><span class="content">postAuthenticationChecks</span><span class="delimiter">'</span></span>)
+    authoritiesMapper = ref(<span class="string"><span class="delimiter">'</span><span class="content">authoritiesMapper</span><span class="delimiter">'</span></span>)
+    hideUserNotFoundExceptions = <span class="predefined-constant">true</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Moreover, we want to use our <code>TwoFactorAuthenticationProvider</code> instead of  <code>DaoAuthenticationProvider</code>.
+In order to do that, we define the providers which should be use to authenticate:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.plugin.springsecurity.providerNames = [
+                <span class="string"><span class="delimiter">'</span><span class="content">twoFactorAuthenticationProvider</span><span class="delimiter">'</span></span>,
+                <span class="string"><span class="delimiter">'</span><span class="content">anonymousAuthenticationProvider</span><span class="delimiter">'</span></span>,
+                <span class="string"><span class="delimiter">'</span><span class="content">rememberMeAuthenticationProvider</span><span class="delimiter">'</span></span>]</code></pre>
+</div>
+</div>
+
+
+<h2 id="authentication">2.6 Authentication</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/authentication.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In order to create a custom authentication, we often need a custom <code>Authentication</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.security.core.Authentication</code></p>
+</div>
+<div class="paragraph">
+<p>Authentication represents the token for an authentication request or an authenticated principal
+once the request has been processed by the method:</p>
+</div>
+<div class="paragraph">
+<p><code>AuthenticationManager.authenticate(Authentication)</code></p>
+</div>
+<div class="paragraph">
+<p>This generally means:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Either extend an existing implementation.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.security.authentication.UsernamePasswordAuthenticationToken</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Or directly implement the interface <code>Authentication</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>What we are trying to achieve is an extension of the common username/password functionality offered
+already by the plugin. We don&#8217;t need a custom authentication object. Instead, we are going to use
+the <code>UsernamePasswordAuthenticationToken</code> object and place in the <code>details</code> property our custom information; the coordinate.</p>
+</div>
+
+
+<h2 id="filter">2.7 Filter</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/filter.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you are using a custom <code>Authentication</code>, you may need to create a filter.</p>
+</div>
+<div class="paragraph">
+<p>That means coding a custom <code>java.servlet.Filter</code> implementation.</p>
+</div>
+<div class="paragraph">
+<p>You have several options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Extend <code>GenericFilterBean</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.web.filter.GenericFilterBean</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Extend a similar filter e.g. <code>UsernamePasswordAuthenticationFilter</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Directly implement the interface</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For this guide, we don&#8217;t need to create a custom filter. Instead, we are using the <code>UsernamePasswordAuthenticationFilter</code>
+and overriding the <code>authenticationDetailsSource</code> bean used by that filter.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">authenticationDetailsSource(TwoFactorAuthenticationDetailsSource)</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/TwoFactorAuthenticationDetailsSource.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.web.authentication.WebAuthenticationDetails</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.web.authentication.WebAuthenticationDetailsSource</span>
+
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TwoFactorAuthenticationDetailsSource</span> <span class="directive">extends</span> WebAuthenticationDetailsSource {
+
+    <span class="annotation">@Override</span>
+    WebAuthenticationDetails buildDetails(HttpServletRequest context) {
+        <span class="keyword">def</span> details = <span class="keyword">new</span> TwoFactorAuthenticationDetails(context)
+
+        <span class="predefined-type">String</span> position = obtainCoordinatePosition(context)
+        details.coordinatePosition = position
+
+        <span class="predefined-type">String</span> value = obtainCoordinateValue(context)
+        details.coordinateValue = value
+        details
+    }
+
+    <span class="comment">/**
+     * Get the Coordinate Position from the request.
+     * @param request
+     * @return
+     */</span>
+    <span class="directive">private</span> <span class="directive">static</span> <span class="predefined-type">String</span> obtainCoordinatePosition(HttpServletRequest request) {
+        <span class="keyword">return</span> request.getParameter(<span class="string"><span class="delimiter">'</span><span class="content">coordinatePosition</span><span class="delimiter">'</span></span>)
+    }
+
+    <span class="comment">/**
+     * Get the Coordinate Value from the request.
+     * @param request
+     * @return
+     */</span>
+    <span class="directive">private</span> <span class="directive">static</span> <span class="predefined-type">String</span> obtainCoordinateValue(HttpServletRequest request) {
+        <span class="keyword">return</span> request.getParameter(<span class="string"><span class="delimiter">'</span><span class="content">coordinateValue</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/TwoFactorAuthenticationDetails.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.Canonical</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.web.authentication.WebAuthenticationDetails</span>
+
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+
+<span class="annotation">@Canonical</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TwoFactorAuthenticationDetails</span> <span class="directive">extends</span> WebAuthenticationDetails {
+    <span class="predefined-type">String</span> coordinatePosition
+    <span class="predefined-type">String</span> coordinateValue
+
+    TwoFactorAuthenticationDetails(HttpServletRequest request) {
+        <span class="local-variable">super</span>(request)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="test">2.8 Functional Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Grails integrate seamlessly with <a href="http://gebish.org">Geb</a>. Thus it is easy to develop
+a functional test for our custom login form.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/BankControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">BankControllerSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test bank controller is secured</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="delimiter">&quot;</span></span>
+        go <span class="string"><span class="delimiter">'</span><span class="content">bank</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>:
+        at LoginPage
+
+        <span class="key">when</span>:
+        login(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>, BootStrap.BANKCARD[position()])
+
+        <span class="key">then</span>:
+        driver.pageSource.contains(<span class="string"><span class="delimiter">'</span><span class="content">Welcome to your bank</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/LoginPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">LoginPage</span> <span class="directive">extends</span> Page {
+
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">login/auth</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> at = { title == <span class="string"><span class="delimiter">'</span><span class="content">Login</span><span class="delimiter">'</span></span> }
+
+    <span class="directive">static</span> content = {
+        usernameField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#username</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        passwordField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#password</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        positionField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#coordinatePosition</span><span class="delimiter">'</span></span>, <span class="integer">0</span>)}
+        valueField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#coordinateValue</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        submitField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+    }
+
+    <span class="predefined-type">String</span> position() {
+        positionField.getAttribute(<span class="string"><span class="delimiter">'</span><span class="content">value</span><span class="delimiter">'</span></span>)
+    }
+
+    <span class="type">void</span> login(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="predefined-type">String</span> value) {
+        usernameField &lt;&lt; username
+        passwordField &lt;&lt; password
+        valueField &lt;&lt; value
+        submitField.click()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="runningTheApp">3 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::/home/travis/build/grails-guides/grails-spring-security-core-plugin-custom-authentication/build/resources/grails-guides-master/src/main/docs/common-testapp.adoc[]</p>
+</div>
+
+                                        </div>
+                                    </td>
+                                    <td id="col2">
+                                        <div class="local clearfix">
+                                            <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-spring-security-core-plugin-custom-authentication"><img src="https://travis-ci.org/grails-guides/grails-spring-security-core-plugin-custom-authentication.svg?branch=master" /></a></div>            
+
+                                            <div class="local-title">
+                                                <a href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication">
+                                                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                                                </div>
+                                                <div class="menu">
+                                                    <div class="input-group">                        
+                                                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-spring-security-core-plugin-custom-authentication.git'" class="codeButton">SSH</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication.git'" class="codeButton">HTTPS</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication'" class="codeButton">Subversion</button>
+                                                    </div>
+
+                                                    <div class="input-group">                    
+                                                        <!-- Target -->
+                                                        <input id="github-url" value="git@github.com:grails-guides/grails-spring-security-core-plugin-custom-authentication.git" type="text" />
+
+                                                        <!-- Trigger -->
+                                                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                                                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                                                        </button>       
+
+                                                    </div>
+                                                    <div class="input-group">
+                                                      <a href="https://github.com/grails-guides/grails-spring-security-core-plugin-custom-authentication/archive/master.zip" class="downloadButton">Download ZIP</a>
+                                                  </div>
+                                              </div>
+                                              
+                                              <div id="table-of-content">
+                                                <h2>Table of Contents</h2>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>2</strong><span>Writing the Application</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#domainClasses"><strong>2.1</strong><span>Domain Classes</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#securedController"><strong>2.2</strong><span>Secured Controller</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#seedData"><strong>2.3</strong><span>Seed Data</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#customLoginForm"><strong>2.4</strong><span>Custom Login Form</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#authenticationProvider"><strong>2.5</strong><span>Authentication Provider</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#authentication"><strong>2.6</strong><span>Authentication</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#filter"><strong>2.7</strong><span>Filter</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#test"><strong>2.8</strong><span>Functional Test</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3</strong><span>Running the Application</span></a></div>
+                                                
+                            <div style="clear:both" ></div>
+                        </div>
+                                            
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+            
+        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+<script type="text/javascript" src="../js/classie.js"></script>        
+<script type="text/javascript" src="../js/sidebarEffects.js"></script>
+<script type="text/javascript" src="../js/navbar.js"></script> 
+<style type="text/css">
+    #colset {
+        background-color: #f5f5f5;
+    }
+    .navbar {
+        padding-right: 0;
+    }
+    #fork-me {
+        display: none;
+    }
+</style>       
+    </body>
+</html>
