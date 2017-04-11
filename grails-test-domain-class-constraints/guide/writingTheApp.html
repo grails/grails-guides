@@ -135,7 +135,7 @@ CONFIGURE SUCCESSFUL
     BigDecimal longitude
 
     <span class="reserved">static</span> constraints = {
-        name maxSize: <span class="integer">255</span>
+        name blank: <span class="predefined-constant">false</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
         url nullable: <span class="predefined-constant">true</span>, <span class="key">url</span>: <span class="predefined-constant">true</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
         email nullable: <span class="predefined-constant">true</span>, <span class="key">email</span>: <span class="predefined-constant">true</span>
         about nullable: <span class="predefined-constant">true</span>
@@ -311,33 +311,46 @@ want this property to be required and with a max length of 255 characters.</p>
 <div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test name cannot be null</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>:
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="predefined-constant">null</span>)
+    domain.name = <span class="predefined-constant">null</span>
 
     <span class="key">then</span>:
-    !hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
 }
 
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test name cannot be blank</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">expect</span>:
-    !<span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    <span class="key">given</span>:
+    domain.clearErrors()
+
+    <span class="key">when</span>:
+    domain.name = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+
+    <span class="key">then</span>:
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
 }
 
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test name can have a maximum of 255 characters</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">256</span>
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: str)
+    domain.name = str
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation fails</span><span class="delimiter">'</span></span>
-    !hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">255</span>
+    domain.name = str
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation passes</span><span class="delimiter">'</span></span>
-    <span class="keyword">new</span> Hotel(<span class="key">name</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
 }</code></pre>
 </div>
 </div>
@@ -352,32 +365,39 @@ want this property to be either a valid url or a null or blank value.</p>
 <div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test url can have a maximum of 255 characters</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> urlprefifx = <span class="string"><span class="delimiter">'</span><span class="content">http://</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> urlsufifx = <span class="string"><span class="delimiter">'</span><span class="content">.com</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*(<span class="integer">256</span> - (urlprefifx.size() + urlsufifx.size()))
     str = urlprefifx + str + urlsufifx
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">url</span>: str)
+    domain.url = str
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">url validation fails</span><span class="delimiter">'</span></span>
-    !hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     str = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>urlprefifx<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span><span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*(<span class="integer">255</span> - (urlprefifx.size() + urlsufifx.size()))<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>urlsufifx<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    domain.url = str
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">url validation passes</span><span class="delimiter">'</span></span>
-    <span class="keyword">new</span> Hotel(<span class="key">url</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
 }
 
 <span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with url: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test url validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>:
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">url</span>: value)
+    domain.url = value
 
     <span class="key">then</span>:
-    expected == hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
 
     <span class="key">where</span>:
     value                  | expected | expectedErrorCode
@@ -399,12 +419,15 @@ want this property to be either a valid url or a null or blank value.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with email: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>:
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">email</span>: value)
+    domain.email = value
 
     <span class="key">then</span>:
-    expected == hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
 
     <span class="key">where</span>:
     value                  | expected | expectedErrorCode
@@ -449,22 +472,34 @@ to 255 characters. We used the <code>mapping</code> block in our domain class to
 <div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test about can be null</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">expect</span>:
-    <span class="keyword">new</span> Hotel(<span class="key">about</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+    <span class="key">given</span>:
+    domain.clearErrors()
+
+    <span class="key">when</span>:
+    domain.about = <span class="predefined-constant">null</span>
+
+    <span class="key">then</span>:
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
 }
 
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test about can be blank</span><span class="delimiter">&quot;</span></span>() {
-    <span class="key">expect</span>:
-    <span class="keyword">new</span> Hotel(<span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+    <span class="key">when</span>:
+    domain.about = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+
+    <span class="key">then</span>:
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
 }
 
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test about can have a more than 255 characters</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
 
     <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
     <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>*<span class="integer">256</span>
+    domain.about = str
 
     <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">about validation passes</span><span class="delimiter">'</span></span>
-    <span class="keyword">new</span> Hotel(<span class="key">about</span>: str).validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
 }</code></pre>
 </div>
 </div>
@@ -524,12 +559,15 @@ longitude <span class="key">nullable</span>: <span class="predefined-constant">t
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with latitude: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test latitude validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>:
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">latitude</span>: value)
+    domain.latitude = value
 
     <span class="key">then</span>:
-    expected == hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
 
     <span class="key">where</span>:
     value                  | expected | expectedErrorCode
@@ -545,12 +583,15 @@ longitude <span class="key">nullable</span>: <span class="predefined-constant">t
 
 <span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.longitude() with latitude: #value should have returned #expected with error code: #expectedErrorCode</span><span class="delimiter">'</span></span>)
 <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test longitude validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    domain.clearErrors()
+
     <span class="key">when</span>:
-    <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">longitude</span>: value)
+    domain.longitude = value
 
     <span class="key">then</span>:
-    expected == hotel.validate([<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>])
-    hotel.errors[<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
 
     <span class="key">where</span>:
     value                  | expected | expectedErrorCode
