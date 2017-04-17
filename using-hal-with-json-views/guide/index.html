@@ -1,0 +1,1831 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Using HAL with JSON Views</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+
+        <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />        
+        <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+        <link rel="stylesheet" type="text/css" href="../css/stMenu.css" />      
+
+    </head>
+
+    <body class="body" onload="addJsClass();">
+
+    <a href="https://github.com/grails/grails-core" target="_blank">
+      <div id="fork-me">
+        <p>Fork me on Github</p>
+      </div>
+    </a>
+    <div id="st-container" class="st-container st-effect-9">
+      <nav class="st-menu st-effect-9" id="menu-12">
+        <h2 class="icon icon-lab">Socialize</h2>
+        <ul>
+          <li><a href="http://grails.org/mailing-lists.html" class="icon"><span class="fa fa-envelope"></span> Discuss on the Mailing List</a></li>
+          <li><a href="http://slack-signup.grails.org" class="icon"><span class="fa fa-slack"></span> Discuss on Slack</a></li>
+          <li><a href="https://twitter.com/grailsframework" class="icon"><span class="fa fa-twitter"></span> Grails on Twitter</a></li>
+          <li><a href="http://grails.org/events.html" class="icon"><span class="fa fa-calendar"></span> Events and conferences</a></li>
+          <li><a href="https://github.com/grails/grails-core" class="icon"><span class="fa fa-github"></span> Source code on GitHub</a></li>
+          <li><a href="http://grails.org/contribute.html#reporting-issues" class="icon"><span class="fa fa-bug"></span> Report issues on Github</a></li>
+          <li><a href="http://stackoverflow.com/questions/tagged/grails" class="icon"><span class="fa fa-stack-overflow"></span> Stack Overflow questions</a></li>
+        </ul>
+      </nav>
+      <div class="st-pusher">
+        <div class="st-content">
+          <div class="st-content">
+            <div class="grailsnavbar grailsnavbar-default">
+              <div class="grailsnavbar-container">
+                <div class="grailsnavbar-header">
+                  <a class="grailsnavbar-brand" href="index.html"><i class="fa grails-icon"><img src="../img/grails-cupsonly-logo-white.svg"></i> Grails</a>
+                </div>
+                <a id="nav-icon" href="javascript:toggleNavIcon();">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </a>
+                <div class="grailsnavbar-collapse collapse">
+                  <ul id="grailsnavbar-nav" class="grailsnavbar-nav grailsnavbar-right closemobile">
+                    <li><a href="http://grails.org/learn.html">Learn</a></li>
+                    <li><a href="http://guides.grails.org">Guides</a></li>
+                    <li><a href="http://grails.org/documentation.html">Documentation</a></li>
+                    <li><a href="http://grails.org/download.html">Download</a></li>
+                    <li><a href="http://plugins.grails.org">Plugins</a></li>
+                    <li><a href="http://grails.org/community.html">Community</a></li>
+                    <li><a href="http://grails.org/support.html">Support</a></li>
+                    <li><a data-effect="st-effect-9" class="st-trigger" href="#">Socialize</a></li>
+                    <li><a href="http://grails.org/search.html"><i class="fa fa-search"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- CONTENT -->
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="col1">
+                                        <div id="main" class="corner-all">
+
+                                            <div class="project">
+                                                <h1>Using HAL with JSON Views</h1>
+                                                <p></p>
+                                                <p>Learn to build discoverable APIs with Grails</p>
+                                                <p><strong>Authors:</strong> ZacharyKlein</p>
+                                                <p><strong>Grails Version:</strong> 3.2.8</p>
+
+                                            </div>
+
+                                            
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to explore <a href="https://en.wikipedia.org/wiki/Hypertext_Application_Language">HAL</a> (Hypertext Application Language) support in Grails, using JSON views (provided by the <a href="http://views.grails.org/latest/">Grails Views</a> library).</p>
+</div>
+<div id="wiki" class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Hypertext Application Language (HAL) is an Internet Draft (a "work in progress") standard convention for defining hypermedia such as links to external resources within JSON or XML code.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Wikipedia
+</div>
+</div>
+<div class="paragraph">
+<p>The purpose of HAL is make APIs "discoverable" - it defines a set of conventions that allow consumers of your API to follow links between resources, as well as providing pagination and other convenience features for "exploring" an API. HAL is a popular standard for implementing <a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a> (Hypermedia As The Engine Of Application State) architecture, which is an extension of basic REST architecture.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="http://stateless.co/hal_specification.html"><img src="http://stateless.co/info-model.png" alt="HAL Resource Structure" width="640"></a>
+</div>
+<div class="title">Figure 1. HAL Resource Structure, from <a href="http://stateless.co" class="bare">http://stateless.co</a></div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For a thorough introduction to HAL, check out the overview and specification at the following URL: <a href="http://stateless.co/hal_specification.html" class="bare">http://stateless.co/hal_specification.html</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails provides support for HAL through JSON views, which are part of the Grails Views library. You can use this library in an existing application following the installation steps in the documentation, or you can create a new application using either the <code>rest-api</code> profile or one of the frontend profiles (<code>angular</code>, <code>angular2</code> and <code>react</code>) which extend the <code>rest-api</code> profile.</p>
+</div>
+<div class="paragraph">
+<p>In this guide, we have provided a basic Grails 3.2.8 application using the <code>rest-api</code> profile in the <code>initial</code> project. We have also included a few domain classes to expose via our API. You may generate your own project if you wish (in which case you will need to copy the domain classes from <code>initial/grails-app/domain/</code> into your own project), or simply use the <code>initial</code> project to follow along with the guide.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What You will Need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to Complete the Guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/using-hal-with-json-views/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/using-hal-with-json-views.git" class="bare">https://github.com/grails-guides/using-hal-with-json-views.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/using-hal-with-json-views/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/using-hal-with-json-views/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">2 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Grails provides excellent support for RESTful url mappings to expose domain resources. In the <code>initial</code> project, we&#8217;ve already annotated our domain classes with the <code>@Resource</code> annotation, which generates a <code>RestfulController</code> and associated URL mappings to expose each domain class as a restful resource.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Customer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="keyword">import</span> <span class="include">grails.rest.*</span>
+
+<span class="annotation">@Resource</span>(readOnly = <span class="predefined-constant">true</span>, uri=<span class="string"><span class="delimiter">'</span><span class="content">/api/customers</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">Customer</span> {</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Resource</code> annotation takes several optional arguments, including a URL endpoint and format options, as well as whether the API should only expose read endpoints</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Adding these annotations to our domain classes gives us a running start to creating our API. See the <a href="https://docs.grails.org/latest/guide/webServices.html#domainResources">Grails documentation</a> for more information on <code>@Resource</code></p>
+</div>
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+<div class="paragraph">
+<p>Now that the Grails app is running, we can try out the API that Grails generated for us via the <code>@Resource</code> annotation. Make a GET request to <code>/api/products</code> to retrieve a list of products:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -H &quot;Accept: application/json&quot; localhost:8080/api/products</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">[
+  {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    },
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">inventoryId</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH001</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cargo Pants</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>: <span class="float">15.00</span>
+  },
+  {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">2</span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    },
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">inventoryId</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH002</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sweater</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>: <span class="float">12.00</span>
+  },
+  {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">3</span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+<span class="comment">//...</span>
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, a GET request to <code>/api/orders/1</code> returns the <code>Order</code> with an id of 1:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -H &quot;Accept: application/json&quot; localhost:8080/api/orders/1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>,
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingAddress</span><span class="delimiter">&quot;</span></span> : {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+   },
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingCost</span><span class="delimiter">&quot;</span></span> : <span class="float">13.54</span>,
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">orderId</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">orderPlaced</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">2017-02-08T09:10:36Z</span><span class="delimiter">&quot;</span></span>,
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">products</span><span class="delimiter">&quot;</span></span> : [
+      {
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">11</span>
+      },
+      {
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">6</span>
+      },
+      {
+         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+      }
+   ],
+   <span class="string"><span class="delimiter">&quot;</span><span class="content">customer</span><span class="delimiter">&quot;</span></span> : {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+   }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Because we&#8217;ve specified <code>readOnly = true</code> in our <code>@Resource</code> annotations, Grails will not generate endpoints for update/create/delete operations. This is sufficient for the steps in this guide, but you can remove the <code>readOnly</code> property (or set it to <code>false</code>) to enable the "write" operations.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="buildingApi">3 Building our API</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/buildingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The default JSON rendered by Grails is a good start, but it doesn&#8217;t necessarily express the details we want in our public-facing API. <a href="http://views.grails.org/latest/">JSON Views</a> allow us to render our data using Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/gapi/groovy/json/StreamingJsonBuilder.html"><code>StreamingJsonBuilder</code></a>, in a statically-compiled Groovy view. JSON views provide a powerful DSL-based tool for expressing the JSON output from our API.</p>
+</div>
+
+
+<h2 id="jsonViews">3.1 Introducing JSON Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/jsonViews.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Here&#8217;s a trivial example of a JSON view:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">json.message {
+    hello <span class="string"><span class="delimiter">&quot;</span><span class="content">world</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This JSON view would produce the following ouput when rendered:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{<span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>:{ <span class="key"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">world</span><span class="delimiter">&quot;</span></span>}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JSON views also support a <code>model</code> which references the data passed in to the view, as seen below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">model {
+    <span class="predefined-type">String</span> message
+}
+json.message {
+    hello message
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JSON views are Groovy files with the file extension <code>gson</code>, and they reside in the <code>grails-app/views</code> directory, just like GSP views. They are resolved (by convention) to a controller with the same name as the view directory, again like GSP views.</p>
+</div>
+
+
+<h2 id="customizingOurApi">3.2 Customizing our API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/customizingOurApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s create a JSON view to customize the output from the <code>/api/orders/$id</code> endpoint. Right now, the default JSON renderer includes ids of all associated objects. However, we don&#8217;t want to expose the <code>id</code> of the <code>shippingAddress</code> property (which is an instance of our <code>Address</code> domain class) - it&#8217;s not exposed as a domain resource in our API and it&#8217;s only relevant to users of API as part of an <code>Order</code> or <code>Customer</code>. Ideally, we&#8217;d like to include the <code>shippingAddress</code> fields in the JSON output of our <code>Order</code> API.</p>
+</div>
+<div class="paragraph">
+<p>In addition, we&#8217;d like to express the <code>orderId</code> property as the order&#8217;s <code>id</code>, rather than the actual id from the database.</p>
+</div>
+<div class="paragraph">
+<p>Create a new directory under <code>grails-app/views</code>, called <code>order</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/order</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you&#8217;re familiar with Grails' view resolution, you may be thinking we need to create an <code>OrderController</code> in order to use views from our <code>order</code> directory. We could do that, however because we&#8217;re making use of the <code>@Resource</code> annotation on our domain class, Grails will generate an associated <code>OrderController</code> (which will in turn inherit from <code>RestfulController</code>) for us. So at this point, we don&#8217;t need to create a controller for our <code>Order</code> class.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a new JSON view called <code>show.gson</code>. This will resolve to the <code>show</code> action in our controller, just as a <code>show.gsp</code> page would in a normal Grails application. Edit the new view with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    id order.orderId
+    shippingCost order.shippingCost
+    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    shippingAddress { <i class="conum" data-value="2"></i><b>(2)</b>
+        street order.shippingAddress.street
+        street2 order.shippingAddress.street2
+        city order.shippingAddress.city
+        state order.shippingAddress.state
+        zip order.shippingAddress.zip
+    }
+
+    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="3"></i><b>(3)</b>
+
+    customer {
+        id order.customer.id
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note that we are using Groovy&#8217;s <code>format</code> method on the <code>Date</code> class to customize the format of the <code>orderPlaced</code> property</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re filling out our <code>shippingAddress</code> with the fields from the <code>Address</code> class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Notice that we&#8217;re iterating over a collect (<code>order.products</code>) with the <code>collect</code> method and returning a map - this will create a JSON array of objects</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now if you make a request to <code>/api/orders/1</code>, you should see the following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -H &quot;Accept: application/json&quot; localhost:8080/api/orders/1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+    <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingCost</span>: <span class="float">13.54</span>,
+    <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2-08-2017</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingAddress</span>: {
+        <span class="key">street</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">321 Arrow Ln</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">street2</span>: <span class="predefined-constant">null</span>,
+        <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Chicago</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">IL</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">zip</span>: <span class="integer">646465</span>
+    },
+    <span class="key">products</span>: [
+            {
+                <span class="key">id</span>: <span class="integer">11</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">1</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">6</span>
+            }
+    ],
+    <span class="key">customer</span>: {
+        <span class="key">id</span>: <span class="integer">1</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create another JSON view for our <code>Customer</code> domain class. Create a new directory under <code>grails-app/views</code>, called <code>customer</code>, and a new JSON view <code>show.gson</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/customer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new JSON view called <code>show.gson</code>. This will resolve to the <code>show</code> action in our controller, just as a <code>show.gsp</code> page would in a normal Grails application. Edit the new view with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/customer/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Customer</span>
+
+model {
+    Customer customer
+}
+json {
+    id customer.id
+    firstName customer.firstName
+    lastName customer.lastName
+    fullName <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>customer.firstName<span class="inline-delimiter">}</span></span><span class="content"> </span><span class="inline"><span class="inline-delimiter">${</span>customer.lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+    address {
+        street customer.address.street
+        street2 customer.address.street2
+        city customer.address.city
+        state customer.address.state
+        zip customer.address.zip
+    }
+
+    orders customer.orders.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="hal">4 Make our API Discoverable via HAL</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/hal.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We&#8217;ve customized our API somewhat now, but we have a few issues:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>By customizing our <code>id</code> property for orders, it&#8217;s no longer clear to clients how to <strong>reference a particulate record</strong> (since our API still relies on the database id)</p>
+</li>
+<li>
+<p>Our three exposed domain classes have a number of <strong>associations where only ids are exposed</strong> - this means that clients need to make a new request to get the details on an associated object (e.g, a client consuming an order would need to make separate requests to obtain the fields for its products)</p>
+</li>
+<li>
+<p>Our API is rather opaque - without documentation, users of our API would have to guess the endpoints to arrive at associated records. Even with documentation, clients would likely need to use custom code to navigate our API, <strong>without a consistent standard</strong> to follow.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The conventions of the HAL+JSON standard can help us solve these issues, and JSON views provide first-class support for HAL - let&#8217;s see how we can use it.</p>
+</div>
+
+
+<h2 id="links">4.1 Linked Resources</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/links.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Links are the key in the HAL standard. HAL resources include a special field called <code>_links</code>, which contains an array of JSON objects that define links to related resources. A HAL link contains (at least) two pieces of information - a relationship, and an <code>href</code> containing the URL to access the related resource. Other metadata can be included as well.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s a sample of a JSON body with a <code>_links</code> field, and two links:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{
+    <span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Groovy Recipes</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Scott Davis</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">pages</span>: <span class="integer">100</span>,
+
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/book/show/1</span><span class="delimiter">&quot;</span></span>,    <i class="conum" data-value="1"></i><b>(1)</b>
+        },
+        <span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>: {
+            <span class="key"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/author/show/1</span><span class="delimiter">&quot;</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>self</code> is a special link that every HAL resource should include - it specifies the URL "back" to the current resource.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re defining a custom link called <code>author</code> that specifies the URL for the <code>author</code> field</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When a HAL resource is accessed by a client, it is possible to "browse" the relationships expressed in the <code>_links</code> field without the client knowing the exact makeup of the API endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//examples are using the fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</span>
+
+<span class="comment">//retrieve a book instance from the API</span>
+fetch(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/api/book/1</span><span class="delimiter">&quot;</span></span>).then(function(response) {
+    <span class="keyword">return</span> response.json();
+}).then(function(data) {
+    <span class="local-variable">this</span>.book = data;
+});
+
+<span class="comment">//retrieve book's author using links</span>
+var author;
+fetch(book._links.author.href).then(function(response) {
+    <span class="keyword">return</span> response.json();
+}).then(function(data) {
+    author = data;
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JSON views implement a Groovy trait <a href="http://views.grails.org/latest/api/grails/plugin/json/view/api/HalView.html"><code>HalView</code></a>, which exposes a <code>hal</code> helper with several methods for outputting HAL-compliant JSON. One of those is the <code>links</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">model {
+    Order order
+}
+json {
+    hal.links(order)
+    <span class="comment">//...</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Calling <code>hal.links()</code> on our domain resource produces the following JSON output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{
+    <span class="key">_links</span>: {
+        <span class="key">self</span>: {
+            <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/api/orders/1</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en_US</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s edit our <code>order/show.gson</code> view to include a <code>self</code> link as well as a link to the associated customer:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    hal.links(<span class="key">self</span>: order, <span class="key">customer</span>: order.customer) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    id order.orderId
+    shippingCost order.shippingCost
+    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
+    shippingAddress {
+        street order.shippingAddress.street
+        street2 order.shippingAddress.street2
+        city order.shippingAddress.city
+        state order.shippingAddress.state
+        zip order.shippingAddress.zip
+    }
+
+    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] }
+
+    customer {
+        id order.customer.id
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>links</code> method can take a domain resource instance, or a map of link names and objects to link.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://localhost:8080/api/orders/1" class="bare">http://localhost:8080/api/orders/1</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+    <span class="key">_links</span>: {
+        <span class="key">self</span>: {
+            <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/orders?id=1</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        },
+        <span class="key">customer</span>: {
+            <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/customers?id=1</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+    },
+    <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingCost</span>: <span class="float">13.54</span>,
+    <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2-08-2017</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingAddress</span>: {
+        <span class="key">street</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">321 Arrow Ln</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">street2</span>: <span class="predefined-constant">null</span>,
+        <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Chicago</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">IL</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">zip</span>: <span class="integer">646465</span>
+    },
+    <span class="key">products</span>: [
+            {
+                <span class="key">id</span>: <span class="integer">11</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">1</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">6</span>
+            }
+    ],
+    <span class="key">customer</span>: {
+        <span class="key">id</span>: <span class="integer">1</span>
+    }
+}
+    <span class="comment">//...</span>
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="templates">4.2 Render Collections with Templates</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/templates.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><code>Order</code> includes a one-many relationship with <code>Product</code>, and right now our API returns a simple list of ids to represent products in an order. Ideally we&#8217;d like to include links to these products as well, so that clients of our API can retrieve the details of each product by following the links we provide. We can use JSON views' template functionality.</p>
+</div>
+<div class="paragraph">
+<p>In the <code>grails-app/views/order</code> directory, create a new JSON template with the name <code>_product.gson</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/_product.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+  Product product
+}
+json {
+  hal.links(product)
+
+  id product.id
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now in our <code>order/show.gson</code> view, we can pass <code>order.products</code> to the <code>tmpl</code> helper, using our new <code>_product</code> template:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/show_v3.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    hal.links(<span class="key">self</span>: order, <span class="key">customer</span>: order.customer)
+
+    id order.orderId
+    shippingCost order.shippingCost
+    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
+    shippingAddress {
+        street order.shippingAddress.street
+        street2 order.shippingAddress.street2
+        city order.shippingAddress.city
+        state order.shippingAddress.state
+        zip order.shippingAddress.zip
+    }
+
+    products tmpl.product(order.products) <i class="conum" data-value="1"></i><b>(1)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>tmpl</code> helper will resolve a method name to a template in the current view directory - e.g, <code>tmpl.product</code> will resolve to <code>/order/_product.gson</code>. If you want to access a template from outside the current directory, you can use an absolute path (relative to the <code>views</code> directory) as a string: <code>tmpl."/customer/order"()</code> will resolve to <code>grails-app/views/customer/_order.gson</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For more information on using templates in JSON views, see the <a href="http://views.grails.org/latest/#_templates">Grails Views documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://localhost:8080/api/orders/1" class="bare">http://localhost:8080/api/orders/1</a></code>, and you should see <code>_links</code> for each product in the <code>products</code> array:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+    <span class="key">_links</span>: {
+        <span class="key">self</span>: {
+            <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/orders?id=1</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        },
+        <span class="key">customer</span>: {
+            <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/customers?id=1</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+            <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+    },
+    <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingCost</span>: <span class="float">13.54</span>,
+    <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2-08-2017</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingAddress</span>: {
+        <span class="key">street</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">321 Arrow Ln</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">street2</span>: <span class="predefined-constant">null</span>,
+        <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Chicago</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">IL</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">zip</span>: <span class="integer">646465</span>
+    },
+    <span class="key">products</span>: [
+        {
+            <span class="key">_links</span>: {
+                <span class="key">self</span>: {
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/11</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+                }
+            },
+            <span class="key">id</span>: <span class="integer">11</span>
+        },
+        {
+            <span class="key">_links</span>: {
+                <span class="key">self</span>: {
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/6</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+                }
+            },
+            <span class="key">id</span>: <span class="integer">6</span>
+        },
+        {
+            <span class="key">_links</span>: {
+                <span class="key">self</span>: {
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/1</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">hreflang</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+                    <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+                }
+            },
+            <span class="key">id</span>: <span class="integer">1</span>
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use the same technique for the <code>Customer&#8217;s orders - create a new template at `grails-app/views/customer/_order.gson</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/customer/_order.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    hal.links(order)
+
+    id order.id
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the <code>customer/show.gson</code> view to use the new <code>_order</code> template:</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use the same technique for the <code>Customer&#8217;s orders - create a new template at `grails-app/views/customer/_order.gson</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/customer/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Customer</span>
+
+model {
+    Customer customer
+}
+json {
+    id customer.id
+    firstName customer.firstName
+    lastName customer.lastName
+    fullName <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>customer.firstName<span class="inline-delimiter">}</span></span><span class="content"> </span><span class="inline"><span class="inline-delimiter">${</span>customer.lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+    address {
+        street customer.address.street
+        street2 customer.address.street2
+        city customer.address.city
+        state customer.address.state
+        zip customer.address.zip
+    }
+
+    orders tmpl.order(customer.orders)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="embedded">4.3 Embed Associated Objects</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/embedded.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s take a look at our <code>Product</code> domain resource. <code>Product</code> has a <code>belongsTo</code> relationship with <code>Category</code>, which is expressed in our default JSON output in a simple object with the category id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{
+    <span class="key">id</span>: <span class="integer">1</span>,
+    <span class="key">category</span>: {
+        <span class="key">id</span>: <span class="integer">1</span>
+    },
+    <span class="key">inventoryId</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH001</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cargo Pants</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">price</span>: <span class="integer">15</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again we&#8217;d like to make it easier for consumers of the API to obtain the category for the product. We have several options:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>We could simply <strong>include the <code>category</code> details in our JSON view</strong>: This approach obscures the boundary between the <code>Product</code> and <code>Category</code> resources in our API - it gives the (incorrect) impression to the client that <code>category.name</code> is a property of <code>Product</code>, rather than a API resource in its own right.</p>
+</li>
+<li>
+<p>We could provide a <strong>link to the category</strong>: This approach would require clients to make a new request to get the category details, and it&#8217;s likely that most clients will want both the product and the category details in the same request.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You may recall that in the case of an order&#8217;s <code>shippingAddress</code>, we used the first of these two approaches (including the associated object&#8217;s details in the JSON view) - this is because <code>Address</code> is not exposed in our API as a resource, so an <code>Address</code> is effectively part of either an <code>Order</code> (<code>shippingAddress</code>) or a <code>Customer</code> (<code>address</code>) as far as our API is concerned.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>HAL specifies an <code>_embedded</code> property to represent cross-resource relationships in a nested format. With an embedded approach, we could include the <code>Category</code> in the same HAL+JSON response, but the category would be in a separate element to make it clear that these are separate resources.</p>
+</div>
+<div class="paragraph">
+<p>JSON views provide an <code>embedded</code> method (via the <code>hal</code> helper) that will generate an <code>_embedded</code> element in our JSON view. It will include the default JSON output for the embedded objects as well as a <code>_self</code> link for each object.  Let&#8217;s use this to embed the category in our product output.</p>
+</div>
+<div class="paragraph">
+<p>Create a new directory under <code>grails-app/views</code>, called <code>product</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/product/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new JSON view under this directory, called <code>show.gson</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    Product product
+}
+json {
+    hal.links(product)
+    hal.embedded(<span class="key">category</span>: product.category) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    id product.inventoryId
+    name product.name
+    price product.price
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;re passing <code>embedded</code> method a map of element names (in this case <code>category</code>) to objects to embed (<code>product.category</code>)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now make a request to <code><a href="http://localhost:8080/api/products/1" class="bare">http://localhost:8080/api/products/1</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/1</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+    }
+  },
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">_embedded</span><span class="delimiter">&quot;</span></span>: {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/categories/1</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+      },
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Clothing</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="integer">0</span>
+    }
+  },
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH001</span><span class="delimiter">&quot;</span></span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cargo Pants</span><span class="delimiter">&quot;</span></span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>: <span class="float">15.00</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In previous code snippet, the <code>category</code> object includes the default JSON renderer output for our <code>Category</code> resource, as well as a <code>_self</code> link so clients can request the category directly if needed.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use the <code>embedded method on the `order/show.gson</code> view, and embed the <code>order.customer</code> resource:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    hal.links(<span class="key">self</span>: order, <span class="key">customer</span>: order.customer)
+    hal.embedded(<span class="key">customer</span>: order.customer) <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://localhost:8080/api/orders/1" class="bare">http://localhost:8080/api/orders/1</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    }
+  },
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">_embedded</span><span class="delimiter">&quot;</span></span>: {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">customer</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/customers/1</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+      },
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Peter</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">River</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="integer">0</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now clients of our API can access the details of embedded resources, without making additional requests.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//examples are using the fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</span>
+
+<span class="comment">//retrieve an order instance from the API</span>
+fetch(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/api/orders/1</span><span class="delimiter">&quot;</span></span>).then(function(response) {
+    <span class="keyword">return</span> response.json();
+}).then(function(data) {
+    <span class="local-variable">this</span>.order = data;
+});
+
+var customer = <span class="local-variable">this</span>.order._embedded.customer;
+
+console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">Order ID: </span><span class="delimiter">&quot;</span></span> + <span class="local-variable">this</span>.order.id);
+console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">Customer: </span><span class="delimiter">&quot;</span></span> + customer.firstName + <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span> + customer.lastName);
+
+<span class="comment">//retrieve a product instance from the API</span>
+fetch(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/api/products/1</span><span class="delimiter">&quot;</span></span>).then(function(response) {
+    <span class="keyword">return</span> response.json();
+}).then(function(data) {
+    <span class="local-variable">this</span>.product = data;
+});
+
+console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">Product: </span><span class="delimiter">&quot;</span></span> + <span class="local-variable">this</span>.product.name);
+console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">Category:</span><span class="delimiter">&quot;</span></span> + <span class="local-variable">this</span>.order._embedded.category.name);</code></pre>
+</div>
+</div>
+
+
+<h2 id="pagination">4.4 Paginate Results</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/pagination.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Another convention specified by the HAL standard is pagination. When serving a list of resources, the <code>_links</code> element can provide <code>first</code>, <code>prev</code>, <code>next</code> and <code>last</code> links, which can be used to navigate the resource list.</p>
+</div>
+<div class="paragraph">
+<p>The <code>hal</code> helper provides a <code>paginate</code> method that will generate these links and handle the pagination of resources. This method requires a bit more information in the <code>model</code> of our JSON view, in order to keep track of the current offset, max number of records per page, and the total number of resources. In order to do this, we&#8217;ll need to create a controller so that we can pass in the needed model parameters.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use HAL pagination links on our <code>Product</code> resource.</p>
+</div>
+<div class="paragraph">
+<p>Because we&#8217;ll be creating our own <code>ProductController</code> to supply the parameters needed for pagination, we&#8217;ll need to remove the <code>@Resource</code> annotation we&#8217;ve been using on our <code>Product</code> domain class. Edit <code>grails-app/domain/com/example/Product.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Product.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Product</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> inventoryId
+
+    <span class="predefined-type">BigDecimal</span> price
+
+    <span class="directive">static</span> belongsTo = [ category : Category ]
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You&#8217;ll often find when developing a RESTful API that the generated controllers and URL mappings from <code>@Resource</code> are a great way to get started, but at some point you&#8217;ll want more control over the API - generating the <code>RestfulController</code> yourself is a good solution at that point.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, create a new <code>RestfulController</code> using the <code>create-restful-controller</code> command (supplied by the <code>rest-api</code> profile):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-restful-controller com.example.ProductController</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit this new controller with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/com/example/ProductController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+
+<span class="type">class</span> <span class="class">ProductController</span> <span class="directive">extends</span> RestfulController&lt;Product&gt; {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    ProductController() {
+        <span class="local-variable">super</span>(Product)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+
+        <span class="keyword">return</span> [
+                productList : listAllResources(params), <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="key">productCount</span>: countResources(),     <i class="conum" data-value="2"></i><b>(2)</b>
+                max         : params.max,        <i class="conum" data-value="3"></i><b>(3)</b>
+                offset      : params.int(<span class="string"><span class="delimiter">&quot;</span><span class="content">offset</span><span class="delimiter">&quot;</span></span>) ?: <span class="integer">0</span>, <i class="conum" data-value="4"></i><b>(4)</b>
+                sort        : params.sort,  <i class="conum" data-value="5"></i><b>(5)</b>
+                order       : params.order  <i class="conum" data-value="6"></i><b>(6)</b>
+        ]
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> getReadOnly() {
+        <span class="keyword">return</span> <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>listAllResource()</code> is a method provided by <code>RestfulController</code> to return a list of all domain resources - you can override this method to control how this list is generated</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>countResources()</code> is another <code>RestfulController</code> method - again, you can override the implementation to suite your API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Total number of results per page</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Offset (used to calculate current page)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Property to sort by</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Direction of sorting</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally, we need to edit our <code>UrlMappings</code> to create the rest endpoints that were formerly generated using the <code>@Resource</code> annotation. Grails supports a <code>resource</code> property on URL mappings that will generate these URLs automatically. Edit <code>UrlMappings.groovy</code> and add the following rule to the <code>mappings</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controller/com/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/api/products</span><span class="delimiter">&quot;</span></span>(<span class="key">resources</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">product</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, we can create our new JSON view using pagination. Create the following view and template under <code>grails-app/views/product</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    <span class="predefined-type">Iterable</span>&lt;Product&gt; productList <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Integer</span> productCount <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Integer</span> max
+    <span class="predefined-type">Integer</span> offset
+    <span class="predefined-type">String</span> sort
+    <span class="predefined-type">String</span> order
+}
+
+json {
+    hal.paginate(Product, productCount, offset, max, sort, order) <i class="conum" data-value="3"></i><b>(3)</b>
+    products tmpl.product(productList ?: <span class="type">[]</span>)
+    count productCount
+    max max
+    offset offset
+    sort sort
+    order order
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>List of product resources</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pagination params from our controller</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Here we pass the pagination parameters to the <code>paginate</code> method, which will generate the HAL pagination links</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/_product.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    Product product
+}
+json {
+    hal.links(product)
+
+    name product.name
+    id product.inventoryId
+    price product.price
+    category product.category.name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://locahost:8080/api/products" class="bare">http://locahost:8080/api/products</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
+{
+  &quot;_links&quot;: {
+    &quot;self&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=0&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;,
+      &quot;type&quot;: &quot;application/hal+json&quot;
+    },
+    &quot;first&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=0&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    },
+    &quot;next&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=10&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    },
+    &quot;last&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=10&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    }
+  },
+  &quot;products&quot;: [
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/1&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Cargo Pants&quot;,
+      &quot;id&quot;: &quot;CLOTH001&quot;,
+      &quot;price&quot;: 15.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/2&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Sweater&quot;,
+      &quot;id&quot;: &quot;CLOTH002&quot;,
+      &quot;price&quot;: 12.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/3&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Jeans&quot;,
+      &quot;id&quot;: &quot;CLOTH003&quot;,
+      &quot;price&quot;: 15.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/4&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Blouse&quot;,
+      &quot;id&quot;: &quot;CLOTH004&quot;,
+      &quot;price&quot;: 18.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/5&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;T-Shirt&quot;,
+      &quot;id&quot;: &quot;CLOTH005&quot;,
+      &quot;price&quot;: 10.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/6&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Jacket&quot;,
+      &quot;id&quot;: &quot;CLOTH006&quot;,
+      &quot;price&quot;: 20.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/7&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Bookcase&quot;,
+      &quot;id&quot;: &quot;FURN001&quot;,
+      &quot;price&quot;: 40.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/8&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Coffee Table&quot;,
+      &quot;id&quot;: &quot;FURN002&quot;,
+      &quot;price&quot;: 50.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/9&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Vanity&quot;,
+      &quot;id&quot;: &quot;FURN003&quot;,
+      &quot;price&quot;: 90.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/10&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Table Saw&quot;,
+      &quot;id&quot;: &quot;TOOL001&quot;,
+      &quot;price&quot;: 120.00,
+      &quot;category&quot;: &quot;Tools&quot;
+    }
+  ],
+  &quot;count&quot;: 13,
+  &quot;max&quot;: 10,
+  &quot;offset&quot;: 0,
+  &quot;sort&quot;: null,
+  &quot;order&quot;: null
+}</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a request to the <code>next</code> link, <code><a href="http://localhost:8080/product/index?offset=10&amp;max=10" class="bare">http://localhost:8080/product/index?offset=10&amp;max=10</a></code>, and you&#8217;ll see the next page of results. Due to the small number of resources in our sample data there will only be 2 pages - try changing the <code>max</code> parameter in your request to 4 - you&#8217;ll now retrieve additional pages to reflect the smaller page size.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;d like, repeat these steps to enable pagination for the other domain resources, such as <code>Order</code> and <code>Customer</code>.</p>
+</div>
+
+
+<h2 id="mimeTypes">4.5 Custom MIME Types</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/mimeTypes.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>HAL resources can declare a custom "MIME Type" (or "Content Type") that clients should use in order to interact with the API. Grails includes two generic HAL MIME types in the default <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">grails</span>:
+    <span class="key">mime</span>:
+        <span class="key">disable</span>:
+            <span class="key">accept</span>:
+                <span class="key">header</span>:
+                    <span class="key">userAgents</span>:
+                        - <span class="string"><span class="content">Gecko</span></span>
+                        - <span class="string"><span class="content">WebKit</span></span>
+                        - <span class="string"><span class="content">Presto</span></span>
+                        - <span class="string"><span class="content">Trident</span></span>
+        <span class="key">types</span>:
+            <span class="key">json</span>:
+              - <span class="string"><span class="content">application/json</span></span>
+              - <span class="string"><span class="content">text/json</span></span>
+            <span class="key">hal</span>:
+              - <span class="string"><span class="content">application/hal+json</span></span>
+              - <span class="string"><span class="content">application/hal+xml</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can specify a custom MIME type for your API if you wish, by adding an entry to this configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">hal</span>:
+  - <span class="string"><span class="content">application/hal+json</span></span>
+  - <span class="string"><span class="content">application/hal+xml</span></span>
+<span class="key">xml</span>:
+  - <span class="string"><span class="content">text/xml</span></span>
+  - <span class="string"><span class="content">application/xml</span></span>
+<span class="key">atom</span>: <span class="string"><span class="content">application/atom+xml</span></span>
+<span class="key">css</span>: <span class="string"><span class="content">text/css</span></span>
+<span class="key">csv</span>: <span class="string"><span class="content">text/csv</span></span>
+<span class="key">js</span>: <span class="string"><span class="content">text/javascript</span></span>
+<span class="key">rss</span>: <span class="string"><span class="content">application/rss+xml</span></span>
+<span class="key">text</span>: <span class="string"><span class="content">text/plain</span></span>
+<span class="key">all</span>: <span class="string"><span class="content">'*/*'</span></span>
+<span class="key">inventory</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/vnd.com.example.inventory+json</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Specifies a MIME type called <code>inventory</code>, and gives it a type specification (by convention, <code>vnd</code> indicates a "vendor" MIME type)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now you can use this custom MIME type in your JSON views, using the <code>type</code> helper method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    Product product
+}
+
+json {
+    hal.links(product)
+    hal.embedded(<span class="key">category</span>: product.category)
+    hal.type(<span class="string"><span class="delimiter">&quot;</span><span class="content">inventory</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    id product.inventoryId
+    name product.name
+    price product.price
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>hal.type()</code> method takes a string to identify the custom MIME type in the <code>application.yml</code> file, or an explicit MIME specification as a string</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://localhost:8080/api/products/1" class="bare">http://localhost:8080/api/products/1</a></code> to see the custom content-type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i localhost:8080/product/1
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/vnd.com.example.inventory+json;charset=UTF-8 <i class="conum" data-value="1"></i><b>(1)</b>
+Transfer-Encoding: chunked
+Date: Sun, 05 Feb 2017 01:51:08 GMT
+
+        def result = render(view: &quot;/product/show&quot;, model:[product: product])
+
+        then:
+        result.json._embedded
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note the new MIME type in the <code>Content-Type</code> header</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="explorableAPI">5 Explore the API</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/explorableAPI.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>HAL+JSON is a flexible and powerful specification for structuring your API&#8217;s output. It allows clients of your API - whether third-party integrations or your own webapps or native apps - to navigate your resources in an efficient and consistent way.</p>
+</div>
+<div class="paragraph">
+<p>There are many useful tools for developing and testing HAL+JSON APIs. If you use the Google Chrome browser, try installing the <a href="https://github.com/gildas-lormeau/JSONView-for-Chrome">JSONView plugin</a>, and navigating your browser to <code><a href="http://localhost:8080/api/products" class="bare">http://localhost:8080/api/products</a></code>. This plugin will render the JSON in a pleasant format, and allow you to follow links between your resources in your browser.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="https://github.com/gildas-lormeau/JSONView-for-Chrome"><img src="../img/jsonviewer.png" alt="JSONViewer" width="500"></a>
+</div>
+<div class="title">Figure 1. JSONViewer plugin for Google Chrome</div>
+</div>
+<div class="paragraph">
+<p>Another powerful tool for testing and your API is <a href="https://www.getpostman.com">Postman</a>, a Google Chrome-based app available for macOS, Windows, Linux and Chrome OS.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<a class="image" href="https://www.getpostman.com"><img src="../img/postman.png" alt="Postman" width="500"></a>
+</div>
+<div class="title">Figure 2. Postman</div>
+</div>
+
+
+<h1 id="helpWithGrails">6 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several Grails services:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3 style="color: #333;">OCI Grails Team includes Grails co-founder and the core development team.
+Gain access to the engineers who developed, matured and maintain Grails</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px;" alt="Grails OCI Team">
+
+<hr/>
+
+<div id="wufoo-z17zxj9n0k6uwsa"><iframe id="wufooFormz17zxj9n0k6uwsa" class="wufoo-form-container" height="536" allowtransparency="true" frameborder="0" scrolling="no" style="width:100%;border:none" src="https://ociweb.wufoo.com/embed/z17zxj9n0k6uwsa/def/embedKey=z17zxj9n0k6uwsa927976&amp;entsource=&amp;referrer=https%3Awuslashwuslashwww.ociweb.comwuslash">&lt;a href="https://ociweb.wufoo.com/forms/z17zxj9n0k6uwsa/" title="html form"&gt;Fill out my Wufoo form!&lt;/a&gt;</iframe></div>
+<script type="text/javascript">var z17zxj9n0k6uwsa;(function(d, t) {
+var s = d.createElement(t), options = {
+'userName':'ociweb',
+'formHash':'z17zxj9n0k6uwsa',
+'autoResize':true,
+'height':'771',
+'async':true,
+'host':'wufoo.com',
+'header':'show',
+'ssl':true};
+s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'www.wufoo.com/scripts/embed/form.js';
+s.onload = s.onreadystatechange = function() {
+var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+try { z17zxj9n0k6uwsa = new WufooForm();z17zxj9n0k6uwsa.initialize(options);z17zxj9n0k6uwsa.display(); } catch (e) {}};
+var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+})(document, 'script');</script>
+
+                                        </div>
+                                    </td>
+                                    <td id="col2">
+                                        <div class="local clearfix">
+                                            <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/using-hal-with-json-views"><img src="https://travis-ci.org/grails-guides/using-hal-with-json-views.svg?branch=master" /></a></div>            
+
+                                            <div class="local-title">
+                                                <a href="https://github.com/grails-guides/using-hal-with-json-views">
+                                                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                                                </div>
+                                                <div class="menu">
+                                                    <div class="input-group">                        
+                                                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/using-hal-with-json-views.git'" class="codeButton">SSH</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views.git'" class="codeButton">HTTPS</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views'" class="codeButton">Subversion</button>
+                                                    </div>
+
+                                                    <div class="input-group">                    
+                                                        <!-- Target -->
+                                                        <input id="github-url" value="git@github.com:grails-guides/using-hal-with-json-views.git" type="text" />
+
+                                                        <!-- Trigger -->
+                                                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                                                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                                                        </button>       
+
+                                                    </div>
+                                                    <div class="input-group">
+                                                      <a href="https://github.com/grails-guides/using-hal-with-json-views/archive/master.zip" class="downloadButton">Download ZIP</a>
+                                                  </div>
+                                              </div>
+                                              
+                                              <div id="table-of-content">
+                                                <h2>Table of Contents</h2>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What You will Need</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to Complete the Guide</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>2</strong><span>Running the Application</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#buildingApi"><strong>3</strong><span>Building our API</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#jsonViews"><strong>3.1</strong><span>Introducing JSON Views</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#customizingOurApi"><strong>3.2</strong><span>Customizing our API</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#hal"><strong>4</strong><span>Make our API Discoverable via HAL</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#links"><strong>4.1</strong><span>Linked Resources</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#templates"><strong>4.2</strong><span>Render Collections with Templates</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#embedded"><strong>4.3</strong><span>Embed Associated Objects</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#pagination"><strong>4.4</strong><span>Paginate Results</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#mimeTypes"><strong>4.5</strong><span>Custom MIME Types</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#explorableAPI"><strong>5</strong><span>Explore the API</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Do you need help with Grails?</span></a></div>
+                                                
+                            <div style="clear:both" ></div>
+                        </div>
+                                            
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+            
+        </div>
+
+            <!-- END CONTENT -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+<script type="text/javascript" src="../js/classie.js"></script>        
+<script type="text/javascript" src="../js/sidebarEffects.js"></script>
+<script type="text/javascript" src="../js/navbar.js"></script> 
+<style type="text/css">
+    #colset {
+        background-color: #f5f5f5;
+    }
+    .grailsnavbar {
+        padding-right: 0;
+    }
+    #fork-me {
+        display: none;
+    }
+</style>       
+    </body>
+</html>

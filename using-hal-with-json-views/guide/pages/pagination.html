@@ -1,0 +1,497 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.4 Paginate Results</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>2</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/buildingApi.html"><strong>3</strong><span>Building our API</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/hal.html"><strong>4</strong><span>Make our API Discoverable via HAL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/explorableAPI.html"><strong>5</strong><span>Explore the API</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/buildingApi.html">&lt;&lt; <strong>3</strong><span>Building our API</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/explorableAPI.html"><strong>5</strong><span>Explore the API</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="pagination">4.4 Paginate Results</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/master/src/main/docs/guide/pagination.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Another convention specified by the HAL standard is pagination. When serving a list of resources, the <code>_links</code> element can provide <code>first</code>, <code>prev</code>, <code>next</code> and <code>last</code> links, which can be used to navigate the resource list.</p>
+</div>
+<div class="paragraph">
+<p>The <code>hal</code> helper provides a <code>paginate</code> method that will generate these links and handle the pagination of resources. This method requires a bit more information in the <code>model</code> of our JSON view, in order to keep track of the current offset, max number of records per page, and the total number of resources. In order to do this, we&#8217;ll need to create a controller so that we can pass in the needed model parameters.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use HAL pagination links on our <code>Product</code> resource.</p>
+</div>
+<div class="paragraph">
+<p>Because we&#8217;ll be creating our own <code>ProductController</code> to supply the parameters needed for pagination, we&#8217;ll need to remove the <code>@Resource</code> annotation we&#8217;ve been using on our <code>Product</code> domain class. Edit <code>grails-app/domain/com/example/Product.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/com/example/Product.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="type">class</span> <span class="class">Product</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> inventoryId
+
+    <span class="predefined-type">BigDecimal</span> price
+
+    <span class="directive">static</span> belongsTo = [ category : Category ]
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You&#8217;ll often find when developing a RESTful API that the generated controllers and URL mappings from <code>@Resource</code> are a great way to get started, but at some point you&#8217;ll want more control over the API - generating the <code>RestfulController</code> yourself is a good solution at that point.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, create a new <code>RestfulController</code> using the <code>create-restful-controller</code> command (supplied by the <code>rest-api</code> profile):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-restful-controller com.example.ProductController</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit this new controller with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/com/example/ProductController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+
+<span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+
+<span class="type">class</span> <span class="class">ProductController</span> <span class="directive">extends</span> RestfulController&lt;Product&gt; {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    ProductController() {
+        <span class="local-variable">super</span>(Product)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+
+        <span class="keyword">return</span> [
+                productList : listAllResources(params), <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="key">productCount</span>: countResources(),     <i class="conum" data-value="2"></i><b>(2)</b>
+                max         : params.max,        <i class="conum" data-value="3"></i><b>(3)</b>
+                offset      : params.int(<span class="string"><span class="delimiter">&quot;</span><span class="content">offset</span><span class="delimiter">&quot;</span></span>) ?: <span class="integer">0</span>, <i class="conum" data-value="4"></i><b>(4)</b>
+                sort        : params.sort,  <i class="conum" data-value="5"></i><b>(5)</b>
+                order       : params.order  <i class="conum" data-value="6"></i><b>(6)</b>
+        ]
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> getReadOnly() {
+        <span class="keyword">return</span> <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>listAllResource()</code> is a method provided by <code>RestfulController</code> to return a list of all domain resources - you can override this method to control how this list is generated</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>countResources()</code> is another <code>RestfulController</code> method - again, you can override the implementation to suite your API</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Total number of results per page</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Offset (used to calculate current page)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Property to sort by</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Direction of sorting</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally, we need to edit our <code>UrlMappings</code> to create the rest endpoints that were formerly generated using the <code>@Resource</code> annotation. Grails supports a <code>resource</code> property on URL mappings that will generate these URLs automatically. Edit <code>UrlMappings.groovy</code> and add the following rule to the <code>mappings</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controller/com/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/api/products</span><span class="delimiter">&quot;</span></span>(<span class="key">resources</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">product</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, we can create our new JSON view using pagination. Create the following view and template under <code>grails-app/views/product</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    <span class="predefined-type">Iterable</span>&lt;Product&gt; productList <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Integer</span> productCount <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Integer</span> max
+    <span class="predefined-type">Integer</span> offset
+    <span class="predefined-type">String</span> sort
+    <span class="predefined-type">String</span> order
+}
+
+json {
+    hal.paginate(Product, productCount, offset, max, sort, order) <i class="conum" data-value="3"></i><b>(3)</b>
+    products tmpl.product(productList ?: <span class="type">[]</span>)
+    count productCount
+    max max
+    offset offset
+    sort sort
+    order order
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>List of product resources</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pagination params from our controller</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Here we pass the pagination parameters to the <code>paginate</code> method, which will generate the HAL pagination links</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/product/_product.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Product</span>
+
+model {
+    Product product
+}
+json {
+    hal.links(product)
+
+    name product.name
+    id product.inventoryId
+    price product.price
+    category product.category.name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a request to <code><a href="http://locahost:8080/api/products" class="bare">http://locahost:8080/api/products</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
+{
+  &quot;_links&quot;: {
+    &quot;self&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=0&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;,
+      &quot;type&quot;: &quot;application/hal+json&quot;
+    },
+    &quot;first&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=0&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    },
+    &quot;next&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=10&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    },
+    &quot;last&quot;: {
+      &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products?offset=10&amp;max=10&quot;,
+      &quot;hreflang&quot;: &quot;en&quot;
+    }
+  },
+  &quot;products&quot;: [
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/1&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Cargo Pants&quot;,
+      &quot;id&quot;: &quot;CLOTH001&quot;,
+      &quot;price&quot;: 15.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/2&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Sweater&quot;,
+      &quot;id&quot;: &quot;CLOTH002&quot;,
+      &quot;price&quot;: 12.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/3&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Jeans&quot;,
+      &quot;id&quot;: &quot;CLOTH003&quot;,
+      &quot;price&quot;: 15.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/4&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Blouse&quot;,
+      &quot;id&quot;: &quot;CLOTH004&quot;,
+      &quot;price&quot;: 18.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/5&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;T-Shirt&quot;,
+      &quot;id&quot;: &quot;CLOTH005&quot;,
+      &quot;price&quot;: 10.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/6&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Jacket&quot;,
+      &quot;id&quot;: &quot;CLOTH006&quot;,
+      &quot;price&quot;: 20.00,
+      &quot;category&quot;: &quot;Clothing&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/7&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Bookcase&quot;,
+      &quot;id&quot;: &quot;FURN001&quot;,
+      &quot;price&quot;: 40.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/8&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Coffee Table&quot;,
+      &quot;id&quot;: &quot;FURN002&quot;,
+      &quot;price&quot;: 50.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/9&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Vanity&quot;,
+      &quot;id&quot;: &quot;FURN003&quot;,
+      &quot;price&quot;: 90.00,
+      &quot;category&quot;: &quot;Furniture&quot;
+    },
+    {
+      &quot;_links&quot;: {
+        &quot;self&quot;: {
+          &quot;href&quot;: &quot;http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/10&quot;,
+          &quot;hreflang&quot;: &quot;en&quot;,
+          &quot;type&quot;: &quot;application/hal+json&quot;
+        }
+      },
+      &quot;name&quot;: &quot;Table Saw&quot;,
+      &quot;id&quot;: &quot;TOOL001&quot;,
+      &quot;price&quot;: 120.00,
+      &quot;category&quot;: &quot;Tools&quot;
+    }
+  ],
+  &quot;count&quot;: 13,
+  &quot;max&quot;: 10,
+  &quot;offset&quot;: 0,
+  &quot;sort&quot;: null,
+  &quot;order&quot;: null
+}</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a request to the <code>next</code> link, <code><a href="http://localhost:8080/product/index?offset=10&amp;max=10" class="bare">http://localhost:8080/product/index?offset=10&amp;max=10</a></code>, and you&#8217;ll see the next page of results. Due to the small number of resources in our sample data there will only be 2 pages - try changing the <code>max</code> parameter in your request to 4 - you&#8217;ll now retrieve additional pages to reflect the smaller page size.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;d like, repeat these steps to enable pagination for the other domain resources, such as <code>Order</code> and <code>Customer</code>.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/buildingApi.html">&lt;&lt; <strong>3</strong><span>Building our API</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/explorableAPI.html"><strong>5</strong><span>Explore the API</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/using-hal-with-json-views"><img src="https://travis-ci.org/grails-guides/using-hal-with-json-views.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/using-hal-with-json-views">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/using-hal-with-json-views.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/using-hal-with-json-views.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/using-hal-with-json-views/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
