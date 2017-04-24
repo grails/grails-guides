@@ -79,12 +79,26 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Add a dependency on the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/">Grails Spring Security Rest plugin</a> to our <code>build.gradle</code> file.</p>
+<p>Add a dependency on the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/">Grails Spring Security Rest plugin</a>
+and to the latest release of <a href="https://grails-plugins.github.io/grails-spring-security-core/v3/index.html">Spring Security Core</a>
+to our <code>build.gradle</code> file.</p>
 </div>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile (<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile (<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span>)
+   compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.1.2</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Bump up GORM version to 6.1.1</p>
+</div>
+<div class="listingblock">
+<div class="title">/gradle.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.2</span><span class="float">.8</span>
+gormVersion=<span class="float">6.1</span><span class="float">.1</span>.RELEASE
+gradleWrapperVersion=<span class="float">3.4</span><span class="float">.1</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -97,14 +111,237 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 </div>
 </div>
 <div class="paragraph">
-<p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>SecurityRole</code> and <code>UserSecurityRole</code>. Service injection in GORM entities is disabled by default since Grails 3.2.8. Because of that, if you want the service <code>springSecurityService</code> to get injected
-in the <code>User</code> domain class you would need to turn on <code>autowire</code>.  Another option would be to move the password encoding logic outside of the domain class.</p>
+<p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>SecurityRole</code> and <code>UserSecurityRole</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/grails/test/security/User.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+        <span class="predefined-type">String</span> username
+        <span class="predefined-type">String</span> password
+        <span class="type">boolean</span> enabled = <span class="predefined-constant">true</span>
+        <span class="type">boolean</span> accountExpired
+        <span class="type">boolean</span> accountLocked
+        <span class="type">boolean</span> passwordExpired
+
+        <span class="predefined-type">Set</span>&lt;SecurityRole&gt; getAuthorities() {
+                (UserSecurityRole.findAllByUser(<span class="local-variable">this</span>) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;UserSecurityRole&gt;)*.securityRole <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;SecurityRole&gt;
+        }
+
+        <span class="directive">static</span> constraints = {
+                password <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">password</span>: <span class="predefined-constant">true</span>
+                username <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        }
+
+        <span class="directive">static</span> mapping = {
+                password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/grails/test/security/SecurityRole.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">SecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+        <span class="predefined-type">String</span> authority
+
+        <span class="directive">static</span> constraints = {
+                authority <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        }
+
+        <span class="directive">static</span> mapping = {
+                cache <span class="predefined-constant">true</span>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/grails/test/security/UserSecurityRole.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="keyword">import</span> <span class="include">org.codehaus.groovy.util.HashCodeHelper</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@ToString</span>(cache=<span class="predefined-constant">true</span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">UserSecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+        User user
+        SecurityRole securityRole
+
+        <span class="annotation">@Override</span>
+        <span class="type">boolean</span> equals(other) {
+                <span class="keyword">if</span> (other <span class="keyword">instanceof</span> UserSecurityRole) {
+                        other.userId == user?.id &amp;&amp; other.securityRoleId == securityRole?.id
+                }
+        }
+
+    <span class="annotation">@Override</span>
+        <span class="type">int</span> hashCode() {
+            <span class="type">int</span> hashCode = HashCodeHelper.initHash()
+        <span class="keyword">if</span> (user) {
+            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
+                }
+                <span class="keyword">if</span> (securityRole) {
+                    hashCode = HashCodeHelper.updateHash(hashCode, securityRole.id)
+                }
+                hashCode
+        }
+
+        <span class="directive">static</span> UserSecurityRole get(<span class="type">long</span> userId, <span class="type">long</span> securityRoleId) {
+                criteriaFor(userId, securityRoleId).get()
+        }
+
+        <span class="directive">static</span> <span class="type">boolean</span> exists(<span class="type">long</span> userId, <span class="type">long</span> securityRoleId) {
+                criteriaFor(userId, securityRoleId).count()
+        }
+
+        <span class="directive">private</span> <span class="directive">static</span> DetachedCriteria criteriaFor(<span class="type">long</span> userId, <span class="type">long</span> securityRoleId) {
+                UserSecurityRole.where {
+                        user == User.load(userId) &amp;&amp;
+                        securityRole == SecurityRole.load(securityRoleId)
+                }
+        }
+
+        <span class="directive">static</span> UserSecurityRole create(User user, SecurityRole securityRole, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+                <span class="keyword">def</span> instance = <span class="keyword">new</span> UserSecurityRole(<span class="key">user</span>: user, <span class="key">securityRole</span>: securityRole)
+                instance.save(<span class="key">flush</span>: flush)
+                instance
+        }
+
+        <span class="directive">static</span> <span class="type">boolean</span> remove(User u, SecurityRole r) {
+                <span class="keyword">if</span> (u != <span class="predefined-constant">null</span> &amp;&amp; r != <span class="predefined-constant">null</span>) {
+                        UserSecurityRole.where { user == u &amp;&amp; securityRole == r }.deleteAll()
+                }
+        }
+
+        <span class="directive">static</span> <span class="type">int</span> removeAll(User u) {
+                u == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserSecurityRole.where { user == u }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+        }
+
+        <span class="directive">static</span> <span class="type">int</span> removeAll(SecurityRole r) {
+                r == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserSecurityRole.where { securityRole == r }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+        }
+
+        <span class="directive">static</span> constraints = {
+                securityRole <span class="key">validator</span>: { SecurityRole r, UserSecurityRole ur -&gt;
+                        <span class="keyword">if</span> (ur.user?.id) {
+                                UserSecurityRole.withNewSession {
+                                        <span class="keyword">if</span> (UserSecurityRole.exists(ur.user.id, r.id)) {
+                                                <span class="keyword">return</span> [<span class="string"><span class="delimiter">'</span><span class="content">userRole.exists</span><span class="delimiter">'</span></span>]
+                                        }
+                                }
+                        }
+                }
+        }
+
+        <span class="directive">static</span> mapping = {
+                id <span class="key">composite</span>: [<span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">securityRole</span><span class="delimiter">'</span></span>]
+                version <span class="predefined-constant">false</span>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using GORM 6.0.10 or a later version and Spring Security core 3.1.2 or later version, s2-quickstart
+generates and registers a bean to handle password encoding:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/grails/test/security/UserPasswordEncoderListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.Datastore</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.ApplicationEvent</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> <span class="directive">extends</span> AbstractPersistenceEventListener {
+
+    <span class="annotation">@Autowired</span>
+    SpringSecurityService springSecurityService
+
+    UserPasswordEncoderListener(<span class="directive">final</span> Datastore datastore) {
+        <span class="local-variable">super</span>(datastore)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> onPersistenceEvent(AbstractPersistenceEvent event) {
+        <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
+            User u = (event.entityObject <span class="keyword">as</span> User)
+            <span class="keyword">if</span> (u.password &amp;&amp; (event.eventType == EventType.PreInsert || (event.eventType == EventType.PreUpdate &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+            }
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> supportsEventType(<span class="predefined-type">Class</span>&lt;? <span class="directive">extends</span> ApplicationEvent&gt; eventType) {
+        eventType == PreUpdateEvent || eventType == PreInsertEvent
+    }
+
+    <span class="directive">private</span> <span class="predefined-type">String</span> encodePassword(<span class="predefined-type">String</span> password) {
+        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.test.security.UserPasswordEncoderListener</span>
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener, ref(<span class="string"><span class="delimiter">'</span><span class="content">hibernateDatastore</span><span class="delimiter">'</span></span>))
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For older versions of GORM, <code>s2-quickstart</code> handles password encoding directly in the generated domain class with the
+injection of <code>SpringSecurityService</code> in the User class. Since Grails 3.2.8. service injection
+is disabled in domain classes. However, you can turn service injection on in domain classes:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">---
-<span class="key">grails</span>:
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
     <span class="key">gorm</span>:
         <span class="error">#</span> Whether to autowire entities.
         <span class="error">#</span> Disabled by <span class="keyword">default</span> <span class="keyword">for</span> performance reasons.
@@ -217,6 +454,9 @@ in the <code>User</code> domain class you would need to turn on <code>autowire</
 <div class="content">
 <pre>package grails.test.security
 
+import grails.compiler.GrailsCompileStatic
+
+@GrailsCompileStatic
 class BootStrap {
 
     def init = { servletContext -&gt;
@@ -224,20 +464,20 @@ class BootStrap {
         def authorities = ['ROLE_BOSS', 'ROLE_EMPLOYEE']
         authorities.each { String authority -&gt;
             if ( !SecurityRole.findByAuthority(authority) ) {
-                new SecurityRole(authority).save()
+                new SecurityRole(authority: authority).save()
             }
         }
 
         if ( !User.findByUsername('sherlock') ) {
             def u = new User(username: 'sherlock', password: 'elementary')
             u.save()
-            new UserSecurityRole(u, SecurityRole.findByAuthority('ROLE_BOSS')).save()
+            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_BOSS')).save()
         }
 
         if ( !User.findByUsername('watson') ) {
             def u = new User(username: 'watson', password: '221Bbakerstreet')
             u.save()
-            new UserSecurityRole(u, SecurityRole.findByAuthority('ROLE_EMPLOYEE')).save()
+            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_EMPLOYEE')).save()
         }
     }
     def destroy = {
