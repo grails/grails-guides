@@ -1,0 +1,947 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Grails Service Testing</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+
+        <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />        
+        <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+        <link rel="stylesheet" type="text/css" href="../css/stMenu.css" />      
+
+    </head>
+
+    <body class="body" onload="addJsClass();">
+
+    <a href="https://github.com/grails/grails-core" target="_blank">
+      <div id="fork-me">
+        <p>Fork me on Github</p>
+      </div>
+    </a>
+    <div id="st-container" class="st-container st-effect-9">
+      <nav class="st-menu st-effect-9" id="menu-12">
+        <h2 class="icon icon-lab">Socialize</h2>
+        <ul>
+          <li><a href="http://grails.org/mailing-lists.html" class="icon"><span class="fa fa-envelope"></span> Discuss on the Mailing List</a></li>
+          <li><a href="http://slack-signup.grails.org" class="icon"><span class="fa fa-slack"></span> Discuss on Slack</a></li>
+          <li><a href="https://twitter.com/grailsframework" class="icon"><span class="fa fa-twitter"></span> Grails on Twitter</a></li>
+          <li><a href="http://grails.org/events.html" class="icon"><span class="fa fa-calendar"></span> Events and conferences</a></li>
+          <li><a href="https://github.com/grails/grails-core" class="icon"><span class="fa fa-github"></span> Source code on GitHub</a></li>
+          <li><a href="http://grails.org/contribute.html#reporting-issues" class="icon"><span class="fa fa-bug"></span> Report issues on Github</a></li>
+          <li><a href="http://stackoverflow.com/questions/tagged/grails" class="icon"><span class="fa fa-stack-overflow"></span> Stack Overflow questions</a></li>
+        </ul>
+      </nav>
+      <div class="st-pusher">
+        <div class="st-content">
+          <div class="st-content">
+            <div class="grailsnavbar grailsnavbar-default">
+              <div class="grailsnavbar-container">
+                <div class="grailsnavbar-header">
+                  <a class="grailsnavbar-brand" href="index.html"><i class="fa grails-icon"><img src="../img/grails-cupsonly-logo-white.svg"></i> Grails</a>
+                </div>
+                <a id="nav-icon" href="javascript:toggleNavIcon();">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </a>
+                <div class="grailsnavbar-collapse collapse">
+                  <ul id="grailsnavbar-nav" class="grailsnavbar-nav grailsnavbar-right closemobile">
+                    <li><a href="http://grails.org/learn.html">Learn</a></li>
+                    <li><a href="http://guides.grails.org">Guides</a></li>
+                    <li><a href="http://grails.org/documentation.html">Documentation</a></li>
+                    <li><a href="http://grails.org/download.html">Download</a></li>
+                    <li><a href="http://plugins.grails.org">Plugins</a></li>
+                    <li><a href="http://grails.org/community.html">Community</a></li>
+                    <li><a href="http://grails.org/support.html">Support</a></li>
+                    <li><a data-effect="st-effect-9" class="st-trigger" href="#">Socialize</a></li>
+                    <li><a href="http://grails.org/search.html"><i class="fa fa-search"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- CONTENT -->
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="col1">
+                                        <div id="main" class="corner-all">
+
+                                            <div class="project">
+                                                <h1>Grails Service Testing</h1>
+                                                <p></p>
+                                                <p>In this guide we are going to explore Service testing in Grails. Unit test GORM, Integration Tests, Mocking collaborators...</p>
+                                                <p><strong>Authors:</strong> Nirav Assar</p>
+                                                <p><strong>Grails Version:</strong> 3.2.8</p>
+
+                                            </div>
+
+                                            
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going explore Service Testing in Grails. You are going to learn
+about:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Grails Services Unit tests - Mocking Collaborators</p>
+</li>
+<li>
+<p>Grails Services Unit tests - GORM code</p>
+</li>
+<li>
+<p>Grails Services Integration tests</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
+</div>
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-mock-basics/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-mock-basics.git" class="bare">https://github.com/grails-guides/grails-mock-basics.git</a></code></p>
+</li>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-mock-basics/initial</code></p>
+</li>
+<li>
+<p>Head on over to the next section</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-mock-basics/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">2 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to write a simple application involving a <code>Classroom</code> and a <code>Student</code> domain class.</p>
+</div>
+<div class="paragraph">
+<p>Several services will interact with those domain classes. We will use those services to discuss several testing topics.</p>
+</div>
+
+
+<h2 id="domainClasses">2.1 Domain Classes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/domainClasses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will create Domain classes that serve as the basis for the application. The <code>Student</code> and <code>Classroom</code> have a one-to-many relationship, where the <code>Classroom</code> holds many <code>Student</code>(s).
+A <code>Student</code> can be enrolled in one <code>Classroom</code> or none.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails create-domain-class Student</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add domain properties to the created class file.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/grails/mock/basics/Student.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Student</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">BigDecimal</span> grade
+    Classroom classroom
+
+    <span class="directive">static</span> constraints = {
+        classroom <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails create-domain-class Classroom</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again, add domain properties to the created class file. This time note that Classroom <code>hasMany</code> Students. This creates the one-to-many relationship.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/grails/mock/basics/Classroom.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Classroom</span> {
+
+    <span class="predefined-type">String</span> teacher
+    <span class="directive">static</span> hasMany = [<span class="key">students</span>: Student]
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="gormHibernate">2.2 Gorm Hibernate</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/gormHibernate.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are using the GORM 6.1.1.RELEASE.</p>
+</div>
+<div class="listingblock">
+<div class="title">gradle.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.2</span><span class="float">.8</span>
+gormVersion=<span class="float">6.1</span><span class="float">.1</span>.RELEASE
+gradleWrapperVersion=<span class="float">3.4</span><span class="float">.1</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        mavenLocal()
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.1</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}
+
+version <span class="string"><span class="delimiter">&quot;</span><span class="content">0.1</span><span class="delimiter">&quot;</span></span>
+group <span class="string"><span class="delimiter">&quot;</span><span class="content">grails.mock.basics</span><span class="delimiter">&quot;</span></span>
+
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eclipse</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">idea</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">war</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-web</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">asset-pipeline</span><span class="delimiter">&quot;</span></span>
+
+repositories {
+    mavenLocal()
+    maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+}
+
+dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-logging</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-autoconfigure</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-core</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-actuator</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-boot</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:cache</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:scaffolding</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.3.Final</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-ehcache:5.1.3.Final</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-test:</span><span class="inline"><span class="inline-delimiter">$</span>gormVersion</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b>
+    console <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-console</span><span class="delimiter">&quot;</span></span>
+    profile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.profiles:web</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:2.14.1</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-testing</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.18</span><span class="delimiter">&quot;</span></span>
+}
+
+bootRun {
+    jvmArgs(<span class="string"><span class="delimiter">'</span><span class="content">-Dspring.output.ansi.enabled=always</span><span class="delimiter">'</span></span>)
+    addResources = <span class="predefined-constant">true</span>
+}
+
+
+assets {
+    minifyJs = <span class="predefined-constant">true</span>
+    minifyCss = <span class="predefined-constant">true</span>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>For this guide we are using GORM Hibernate implementation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Include the <code>grails-datastore-gorm-test</code> dependency to test GORM</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="dynamicFinderService">2.3 DynamicFinder Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/dynamicFinderService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The next service uses a <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#finders">GORM Dynamic Finder</a> to get a list of students with a grade above a threshold.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/grails/mock/basics/StudentService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="type">class</span> <span class="class">StudentService</span> {
+
+    <span class="predefined-type">List</span>&lt;Student&gt; findStudentsWithGradeAbove(<span class="predefined-type">BigDecimal</span> grade) {
+        Student.findAllByGradeGreaterThanEquals(grade)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="dynamicFinderServiceTests">2.4 HibernateSpec</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/dynamicFinderServiceTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to use a unit test for the dynamic finder with the help of <code>HibernateSpec</code>. It allows Hibernate to be used in Grails unit tests. It uses a H2 in-memory database.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/grails/mock/basics/StudentServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+
+<span class="annotation">@TestFor</span>(StudentService)
+<span class="type">class</span> <span class="class">StudentServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Student] } <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        service.transactionManager = transactionManager <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find students with grades above</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are already stored in db</span><span class="delimiter">&quot;</span></span>
+        Student.saveAll(
+            <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>),
+            <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>),
+            <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>),
+        )
+
+        <span class="key">then</span>:
+        Student.count() == <span class="integer">3</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">service is called to search</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">List</span>&lt;Student&gt; students = service.findStudentsWithGradeAbove(<span class="integer">92</span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are found with appropriate grades</span><span class="delimiter">&quot;</span></span>
+        students.size() == <span class="integer">2</span>
+        students[<span class="integer">0</span>].name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>
+        students[<span class="integer">0</span>].grade == <span class="integer">95</span>
+        students[<span class="integer">1</span>].name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>
+        students[<span class="integer">1</span>].grade == <span class="integer">93</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Test a limited set of domain classes, override <code>getDomainClasses</code> method and specify exactly which ones you wish to test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If the service under test uses <code>@Transactional</code> you will need to assign the transaction manager within the unit test’s setup method.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="gormService">2.5 Projection Query</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/gormService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The next service uses Criteria query with a projection to calculate the average grade of the students enrolled in a classroom, identified by its teacher name.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/grails/mock/basics/ClassroomService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="type">class</span> <span class="class">ClassroomService</span> {
+
+    <span class="predefined-type">BigDecimal</span> calculateAvgGrade(<span class="predefined-type">String</span> teacherName) {
+        Student.where {
+            classroom.teacher == teacherName
+        }.projections {
+            avg(<span class="string"><span class="delimiter">'</span><span class="content">grade</span><span class="delimiter">'</span></span>)
+        }.get() <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="integrationTests">2.6 Service Integration tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/integrationTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to use an integration test to test the query. A projection query cannot be tested in unit tests.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/grails/mock/basics/ClassroomServiceIntegrationSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Rollback</span>
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">ClassroomServiceIntegrationSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Autowired</span>
+    ClassroomService service
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test calculate average grade of classroom</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
+        [
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>]
+        ].each {
+            classroom.addToStudents(<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="local-variable">it</span>.name, <span class="key">grade</span>: <span class="local-variable">it</span>.grade))
+        }
+        classroom.save()
+
+        <span class="key">then</span>:
+        Classroom.count() == <span class="integer">1</span>
+        Student.count() == <span class="integer">3</span>
+
+        <span class="key">when</span>:
+        <span class="predefined-type">BigDecimal</span> avgGrade = service.calculateAvgGrade(<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        avgGrade == <span class="float">93.0</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="serviceWithCollaborators">2.7 Service with Collaborators</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/serviceWithCollaborators.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We have a service which collaborates with another service to perform an action. This is a common use case. We are going to
+learn how to mock collaborators to test the service logic in isolation.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/grails/mock/basics/ClassroomGradesNotificationService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">ClassroomGradesNotificationService</span> {
+
+    <span class="keyword">def</span> emailService
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="type">int</span> emailClassroomStudents(Classroom classroom) {
+        <span class="type">int</span> emailCount = <span class="integer">0</span>
+        <span class="keyword">for</span> ( student <span class="keyword">in</span> classroom.students ) {
+            <span class="keyword">def</span> email = emailFromTeacherToStudent(classroom.teacher, student)
+            emailCount += emailService.sendEmail(email)
+        }
+        emailCount
+    }
+
+    <span class="predefined-type">Map</span> emailFromTeacherToStudent(<span class="predefined-type">String</span> teacher, Student student) {
+        [
+                <span class="key">to</span>: <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>student.name<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>,
+                <span class="key">from</span>: <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>teacher<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>,
+                <span class="key">note</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is </span><span class="inline"><span class="inline-delimiter">${</span>student.grade<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/grails/mock/basics/EmailService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">EmailService</span> {
+
+    <span class="type">int</span> sendEmail(<span class="predefined-type">Map</span> message) {
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">Send email: {0}</span><span class="delimiter">'</span></span>, message
+        <span class="integer">1</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="testEmailWithMock">2.8 Test Email with Mock Collaborators</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/testEmailWithMock.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Spock framework gives the ability to mock collaborators. We are able to substitute dependencies within a service with a mock implementation. This gives the advantage of focusing on the functionality under test, while delegating the dependent functionality to a mock object. In addition, mock collaborators can be verified to see how many times they are called and which parameters are being sent.</p>
+</div>
+<div class="paragraph">
+<p>Implement the code to test email with a mock collaborator. Essentially, we want to verify the email service is called for each <code>Student</code> in a <code>Classroom</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/grails/mock/basics/ClassroomGradesNotificationServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
+
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@TestFor</span>(ClassroomGradesNotificationService)
+<span class="annotation">@Mock</span>([Student, Classroom]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span> Classroom classroom
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
+        [
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>]
+        ].each {
+            classroom.addToStudents(<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="local-variable">it</span>.name, <span class="key">grade</span>: <span class="local-variable">it</span>.grade))
+        }
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email students with mock collaborator</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are part of a classroom</span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">def</span> mockService = Mock(EmailService) <i class="conum" data-value="2"></i><b>(2)</b>
+        service.emailService = mockService <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">service is called to email students</span><span class="delimiter">&quot;</span></span>
+        <span class="type">int</span> emailCount = service.emailClassroomStudents(classroom) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">then</span>:
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 95</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 91</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 93</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span>
+        emailCount == <span class="integer">3</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Mock domain classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Instantiate the mock implementation of <code>EmailService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Inject the mock into the service.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Invoke the service under test, which now has a mock implementation of <code>EmailService</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Use the spock syntax to verify invocation, params, and return a value.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the <code>then:</code> clause, we use spock to verify the mock was called. With <code>1 *</code>, this verfies it was called once. The parameters defined verify what was passed in during execution. The <code>&gt;&gt; 1</code> give the mock stub capability where it will return 1.</p>
+</div>
+<div class="paragraph">
+<p>Essentially, we are verifying the mock was called three different times with different <code>Student</code> parameters.</p>
+</div>
+
+
+<h2 id="testEmailWithExpando">2.9 Test Email with Expando</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/testEmailWithExpando.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Another approach to mocking is with Groovy&#8217;s Expando() class. Expando() is a map implementation which gives the ability to create a mock object with a simple closure. There are no built in verifications, but it allows a simply way to mock out a dependency so you can focus what is under test.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/grails/mock/basics/ClassroomGradesNotificationServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
+
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@TestFor</span>(ClassroomGradesNotificationService)
+<span class="annotation">@Mock</span>([Student, Classroom]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span> Classroom classroom
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
+        [
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>]
+        ].each {
+            classroom.addToStudents(<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="local-variable">it</span>.name, <span class="key">grade</span>: <span class="local-variable">it</span>.grade))
+        }
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email students with expando</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are part of a classroom</span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">def</span> mockService = <span class="keyword">new</span> Expando() <i class="conum" data-value="2"></i><b>(2)</b>
+        mockService.sendEmail = { <span class="predefined-type">Map</span> message -&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="keyword">return</span> <span class="integer">1</span>
+        }
+        service.emailService = mockService
+
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">service is called to email students</span><span class="delimiter">&quot;</span></span>
+        <span class="type">int</span> emailCount = service.emailClassroomStudents(classroom)
+
+        <span class="key">then</span>:
+        emailCount == <span class="integer">3</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Mock domain classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Create an Expando for the mock.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Implement the method with simple closure.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="summary">3 Summary</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/summary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To summarize this guide, we learned how . . .</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To unit test Service&#8217;s methods with GORM code, use <code>HibernateSpec</code>.</p>
+</li>
+<li>
+<p>To create an integration tests for a service, inject the service with <code>@Autowired</code>.</p>
+</li>
+<li>
+<p>Mocking Services can be done with the Spock <code>Mock()</code> method. It abides by lenient mock principles, and comes with an array of features.</p>
+</li>
+<li>
+<p><code>Expando()</code> is a plain mocking approach offered by Groovy.</p>
+</li>
+</ul>
+</div>
+
+
+<h1 id="runningTheApp">4 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Unresolved directive in &lt;stdin&gt; - include::/home/travis/build/grails-guides/grails-mock-basics/build/resources/grails-guides-master/src/main/docs/common-testapp.adoc[]</p>
+</div>
+
+                                        </div>
+                                    </td>
+                                    <td id="col2">
+                                        <div class="local clearfix">
+                                            <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-mock-basics"><img src="https://travis-ci.org/grails-guides/grails-mock-basics.svg?branch=master" /></a></div>            
+
+                                            <div class="local-title">
+                                                <a href="https://github.com/grails-guides/grails-mock-basics">
+                                                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                                                </div>
+                                                <div class="menu">
+                                                    <div class="input-group">                        
+                                                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-mock-basics.git'" class="codeButton">SSH</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-basics.git'" class="codeButton">HTTPS</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-basics'" class="codeButton">Subversion</button>
+                                                    </div>
+
+                                                    <div class="input-group">                    
+                                                        <!-- Target -->
+                                                        <input id="github-url" value="git@github.com:grails-guides/grails-mock-basics.git" type="text" />
+
+                                                        <!-- Trigger -->
+                                                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                                                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                                                        </button>       
+
+                                                    </div>
+                                                    <div class="input-group">
+                                                      <a href="https://github.com/grails-guides/grails-mock-basics/archive/master.zip" class="downloadButton">Download ZIP</a>
+                                                  </div>
+                                              </div>
+                                              
+                                              <div id="table-of-content">
+                                                <h2>Table of Contents</h2>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>2</strong><span>Writing the Application</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#domainClasses"><strong>2.1</strong><span>Domain Classes</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#gormHibernate"><strong>2.2</strong><span>Gorm Hibernate</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#dynamicFinderService"><strong>2.3</strong><span>DynamicFinder Service</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#dynamicFinderServiceTests"><strong>2.4</strong><span>HibernateSpec</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#gormService"><strong>2.5</strong><span>Projection Query</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#integrationTests"><strong>2.6</strong><span>Service Integration tests</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#serviceWithCollaborators"><strong>2.7</strong><span>Service with Collaborators</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#testEmailWithMock"><strong>2.8</strong><span>Test Email with Mock Collaborators</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#testEmailWithExpando"><strong>2.9</strong><span>Test Email with Expando</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#summary"><strong>3</strong><span>Summary</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+                                                
+                            <div style="clear:both" ></div>
+                        </div>
+                                            
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+            
+        </div>
+
+            <!-- END CONTENT -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+<script type="text/javascript" src="../js/classie.js"></script>        
+<script type="text/javascript" src="../js/sidebarEffects.js"></script>
+<script type="text/javascript" src="../js/navbar.js"></script> 
+<style type="text/css">
+    #colset {
+        background-color: #f5f5f5;
+    }
+    .grailsnavbar {
+        padding-right: 0;
+    }
+    #fork-me {
+        display: none;
+    }
+</style>       
+    </body>
+</html>
