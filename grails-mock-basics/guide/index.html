@@ -385,7 +385,7 @@ assets {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
 <span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 
 <span class="annotation">@GrailsCompileStatic</span>
 <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
@@ -423,10 +423,6 @@ assets {
 <span class="type">class</span> <span class="class">StudentServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
 
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Student] } <i class="conum" data-value="1"></i><b>(1)</b>
-
-    <span class="keyword">def</span> <span class="function">setup</span>() {
-        service.transactionManager = transactionManager <i class="conum" data-value="2"></i><b>(2)</b>
-    }
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find students with grades above</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are already stored in db</span><span class="delimiter">&quot;</span></span>
@@ -483,7 +479,7 @@ assets {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
 <span class="annotation">@CompileStatic</span>
@@ -582,9 +578,8 @@ learn how to mock collaborators to test the service logic in isolation.</p>
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">ClassroomGradesNotificationService</span> {
 
-    <span class="keyword">def</span> emailService
+    EmailService emailService
 
-    <span class="annotation">@CompileDynamic</span>
     <span class="type">int</span> emailClassroomStudents(Classroom classroom) {
         <span class="type">int</span> emailCount = <span class="integer">0</span>
         <span class="keyword">for</span> ( Student student <span class="keyword">in</span> classroom.students ) {
@@ -719,84 +714,6 @@ learn how to mock collaborators to test the service logic in isolation.</p>
 </div>
 
 
-<h2 id="testEmailWithExpando">2.9 Test Email with Expando</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-basics/edit/master/src/main/docs/guide/testEmailWithExpando.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>Another approach to mocking is with Groovy&#8217;s Expando() class. Expando() is a map implementation which gives the ability to create a mock object with a simple closure. There are no built in verifications, but it allows a simply way to mock out a dependency so you can focus what is under test.</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/grails/mock/basics/ClassroomGradesNotificationServiceSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
-
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
-
-
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
-<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
-<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-
-<span class="annotation">@TestFor</span>(ClassroomGradesNotificationService)
-<span class="annotation">@Mock</span>([Student, Classroom]) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification {
-
-    <span class="annotation">@Shared</span> Classroom classroom
-
-    <span class="keyword">def</span> <span class="function">setup</span>() {
-        classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
-        [
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>]
-        ].each {
-            classroom.addToStudents(<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="local-variable">it</span>.name, <span class="key">grade</span>: <span class="local-variable">it</span>.grade))
-        }
-    }
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email students with expando</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are part of a classroom</span><span class="delimiter">&quot;</span></span>
-        <span class="keyword">def</span> mockService = <span class="keyword">new</span> Expando() <i class="conum" data-value="2"></i><b>(2)</b>
-        mockService.sendEmail = { <span class="predefined-type">Map</span> message -&gt; <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="keyword">return</span> <span class="integer">1</span>
-        }
-        service.emailService = mockService
-
-
-        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">service is called to email students</span><span class="delimiter">&quot;</span></span>
-        <span class="type">int</span> emailCount = service.emailClassroomStudents(classroom)
-
-        <span class="key">then</span>:
-        emailCount == <span class="integer">3</span>
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Mock domain classes</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Create an Expando for the mock.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Implement the method with simple closure.</td>
-</tr>
-</table>
-</div>
-
-
 <h1 id="summary">3 Summary</h1>
 
 <div class='contribute-btn'>
@@ -819,9 +736,6 @@ learn how to mock collaborators to test the service logic in isolation.</p>
 </li>
 <li>
 <p>Mocking Services can be done with the Spock <code>Mock()</code> method. It abides by lenient mock principles, and comes with an array of features.</p>
-</li>
-<li>
-<p><code>Expando()</code> is a plain mocking approach offered by Groovy.</p>
 </li>
 </ul>
 </div>
@@ -906,8 +820,6 @@ grails&gt; open test-report</code></pre>
                                                 <div class="toc-item" style="margin-left:10px"><a href="#serviceWithCollaborators"><strong>2.7</strong><span>Service with Collaborators</span></a></div>
                                                 
                                                 <div class="toc-item" style="margin-left:10px"><a href="#testEmailWithMock"><strong>2.8</strong><span>Test Email with Mock Collaborators</span></a></div>
-                                                
-                                                <div class="toc-item" style="margin-left:10px"><a href="#testEmailWithExpando"><strong>2.9</strong><span>Test Email with Expando</span></a></div>
                                                 
                                                 <div class="toc-item" style="margin-left:0px"><a href="#summary"><strong>3</strong><span>Summary</span></a></div>
                                                 
