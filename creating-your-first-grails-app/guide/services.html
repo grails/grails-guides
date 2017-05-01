@@ -125,19 +125,19 @@ Controllers are for "web logic", services for "business logic"
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-service com.example.ValueEstimateService
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-service demo.ValueEstimateService
 
-| Created grails-app/services/com/example/ValueEstimateService.groovy
-| Created src/test/groovy/com/example/ValueEstimateServiceSpec.groovy</code></pre>
+| Created grails-app/services/demo/ValueEstimateService.groovy
+| Created src/test/groovy/demo/ValueEstimateServiceSpec.groovy</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Edit <code>grails-app/services/com/example/ValueEstimateService.groovy</code></p>
+<p>Edit <code>grails-app/services/demo/ValueEstimateService.groovy</code></p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/com/example/ValueEstimateService.groovy</div>
+<div class="title">grails-app/services/demo/ValueEstimateService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
 
@@ -154,9 +154,9 @@ Controllers are for "web logic", services for "business logic"
 <p>Grails has provided a <code>serviceMethod</code> stub as an example. Delete it and replace it with the following content:</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/com/example/ValueEstimateService.groovy</div>
+<div class="title">grails-app/services/demo/ValueEstimateService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.example
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
 
@@ -164,12 +164,10 @@ Controllers are for "web logic", services for "business logic"
 <span class="type">class</span> <span class="class">ValueEstimateService</span> {
 
     <span class="keyword">def</span> <span class="function">getEstimate</span>(Vehicle vehicle) {
-        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Estimating vehicle value...</span><span class="delimiter">&quot;</span></span>
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">Estimating vehicle value...</span><span class="delimiter">'</span></span>
 
         <span class="comment">//TODO: Call third-party valuation API</span>
-        <span class="keyword">def</span> value = <span class="predefined-type">Math</span>.round (vehicle.name.size() + vehicle.model.name.size() * vehicle.year) * <span class="integer">2</span>
-
-        <span class="keyword">return</span> value
+        <span class="predefined-type">Math</span>.round (vehicle.name.size() + vehicle.model.name.size() * vehicle.year) * <span class="integer">2</span>
     }
 }</code></pre>
 </div>
@@ -181,17 +179,17 @@ Controllers are for "web logic", services for "business logic"
 <p>Now, let&#8217;s use our new service.</p>
 </div>
 <div class="paragraph">
-<p>Edit <code>grails-app/controllers/com/example/VehicleController.groovy</code> (the scaffolded controller we generated earlier), and add the property shown below:</p>
+<p>Edit <code>grails-app/controllers/demo/VehicleController.groovy</code> (the scaffolded controller we generated earlier), and add the property shown below:</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/controllers/com/example/VehicleController.groovy</div>
+<div class="title">grails-app/controllers/demo/VehicleController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-<span class="type">class</span> <span class="class">VehicleController</span> {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
 
-    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>, <span class="key">update</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>]
-
-    <span class="keyword">def</span> valueEstimateService <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="type">class</span> <span class="class">VehicleController</span> {</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -206,10 +204,10 @@ Controllers are for "web logic", services for "business logic"
 <p>Now (still editing <code>VehicleController.groovy</code>), modify the <code>show</code> action as seen below:</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/controllers/com/example/VehicleController.groovy</div>
+<div class="title">grails-app/controllers/demo/VehicleController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">show</span>(Vehicle vehicle) {
-    respond vehicle, <span class="key">model</span>: [<span class="key">estimatedValue</span>: valueEstimateService.getEstimate(vehicle)]
+<pre class="CodeRay highlight"><code data-lang="groovy">    params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+    respond Vehicle.list(params), <span class="key">model</span>:[<span class="key">vehicleCount</span>: Vehicle.count()]
 }</code></pre>
 </div>
 </div>

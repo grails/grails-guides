@@ -104,7 +104,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-views com.example.Vehicle</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-views demo.Vehicle</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -112,7 +112,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-controller com.example.Vehicle</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-controller demo.Vehicle</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -120,7 +120,7 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-all com.example.Vehicle</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-all demo.Vehicle</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -143,23 +143,26 @@ To override existing files, use th <code>-force</code> flag along with the <code
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-all com.example.Vehicle -force</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw generate-all demo.Vehicle -force</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Open the <code>VehicleController.groovy</code> file at <code>grails-app/controllers/com/example/</code>.</p>
+<p>Open the <code>VehicleController.groovy</code> file at <code>grails-app/controllers/demo/</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.*</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
+<span class="keyword">import</span> <span class="include">demo.Vehicle</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
-
-
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])
 <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">VehicleController</span> {
 
     <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">staticscaffolding</span><span class="delimiter">'</span></span>
 
-    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>, <span class="key">update</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>]
+    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>]
 
     <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
         params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>) <i class="conum" data-value="2"></i><b>(2)</b>
@@ -170,6 +173,7 @@ To override existing files, use th <code>-force</code> flag along with the <code
         respond vehicle <i class="conum" data-value="3"></i><b>(3)</b>
     }
 
+    <span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">GrailsMassAssignment</span><span class="delimiter">'</span></span>])
     <span class="keyword">def</span> <span class="function">create</span>() {
         respond <span class="keyword">new</span> Vehicle(params) <i class="conum" data-value="3"></i><b>(3)</b>
     }
@@ -226,7 +230,7 @@ To override existing files, use th <code>-force</code> flag along with the <code
                 flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Vehicle</span><span class="delimiter">'</span></span>), vehicle.id])
                 redirect vehicle <i class="conum" data-value="6"></i><b>(6)</b>
             }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ respond vehicle, [<span class="key">status</span>: OK] } <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond vehicle, [<span class="key">status</span>: OK] } <i class="conum" data-value="3"></i><b>(3)</b>
         }
     }
 
@@ -245,9 +249,9 @@ To override existing files, use th <code>-force</code> flag along with the <code
             form multipartForm {
                 <i class="conum" data-value="5"></i><b>(5)</b>
                 flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.deleted.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Vehicle</span><span class="delimiter">'</span></span>), vehicle.id])
-                redirect <span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>, <span class="key">method</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="6"></i><b>(6)</b>
+                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span> <i class="conum" data-value="6"></i><b>(6)</b>
             }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ render <span class="key">status</span>: NO_CONTENT } <i class="conum" data-value="7"></i><b>(7)</b>
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { render <span class="key">status</span>: NO_CONTENT } <i class="conum" data-value="7"></i><b>(7)</b>
         }
     }
 
@@ -256,11 +260,7 @@ To override existing files, use th <code>-force</code> flag along with the <code
             form multipartForm {
                 <i class="conum" data-value="5"></i><b>(5)</b>
                 flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.not.found.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Vehicle</span><span class="delimiter">'</span></span>), params.id])
-                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="6"></i><b>(6)</b>
-            }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ render <span class="key">status</span>: NOT_FOUND }  <i class="conum" data-value="7"></i><b>(7)</b>
-        }
-    }</code></pre>
+                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span> <i class="conum" data-value="6"></i><b>(6)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
