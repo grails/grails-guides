@@ -110,28 +110,30 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@ReadOnly</span>
 <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; graph(<span class="type">int</span> limit = <span class="integer">100</span>) {
-    <span class="keyword">return</span> toD3Format(findMovieTitlesAndCast(limit))
+    toD3Format(findMovieTitlesAndCast(limit))
 }
 
-<span class="directive">private</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; toD3Format(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">String</span>&gt;&gt;&gt; result) {
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">NestedForLoop</span><span class="delimiter">'</span></span>)
+<span class="annotation">@CompileDynamic</span>
+<span class="directive">private</span> <span class="directive">static</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; toD3Format(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">String</span>&gt;&gt;&gt; result) {
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>,<span class="predefined-type">String</span>&gt;&gt; nodes = <span class="type">[]</span>
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>,<span class="predefined-type">Object</span>&gt;&gt; rels= <span class="type">[]</span>
-    <span class="type">int</span> i=<span class="integer">0</span>
-    <span class="keyword">for</span>(entry <span class="keyword">in</span> result) {
-        nodes &lt;&lt; [<span class="key">title</span>: entry.movie, <span class="key">label</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">movie</span><span class="delimiter">&quot;</span></span>]
+    <span class="type">int</span> i = <span class="integer">0</span>
+    <span class="keyword">for</span> (entry <span class="keyword">in</span> result) {
+        nodes &lt;&lt; [<span class="key">title</span>: entry.movie, <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>]
         <span class="type">int</span> target=i
         i++
         <span class="keyword">for</span> (<span class="predefined-type">String</span> name : (<span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">String</span>&gt;) entry.cast) {
-            <span class="keyword">def</span> actor = [<span class="key">title</span>: name, <span class="key">label</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">actor</span><span class="delimiter">&quot;</span></span>]
+            <span class="keyword">def</span> actor = [<span class="key">title</span>: name, <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">actor</span><span class="delimiter">'</span></span>]
             <span class="type">int</span> source = nodes.indexOf(actor)
             <span class="keyword">if</span> (source == -<span class="integer">1</span>) {
                 nodes &lt;&lt; actor
                 source = i++
             }
-            rels &lt;&lt; [<span class="key">source</span>:source, <span class="key">target</span>: target]
+            rels &lt;&lt; [<span class="key">source</span>: source, <span class="key">target</span>: target]
         }
     }
-    <span class="keyword">return</span> [<span class="key">nodes</span>: nodes, <span class="key">links</span>: rels]
+    [<span class="key">nodes</span>: nodes, <span class="key">links</span>: rels]
 }</code></pre>
 </div>
 </div>
@@ -142,7 +144,7 @@ function addJsClass() {
 <div class="title">grails-app/controllers/neo4j/movies/MovieController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">graph</span>() {
-    respond movieService.graph(params.int(<span class="string"><span class="delimiter">&quot;</span><span class="content">limit</span><span class="delimiter">&quot;</span></span>, <span class="integer">100</span>))
+    respond movieService.graph(params.int(<span class="string"><span class="delimiter">'</span><span class="content">limit</span><span class="delimiter">'</span></span>, <span class="integer">100</span>))
 }</code></pre>
 </div>
 </div>
