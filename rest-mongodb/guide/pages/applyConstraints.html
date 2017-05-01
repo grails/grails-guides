@@ -85,8 +85,8 @@ function addJsClass() {
 <div class="title">grails-app/domain/mongodb/example/Product.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> constraints = {
-    name <span class="key">blank</span>:<span class="predefined-constant">false</span>
-    price <span class="key">range</span>:<span class="float">0.0</span>..<span class="float">1000.00</span>
+    name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    price <span class="key">range</span>: <span class="float">0.0</span>..<span class="float">1000.00</span>
 }</code></pre>
 </div>
 </div>
@@ -118,8 +118,8 @@ function addJsClass() {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
 <span class="keyword">import</span> <span class="include">de.flapdoodle.embed.mongo.distribution.Version</span>
 <span class="keyword">import</span> <span class="include">de.flapdoodle.embed.mongo.tests.MongodForTestsFactory</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
-<span class="keyword">import</span> <span class="include">grails.test.mongodb.*</span></code></pre>
+<span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -128,7 +128,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@TestFor</span>(Product)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
+<span class="annotation">@TestFor</span>(Product)
 <span class="type">class</span> <span class="class">ProductSpec</span> <span class="directive">extends</span> MongoSpec {</code></pre>
 </div>
 </div>
@@ -153,7 +154,7 @@ MongoClient createMongoClient() {
 <div class="listingblock">
 <div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test domain class validation</span><span class="delimiter">&quot;</span></span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test domain class validation</span><span class="delimiter">'</span></span>() {
     ...
 }</code></pre>
 </div>
@@ -164,11 +165,11 @@ MongoClient createMongoClient() {
 <div class="listingblock">
 <div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A domain class is saved with invalid data</span><span class="delimiter">&quot;</span></span>
-Product product = <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>, <span class="key">price</span>: -<span class="float">2.0d</span>)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A domain class is saved with invalid data</span><span class="delimiter">'</span></span>
+Product product = <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">price</span>: -<span class="float">2.0d</span>)
 product.save()
 
-<span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">There were errors and the data was not saved</span><span class="delimiter">&quot;</span></span>
+<span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">There were errors and the data was not saved</span><span class="delimiter">'</span></span>
 product.hasErrors()
 product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">price</span><span class="delimiter">'</span></span>)
 product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
@@ -187,12 +188,12 @@ Product.count() == <span class="integer">0</span></code></pre>
 <div class="listingblock">
 <div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A valid domain is saved</span><span class="delimiter">&quot;</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A valid domain is saved</span><span class="delimiter">'</span></span>
 product.name = <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>
 product.price = <span class="float">2.15d</span>
 product.save()
 
-<span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The product was saved successfully</span><span class="delimiter">&quot;</span></span>
+<span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The product was saved successfully</span><span class="delimiter">'</span></span>
 Product.count() == <span class="integer">1</span>
 Product.first().price == <span class="float">2.15d</span></code></pre>
 </div>
