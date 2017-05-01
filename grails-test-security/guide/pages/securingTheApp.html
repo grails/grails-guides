@@ -118,7 +118,6 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
 <span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
 <span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
-
         <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
 
         <span class="predefined-type">String</span> username
@@ -158,7 +157,6 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="type">class</span> <span class="class">SecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
 
         <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
-
         <span class="predefined-type">String</span> authority
 
         <span class="directive">static</span> constraints = {
@@ -182,6 +180,7 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="keyword">import</span> <span class="include">org.codehaus.groovy.util.HashCodeHelper</span>
 <span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Instanceof</span><span class="delimiter">'</span></span>])
 <span class="annotation">@GrailsCompileStatic</span>
 <span class="annotation">@ToString</span>(cache=<span class="predefined-constant">true</span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
 <span class="type">class</span> <span class="class">UserSecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
@@ -198,14 +197,14 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
                 }
         }
 
-    <span class="annotation">@Override</span>
+        <span class="annotation">@Override</span>
         <span class="type">int</span> hashCode() {
-            <span class="type">int</span> hashCode = HashCodeHelper.initHash()
-        <span class="keyword">if</span> (user) {
-            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
+                <span class="type">int</span> hashCode = HashCodeHelper.initHash()
+                <span class="keyword">if</span> (user) {
+                        hashCode = HashCodeHelper.updateHash(hashCode, user.id)
                 }
                 <span class="keyword">if</span> (securityRole) {
-                    hashCode = HashCodeHelper.updateHash(hashCode, securityRole.id)
+                        hashCode = HashCodeHelper.updateHash(hashCode, securityRole.id)
                 }
                 hashCode
         }
@@ -221,7 +220,7 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
         <span class="directive">private</span> <span class="directive">static</span> DetachedCriteria criteriaFor(<span class="type">long</span> userId, <span class="type">long</span> securityRoleId) {
                 UserSecurityRole.where {
                         user == User.load(userId) &amp;&amp;
-                        securityRole == SecurityRole.load(securityRoleId)
+                                        securityRole == SecurityRole.load(securityRoleId)
                 }
         }
 
@@ -280,10 +279,11 @@ generates and registers a bean to handle password encoding:</p>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.ApplicationEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">UnnecessaryGetter</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Instanceof</span><span class="delimiter">'</span></span>])
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> <span class="directive">extends</span> AbstractPersistenceEventListener {
 
@@ -299,7 +299,7 @@ generates and registers a bean to handle password encoding:</p>
         <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
             User u = (event.entityObject <span class="keyword">as</span> User)
             <span class="keyword">if</span> (u.password &amp;&amp; (event.eventType == EventType.PreInsert || (event.eventType == EventType.PreUpdate &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
-                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>, encodePassword(u.password))
             }
         }
     }

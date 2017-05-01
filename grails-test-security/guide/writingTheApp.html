@@ -200,7 +200,7 @@ Created grails-app/controllers/grails/test/security/ApiAnnouncementController.gr
 <div class="listingblock">
 <div class="title">grails-app/controllers/grails/test/security/UrlMappings.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">apiAnnouncement</span><span class="delimiter">'</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">apiAnnouncement</span><span class="delimiter">'</span></span>)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -212,7 +212,9 @@ Created grails-app/controllers/grails/test/security/ApiAnnouncementController.gr
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
 
 <span class="keyword">import</span> <span class="include">grails.rest.RestfulController</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">ApiAnnouncementController</span> <span class="directive">extends</span> RestfulController {
     <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
 
@@ -270,7 +272,6 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
 <span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
 <span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
-
         <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
 
         <span class="predefined-type">String</span> username
@@ -310,7 +311,6 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="type">class</span> <span class="class">SecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
 
         <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
-
         <span class="predefined-type">String</span> authority
 
         <span class="directive">static</span> constraints = {
@@ -334,6 +334,7 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 <span class="keyword">import</span> <span class="include">org.codehaus.groovy.util.HashCodeHelper</span>
 <span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Instanceof</span><span class="delimiter">'</span></span>])
 <span class="annotation">@GrailsCompileStatic</span>
 <span class="annotation">@ToString</span>(cache=<span class="predefined-constant">true</span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
 <span class="type">class</span> <span class="class">UserSecurityRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
@@ -350,14 +351,14 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
                 }
         }
 
-    <span class="annotation">@Override</span>
+        <span class="annotation">@Override</span>
         <span class="type">int</span> hashCode() {
-            <span class="type">int</span> hashCode = HashCodeHelper.initHash()
-        <span class="keyword">if</span> (user) {
-            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
+                <span class="type">int</span> hashCode = HashCodeHelper.initHash()
+                <span class="keyword">if</span> (user) {
+                        hashCode = HashCodeHelper.updateHash(hashCode, user.id)
                 }
                 <span class="keyword">if</span> (securityRole) {
-                    hashCode = HashCodeHelper.updateHash(hashCode, securityRole.id)
+                        hashCode = HashCodeHelper.updateHash(hashCode, securityRole.id)
                 }
                 hashCode
         }
@@ -373,7 +374,7 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
         <span class="directive">private</span> <span class="directive">static</span> DetachedCriteria criteriaFor(<span class="type">long</span> userId, <span class="type">long</span> securityRoleId) {
                 UserSecurityRole.where {
                         user == User.load(userId) &amp;&amp;
-                        securityRole == SecurityRole.load(securityRoleId)
+                                        securityRole == SecurityRole.load(securityRoleId)
                 }
         }
 
@@ -432,10 +433,11 @@ generates and registers a bean to handle password encoding:</p>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.ApplicationEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">UnnecessaryGetter</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Instanceof</span><span class="delimiter">'</span></span>])
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> <span class="directive">extends</span> AbstractPersistenceEventListener {
 
@@ -451,7 +453,7 @@ generates and registers a bean to handle password encoding:</p>
         <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
             User u = (event.entityObject <span class="keyword">as</span> User)
             <span class="keyword">if</span> (u.password &amp;&amp; (event.eventType == EventType.PreInsert || (event.eventType == EventType.PreUpdate &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
-                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>, encodePassword(u.password))
             }
         }
     }
@@ -645,21 +647,21 @@ class BootStrap {
 <span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
 <span class="annotation">@Integration</span>
 <span class="annotation">@Rollback</span>
 <span class="type">class</span> <span class="class">ApiAnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test /api/announcements url is secured</span><span class="delimiter">&quot;</span></span>() {
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test /api/announcements url is secured</span><span class="delimiter">'</span></span>() {
         <span class="key">given</span>:
         RestBuilder rest = <span class="keyword">new</span> RestBuilder()
 
         <span class="key">when</span>:
         <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
         }
 
         <span class="key">then</span>:
@@ -674,8 +676,8 @@ class BootStrap {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the sherlock</span><span class="delimiter">'</span></span>
         RestBuilder rest = <span class="keyword">new</span> RestBuilder()
         <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="5"></i><b>(5)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
             json {
                 username = <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>
                 password = <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>
@@ -694,8 +696,8 @@ class BootStrap {
 
         <span class="key">when</span>:
         resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) {
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Authorization</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="6"></i><b>(6)</b>
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="6"></i><b>(6)</b>
         }
 
         <span class="key">then</span>:
@@ -707,8 +709,8 @@ class BootStrap {
         RestBuilder rest = <span class="keyword">new</span> RestBuilder()
 
         <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
             json {
                 username = <span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>
                 password = <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>
@@ -728,8 +730,8 @@ class BootStrap {
 
         <span class="key">when</span>:
         resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) {
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Authorization</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
         }
 
         <span class="key">then</span>:
@@ -801,16 +803,16 @@ class BootStrap {
 <span class="keyword">import</span> <span class="include">geb.Page</span>
 
 <span class="type">class</span> <span class="class">LoginPage</span> <span class="directive">extends</span> Page {
-    <span class="directive">static</span> url = <span class="string"><span class="delimiter">&quot;</span><span class="content">/login/auth</span><span class="delimiter">&quot;</span></span>
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/login/auth</span><span class="delimiter">'</span></span>
 
     <span class="directive">static</span> at = {
-        title == <span class="string"><span class="delimiter">&quot;</span><span class="content">Login</span><span class="delimiter">&quot;</span></span>
+        title == <span class="string"><span class="delimiter">'</span><span class="content">Login</span><span class="delimiter">'</span></span>
     }
 
     <span class="directive">static</span> content = {
-        loginButton { <span class="error">$</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">#submit</span><span class="delimiter">&quot;</span></span>, <span class="integer">0</span>) }
-        usernameInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">#username</span><span class="delimiter">&quot;</span></span>, <span class="integer">0</span>) }
-        passwordInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">#password</span><span class="delimiter">&quot;</span></span>, <span class="integer">0</span>) }
+        loginButton { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        usernameInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#username</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        passwordInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#password</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
     }
 
     <span class="type">void</span> login(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password) {
@@ -829,10 +831,10 @@ class BootStrap {
 <span class="keyword">import</span> <span class="include">geb.Page</span>
 
 <span class="type">class</span> <span class="class">AnnouncementListingPage</span> <span class="directive">extends</span> Page {
-    <span class="directive">static</span> url = <span class="string"><span class="delimiter">&quot;</span><span class="content">/announcement/index</span><span class="delimiter">&quot;</span></span>
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
 
     <span class="directive">static</span> at = {
-        <span class="error">$</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">#list-announcement</span><span class="delimiter">&quot;</span></span>).text()?.contains <span class="string"><span class="delimiter">&quot;</span><span class="content">Announcement List</span><span class="delimiter">&quot;</span></span>
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#list-announcement</span><span class="delimiter">'</span></span>).text()?.contains <span class="string"><span class="delimiter">'</span><span class="content">Announcement List</span><span class="delimiter">'</span></span>
     }
 }</code></pre>
 </div>
@@ -845,10 +847,11 @@ class BootStrap {
 <span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
 <span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
 
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> GebSpec {
 
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_BOSS</span><span class="delimiter">&quot;</span></span>() {
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_BOSS</span><span class="delimiter">'</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">try to visit announcement listing without login</span><span class="delimiter">'</span></span>
         go <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
 
@@ -862,7 +865,7 @@ class BootStrap {
         at AnnouncementListingPage
     }
 
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_EMPLOYEE</span><span class="delimiter">&quot;</span></span>() {
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">try to visit announcement listing without login</span><span class="delimiter">'</span></span>
         go <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
 
