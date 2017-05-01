@@ -89,13 +89,14 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
-
 
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
 <span class="annotation">@TestFor</span>(ClassroomGradesNotificationService)
 <span class="annotation">@Mock</span>([Student, Classroom]) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification {
@@ -103,28 +104,28 @@ function addJsClass() {
     <span class="annotation">@Shared</span> Classroom classroom
 
     <span class="keyword">def</span> <span class="function">setup</span>() {
-        classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>)
+        classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>)
         [
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
-                [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">grade</span>: <span class="integer">93</span>]
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">91</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">95</span>],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">93</span>],
         ].each {
             classroom.addToStudents(<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="local-variable">it</span>.name, <span class="key">grade</span>: <span class="local-variable">it</span>.grade))
         }
     }
 
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email students with mock collaborator</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">students are part of a classroom</span><span class="delimiter">&quot;</span></span>
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test email students with mock collaborator</span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">'</span><span class="content">students are part of a classroom</span><span class="delimiter">'</span></span>
         <span class="keyword">def</span> mockService = Mock(EmailService) <i class="conum" data-value="2"></i><b>(2)</b>
         service.emailService = mockService <i class="conum" data-value="3"></i><b>(3)</b>
 
-        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">service is called to email students</span><span class="delimiter">&quot;</span></span>
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">service is called to email students</span><span class="delimiter">'</span></span>
         <span class="type">int</span> emailCount = service.emailClassroomStudents(classroom) <i class="conum" data-value="4"></i><b>(4)</b>
 
         <span class="key">then</span>:
-        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 95</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span> <i class="conum" data-value="4"></i><b>(4)</b>
-        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 91</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span>
-        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>, <span class="key">from</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Smith</span><span class="delimiter">&quot;</span></span>, <span class="key">note</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Grade is 93</span><span class="delimiter">&quot;</span></span>]) &gt;&gt; <span class="integer">1</span>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 95</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 91</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 93</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span>
         emailCount == <span class="integer">3</span>
     }
 
