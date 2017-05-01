@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Cloud Storage</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/googleCloud.html"><strong>3</strong><span>Cloud SDK</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appEngine.html"><strong>4</strong><span>Google App Engine</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cloudSQL.html"><strong>5</strong><span>Cloud SQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cloudStorage.html"><strong>6</strong><span>Cloud Storage</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/deployingTheApp.html"><strong>7</strong><span>Deploying the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/logging.html"><strong>8</strong><span>Logging</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/learnMore.html"><strong>9</strong><span>Learn More</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>10</strong><span>Help With Grails</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendixA.html"><strong>11</strong><span>Appendix A - Scaffolding</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/cloudSQL.html">&lt;&lt; <strong>5</strong><span>Cloud SQL</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/deployingTheApp.html"><strong>7</strong><span>Deploying the App</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="cloudStorage">6 Cloud Storage</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-cloud/edit/master/src/main/docs/guide/cloudStorage.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We allow our users to upload a book cover image. To store the images in the Cloud, we use <a href="https://cloud.google.com/storage/">Google Cloud Storage</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Google Cloud Storage is unified object storage for developers and enterprises, from live data serving to data analytics/ML to data archiving.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p><a href="https://console.cloud.google.com/flows/enableapi?apiid=storage_api,logging,sqladmin.googleapis.com&amp;redirect=https://console.cloud.google.com&amp;_ga=1.20629880.1963584502.1488379440">Enable Cloud Datastore API</a> for the project.</p>
+</div>
+<div class="paragraph">
+<p>We use a Grails Command Object and two controller actions to handle the image upload:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/FeaturedImageCommand.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.multipart.MultipartFile</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">FeaturedImageCommand</span> <span class="directive">implements</span> Validateable {
+    MultipartFile featuredImageFile
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">Long</span> version
+
+    <span class="directive">static</span> constraints = {
+        id <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        version <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        featuredImageFile  <span class="key">validator</span>: { MultipartFile val, FeaturedImageCommand obj -&gt;
+            <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="keyword">if</span> ( val.empty ) {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+
+            [<span class="string"><span class="delimiter">'</span><span class="content">jpeg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">jpg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">png</span><span class="delimiter">'</span></span>].any { <span class="predefined-type">String</span> extension -&gt;
+                 val.originalFilename?.toLowerCase()?.endsWith(extension)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/BookController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Book</span> book) {
+    respond book
+}
+<span class="annotation">@CompileDynamic</span>
+<span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
+
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond(cmd.errors, <span class="key">model</span>: [<span class="key">book</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">def</span> book = uploadBookFeaturedImageService.uploadFeaturedImage(cmd)
+    <span class="keyword">if</span> (book == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (book.hasErrors()) {
+        respond(book.errors, <span class="key">model</span>: [<span class="key">book</span>: book], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
+    }
+
+    request.withFormat {
+        form multipartForm {
+            flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>), book.id])
+            redirect book
+        }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond book, [<span class="key">status</span>: OK] }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Our business logic is handled in <code>UploadBookFeaturedImageService.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/UploadBookFeaturedImageService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">org.grails.plugins.googlecloud.storage.GoogleCloudStorageService</span>
+<span class="keyword">import</span> <span class="include">org.joda.time.DateTime</span>
+<span class="keyword">import</span> <span class="include">org.joda.time.DateTimeZone</span>
+<span class="keyword">import</span> <span class="include">org.joda.time.format.DateTimeFormat</span>
+<span class="keyword">import</span> <span class="include">org.joda.time.format.DateTimeFormatter</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UploadBookFeaturedImageService</span> {
+
+    BookGormService bookGormService
+
+    GoogleCloudStorageService googleCloudStorageService
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="predefined-type">String</span> fileSuffix() {
+        DateTimeFormatter dtf = DateTimeFormat.forPattern(<span class="string"><span class="delimiter">'</span><span class="content">-YYYY-MM-dd-HHmmssSSS</span><span class="delimiter">'</span></span>)
+        DateTime dt = DateTime.now(DateTimeZone.UTC)
+        dt.toString(dtf)
+    }
+
+    <span class="predefined-type">Book</span> uploadFeaturedImage(FeaturedImageCommand cmd) {
+        <span class="predefined-type">String</span> fileName = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd.featuredImageFile.originalFilename<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>fileSuffix()<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">cloud storage file name </span><span class="inline"><span class="inline-delimiter">$</span>fileName</span><span class="delimiter">&quot;</span></span>
+
+        <span class="predefined-type">String</span> fileUrl = googleCloudStorageService.storeMultipartFile(fileName, cmd.featuredImageFile)
+
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">cloud storage media url </span><span class="inline"><span class="inline-delimiter">$</span>fileUrl</span><span class="delimiter">&quot;</span></span>
+
+        <span class="keyword">def</span> book = bookGormService.updateFeaturedImageUrl(cmd.id, cmd.version, fileName, fileUrl)
+        <span class="keyword">if</span> ( !book || book.hasErrors() ) {
+            googleCloudStorageService.deleteFile(fileName)
+        }
+        book
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code which interacts with Cloud Storage is encapsulated in a service:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/org/grails/plugins/googlecloud/storage/GoogleCloudStorageService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.plugins.googlecloud.storage
+
+<span class="keyword">import</span> <span class="include">com.google.cloud.storage.Acl</span>
+<span class="keyword">import</span> <span class="include">com.google.cloud.storage.BlobId</span>
+<span class="keyword">import</span> <span class="include">com.google.cloud.storage.BlobInfo</span>
+<span class="keyword">import</span> <span class="include">com.google.cloud.storage.Storage</span>
+<span class="keyword">import</span> <span class="include">com.google.cloud.storage.StorageOptions</span>
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.multipart.MultipartFile</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">GrailsStatelessService</span><span class="delimiter">'</span></span>)
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">GoogleCloudStorageService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    Storage storage = StorageOptions.defaultInstance.service
+
+    <span class="comment">// Google Cloud Platform project ID.</span>
+    <span class="predefined-type">String</span> projectId
+
+    <span class="comment">// Cloud Storage Bucket</span>
+    <span class="predefined-type">String</span> bucket
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        projectId = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">googlecloud.projectid</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+        bucket = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">googlecloud.cloudStorage.bucket</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, projectId)
+    }
+
+    <span class="predefined-type">String</span> storeMultipartFile(<span class="predefined-type">String</span> fileName, MultipartFile multipartFile) {
+        storeInputStream(fileName, multipartFile.inputStream)
+    }
+
+    <span class="predefined-type">String</span> storeInputStream(<span class="predefined-type">String</span> fileName, <span class="predefined-type">InputStream</span> inputStream) {
+        BlobInfo blobInfo = storage.create(readableBlobInfo(bucket, fileName), inputStream)
+        blobInfo.mediaLink
+    }
+
+    <span class="predefined-type">String</span> storeBytes(<span class="predefined-type">String</span> fileName, <span class="type">byte</span><span class="type">[]</span> bytes) {
+        BlobInfo blobInfo = storage.create(readableBlobInfo(bucket, fileName), bytes)
+        blobInfo.mediaLink
+    }
+
+    <span class="directive">private</span> <span class="directive">static</span> BlobInfo readableBlobInfo(<span class="predefined-type">String</span> bucket, <span class="predefined-type">String</span> fileName) {
+        BlobInfo.newBuilder(bucket, fileName)
+                <span class="comment">// Modify access list to allow all users with link to read file</span>
+                .setAcl([<span class="predefined-type">Acl</span>.of(<span class="predefined-type">Acl</span>.User.ofAllUsers(), <span class="predefined-type">Acl</span>.Role.READER)])
+                .build()
+    }
+
+    <span class="type">boolean</span> deleteFile(<span class="predefined-type">String</span> fileName) {
+        BlobId blobId = BlobId.of(bucket, fileName)
+        storage.delete(blobId)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above service uses two configuration parameters:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">googlecloud</span>:
+    <span class="key">projectid</span>: grailstest
+    <span class="key">cloudStorage</span>:
+        <span class="key">bucket</span>: grailstest</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the upload of an image to Google Cloud is successful, we save the reference to the media url in our domain class.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/BookGormService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
+<span class="predefined-type">Book</span> updateFeaturedImageUrl(<span class="predefined-type">Long</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> fileName, <span class="predefined-type">String</span> featuredImageUrl, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+    <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.get(id)
+    <span class="keyword">if</span> ( !book ) {
+        <span class="keyword">return</span> <span class="predefined-constant">null</span>
+    }
+    book.version = version
+    book.fileName = fileName
+    book.featuredImageUrl = featuredImageUrl
+    book.save(<span class="key">flush</span>: flush)
+    book
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/cloudSQL.html">&lt;&lt; <strong>5</strong><span>Cloud SQL</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/deployingTheApp.html"><strong>7</strong><span>Deploying the App</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-google-cloud"><img src="https://travis-ci.org/grails-guides/grails-google-cloud.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-google-cloud">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-google-cloud.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-cloud.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-cloud'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-google-cloud.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-google-cloud/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

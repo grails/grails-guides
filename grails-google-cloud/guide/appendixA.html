@@ -1,0 +1,470 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>11 Appendix A - Scaffolding</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/googleCloud.html"><strong>3</strong><span>Cloud SDK</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appEngine.html"><strong>4</strong><span>Google App Engine</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cloudSQL.html"><strong>5</strong><span>Cloud SQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/cloudStorage.html"><strong>6</strong><span>Cloud Storage</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/deployingTheApp.html"><strong>7</strong><span>Deploying the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/logging.html"><strong>8</strong><span>Logging</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/learnMore.html"><strong>9</strong><span>Learn More</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>10</strong><span>Help With Grails</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendixA.html"><strong>11</strong><span>Appendix A - Scaffolding</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/helpWithGrails.html">&lt;&lt; <strong>10</strong><span>Help With Grails</span></a></div>
+                
+
+                
+
+
+                
+
+                
+
+<h1 id="appendixA">11 Appendix A - Scaffolding</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-cloud/edit/master/src/main/docs/guide/appendixA.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_book_controller">Book Controller</h3>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/BookController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookController</span> {
+
+<span class="directive">static</span> allowedMethods = [
+        <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">show</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">edit</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">create</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">editFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+        <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+        <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+        <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
+]
+
+UploadBookFeaturedImageService uploadBookFeaturedImageService
+
+BookGormService bookGormService
+
+<span class="annotation">@CompileDynamic</span>
+<span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+    params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+    <span class="keyword">def</span> (l, total) = bookGormService.list(params)
+    respond l, <span class="key">model</span>: [<span class="key">bookCount</span>: total]
+}
+
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Book</span> book) {
+    respond book
+}
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">GrailsMassAssignment</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="keyword">def</span> <span class="function">create</span>() {
+    respond <span class="keyword">new</span> <span class="predefined-type">Book</span>(params)
+}
+
+<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+<span class="keyword">def</span> <span class="function">edit</span>(<span class="predefined-type">Book</span> book) {
+    respond book
+}
+
+<span class="annotation">@CompileDynamic</span>
+<span class="keyword">def</span> <span class="function">save</span>(NameCommand cmd) {
+    <span class="keyword">if</span> (cmd == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond cmd.errors, <span class="key">model</span>: [<span class="key">book</span>: cmd], <span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">def</span> book = bookGormService.save(cmd)
+
+    <span class="keyword">if</span> ( book == <span class="predefined-constant">null</span> ) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> ( book.hasErrors() ) {
+        respond book.errors, <span class="key">model</span>: [<span class="key">book</span>: book], <span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+
+    request.withFormat {
+        form multipartForm {
+            flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.created.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>), book.id])
+            redirect book
+        }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond book, [<span class="key">status</span>: CREATED] }
+    }
+}
+
+<span class="annotation">@CompileDynamic</span>
+<span class="keyword">def</span> <span class="function">update</span>(NameUpdateCommand cmd) {
+    <span class="keyword">if</span> (cmd == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond cmd.errors, <span class="key">model</span>: [<span class="key">book</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">def</span> book = bookGormService.update(cmd)
+
+    <span class="keyword">if</span> ( book == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> ( book.hasErrors() ) {
+        respond book.errors, <span class="key">model</span>: [<span class="key">book</span>: book], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+
+    request.withFormat {
+        form multipartForm {
+            flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>), book.id])
+            redirect book
+        }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond book, [<span class="key">status</span>: OK] }
+    }
+}
+
+<span class="annotation">@CompileDynamic</span>
+<span class="keyword">def</span> <span class="function">delete</span>() {
+
+    <span class="predefined-type">Long</span> bookId = params.long(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+
+    <span class="keyword">if</span> ( !bookId ) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    bookGormService.deleteById(bookId)
+
+    request.withFormat {
+        form multipartForm {
+            flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.deleted.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>), bookId])
+            redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>
+        }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { render <span class="key">status</span>: NO_CONTENT }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_book_services">Book Services</h3>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/BookService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/grails-google-cloud/complete/grails-app/controllers/demo/BookService.groovy[indent=<span class="integer">0</span>]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_book_gsps">Book GSPs</h3>
+<div class="listingblock">
+<div class="title">/grails-app/views/book/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;<span class="key">g</span>:set var=<span class="string"><span class="delimiter">&quot;</span><span class="content">entityName</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.list.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>    &lt;body&gt;
+        &lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#list-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">skip</span><span class="delimiter">&quot;</span></span> <span class="class">tabindex</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">-1</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.link.skip.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Skip to content&amp;hellip;</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>        &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">nav</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span> <span class="class">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink(<span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.home.label</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.new.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">list-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content scaffold-list</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;h1&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.list.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">status</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">f</span>:table collection=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>bookList<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> properties=<span class="string"><span class="delimiter">&quot;</span><span class="content">['name']</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">pagination</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="class">g</span>:paginate total=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>bookCount ?: <span class="integer">0</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/book/show.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;<span class="key">g</span>:set var=<span class="string"><span class="delimiter">&quot;</span><span class="content">entityName</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.show.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>    &lt;body&gt;
+        &lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#show-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">skip</span><span class="delimiter">&quot;</span></span> <span class="class">tabindex</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">-1</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.link.skip.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Skip to content&amp;hellip;</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>        &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">nav</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span> <span class="class">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink(<span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.home.label</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">list</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.list.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.new.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">show-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content scaffold-show</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">status</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>            &lt;h1&gt;&lt;<span class="key">f</span>:display bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> property=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book.featuredImageUrl<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;img src=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book.featuredImageUrl<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">400</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:form resource=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> method=<span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">buttons</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">edit</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">editFeaturedImage</span><span class="delimiter">&quot;</span></span> resource=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">book.featuredImageUrl.edit.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Edit Featured Image</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;</span></span><span class="error">
+</span>                    &lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">edit</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">edit</span><span class="delimiter">&quot;</span></span> resource=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.button.edit.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Edit</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;</span></span><span class="error">
+</span>                    &lt;input <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">delete</span><span class="delimiter">&quot;</span></span> <span class="class">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.button.delete.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Delete</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> onclick=<span class="string"><span class="delimiter">&quot;</span><span class="content">return confirm('</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.button.delete.confirm.message</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Are you sure?</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="content">');</span><span class="delimiter">&quot;</span></span> /&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/book/edit.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;<span class="key">g</span>:set var=<span class="string"><span class="delimiter">&quot;</span><span class="content">entityName</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Book</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.edit.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>    &lt;body&gt;
+        &lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#edit-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">skip</span><span class="delimiter">&quot;</span></span> <span class="class">tabindex</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">-1</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.link.skip.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Skip to content&amp;hellip;</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>        &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">nav</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span> <span class="class">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink(<span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.home.label</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">list</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.list.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.new.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">edit-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content scaffold-edit</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;h1&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.edit.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">status</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:hasErrors bean=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">errors</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">alert</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="key">g</span>:eachError bean=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> var=<span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;li &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error <span class="keyword">in</span> org.springframework.validation.FieldError<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;data-field-id=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error.field<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;&gt;&lt;g:message error=&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error<span class="inline-delimiter">}</span></span><span class="content">&quot;</span><span class="delimiter">/</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:eachError&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:hasErrors&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:form resource=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> method=<span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="key">g</span>:hiddenField name=<span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book?.version<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+                &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>                &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">buttons</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">input</span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span> <span class="class">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.button.update.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Update</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/book/create.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;<span class="key">g</span>:set var=<span class="string"><span class="delimiter">&quot;</span><span class="content">entityName</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.create.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>    &lt;body&gt;
+        &lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#create-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">skip</span><span class="delimiter">&quot;</span></span> <span class="class">tabindex</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">-1</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.link.skip.label</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Skip to content&amp;hellip;</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>        &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">nav</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">home</span><span class="delimiter">&quot;</span></span> <span class="class">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink(<span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.home.label</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+                &lt;li&gt;&lt;<span class="key">g</span>:link <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">list</span><span class="delimiter">&quot;</span></span> <span class="class">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.list.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">create-book</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content scaffold-create</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;h1&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.create.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">status</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:hasErrors bean=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">errors</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">alert</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="key">g</span>:eachError bean=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> var=<span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;li &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error <span class="keyword">in</span> org.springframework.validation.FieldError<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;data-field-id=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error.field<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;&gt;&lt;g:message error=&quot;</span><span class="inline"><span class="inline-delimiter">${</span>error<span class="inline-delimiter">}</span></span><span class="content">&quot;</span><span class="delimiter">/</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:eachError&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:hasErrors&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">g</span>:form action=<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl, fileName</span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>                &lt;fieldset <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">buttons</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">g</span>:submitButton name=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span> <span class="class">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.button.create.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Create</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> /&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">fieldset&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/helpWithGrails.html">&lt;&lt; <strong>10</strong><span>Help With Grails</span></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-google-cloud"><img src="https://travis-ci.org/grails-guides/grails-google-cloud.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-google-cloud">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-google-cloud.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-cloud.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-cloud'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-google-cloud.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-google-cloud/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
