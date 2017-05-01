@@ -124,13 +124,11 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">repositories {
+<pre class="CodeRay highlight"><code data-lang="groovy">    maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
     maven { url <span class="string"><span class="delimiter">'</span><span class="content">http://dl.bintray.com/agorapulse/libs</span><span class="delimiter">'</span></span> }
-}
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-boot</span><span class="delimiter">&quot;</span></span>
-
-assets {</code></pre>
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -313,20 +311,20 @@ object to validate the upload form submission. If it does not find validation er
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.*</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
 
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
 <span class="type">class</span> <span class="class">HotelController</span> {
 
-    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>,
-                             <span class="key">update</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>,
-                             <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>,
-                             <span class="key">delete</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>]
-
-    <span class="keyword">def</span> uploadHotelFeaturedImageService
-
-    <span class="keyword">def</span> hotelGormService
-
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
     <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
 
         <span class="keyword">if</span> (cmd.hasErrors()) {
@@ -350,9 +348,10 @@ object to validate the upload form submission. If it does not find validation er
                 flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel</span><span class="delimiter">'</span></span>), hotel.id])
                 redirect hotel
             }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ respond hotel, [<span class="key">status</span>: OK] }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond hotel, [<span class="key">status</span>: OK] }
         }
-    }</code></pre>
+    }
+                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -420,8 +419,7 @@ file to AWS S3. In case of error, the service deletes the file it has previously
 <div class="title">/build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">bootRun {
-    systemProperties <span class="predefined-type">System</span>.properties
-}</code></pre>
+    systemProperties <span class="predefined-type">System</span>.properties</code></pre>
 </div>
 </div>
 <div class="paragraph">

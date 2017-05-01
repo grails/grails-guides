@@ -269,20 +269,20 @@ object to validate the upload form submission. If it does not find validation er
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.*</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
 
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
 <span class="type">class</span> <span class="class">PointOfInterestController</span> {
 
-    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">POST</span><span class="delimiter">&quot;</span></span>,
-                             <span class="key">update</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PUT</span><span class="delimiter">&quot;</span></span>,
-                             <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-                             <span class="key">delete</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DELETE</span><span class="delimiter">&quot;</span></span>]
-
-    <span class="keyword">def</span> uploadPointOfInterestFeaturedImageService
-
-    <span class="keyword">def</span> pointOfInterestGormService
-
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
     <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
 
         <span class="keyword">if</span> (cmd.hasErrors()) {
@@ -306,9 +306,10 @@ object to validate the upload form submission. If it does not find validation er
                 flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">pointOfInterest.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Point of Interest</span><span class="delimiter">'</span></span>), pointOfInterest.id])
                 redirect pointOfInterest
             }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>{ respond pointOfInterest, [<span class="key">status</span>: OK] }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond pointOfInterest, [<span class="key">status</span>: OK] }
         }
-    }</code></pre>
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -337,13 +338,16 @@ In case of error, the service deletes the file it has previously transfered</p>
 
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">GrailsStatelessService</span><span class="delimiter">'</span></span>)
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">UploadPointOfInterestFeaturedImageService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    PointOfInterestGormService pointOfInterestGormService
 
     <span class="predefined-type">String</span> cdnFolder
     <span class="predefined-type">String</span> cdnRootUrl
-
-    <span class="keyword">def</span> pointOfInterestGormService
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> setConfiguration(Config co) {
@@ -351,6 +355,7 @@ In case of error, the service deletes the file it has previously transfered</p>
         cdnRootUrl = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">grails.guides.cdnRootUrl</span><span class="delimiter">'</span></span>)
     }
 
+    <span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">JavaIoPackageAccess</span><span class="delimiter">'</span></span>)
     PointOfInterest uploadFeatureImage(FeaturedImageCommand cmd) {
 
         <span class="predefined-type">String</span> filename = cmd.featuredImageFile.originalFilename
