@@ -82,7 +82,7 @@ function addJsClass(el) {
                                                 <p></p>
                                                 <p>This guide will explain how you can use command objects to validate input data in a Grails application</p>
                                                 <p><strong>Authors:</strong> Matthew Moss</p>
-                                                <p><strong>Grails Version:</strong> 3.2.8</p>
+                                                <p><strong>Grails Version:</strong> 3.2.9</p>
 
                                             </div>
 
@@ -270,6 +270,7 @@ the <code>show</code> action to look like this:</p>
 <span class="keyword">import</span> <span class="include">org.springframework.http.HttpStatus</span>
 
 <span class="type">class</span> <span class="class">PlayerController</span> {
+
     <span class="keyword">def</span> <span class="function">index</span>() {
         respond Player.list(params), <span class="key">model</span>: [<span class="key">playerCount</span>: Player.count()]
     }
@@ -328,7 +329,8 @@ action.</p>
 <div class="listingblock">
 <div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">create</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">GrailsMassAssignment</span><span class="delimiter">'</span></span>])
+    <span class="keyword">def</span> <span class="function">create</span>() {
         respond <span class="keyword">new</span> Player(params)
     }</code></pre>
 </div>
@@ -518,20 +520,20 @@ line to the dependencies block.</p>
 
 <span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>])
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">PlayerControllerFuncSpec</span> <span class="directive">extends</span> Specification {
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test save validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test save validation</span><span class="delimiter">'</span></span>() {
         <span class="key">given</span>:
         RestBuilder rest = <span class="keyword">new</span> RestBuilder()
 
         <span class="key">when</span>:
         <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
             json {
                 name = <span class="string"><span class="delimiter">'</span><span class="content">Bob Smith</span><span class="delimiter">'</span></span>
                 wins = <span class="integer">42</span>
@@ -776,18 +778,14 @@ submission.</p>
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
 <span class="annotation">@TestFor</span>(PlayerController)
 <span class="annotation">@Mock</span>([Player])
 <span class="type">class</span> <span class="class">PlayerControllerSpec</span> <span class="directive">extends</span> Specification {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test update</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
-        <span class="keyword">def</span>  player = <span class="keyword">new</span> Player(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>,
-                <span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="content">XCOM: Enemy Unkown</span><span class="delimiter">'</span></span>,
-                <span class="key">region</span>: <span class="string"><span class="delimiter">'</span><span class="content">Spain</span><span class="delimiter">'</span></span>,
-                <span class="key">wins</span>: <span class="integer">3</span>,
-                <span class="key">losses</span>: <span class="integer">2</span>
-        )
+        <span class="keyword">def</span>  player = <span class="keyword">new</span> Player(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="content">XCOM: Enemy Unkown</span><span class="delimiter">'</span></span>, <span class="key">region</span>: <span class="string"><span class="delimiter">'</span><span class="content">Spain</span><span class="delimiter">'</span></span>, <span class="key">wins</span>: <span class="integer">3</span>, <span class="key">losses</span>: <span class="integer">2</span>)
         player.save()
         params.id = player.id
         params.name = <span class="string"><span class="delimiter">'</span><span class="content">Sergio del Amo</span><span class="delimiter">'</span></span>
@@ -857,6 +855,7 @@ and add constraints.</p>
 
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>])
 <span class="type">class</span> <span class="class">PlayerInfoSpec</span> <span class="directive">extends</span> Specification {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.region can be null</span><span class="delimiter">&quot;</span></span>() {
