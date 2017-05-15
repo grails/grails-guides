@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Multi-Tenancy Unit Testing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/integrationTest.html"><strong>4</strong><span>Functional Tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheApp.html">&lt;&lt; <strong>2</strong><span>Writing the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/integrationTest.html"><strong>4</strong><span>Functional Tests</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="testingTheApp">3 Multi-Tenancy Unit Testing</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/testingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Testing controller logic that uses Multi-Tenancy requires special considerations.</p>
+</div>
+<div class="paragraph">
+<p>Luckily GORM 6.1 makes it relatively simple to write unit tests.</p>
+</div>
+<div class="paragraph">
+<p>To write a unit test for the <code>VehicleController</code> class create a new <code>src/test/groovy/example/VehicleControllerSpec.groovy</code> Spock specification:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Stepwise</span>
+<span class="annotation">@TestFor</span>(VehicleController)
+<span class="type">class</span> <span class="class">VehicleControllerSpec</span> <span class="directive">extends</span> HibernateSpec {
+        ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see above the test extends <code>HibernateSpec</code>.</p>
+</div>
+<div class="paragraph">
+<p>To make testing simpler override the <code>tenantResolverClass</code> by overriding the <code>getConfiguration()</code> method of <code>HibernateSpec</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
+<span class="predefined-type">Map</span> getConfiguration() {
+    [(Settings.SETTING_MULTI_TENANT_RESOLVER_CLASS): SystemPropertyTenantResolver]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will allow you to use <a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/resolvers/SystemPropertyTenantResolver.html">SystemPropertyTenantResolver</a> for changing the tenant id within the test.</p>
+</div>
+<div class="paragraph">
+<p>Next step is to provide a <code>setup</code> method that configures the <code>VehicleService</code> for the controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">VehicleService vehicleService <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="keyword">def</span> <span class="function">setup</span>() {
+    <span class="predefined-type">System</span>.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, <span class="string"><span class="delimiter">'</span><span class="content">audi</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    vehicleService = hibernateDatastore.getService(VehicleService) <i class="conum" data-value="3"></i><b>(3)</b>
+    controller.vehicleService = vehicleService <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define a <code>vehicleService</code> as a property of the unit test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set the tenant id to <code>audi</code> for the purposes of the test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Lookup the <code>VehicleService</code> implementation from GORM</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Assign the <code>VehicleService</code> to the controller under test</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To ensure proper cleanup you should also clear the tenant id in a <code>cleanup</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">cleanup</span>() {
+    <span class="predefined-type">System</span>.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that done it is trivial to test the controller logic, for example to test the <code>index</code> action with no data:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">Test the index action returns the correct model</span><span class="delimiter">'</span></span>() {
+
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">The index action is executed</span><span class="delimiter">'</span></span>
+    controller.index()
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The model is correct</span><span class="delimiter">'</span></span>
+    !model.vehicleList
+    model.vehicleCount == <span class="integer">0</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also write tests to test the case where no tenant id is present by clearing the tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">Test the index action with no tenant id</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">there is no tenant id</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">System</span>.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+    controller.index()
+
+    <span class="key">then</span>:
+    thrown(TenantNotFoundException)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Testing more complex interactions like saving data is possible too:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/VehicleControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">Test the save action correctly persists an instance</span><span class="delimiter">'</span></span>() {
+
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">The save action is executed with an invalid instance</span><span class="delimiter">'</span></span>
+    request.contentType = FORM_CONTENT_TYPE
+    request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
+    controller.save(<span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="integer">1900</span>)
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The create view is rendered again with the correct model</span><span class="delimiter">'</span></span>
+    model.vehicle != <span class="predefined-constant">null</span>
+    view == <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">The save action is executed with a valid instance</span><span class="delimiter">'</span></span>
+    response.reset()
+    controller.save(<span class="string"><span class="delimiter">'</span><span class="content">A5</span><span class="delimiter">'</span></span>, <span class="integer">2011</span>)
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">A redirect is issued to the show action</span><span class="delimiter">'</span></span>
+    response.redirectedUrl == <span class="string"><span class="delimiter">'</span><span class="content">/vehicles/1</span><span class="delimiter">'</span></span>
+    controller.flash.message != <span class="predefined-constant">null</span>
+    vehicleService.count() == <span class="integer">1</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that within the assertions of the above test we use the <code>vehicleService</code> which makes sure the correct database connection is used when making the assertion.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheApp.html">&lt;&lt; <strong>2</strong><span>Writing the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/integrationTest.html"><strong>4</strong><span>Functional Tests</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/database-per-tenant"><img src="https://travis-ci.org/grails-guides/database-per-tenant.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/database-per-tenant">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/database-per-tenant.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/database-per-tenant.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/database-per-tenant'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/database-per-tenant.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/database-per-tenant/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

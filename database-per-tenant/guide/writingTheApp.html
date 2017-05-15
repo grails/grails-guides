@@ -1,0 +1,968 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/integrationTest.html"><strong>4</strong><span>Functional Tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#setupMultitenancy"><strong>2.1</strong><span>Setup Multi-Tenancy</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#multiTenancyMode"><strong>2.1.1</strong><span>The Multi-Tenancy Mode</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#multiTenancyResolver"><strong>2.1.2</strong><span>The TenantResolver</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#dataSources"><strong>2.1.3</strong><span>Multiple Data Sources</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#domainClasses"><strong>2.2</strong><span>Creating the Domain Classes</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#seedData"><strong>2.3</strong><span>Setup Test Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tenantSelection"><strong>2.4</strong><span>Implementing Tenant Selection</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#multiTenantLogic"><strong>2.5</strong><span>Writing Multi-Tenant Aware Data Logic</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#readingData"><strong>2.5.1</strong><span>Executing Multi-Tenant Aware Queries</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:10px"><a href="#writingData"><strong>2.5.2</strong><span>Executing Multi-Tenant Updates</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">2 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Since the application requires GORM 6.1.x the first step is to set your GORM version within <code>gradle.properties</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">gradle.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.2</span><span class="float">.9</span>
+gormVersion=<span class="float">6.1</span><span class="float">.3</span>.RELEASE
+gradleWrapperVersion=<span class="float">3.4</span><span class="float">.1</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="setupMultitenancy">2.1 Setup Multi-Tenancy</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/setupMultitenancy.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="multiTenancyMode">2.1.1 The Multi-Tenancy Mode</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/setupMultitenancy/multiTenancyMode.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In order to use Multi-Tenancy you need to setup the Multi-Tenancy mode that GORM uses, given that three distinct modes are supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#DATABASE">DATABASE</a> - Use a distinct database connection per tenant</p>
+</li>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#SCHEMA">SCHEMA</a> - Use a single database, but different physical schemas per tenant</p>
+</li>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#DISCRIMINATOR">DISCRIMINATOR</a> - Use a single database, but partition the data using a discriminator column</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Generally <code>DATABASE</code> and <code>SCHEMA</code> modes can both be considered to be physically separated, whilst <code>DISCRIMINATOR</code> mode requires more care since different tenants' data is stored in the same physical database:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/multi-tenancy-modes.png" alt="multi tenancy modes">
+</div>
+</div>
+<div class="paragraph">
+<p>In this case the required Multi-Tenancy mode is <code>DATABASE</code> and it can be configured using the <code>grails.gorm.multiTenancy.mode</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: DATABASE
+            <span class="key">tenantResolverClass</span>: org.grails.datastore.mapping.multitenancy.web.SessionTenantResolver</code></pre>
+</div>
+</div>
+
+
+<h2 id="multiTenancyResolver">2.1.2 The TenantResolver</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/setupMultitenancy/multiTenancyResolver.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Note that, in addition to the mode, the above example configures the <code>tenantResolverClass</code> to use to resolve the tenant.</p>
+</div>
+<div class="paragraph">
+<p>The <code>tenantResolverClass</code> is a class that implements the <a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a> interface.</p>
+</div>
+<div class="paragraph">
+<p>Included within GORM there are several built-in <code>TenantResolver</code> implementations including:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Available TenantResolver Implementations</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/SessionTenantResolver.html">SessionTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the HTTP session using an attribute called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/CookieTenantResolver.html">CookieTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the HTTP cookie using an attribute called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/SubDomainTenantResolver.html">SubDomainTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the current sub-domain. For example if the subdomain is <code>foo.mycompany.com</code>, the tenant id would be <code>foo</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/resolvers/SystemPropertyTenantResolver.html">SystemPropertyTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from a system property called <code>gorm.tenantId</code>. Mainly useful for testing</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The above implementations are useful to have out-of-the-box, however GORM is flexible and you can implement your own strategy by implementing the <code>TenantResolver</code> interface.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For example if you are using Spring Security you could write a <code>TenantResolver</code> that resolves the tenant id from the currently logged in user.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For this example we are going to be using <code>SessionTenantResolver</code> and storing the tenant id within the current user session.</p>
+</div>
+
+
+<h2 id="dataSources">2.1.3 Multiple Data Sources</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/setupMultitenancy/dataSources.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Apart from the default <code>dataSource</code>, we configure two additional data sources
+<code>audi</code> and <code>ford</code> for each of the tenants:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="predefined-constant">true</span>
+    <span class="key">jmxExport</span>: <span class="predefined-constant">true</span>
+    <span class="key">driverClassName</span>: org.h2.Driver
+    <span class="key">username</span>: sa
+    <span class="key">password</span>:
+    <span class="key">dbCreate</span>: create-drop
+    <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:devDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE
+
+<span class="key">dataSources</span>:
+    <span class="key">ford</span>:
+      <span class="key">dbCreate</span>: create-drop
+      <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:fordDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE
+    <span class="key">audi</span>:
+      <span class="key">dbCreate</span>: create-drop
+      <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:audiDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The names of the data sources correspond to the tenant ids that the configured <code>TenantResolver</code> should return.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If the default data source can also be considered a tenant then the value of <code>ConnectionSources.DEFAULT</code> should be returned as the tenant id.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="domainClasses">2.2 Creating the Domain Classes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/domainClasses.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When creating domain classes for your application you will typically have domain classes that are Multi-Tenant and others that are not.</p>
+</div>
+<div class="paragraph">
+<p>For domain classes which won&#8217;t be using Multi-Tenancy simply define them as you would normally do and they will be mapped to the default <code>dataSource</code>.</p>
+</div>
+<div class="paragraph">
+<p>For this example the <code>Manufacturer</code> will be the provider of tenant ids. The name of the <code>Manufacturer</code> will be used as the tenant <code>id</code> allowing access to each configured database:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/Manufacturer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="type">class</span> <span class="class">Manufacturer</span> {
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next step is to define domain classes that can only be accessed by a given tenant:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/Engine.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.MultiTenant</span>
+
+<span class="type">class</span> <span class="class">Engine</span> <span class="directive">implements</span> MultiTenant&lt;Engine&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Integer</span> cylinders
+
+    <span class="directive">static</span> constraints = {
+        cylinders <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.MultiTenant</span>
+
+<span class="type">class</span> <span class="class">Vehicle</span> <span class="directive">implements</span> MultiTenant&lt;Vehicle&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> model
+    <span class="predefined-type">Integer</span> year
+
+    <span class="directive">static</span> hasMany = [<span class="key">engines</span>: Engine]
+    <span class="directive">static</span> constraints = {
+        model <span class="key">blank</span>:<span class="predefined-constant">false</span>
+        year <span class="key">min</span>:<span class="integer">1980</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both domain class implement the <a href="http://gorm.grails.org/latest/api//grails/gorm/MultiTenant.html">MultiTenant trait</a></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>Vehicle</code> and <code>Engine</code> domain classes both implement the <a href="http://gorm.grails.org/latest/api//grails/gorm/MultiTenant.html">MultiTenant</a> trait which results in GORM resolving the database to use from the resulting tenant id returned from the configured <a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>.</p>
+</div>
+
+
+<h2 id="seedData">2.3 Setup Test Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/seedData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To setup some test data you can modify the <code>Application</code> class to implement the <code>ApplicationRunner</code> interface to run transactional logic on startup:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/Application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.boot.GrailsApp</span>
+<span class="keyword">import</span> <span class="include">grails.boot.config.GrailsAutoConfiguration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.ApplicationArguments</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.ApplicationRunner</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Application</span> <span class="directive">extends</span> GrailsAutoConfiguration <span class="directive">implements</span> ApplicationRunner { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        GrailsApp.run(Application, args)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> run(ApplicationArguments args) <span class="directive">throws</span> <span class="exception">Exception</span> { <i class="conum" data-value="2"></i><b>(2)</b>
+        Manufacturer.saveAll( <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Audi</span><span class="delimiter">'</span></span>),
+            <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ford</span><span class="delimiter">'</span></span>)
+        )
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement the <code>ApplicationRunner</code> interface</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Mark the <code>run</code> method as transactional with <code>@Transactional</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use <code>saveAll</code> to save two <code>Manufacturer</code> instances</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the example about two <code>Manufacturer</code> instances are saved that will correspond to the two tenants supported by this application. The names <code>Audi</code> and <code>Ford</code> are used and correspond to the names of the data sources configured in <code>grails-app/conf/application.yml</code>.</p>
+</div>
+
+
+<h2 id="tenantSelection">2.4 Implementing Tenant Selection</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/tenantSelection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The first step to supporting Multi-Tenancy in your application is implementing some form of tenant selection. This could be to resolve the tenant via a DNS subdomain, or it could be part of your applications registration process if you are using authentication with Spring Security.</p>
+</div>
+<div class="paragraph">
+<p>To keep things simple for the example we are going to implement a simple mechanism that provides a UI to store the <code>tenantId</code> within the users HTTP session.</p>
+</div>
+<div class="paragraph">
+<p>First create a new <code>ManufacturerController</code> use <code>create-controller</code> or your preferred IDE:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-controller Manufacturer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next modify the <code>UrlMappings.groovy</code> file to map the root of the application to the <code>index</code> action:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">manufacturer</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then define an <code>index</code> action that lists of all the Manufacturers and renders the <code>grails-app/views/index.gsp</code> view.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/ManufacturerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.web.SessionTenantResolver</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">ManufacturerController</span> {
+    <span class="annotation">@ReadOnly</span>
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">manufacturers</span>: Manufacturer.list()]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Within the <code>grails-app/views/index.gsp</code> file, simply iterate through each result and create a link to the <code>select</code> action</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">controllers</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;h2&gt;</span>Available Manufacturers:<span class="tag">&lt;/h2&gt;</span>
+    <span class="tag">&lt;ul&gt;</span>
+        <span class="tag">&lt;g:each</span> <span class="attribute-name">var</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">m</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${manufacturers}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;li</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">controller</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+                <span class="tag">&lt;g:link</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">manufacturer</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">select</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${m.name}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>${m.name}<span class="tag">&lt;/g:link&gt;</span>
+            <span class="tag">&lt;/li&gt;</span>
+        <span class="tag">&lt;/g:each&gt;</span>
+    <span class="tag">&lt;/ul&gt;</span>
+<span class="tag">&lt;/div&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>select</code> action, selects the current tenant and stores the tenant within the current user&#8217;s HTTP session:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/ManufacturerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@ReadOnly</span>
+<span class="keyword">def</span> <span class="function">select</span>(<span class="predefined-type">String</span> id) {
+    Manufacturer m = Manufacturer.where {
+        name == id
+    }.first() <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="keyword">if</span> ( m ) {
+        session.setAttribute(SessionTenantResolver.ATTRIBUTE, m.name.toLowerCase()) <i class="conum" data-value="2"></i><b>(2)</b>
+        redirect <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    <span class="keyword">else</span> {
+        render <span class="key">status</span>: <span class="integer">404</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Fetches a Manufacturer identified by the supplied <code>id</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The selected tenant is stored within a session attribute.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>select</code> action will find a <code>Manufacturer</code> and store the name of the <code>Manufacturer</code> (in lower case so it corresponds to a configured data source) as the current tenant within the HTTP session.</p>
+</div>
+<div class="paragraph">
+<p>This causes <a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/SessionTenantResolver.html">SessionTenantResolver</a> to resolve the correct tenant id from the HTTP session.</p>
+</div>
+<div class="paragraph">
+<p>Finally, to improve error handling you can map every occurrence of <code>TenantNotFoundException</code> to redirect back to the list of manufacturers:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'</span><span class="content">500</span><span class="delimiter">'</span></span> (<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">manufacturer</span><span class="delimiter">'</span></span>, <span class="key">exception</span>: TenantNotFoundException)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With these changes in place you will able to select each tenant from the homepage:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/available-tenants.png" alt="available tenants">
+</div>
+</div>
+<div class="paragraph">
+<p>Now that it is possible to select a tenant, lets create a logic that is able to use the currently active tenant.</p>
+</div>
+
+
+<h2 id="multiTenantLogic">2.5 Writing Multi-Tenant Aware Data Logic</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/multiTenantLogic.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>One of the challenges with regards to building an application that uses a unique database connection per tenant is that you have the manage multiple persistence contexts in a scalable manner.</p>
+</div>
+<div class="paragraph">
+<p>It would not scale to bind a Hibernate session for each and every tenant to each request that came into the application, so you have to be able to write logic that takes into account the fact that the the Hibernate session you are using to access the current tenant&#8217;s data is not currently bound to the current controller action&#8217;s execution.</p>
+</div>
+<div class="paragraph">
+<p>To make this challenge simpler GORM features a set of <a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/package-summary.html">Multi-Tenancy transformations</a> including:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Multi Tenancy Transformations</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/CurrentTenant.html">CurrentTenant</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant and binds a Hibernate session for the scope of the method</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/Tenant.html">Tenant</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves a specific tenant and binds a Hibernate session for the scope of the method</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/WithoutTenant.html">WithoutTenant</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execute some logic within a method without a tenant present</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>These should generally be applied to services in a Grails application and they work really well when combined with the <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a> concept introduced in GORM 6.1.</p>
+</div>
+<div class="paragraph">
+<p>To implement the logic to save and retrieve <code>Vehicle</code> instances create a new <code>grails-app/services/example/VehicleService.groovy</code> file and annotate it within the <a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/CurrentTenant.html">CurrentTenant</a> and <a href="http://gorm.grails.org/latest/api//grails/gorm/services/Service.html">Service</a> annotations:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/VehicleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.CurrentTenant</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Join</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Service</span>(Vehicle) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@CurrentTenant</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="annotation">@CompileStatic</span>
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">VehicleService</span> {
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <a href="http://gorm.grails.org/latest/api//grails/gorm/services/Service.html">Service</a> transformation will ensure any abstract methods that can be implemented by GORM are implemented</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <a href="http://gorm.grails.org/latest/api//grails/gorm/multitenancy/CurrentTenant.html">CurrentTenant</a> transformation will ensure any method that is executed on the service resolves the current tenant first and binds a Hibernate session for the resolved database connection.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The class is <code>abstract</code> because many of the methods will be implemented for you by GORM.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now lets take a look at how to implement querying logic for a Multi-Tenant application.</p>
+</div>
+
+
+<h2 id="readingData">2.5.1 Executing Multi-Tenant Aware Queries</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/multiTenantLogic/readingData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To implement Multi-Tenant queries in a GORM Data Service simply add abstract methods that correspond to <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#_data_service_queries">one of the supported conventions in GORM</a>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/VehicleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">engines</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="directive">abstract</span> <span class="predefined-type">List</span>&lt;Vehicle&gt; list(<span class="predefined-type">Map</span> args ) <i class="conum" data-value="2"></i><b>(2)</b>
+
+<span class="directive">abstract</span> <span class="predefined-type">Integer</span> count() <i class="conum" data-value="3"></i><b>(3)</b>
+
+<span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">engines</span><span class="delimiter">'</span></span>)
+<span class="directive">abstract</span> Vehicle find(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Each query method is annotated with <code>@Join</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>list</code> method returns a list of <code>Vehicle</code> instances and takes optional arguments as a map to perform pagination</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>count</code> method counts the number of <code>Vehicle</code> instances</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>find</code> method finds a single <code>Vehicle</code> by <code>id</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The usage of <code>@Join</code> warrants further explanation. Recall that in a Multi-Tenant application a new Hibernate session is created for the connection found for the current tenant id.</p>
+</div>
+<div class="paragraph">
+<p>Once the method completes however, this session is closed which means that any associations not loaded by the query could lead to a <code>LazyInitializationException</code> due to the closed session.</p>
+</div>
+<div class="paragraph">
+<p>It is therefore critical that your queries always return the data that is required to render the view. This typically leads to better performing queries anyway and will in fact help you design a better performing application.</p>
+</div>
+<div class="paragraph">
+<p>The <code>@Join</code> annotation is a simple way to achieve a join query, but in some cases it may be simpler to use <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#_query_joins">a JPA-QL query</a>.</p>
+</div>
+<div class="paragraph">
+<p>Now it is time to write a controller that can use these newly defined methods. First, create a new <code>grails-app/controllers/example/VehicleController.groovy</code> class with either the <code>create-controller</code> command or your preferred IDE.</p>
+</div>
+<div class="paragraph">
+<p>The <code>VehicleController</code> should define a property referencing the previously created <code>VehicleService</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/VehicleController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.CurrentTenant</span>
+<span class="keyword">import</span> <span class="include">grails.validation.ValidationException</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">VehicleController</span>  {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>]
+
+    VehicleService vehicleService
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now run <code>grails generate-views</code> to generate some default GSP views that can render the <code>Vehicle</code> instances:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails generate-views example.Vehicle</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next add an entry into the <code>UrlMappings.groovy</code> file to map the <code>/vehicles</code> URI:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'</span><span class="content">/vehicles</span><span class="delimiter">'</span></span>(<span class="key">resources</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you are ready to add the query logic to read <code>Vehicle</code> instances for each tenant. Update <code>VehicleController</code> with the following read operations:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/VehicleController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+    params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+    respond vehicleService.list(params), <span class="key">model</span>: [<span class="key">vehicleCount</span>: vehicleService.count()]
+}
+
+<span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Long</span> id) {
+    Vehicle vehicle = id ? vehicleService.find(id) : <span class="predefined-constant">null</span>
+    respond vehicle
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both the <code>find</code> and <code>show</code> actions use the <code>VehicleService</code> to locate <code>Vehicle</code> instances. The <code>VehicleService</code> will ensure the correct tenant is resolved and the correct data returned for each tenant.</p>
+</div>
+
+
+<h2 id="writingData">2.5.2 Executing Multi-Tenant Updates</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/database-per-tenant/edit/master/src/main/docs/guide/writingTheApp/multiTenantLogic/writingData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To add logic to perform write operations you can simply modify the <code>VehicleService</code> and add new abstract methods for <code>save</code> and <code>delete</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/VehicleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">abstract</span> Vehicle save(<span class="predefined-type">String</span> model,
+                        <span class="predefined-type">Integer</span> year)
+
+<span class="directive">abstract</span> Vehicle delete(<span class="predefined-type">Serializable</span> id)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above <code>save</code> and <code>delete</code> methods will be implemented automatically for you.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+GORM Data Services are smart about adding appropriate transaction semantics to each method (for example, <code>readOnly</code> for read operations). However you can override the transaction semantics by adding the <code>@Transactional</code> annotation yourself.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To implement updates you can add a new method that calls the existing abstract <code>find</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/VehicleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>
+Vehicle update( <span class="predefined-type">Serializable</span> id, <i class="conum" data-value="5"></i><b>(5)</b>
+                <span class="predefined-type">String</span> model,
+                <span class="predefined-type">Integer</span> year) {
+    Vehicle vehicle = find(id)
+    <span class="keyword">if</span> (vehicle != <span class="predefined-constant">null</span>) {
+        vehicle.model = model
+        vehicle.year = year
+        vehicle.save(<span class="key">failOnError</span>:<span class="predefined-constant">true</span>)
+    }
+    vehicle
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This demonstrates an important concept of GORM Data Services: It is possible to easily mix methods you define with ones that are automatically implemented for you by GORM.</p>
+</div>
+<div class="paragraph">
+<p>The corresponding controller actions to call <code>VehicleService</code> and expose these write operations are also trivial:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/VehicleController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">save</span>(<span class="predefined-type">String</span> model, <span class="predefined-type">Integer</span> year) {
+    <span class="keyword">try</span> {
+        Vehicle vehicle = vehicleService.save(model, year)
+        flash.message = <span class="string"><span class="delimiter">'</span><span class="content">Vehicle created</span><span class="delimiter">'</span></span>
+        redirect vehicle
+    } <span class="keyword">catch</span> (ValidationException e) {
+        respond e.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+    }
+}
+
+<span class="keyword">def</span> <span class="function">update</span>(<span class="predefined-type">Long</span> id, <span class="predefined-type">String</span> model, <span class="predefined-type">Integer</span> year) {
+    <span class="keyword">try</span> {
+        Vehicle vehicle = vehicleService.update(id, model, year)
+        <span class="keyword">if</span> (vehicle == <span class="predefined-constant">null</span>) {
+            notFound()
+        }
+        <span class="keyword">else</span> {
+            flash.message = <span class="string"><span class="delimiter">'</span><span class="content">Vehicle updated</span><span class="delimiter">'</span></span>
+            redirect vehicle
+        }
+    } <span class="keyword">catch</span> (ValidationException e) {
+        respond e.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+    }
+}
+
+<span class="directive">protected</span> <span class="type">void</span> notFound() {
+    flash.message = <span class="string"><span class="delimiter">'</span><span class="content">Vehicle not found</span><span class="delimiter">'</span></span>
+    redirect <span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/vehicles</span><span class="delimiter">'</span></span>, <span class="key">status</span>: NOT_FOUND
+}
+
+<span class="keyword">def</span> <span class="function">delete</span>(<span class="predefined-type">Long</span> id) {
+    Vehicle vehicle = vehicleService.delete(id)
+    <span class="keyword">if</span> (vehicle == <span class="predefined-constant">null</span>) {
+        notFound()
+    }
+    <span class="keyword">else</span> {
+        flash.message = <span class="string"><span class="delimiter">'</span><span class="content">Vehicle Deleted</span><span class="delimiter">'</span></span>
+        redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/database-per-tenant"><img src="https://travis-ci.org/grails-guides/database-per-tenant.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/database-per-tenant">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/database-per-tenant.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/database-per-tenant.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/database-per-tenant'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/database-per-tenant.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/database-per-tenant/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
