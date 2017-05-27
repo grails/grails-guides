@@ -110,13 +110,42 @@ function addJsClass() {
 </blockquote>
 </div>
 <div class="paragraph">
-<p><a href="https://console.cloud.google.com/flows/enableapi?apiid=storage_api,logging,sqladmin.googleapis.com&amp;redirect=https://console.cloud.google.com&amp;_ga=1.20629880.1963584502.1488379440">Enable Cloud Datastore API</a> for the project.</p>
+<p><a href="https://console.cloud.google.com/flows/enableapi?apiid=storage_api,logging,sqladmin.googleapis.com&amp;redirect=https://console.cloud.google.com&amp;_ga=1.20629880.1963584502.1488379440">Enable Cloud Datastore API</a> for the project, if you have not enabled it already.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/enable-cloud-storage.png" alt="enable cloud storage">
+</div>
+</div>
+<div class="paragraph">
+<p>You can create a Cloud Storage Bucket as illustrated in the image below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/create-bucket.png" alt="create bucket">
+</div>
+</div>
+<div class="paragraph">
+<p>You will need to configure in <code>application.yml</code> your Cloud Storage Bucket and project id:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">googlecloud</span>:
+    <span class="key">projectid</span>: test-grails-guide
+    <span class="key">cloudStorage</span>:
+        <span class="key">bucket</span>: test-grails-guide-bucket</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These configuration parameters are used by the services described below.</p>
 </div>
 <div class="paragraph">
 <p>We use a Grails Command Object and two controller actions to handle the image upload:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/FeaturedImageCommand.groovy</div>
+<div class="title">grails-app/controllers/demo/FeaturedImageCommand.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -150,7 +179,7 @@ function addJsClass() {
 </div>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/BookController.groovy</div>
+<div class="title">grails-app/controllers/demo/BookController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
 <span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Book</span> book) {
@@ -189,7 +218,7 @@ function addJsClass() {
 <p>Our business logic is handled in <code>UploadBookFeaturedImageService.groovy</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/UploadBookFeaturedImageService.groovy</div>
+<div class="title">grails-app/services/demo/UploadBookFeaturedImageService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -237,7 +266,7 @@ function addJsClass() {
 <p>The code which interacts with Cloud Storage is encapsulated in a service:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/org/grails/plugins/googlecloud/storage/GoogleCloudStorageService.groovy</div>
+<div class="title">grails-app/services/org/grails/plugins/googlecloud/storage/GoogleCloudStorageService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.plugins.googlecloud.storage
 
@@ -298,23 +327,10 @@ function addJsClass() {
 </div>
 </div>
 <div class="paragraph">
-<p>The above service uses two configuration parameters:</p>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">---
-<span class="key">googlecloud</span>:
-    <span class="key">projectid</span>: grailstest
-    <span class="key">cloudStorage</span>:
-        <span class="key">bucket</span>: grailstest</code></pre>
-</div>
-</div>
-<div class="paragraph">
 <p>If the upload of an image to Google Cloud is successful, we save the reference to the media url in our domain class.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/BookGormService.groovy</div>
+<div class="title">grails-app/services/demo/BookGormService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
 <span class="predefined-type">Book</span> updateFeaturedImageUrl(<span class="predefined-type">Long</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> fileName, <span class="predefined-type">String</span> featuredImageUrl, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {

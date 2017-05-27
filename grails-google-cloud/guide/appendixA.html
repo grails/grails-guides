@@ -100,7 +100,7 @@ function addJsClass() {
 <div class="sect2">
 <h3 id="_book_controller">Book Controller</h3>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/BookController.groovy</div>
+<div class="title">grails-app/controllers/demo/BookController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -248,16 +248,72 @@ BookGormService bookGormService
 <div class="sect2">
 <h3 id="_book_services">Book Services</h3>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/BookService.groovy</div>
+<div class="title">grails-app/services/demo/BookGormService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/grails-google-cloud/complete/grails-app/controllers/demo/BookService.groovy[indent=<span class="integer">0</span>]</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookGormService</span> {
+
+    <span class="comment">// tag::list[]</span>
+    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+    <span class="predefined-type">List</span> list(<span class="predefined-type">Map</span> params) {
+        [<span class="predefined-type">Book</span>.list(params), <span class="predefined-type">Book</span>.count()]
+    }
+    <span class="comment">// end::list[]</span>
+
+    <span class="comment">// tag::save[]</span>
+    <span class="annotation">@CompileDynamic</span>
+    <span class="predefined-type">Book</span> save(NameCommand cmd) {
+        <span class="keyword">def</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>()
+        book.properties = cmd.properties
+        book.save()
+    }
+    <span class="comment">// end::save[]</span>
+
+    <span class="comment">// tag::update[]</span>
+    <span class="annotation">@CompileDynamic</span>
+    <span class="predefined-type">Book</span> update(NameUpdateCommand cmd) {
+        <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.get(cmd.id)
+        book.properties = cmd.properties
+        book.save()
+    }
+    <span class="comment">// end::update[]</span>
+
+    <span class="comment">// tag::deleteById[]</span>
+    <span class="type">void</span> deleteById(<span class="predefined-type">Long</span> bookId) {
+        <span class="keyword">def</span> book = <span class="predefined-type">Book</span>.get(bookId)
+        book?.delete()
+    }
+    <span class="comment">// end::deleteById[]</span>
+
+    <span class="comment">// tag::updateFeaturedImageUrl[]</span>
+    <span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
+    <span class="predefined-type">Book</span> updateFeaturedImageUrl(<span class="predefined-type">Long</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> fileName, <span class="predefined-type">String</span> featuredImageUrl, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.get(id)
+        <span class="keyword">if</span> ( !book ) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        book.version = version
+        book.fileName = fileName
+        book.featuredImageUrl = featuredImageUrl
+        book.save(<span class="key">flush</span>: flush)
+        book
+    }
+    <span class="comment">// end::updateFeaturedImageUrl[]</span>
+}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_book_gsps">Book GSPs</h3>
 <div class="listingblock">
-<div class="title">/grails-app/views/book/index.gsp</div>
+<div class="title">grails-app/views/book/index.gsp</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
@@ -289,7 +345,7 @@ BookGormService bookGormService
 </div>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/views/book/show.gsp</div>
+<div class="title">grails-app/views/book/show.gsp</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
@@ -328,7 +384,7 @@ BookGormService bookGormService
 </div>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/views/book/edit.gsp</div>
+<div class="title">grails-app/views/book/edit.gsp</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
@@ -373,7 +429,7 @@ BookGormService bookGormService
 </div>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/views/book/create.gsp</div>
+<div class="title">grails-app/views/book/create.gsp</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
