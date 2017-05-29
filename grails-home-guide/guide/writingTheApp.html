@@ -1,0 +1,1055 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/googleCloudSettings.html"><strong>2</strong><span>Google Cloud Settings</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/test.html"><strong>4</strong><span>Test</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/googleCloudSettings.html">&lt;&lt; <strong>2</strong><span>Google Cloud Settings</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/test.html"><strong>4</strong><span>Test</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#grailsResponseHandler"><strong>3.1</strong><span>Handle Request from Google in Grails</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#colorRequestHandlerFactory"><strong>3.2</strong><span>Color Handler</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#googleActionsJavaSdk"><strong>3.3</strong><span>Unofficial Google Actions Java SDK</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gapGradlePlugin"><strong>3.4</strong><span>Google App Engine Gradle Plugin</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#applicationDeploymentConfiguration"><strong>3.5</strong><span>Application Deployment Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#springBootJetty"><strong>3.6</strong><span>SpringBoot Jetty</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#deployingTheApp"><strong>3.7</strong><span>Deploying the App</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="grailsResponseHandler">3.1 Handle Request from Google in Grails</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/grailsResponseHandler.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We name our app <em>color finder</em>. We want to achieve the scenario pictured below:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/scenarioA.jpeg" alt="scenarioA">
+</div>
+</div>
+<div class="paragraph">
+<p>First, we are going to add a dependency to <a href="https://github.com/frogermcs/Google-Actions-Java-SDK">Google Actions Java SDK</a></p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">com.frogermcs.gactions:gactions:0.1.1</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The illustrated conversation is managed with the handlers. We instantiate the handlers with factories. Add the next classes
+to your app:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/MainRequestHandlerFactory.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">MainRequestHandlerFactory</span> <span class="directive">extends</span> RequestHandler.Factory {
+    <span class="annotation">@Override</span>
+    RequestHandler create(RootRequest rootRequest) {
+        <span class="keyword">new</span> MainRequestHandler(rootRequest)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/MainRequestHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.ResponseBuilder</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.response.RootResponse</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">MainRequestHandler</span> <span class="directive">extends</span> RequestHandler {
+    <span class="directive">protected</span> MainRequestHandler(RootRequest rootRequest) {
+        <span class="local-variable">super</span>(rootRequest)
+    }
+
+    <span class="annotation">@Override</span>
+    RootResponse getResponse() {
+        ResponseBuilder.askResponse(<span class="string"><span class="delimiter">'</span><span class="content">Hey, it works! Now tell something so I could repeat it.</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/MainRequestHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.ResponseBuilder</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.response.RootResponse</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">MainRequestHandler</span> <span class="directive">extends</span> RequestHandler {
+    <span class="directive">protected</span> MainRequestHandler(RootRequest rootRequest) {
+        <span class="local-variable">super</span>(rootRequest)
+    }
+
+    <span class="annotation">@Override</span>
+    RootResponse getResponse() {
+        ResponseBuilder.askResponse(<span class="string"><span class="delimiter">'</span><span class="content">Hey, it works! Now tell something so I could repeat it.</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/TextRequestHandlerFactory.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TextRequestHandlerFactory</span> <span class="directive">extends</span> RequestHandler.Factory {
+    <span class="annotation">@Override</span>
+    RequestHandler create(RootRequest rootRequest) {
+        <span class="keyword">new</span> TextRequestHandler(rootRequest)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/TextRequestHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.ResponseBuilder</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.response.RootResponse</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TextRequestHandler</span> <span class="directive">extends</span> RequestHandler {
+    <span class="directive">protected</span> TextRequestHandler(RootRequest rootRequest) {
+        <span class="local-variable">super</span>(rootRequest)
+    }
+
+    <span class="annotation">@Override</span>
+    RootResponse getResponse() {
+        ResponseBuilder.tellResponse(<span class="string"><span class="delimiter">&quot;</span><span class="content">You just told: </span><span class="inline"><span class="inline-delimiter">${</span>rootRequest.inputs.get(<span class="integer">0</span>).raw_inputs.get(<span class="integer">0</span>).query<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to handle the request that come from Google in a Grails Controller:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A controller fulfills the C in the Model View Controller (MVC) pattern and is responsible for handling web requests. In Grails a controller is a class with a name that ends in the convention "Controller" and lives in the grails-app/controllers directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>The Grails Controller, in turn, will  delegate to Actions SDK.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/AssistantActionController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.AssistantActions</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.StandardIntents</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.google.gson.Gson</span>
+<span class="keyword">import</span> <span class="include">com.google.gson.stream.JsonReader</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">AssistantActionController</span> {
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        AssistantActions assistantActions =
+                <span class="keyword">new</span> AssistantActions.Builder(<span class="keyword">new</span> GrailsResponseHandler(response))
+                        .addRequestHandlerFactory(StandardIntents.MAIN, <span class="keyword">new</span> MainRequestHandlerFactory())  <i class="conum" data-value="1"></i><b>(1)</b>
+                        .addRequestHandlerFactory(StandardIntents.TEXT, <span class="keyword">new</span> TextRequestHandlerFactory())
+                        .build()
+        RootRequest rootRequest = parseActionRequest(request)
+        assistantActions.handleRequest(rootRequest) <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    <span class="directive">private</span> RootRequest parseActionRequest(HttpServletRequest request) <span class="directive">throws</span> <span class="exception">IOException</span> {
+        JsonReader jsonReader = <span class="keyword">new</span> JsonReader(request.reader)
+        <span class="keyword">new</span> Gson().fromJson(jsonReader, RootRequest)
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We can chain handlers</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Grails action delegates to Actions SDK to handle requests that come from Google.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We do not want to return a grails view. The handlers manage the response</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Add <code>GrailsResponseHandler</code> to your project. As illustrated above, it allow us to use a controller to process the incoming requests.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/GrailsResponseHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.ResponseHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.response.RootResponse</span>
+<span class="keyword">import</span> <span class="include">com.google.gson.Gson</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="comment">/**
+ * This is a handler for the SDK to make it work with Grails properly
+ */</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">GrailsResponseHandler</span> <span class="directive">implements</span> ResponseHandler {
+    <span class="directive">private</span> <span class="directive">final</span> HttpServletResponse httpServletResponse
+    <span class="directive">private</span> <span class="directive">final</span> Gson gson
+
+    GrailsResponseHandler(HttpServletResponse httpServletResponse) {
+        <span class="local-variable">this</span>(httpServletResponse, <span class="keyword">new</span> Gson())
+    }
+
+    GrailsResponseHandler(HttpServletResponse httpServletResponse, Gson gson) {
+        <span class="local-variable">this</span>.httpServletResponse = httpServletResponse
+        <span class="local-variable">this</span>.gson = gson
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onPrepareContentType(<span class="predefined-type">String</span> contentType) {
+        httpServletResponse.setContentType(contentType)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onPrepareResponseHeaders(<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; headers) {
+        <span class="keyword">for</span> (<span class="predefined-type">String</span> headerName : headers.keySet()) {
+            httpServletResponse.addHeader(headerName, headers.get(headerName))
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onResponse(RootResponse rootResponse) {
+        <span class="keyword">try</span> {
+            gson.toJson(rootResponse, httpServletResponse.writer)
+            httpServletResponse.flushBuffer()
+        } <span class="keyword">catch</span> (<span class="exception">IOException</span> e) {
+            log.error(<span class="string"><span class="delimiter">'</span><span class="content">Error writing response</span><span class="delimiter">'</span></span>, e)
+        }
+    }
+
+    <span class="predefined-type">String</span> getResponse(RootResponse rootResponse) {
+
+        <span class="keyword">try</span> {
+            gson.toJson(rootResponse)
+        } <span class="keyword">catch</span> (<span class="exception">IOException</span> e) {
+            log.error(<span class="string"><span class="delimiter">'</span><span class="content">Error getting response</span><span class="delimiter">'</span></span>, e)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="colorRequestHandlerFactory">3.2 Color Handler</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/colorRequestHandlerFactory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To honor our app&#8217;s name we want to handle the next scenario as well:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/scenarioB.jpeg" alt="scenarioB">
+</div>
+</div>
+<div class="paragraph">
+<p>Similar to the previous example. We need a handler and a factory to instantiate the handler.</p>
+</div>
+<div class="paragraph">
+<p>This handler demonstrates passing a verbal parameter into the intent. When the user asks for a brighter color for X it will try to find a brighter color with a name and say it to the user.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/ColorRequestHandlerFactory.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">ColorRequestHandlerFactory</span> <span class="directive">extends</span> RequestHandler.Factory {
+    <span class="annotation">@Override</span>
+    RequestHandler create(RootRequest rootRequest) {
+        <span class="keyword">new</span> ColorRequestHandler(rootRequest)
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/ColorRequestHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.ResponseBuilder</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.RequestHandler</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.response.RootResponse</span>
+<span class="keyword">import</span> <span class="include">demo.util.ColorUtils</span>
+<span class="keyword">import</span> <span class="include">java.awt.Color</span>
+<span class="keyword">import</span> <span class="include">java.lang.reflect.Field</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="comment">/**
+ * take a color name input and returns a brighter color name in return if possible
+ */</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">ColorRequestHandler</span> <span class="directive">extends</span> RequestHandler {
+
+    <span class="directive">protected</span> ColorRequestHandler(RootRequest rootRequest) {
+        <span class="local-variable">super</span>(rootRequest)
+    }
+
+    <span class="annotation">@Override</span>
+    RootResponse getResponse() {
+        log.debug(<span class="string"><span class="delimiter">&quot;</span><span class="content">Inputs=</span><span class="inline"><span class="inline-delimiter">${</span>rootRequest.inputs.toListString()<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">String</span> color = rootRequest.inputs[<span class="integer">0</span>].arguments[<span class="integer">0</span>].raw_text.toLowerCase()
+
+        <span class="predefined-type">Color</span> parsedColor = <span class="predefined-constant">null</span>
+        <span class="keyword">try</span> {
+            <span class="predefined-type">Field</span> field = <span class="predefined-type">Class</span>.forName(<span class="string"><span class="delimiter">'</span><span class="content">java.awt.Color</span><span class="delimiter">'</span></span>).getField(color)
+            parsedColor = (<span class="predefined-type">Color</span>)field.get(<span class="predefined-constant">null</span>)
+        } <span class="keyword">catch</span> (<span class="exception">NoSuchFieldException</span> ne) {
+            <span class="keyword">return</span> colorNotFound(color)
+        }
+        <span class="keyword">if</span> (parsedColor) {
+            ColorUtils colorUtils = <span class="keyword">new</span> ColorUtils()
+            <span class="predefined-type">String</span> brighter = colorUtils.findBrighterNameForColor(parsedColor).toLowerCase()
+            <span class="predefined-type">String</span> answer = <span class="string"><span class="delimiter">&quot;</span><span class="content">Sorry I can't find a brighter color for </span><span class="inline"><span class="inline-delimiter">${</span>color<span class="inline-delimiter">}</span></span><span class="content">.</span><span class="delimiter">&quot;</span></span>
+            if (brighter != color) {
+                answer = <span class="string"><span class="delimiter">&quot;</span><span class="content">The brighter color for </span><span class="inline"><span class="inline-delimiter">${</span>color<span class="inline-delimiter">}</span></span><span class="content"> is </span><span class="inline"><span class="inline-delimiter">${</span>brighter<span class="inline-delimiter">}</span></span><span class="content"> </span><span class="delimiter">&quot;</span></span>
+            }
+            <span class="keyword">return</span> ResponseBuilder.tellResponse(answer)
+        }
+        colorNotFound(color)
+    }
+
+    <span class="directive">private</span> RootResponse colorNotFound(<span class="predefined-type">String</span> color) {
+        ResponseBuilder.tellResponse(<span class="string"><span class="delimiter">&quot;</span><span class="content">Sorry I don't understand the color </span><span class="inline"><span class="inline-delimiter">${</span>color<span class="inline-delimiter">}</span></span><span class="content">.</span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to handle the request that come from Google in another action of our controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/AssistantActionController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.AssistantActions</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.StandardIntents</span>
+<span class="keyword">import</span> <span class="include">com.frogermcs.gactions.api.request.RootRequest</span>
+<span class="keyword">import</span> <span class="include">com.google.gson.Gson</span>
+<span class="keyword">import</span> <span class="include">com.google.gson.stream.JsonReader</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">AssistantActionController</span> {
+    <span class="keyword">def</span> <span class="function">color</span>() {
+        AssistantActions assistantActions =
+                <span class="keyword">new</span> AssistantActions.Builder(<span class="keyword">new</span> GrailsResponseHandler(response))
+                        .addRequestHandlerFactory(<span class="string"><span class="delimiter">'</span><span class="content">color.intent</span><span class="delimiter">'</span></span>, <span class="keyword">new</span> ColorRequestHandlerFactory()) <i class="conum" data-value="1"></i><b>(1)</b>
+                        .build()
+        RootRequest rootRequest = parseActionRequest(request)  <i class="conum" data-value="2"></i><b>(2)</b>
+        assistantActions.handleRequest(rootRequest)
+        <span class="predefined-constant">null</span>  <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    <span class="directive">private</span> RootRequest parseActionRequest(HttpServletRequest request) <span class="directive">throws</span> <span class="exception">IOException</span> {
+        JsonReader jsonReader = <span class="keyword">new</span> JsonReader(request.reader)
+        <span class="keyword">new</span> Gson().fromJson(jsonReader, RootRequest)
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Instantiate the handler with the help of the factory</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Grails action delegates to Actions SDK to handle requests that come from Google.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We do not want to return a grails view. The handlers manage the response</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let’s use a simple utility class to make our action do something interesting. This will help us map a given <code>java.awt.Color</code> to give us a english name for it.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/util/ColorUtils.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo.util;
+
+<span class="keyword">import</span> <span class="include">java.awt.*</span>;
+<span class="keyword">import</span> <span class="include">java.util.ArrayList</span>;
+
+<span class="comment">/**
+ * Java Code to get a color name from rgb/hex value/awt color
+ *
+ * The part of looking up a color name from the rgb values is edited from
+ * https://gist.github.com/nightlark/6482130#file-gistfile1-java (that has some errors) by Ryan Mast (nightlark)
+ *
+ * @author Xiaoxiao Li
+ *
+ */</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">ColorUtils</span> {
+
+    <span class="comment">/**
+     * Initialize the color list that we have.
+     */</span>
+    <span class="directive">private</span> <span class="predefined-type">ArrayList</span>&lt;ColorName&gt; initColorList() {
+        <span class="predefined-type">ArrayList</span>&lt;ColorName&gt; colorList = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;ColorName&gt;();
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">AliceBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF0</span>, <span class="hex">0xF8</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">AntiqueWhite</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFA</span>, <span class="hex">0xEB</span>, <span class="hex">0xD7</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Aqua</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Aquamarine</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x7F</span>, <span class="hex">0xFF</span>, <span class="hex">0xD4</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Azure</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF0</span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Beige</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF5</span>, <span class="hex">0xF5</span>, <span class="hex">0xDC</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bisque</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xE4</span>, <span class="hex">0xC4</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Black</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">BlanchedAlmond</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xEB</span>, <span class="hex">0xCD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Blue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">BlueViolet</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x8A</span>, <span class="hex">0x2B</span>, <span class="hex">0xE2</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Brown</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xA5</span>, <span class="hex">0x2A</span>, <span class="hex">0x2A</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">BurlyWood</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDE</span>, <span class="hex">0xB8</span>, <span class="hex">0x87</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">CadetBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x5F</span>, <span class="hex">0x9E</span>, <span class="hex">0xA0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Chartreuse</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x7F</span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Chocolate</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xD2</span>, <span class="hex">0x69</span>, <span class="hex">0x1E</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Coral</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x7F</span>, <span class="hex">0x50</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">CornflowerBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x64</span>, <span class="hex">0x95</span>, <span class="hex">0xED</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Cornsilk</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xF8</span>, <span class="hex">0xDC</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Crimson</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDC</span>, <span class="hex">0x14</span>, <span class="hex">0x3C</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Cyan</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>, <span class="hex">0x8B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkCyan</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x8B</span>, <span class="hex">0x8B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkGoldenRod</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xB8</span>, <span class="hex">0x86</span>, <span class="hex">0x0B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xA9</span>, <span class="hex">0xA9</span>, <span class="hex">0xA9</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x64</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkKhaki</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xBD</span>, <span class="hex">0xB7</span>, <span class="hex">0x6B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkMagenta</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x8B</span>, <span class="hex">0x00</span>, <span class="hex">0x8B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkOliveGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x55</span>, <span class="hex">0x6B</span>, <span class="hex">0x2F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkOrange</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x8C</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkOrchid</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x99</span>, <span class="hex">0x32</span>, <span class="hex">0xCC</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkRed</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x8B</span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkSalmon</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xE9</span>, <span class="hex">0x96</span>, <span class="hex">0x7A</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkSeaGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x8F</span>, <span class="hex">0xBC</span>, <span class="hex">0x8F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkSlateBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x48</span>, <span class="hex">0x3D</span>, <span class="hex">0x8B</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkSlateGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x2F</span>, <span class="hex">0x4F</span>, <span class="hex">0x4F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkTurquoise</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xCE</span>, <span class="hex">0xD1</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DarkViolet</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x94</span>, <span class="hex">0x00</span>, <span class="hex">0xD3</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DeepPink</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x14</span>, <span class="hex">0x93</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DeepSkyBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xBF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DimGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x69</span>, <span class="hex">0x69</span>, <span class="hex">0x69</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">DodgerBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x1E</span>, <span class="hex">0x90</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">FireBrick</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xB2</span>, <span class="hex">0x22</span>, <span class="hex">0x22</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">FloralWhite</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFA</span>, <span class="hex">0xF0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">ForestGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x22</span>, <span class="hex">0x8B</span>, <span class="hex">0x22</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Fuchsia</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Gainsboro</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDC</span>, <span class="hex">0xDC</span>, <span class="hex">0xDC</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">GhostWhite</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF8</span>, <span class="hex">0xF8</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Gold</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xD7</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">GoldenRod</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDA</span>, <span class="hex">0xA5</span>, <span class="hex">0x20</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Gray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x80</span>, <span class="hex">0x80</span>, <span class="hex">0x80</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Green</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x80</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">GreenYellow</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xAD</span>, <span class="hex">0xFF</span>, <span class="hex">0x2F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">HoneyDew</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF0</span>, <span class="hex">0xFF</span>, <span class="hex">0xF0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">HotPink</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x69</span>, <span class="hex">0xB4</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">IndianRed</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xCD</span>, <span class="hex">0x5C</span>, <span class="hex">0x5C</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Indigo</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x4B</span>, <span class="hex">0x00</span>, <span class="hex">0x82</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Ivory</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>, <span class="hex">0xF0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Khaki</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF0</span>, <span class="hex">0xE6</span>, <span class="hex">0x8C</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Lavender</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xE6</span>, <span class="hex">0xE6</span>, <span class="hex">0xFA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LavenderBlush</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xF0</span>, <span class="hex">0xF5</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LawnGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x7C</span>, <span class="hex">0xFC</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LemonChiffon</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFA</span>, <span class="hex">0xCD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xAD</span>, <span class="hex">0xD8</span>, <span class="hex">0xE6</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightCoral</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF0</span>, <span class="hex">0x80</span>, <span class="hex">0x80</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightCyan</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xE0</span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightGoldenRodYellow</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFA</span>, <span class="hex">0xFA</span>, <span class="hex">0xD2</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xD3</span>, <span class="hex">0xD3</span>, <span class="hex">0xD3</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x90</span>, <span class="hex">0xEE</span>, <span class="hex">0x90</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightPink</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xB6</span>, <span class="hex">0xC1</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightSalmon</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xA0</span>, <span class="hex">0x7A</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightSeaGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x20</span>, <span class="hex">0xB2</span>, <span class="hex">0xAA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightSkyBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x87</span>, <span class="hex">0xCE</span>, <span class="hex">0xFA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightSlateGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x77</span>, <span class="hex">0x88</span>, <span class="hex">0x99</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightSteelBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xB0</span>, <span class="hex">0xC4</span>, <span class="hex">0xDE</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LightYellow</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>, <span class="hex">0xE0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Lime</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">LimeGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x32</span>, <span class="hex">0xCD</span>, <span class="hex">0x32</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Linen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFA</span>, <span class="hex">0xF0</span>, <span class="hex">0xE6</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Magenta</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Maroon</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x80</span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumAquaMarine</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x66</span>, <span class="hex">0xCD</span>, <span class="hex">0xAA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>, <span class="hex">0xCD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumOrchid</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xBA</span>, <span class="hex">0x55</span>, <span class="hex">0xD3</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumPurple</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x93</span>, <span class="hex">0x70</span>, <span class="hex">0xDB</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumSeaGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x3C</span>, <span class="hex">0xB3</span>, <span class="hex">0x71</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumSlateBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x7B</span>, <span class="hex">0x68</span>, <span class="hex">0xEE</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumSpringGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xFA</span>, <span class="hex">0x9A</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumTurquoise</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x48</span>, <span class="hex">0xD1</span>, <span class="hex">0xCC</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MediumVioletRed</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xC7</span>, <span class="hex">0x15</span>, <span class="hex">0x85</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MidnightBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x19</span>, <span class="hex">0x19</span>, <span class="hex">0x70</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MintCream</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF5</span>, <span class="hex">0xFF</span>, <span class="hex">0xFA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">MistyRose</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xE4</span>, <span class="hex">0xE1</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Moccasin</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xE4</span>, <span class="hex">0xB5</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">NavajoWhite</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xDE</span>, <span class="hex">0xAD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Navy</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>, <span class="hex">0x80</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">OldLace</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFD</span>, <span class="hex">0xF5</span>, <span class="hex">0xE6</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Olive</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x80</span>, <span class="hex">0x80</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">OliveDrab</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x6B</span>, <span class="hex">0x8E</span>, <span class="hex">0x23</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Orange</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xA5</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">OrangeRed</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x45</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Orchid</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDA</span>, <span class="hex">0x70</span>, <span class="hex">0xD6</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PaleGoldenRod</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xEE</span>, <span class="hex">0xE8</span>, <span class="hex">0xAA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PaleGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x98</span>, <span class="hex">0xFB</span>, <span class="hex">0x98</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PaleTurquoise</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xAF</span>, <span class="hex">0xEE</span>, <span class="hex">0xEE</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PaleVioletRed</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDB</span>, <span class="hex">0x70</span>, <span class="hex">0x93</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PapayaWhip</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xEF</span>, <span class="hex">0xD5</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PeachPuff</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xDA</span>, <span class="hex">0xB9</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Peru</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xCD</span>, <span class="hex">0x85</span>, <span class="hex">0x3F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pink</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xC0</span>, <span class="hex">0xCB</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Plum</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xDD</span>, <span class="hex">0xA0</span>, <span class="hex">0xDD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">PowderBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xB0</span>, <span class="hex">0xE0</span>, <span class="hex">0xE6</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Purple</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x80</span>, <span class="hex">0x00</span>, <span class="hex">0x80</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Red</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">RosyBrown</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xBC</span>, <span class="hex">0x8F</span>, <span class="hex">0x8F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">RoyalBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x41</span>, <span class="hex">0x69</span>, <span class="hex">0xE1</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SaddleBrown</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x8B</span>, <span class="hex">0x45</span>, <span class="hex">0x13</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Salmon</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFA</span>, <span class="hex">0x80</span>, <span class="hex">0x72</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SandyBrown</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF4</span>, <span class="hex">0xA4</span>, <span class="hex">0x60</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SeaGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x2E</span>, <span class="hex">0x8B</span>, <span class="hex">0x57</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SeaShell</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xF5</span>, <span class="hex">0xEE</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Sienna</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xA0</span>, <span class="hex">0x52</span>, <span class="hex">0x2D</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Silver</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xC0</span>, <span class="hex">0xC0</span>, <span class="hex">0xC0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SkyBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x87</span>, <span class="hex">0xCE</span>, <span class="hex">0xEB</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SlateBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x6A</span>, <span class="hex">0x5A</span>, <span class="hex">0xCD</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SlateGray</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x70</span>, <span class="hex">0x80</span>, <span class="hex">0x90</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Snow</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFA</span>, <span class="hex">0xFA</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SpringGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0xFF</span>, <span class="hex">0x7F</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">SteelBlue</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x46</span>, <span class="hex">0x82</span>, <span class="hex">0xB4</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tan</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xD2</span>, <span class="hex">0xB4</span>, <span class="hex">0x8C</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Teal</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x00</span>, <span class="hex">0x80</span>, <span class="hex">0x80</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Thistle</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xD8</span>, <span class="hex">0xBF</span>, <span class="hex">0xD8</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tomato</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0x63</span>, <span class="hex">0x47</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Turquoise</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x40</span>, <span class="hex">0xE0</span>, <span class="hex">0xD0</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Violet</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xEE</span>, <span class="hex">0x82</span>, <span class="hex">0xEE</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Wheat</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF5</span>, <span class="hex">0xDE</span>, <span class="hex">0xB3</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">White</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">WhiteSmoke</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xF5</span>, <span class="hex">0xF5</span>, <span class="hex">0xF5</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Yellow</span><span class="delimiter">&quot;</span></span>, <span class="hex">0xFF</span>, <span class="hex">0xFF</span>, <span class="hex">0x00</span>));
+        colorList.add(<span class="keyword">new</span> ColorName(<span class="string"><span class="delimiter">&quot;</span><span class="content">YellowGreen</span><span class="delimiter">&quot;</span></span>, <span class="hex">0x9A</span>, <span class="hex">0xCD</span>, <span class="hex">0x32</span>));
+        <span class="keyword">return</span> colorList;
+    }
+
+    <span class="comment">/**
+     * Get the closest color name from our list
+     *
+     * @param r
+     * @param g
+     * @param b
+     * @return
+     */</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getColorNameFromRgb(<span class="type">int</span> r, <span class="type">int</span> g, <span class="type">int</span> b) {
+        <span class="predefined-type">ArrayList</span>&lt;ColorName&gt; colorList = initColorList();
+        ColorName closestMatch = <span class="predefined-constant">null</span>;
+        <span class="type">int</span> minMSE = <span class="predefined-type">Integer</span>.MAX_VALUE;
+        <span class="type">int</span> mse;
+        <span class="keyword">for</span> (ColorName c : colorList) {
+            mse = c.computeMSE(r, g, b);
+            <span class="keyword">if</span> (mse &lt; minMSE) {
+                minMSE = mse;
+                closestMatch = c;
+            }
+        }
+
+        <span class="keyword">if</span> (closestMatch != <span class="predefined-constant">null</span>) {
+            <span class="keyword">return</span> closestMatch.getName();
+        } <span class="keyword">else</span> {
+            <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">No matched color name.</span><span class="delimiter">&quot;</span></span>;
+        }
+    }
+
+    <span class="comment">/**
+     * Convert hexColor to rgb, then call getColorNameFromRgb(r, g, b)
+     *
+     * @param hexColor
+     * @return
+     */</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> getColorNameFromHex(<span class="type">int</span> hexColor) {
+        <span class="type">int</span> r = (hexColor &amp; <span class="hex">0xFF0000</span>) &gt;&gt; <span class="integer">16</span>;
+        <span class="type">int</span> g = (hexColor &amp; <span class="hex">0xFF00</span>) &gt;&gt; <span class="integer">8</span>;
+        <span class="type">int</span> b = (hexColor &amp; <span class="hex">0xFF</span>);
+        <span class="keyword">return</span> getColorNameFromRgb(r, g, b);
+    }
+
+    <span class="directive">public</span> <span class="type">int</span> colorToHex(<span class="predefined-type">Color</span> c) {
+        <span class="keyword">return</span> <span class="predefined-type">Integer</span>.decode(<span class="string"><span class="delimiter">&quot;</span><span class="content">0x</span><span class="delimiter">&quot;</span></span>
+                + <span class="predefined-type">Integer</span>.toHexString(c.getRGB()).substring(<span class="integer">2</span>));
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> getColorNameFromColor(<span class="predefined-type">Color</span> color) {
+        <span class="keyword">return</span> getColorNameFromRgb(color.getRed(), color.getGreen(),
+                color.getBlue());
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> findBrighterNameForColor(<span class="predefined-type">Color</span> color) {
+        <span class="predefined-type">String</span> name = getColorNameFromColor(color);
+        <span class="predefined-type">String</span> nextColorName = name;
+        <span class="type">int</span> colorCount = <span class="integer">0</span>;
+        <span class="keyword">while</span> (name.equals(nextColorName) &amp;&amp; colorCount &lt; <span class="integer">100</span>) {
+            color = color.brighter();
+            nextColorName = getColorNameFromColor(color);
+            colorCount++;
+        }
+        <span class="keyword">return</span> nextColorName;
+
+
+
+    }
+
+    <span class="directive">public</span> <span class="predefined-type">String</span> findDarkerNameForColor(<span class="predefined-type">Color</span> color) {
+        <span class="predefined-type">String</span> name = getColorNameFromColor(color);
+        <span class="predefined-type">String</span> nextColorName = name;
+        <span class="type">int</span> colorCount = <span class="integer">0</span>;
+        <span class="keyword">while</span> (name.equals(nextColorName) &amp;&amp; colorCount &lt; <span class="integer">100</span>) {
+            color = color.darker();
+            nextColorName = getColorNameFromColor(color);
+            colorCount++;
+        }
+        <span class="keyword">return</span> nextColorName;
+
+
+
+    }
+
+    <span class="comment">/**
+     * SubClass of ColorUtils. In order to lookup color name
+     *
+     * @author Xiaoxiao Li
+     *
+     */</span>
+    <span class="directive">public</span> <span class="type">class</span> <span class="class">ColorName</span> {
+        <span class="directive">public</span> <span class="type">int</span> r, g, b;
+        <span class="directive">public</span> <span class="predefined-type">String</span> name;
+
+        <span class="directive">public</span> ColorName(<span class="predefined-type">String</span> name, <span class="type">int</span> r, <span class="type">int</span> g, <span class="type">int</span> b) {
+            <span class="local-variable">this</span>.r = r;
+            <span class="local-variable">this</span>.g = g;
+            <span class="local-variable">this</span>.b = b;
+            <span class="local-variable">this</span>.name = name;
+        }
+
+        <span class="directive">public</span> <span class="type">int</span> computeMSE(<span class="type">int</span> pixR, <span class="type">int</span> pixG, <span class="type">int</span> pixB) {
+            <span class="keyword">return</span> (<span class="type">int</span>) (((pixR - r) * (pixR - r) + (pixG - g) * (pixG - g) + (pixB - b)
+                    * (pixB - b)) / <span class="integer">3</span>);
+        }
+
+        <span class="directive">public</span> <span class="type">int</span> getR() {
+            <span class="keyword">return</span> r;
+        }
+
+        <span class="directive">public</span> <span class="type">int</span> getG() {
+            <span class="keyword">return</span> g;
+        }
+
+        <span class="directive">public</span> <span class="type">int</span> getB() {
+            <span class="keyword">return</span> b;
+        }
+
+        <span class="directive">public</span> <span class="predefined-type">String</span> getName() {
+            <span class="keyword">return</span> name;
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Previous class is a Java Class. <strong>Grails allows us to mix Groovy and Java code seamlessly</strong>.</p>
+</div>
+
+
+<h2 id="googleActionsJavaSdk">3.3 Unofficial Google Actions Java SDK</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/googleActionsJavaSdk.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The SDK is at <a href="https://github.com/frogermcs/Google-Actions-Java-SDK" class="bare">https://github.com/frogermcs/Google-Actions-Java-SDK</a> however all we need to do is edit our build.gradle to include the library.</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="gradle">compile 'com.frogermcs.gactions:gactions:0.1.1'</code></pre>
+</div>
+</div>
+
+
+<h2 id="gapGradlePlugin">3.4 Google App Engine Gradle Plugin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/gapGradlePlugin.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To deploy to App Engine, we are going to use the <a href="https://github.com/GoogleCloudPlatform/app-gradle-plugin">Google App Engine Gradle Plugin</a>.</p>
+</div>
+<div class="paragraph">
+<p>We need to modify <code>build.gradle</code>, add the plugin as a buildscript dependency and apply the plugin:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        mavenLocal()
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">'</span><span class="content">com.google.cloud.tools:appengine-gradle-plugin:1.1.1</span><span class="delimiter">'</span></span>
+    }
+}
+...
+apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">com.google.cloud.tools.appengine</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="applicationDeploymentConfiguration">3.5 Application Deployment Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/applicationDeploymentConfiguration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To deploy to Google App Engine, we need to add the file <code>src/main/appengine/app.yaml</code></p>
+</div>
+<div class="paragraph">
+<p>It describes the application&#8217;s deployment configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/appengine/app.yaml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">runtime</span>: java
+<span class="key">env</span>: flex
+
+<span class="key">runtime_config</span>:
+    <span class="key">jdk</span>: openjdk8
+    <span class="key">server</span>: jetty9
+
+<span class="key">health_check</span>:
+    <span class="key">enable_health_check</span>: False
+
+<span class="key">resources</span>:
+    <span class="key">cpu</span>: <span class="integer">1</span>
+    <span class="key">memory_gb</span>: <span class="float">2.3</span>
+
+<span class="key">manual_scaling</span>:
+  <span class="key">instances</span>: <span class="integer">1</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, <code>app.yaml</code> specifies the runtime used by the app, and sets <code>env: flex</code>,
+specifying that the app uses the <a href="https://cloud.google.com/appengine/docs/flexible/">flexible environment</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The minimal <code>app.yaml</code> application configuration file shown above is sufficient for a simple Grails application.
+Depending on the size, complexity, and features that your application uses, you may need to change and extend this basic
+configuration file. For more information on what can be configured via <code>app.yaml</code>, please see the
+<a href="https://cloud.google.com/appengine/docs/flexible/java/configuring-your-app-with-app-yaml">Configuring Your App with app.yaml</a>
+guide.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information on how the Java runtime works, see <a href="https://cloud.google.com/appengine/docs/flexible/java/dev-jetty9">Java 8 / Jetty 9.3 Runtime</a>.</p>
+</div>
+
+
+<h2 id="springBootJetty">3.6 SpringBoot Jetty</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/springBootJetty.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As shown in the previous app engine configuration file, we are using Jetty.</p>
+</div>
+<div class="paragraph">
+<p>Following SpringBoot&#8217;s documentation, we need to do the following changes to
+<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html">deploy to Jetty instead of Tomcat</a></p>
+</div>
+<div class="paragraph">
+<p>Replace tomcat:</p>
+</div>
+<div class="listingblock">
+<div class="title">app/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">provided <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>with jetty:</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">provided <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-jetty</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We need to exclude the tomcat-juli dependency as well. Add:</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations {
+    compile.exclude <span class="key">module</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">tomcat-juli</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="deployingTheApp">3.7 Deploying the App</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-home/edit/master/src/main/docs/guide/deployingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To deploy the app to Google App Engine run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew appengineDeploy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Initial deployment may take a while. When finished, you will be able to access your app.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/googleCloudSettings.html">&lt;&lt; <strong>2</strong><span>Google Cloud Settings</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/test.html"><strong>4</strong><span>Test</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-google-home"><img src="https://travis-ci.org/grails-guides/grails-google-home.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-google-home">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-google-home.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-home.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-google-home'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-google-home.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-google-home/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
