@@ -84,8 +84,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])
-<span class="annotation">@TestFor</span>(Hotel)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@TestFor</span>(Hotel)
 <span class="type">class</span> <span class="class">HotelSpec</span> <span class="directive">extends</span> Specification {</code></pre>
 </div>
 </div>
@@ -227,6 +226,66 @@ Email validator ensures it has less than 255 characters
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_unique_constraint_testing">Email Unique constraint testing</h3>
+<div class="paragraph">
+<p>We have added a <code>unique</code> constraint to the Hotel&#8217;s email address.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Unique: It constrains a property as unique at the database level. Unique is a persistent call and will query the database.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>You can test a unique constraint with such a test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelEmailUniqueConstraintSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">HotelEmailUniqueConstraintSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Hotel] }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel's email unique constraint</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">You instantiate a hotel with name and an email address which has been never used before</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel Transilvania</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel is valid instance</span><span class="delimiter">'</span></span>
+        hotel.validate()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">we can save it, and we get back a not null GORM Entity</span><span class="delimiter">'</span></span>
+        hotel.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">there is one additional Hotel</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count()) + <span class="integer">1</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">instanting a different hotel with the same email address</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hilton = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hilton Hotel</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the hotel instance is not valid</span><span class="delimiter">'</span></span>
+        !hilton.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">unique error code is populated</span><span class="delimiter">'</span></span>
+        hilton.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == <span class="string"><span class="delimiter">'</span><span class="content">unique</span><span class="delimiter">'</span></span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">trying to save fails too</span><span class="delimiter">'</span></span>
+        !hilton.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">no hotel has been added</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count())
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">

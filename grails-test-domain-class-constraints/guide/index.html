@@ -139,23 +139,51 @@ function addJsClass(el) {
 
 
 <div class="paragraph">
-<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
-</div>
-<div class="paragraph">
 <p>To get started do the following:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/grails-guides/grails-test-domain-class-constraints/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-test-domain-class-constraints.git" class="bare">https://github.com/grails-guides/grails-test-domain-class-constraints.git</a></code></p>
+<p><a href="https://github.com/grails-guides/grails-test-domain-class-constraints/archive/master.zip">Download</a> and unzip the source</p>
 </li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-test-domain-class-constraints.git" class="bare">https://github.com/grails-guides/grails-test-domain-class-constraints.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with additional some code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><code>cd</code> into <code>grails-guides/grails-test-domain-class-constraints/initial</code></p>
 </li>
-<li>
-<p>Head on over to the next section</p>
-</li>
 </ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -164,7 +192,7 @@ function addJsClass(el) {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-test-domain-class-constraints/complete</code>
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-test-domain-class-constraints/complete</code>
 </td>
 </tr>
 </table>
@@ -232,7 +260,7 @@ CONFIGURE SUCCESSFUL
     <span class="reserved">static</span> constraints = {
         name blank: <span class="predefined-constant">false</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
         url nullable: <span class="predefined-constant">true</span>, <span class="key">url</span>: <span class="predefined-constant">true</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
-        email nullable: <span class="predefined-constant">true</span>, <span class="key">email</span>: <span class="predefined-constant">true</span>
+        email nullable: <span class="predefined-constant">true</span>, <span class="key">email</span>: <span class="predefined-constant">true</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
         about nullable: <span class="predefined-constant">true</span>
         <span class="comment">// tag::latitudeCustomValidator[]</span>
         latitude nullable: <span class="predefined-constant">true</span>, <span class="key">validator</span>: { val, obj, errors -&gt;
@@ -383,8 +411,7 @@ You can define your <a href="https://docs.grails.org/latest/ref/Constraints/vali
 <div class="listingblock">
 <div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])
-<span class="annotation">@TestFor</span>(Hotel)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@TestFor</span>(Hotel)
 <span class="type">class</span> <span class="class">HotelSpec</span> <span class="directive">extends</span> Specification {</code></pre>
 </div>
 </div>
@@ -526,6 +553,66 @@ Email validator ensures it has less than 255 characters
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_unique_constraint_testing">Email Unique constraint testing</h3>
+<div class="paragraph">
+<p>We have added a <code>unique</code> constraint to the Hotel&#8217;s email address.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Unique: It constrains a property as unique at the database level. Unique is a persistent call and will query the database.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>You can test a unique constraint with such a test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelEmailUniqueConstraintSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">HotelEmailUniqueConstraintSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Hotel] }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel's email unique constraint</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">You instantiate a hotel with name and an email address which has been never used before</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel Transilvania</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel is valid instance</span><span class="delimiter">'</span></span>
+        hotel.validate()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">we can save it, and we get back a not null GORM Entity</span><span class="delimiter">'</span></span>
+        hotel.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">there is one additional Hotel</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count()) + <span class="integer">1</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">instanting a different hotel with the same email address</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hilton = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hilton Hotel</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the hotel instance is not valid</span><span class="delimiter">'</span></span>
+        !hilton.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">unique error code is populated</span><span class="delimiter">'</span></span>
+        hilton.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == <span class="string"><span class="delimiter">'</span><span class="content">unique</span><span class="delimiter">'</span></span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">trying to save fails too</span><span class="delimiter">'</span></span>
+        !hilton.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">no hotel has been added</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count())
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
