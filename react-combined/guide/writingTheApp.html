@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gradle"><strong>2.1</strong><span>Configuring Gradle</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#config"><strong>2.2</strong><span>Updating our config</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#urlMappings"><strong>2.3</strong><span>URL Mappings</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">2 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-combined/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you open the <code>initial</code> project of this guide, you will find a plain project
+generated from the React profile.</p>
+</div>
+<div class="paragraph">
+<p>We did one minor change. We moved the <code>initial/server/gradle.properties</code> to
+the root directory <code>initial/gradle.properties</code></p>
+</div>
+<div class="paragraph">
+<p>Both the <code>server</code> Grails app and the <code>client</code> React app have <code>production</code>
+build tasks set up - you can run <code>./gradlew server:assemble</code> to build a WAR or
+JAR file, and you can run <code>yarn build</code> (or <code>./gradlew client:build</code>) to generate
+a static React/webpack bundle.
+Our first step to create a new <code>build.gradle</code> file at the top of our project
+structure, above the <code>client</code> and <code>server</code> subprojects.</p>
+</div>
+
+
+<h2 id="gradle">2.1 Configuring Gradle</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-combined/edit/master/src/main/docs/guide/gradle.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a new <code>build.gradle</code> file (at the same level as <code>settings.gradle</code>), and add the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">task copyClientResources(<span class="key">dependsOn</span>: <span class="string"><span class="delimiter">'</span><span class="content">:client:build</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+    group = <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>
+    description = <span class="string"><span class="delimiter">'</span><span class="content">Copy client resources into server</span><span class="delimiter">'</span></span>
+    doLast {
+        copy {
+            from project(<span class="string"><span class="delimiter">'</span><span class="content">:client</span><span class="delimiter">'</span></span>).buildDir.absolutePath
+            into <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>project(<span class="string"><span class="delimiter">'</span><span class="content">:server</span><span class="delimiter">'</span></span>).buildDir<span class="inline-delimiter">}</span></span><span class="content">/resources/main/public</span><span class="delimiter">&quot;</span></span>
+        }
+    }
+}
+task assembleServerAndClient(<span class="key">dependsOn</span>: [<span class="string"><span class="delimiter">'</span><span class="content">copyClientResources</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">:server:assemble</span><span class="delimiter">'</span></span>]) {  <i class="conum" data-value="2"></i><b>(2)</b>
+    group = <span class="string"><span class="delimiter">'</span><span class="content">build</span><span class="delimiter">'</span></span>
+    description = <span class="string"><span class="delimiter">'</span><span class="content">Build combined server &amp; client JAR</span><span class="delimiter">'</span></span>
+
+    doLast {
+        copy {
+            from fileTree(<span class="key">dir</span>: <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>project(<span class="string"><span class="delimiter">'</span><span class="content">:server</span><span class="delimiter">'</span></span>).buildDir<span class="inline-delimiter">}</span></span><span class="content">/libs/</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="4"></i><b>(4)</b>
+            into <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>rootDir</span><span class="content">/build/</span><span class="delimiter">&quot;</span></span>
+        }
+
+        logger.quiet <span class="string"><span class="delimiter">&quot;</span><span class="content">JAR generated at </span><span class="inline"><span class="inline-delimiter">$</span>rootDir</span><span class="content">/build/. It combines the server and client projects.</span><span class="delimiter">&quot;</span></span>
+    }
+}
+task(<span class="string"><span class="delimiter">&quot;</span><span class="content">:server:assemble</span><span class="delimiter">&quot;</span></span>).mustRunAfter(copyClientResources) <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>copyClientResources</code> task will copy the static files generated by <code>yarn build</code> into the resources directory of the <code>server</code> project.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>assembleServerAndClient</code> task ties the copy step to the existing Gradle <code>assemble</code> task for the <code>server</code> project. This means that we will get our unified archive only when running this top-level task (running <code>server:assemble</code>) alone will generate a "plain" WAR/JAR file without the client resources.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If <code>copyClientResources</code> is to be executed, it must be before <code>:sever:assemble</code>. This ensures client static files will be available when the Grails app is assembled.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>After the combined JAR file has been created, we copy the files to the top-level <code>build</code> directory.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In this guide, we will be using an executable JAR file as our deployment target.
+To enable this, edit the <code>server</code> project&#8217;s <code>build.gradle</code> file, and <strong>delete</strong> the following line:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">war</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="config">2.2 Updating our config</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-combined/edit/master/src/main/docs/guide/config.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that we have a unified Gradle build target, we have a couple more configuration changes to make. All of these changes have to do with the URL differences between the separate Grails &amp; React apps and our new combined deployment.</p>
+</div>
+<div class="paragraph">
+<p>By default, static resources in a deployed Grails app are served from the  <code>/static</code> base URL. That will conflict with what our React app expects, but fortunately, this is a very simple change.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">grails</span>:
+    <span class="key">resources</span>:
+        <span class="key">pattern</span>: <span class="string"><span class="content">/**</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This simply sets the static resources URL to be set to the root context.</p>
+</div>
+<div class="paragraph">
+<p>Along similar lines, we need to edit the URL that the React app uses to make REST calls against the Grails app. This can be done within <code>src/config.js</code> in the <code>client</code> project.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>client/src/config.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/config.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> pjson from <span class="string"><span class="delimiter">'</span><span class="content">./../package.json</span><span class="delimiter">'</span></span>;
+
+const prod = process.env.NODE_ENV === <span class="string"><span class="delimiter">'</span><span class="content">production</span><span class="delimiter">'</span></span>;  <i class="conum" data-value="1"></i><b>(1)</b>
+
+console.log(<span class="error">`</span>Loading <span class="predefined">$</span>{process.env.NODE_ENV} config...<span class="error">`</span>);
+
+<span class="reserved">export</span> const SERVER_URL = prod ? <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span> : <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8080</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">export</span> const CLIENT_VERSION = pjson.version;
+<span class="reserved">export</span> const REACT_VERSION = pjson.dependencies.react;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>process.env.NODE_ENV</code> is a NodeJS environment variable that will tell us if we are running in production or development mode. We&#8217;re using a simple ternary operator to switch the <code>SERVER_URL</code> config property to point to our standalone Grails app during development, and to use the root context in production.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="urlMappings">2.3 URL Mappings</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-combined/edit/master/src/main/docs/guide/urlMappings.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our final change needs to happen in <code>UrlMappings.groovy</code>. If you recall, by default the <code>server</code> Grails app renders some application metadata at the root context. However, in order for our combined build to work, we need to load our React app at the root context. Fortunately, this is a very simple change as well.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/grails-app/controllers/demo/UrlMappings.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">if</span> ( Environment.current == Environment.PRODUCTION ) { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>(<span class="key">uri</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index.html</span><span class="delimiter">'</span></span>)
+} <span class="keyword">else</span> {
+    <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">application</span><span class="delimiter">'</span></span>, <span class="key">action</span>:<span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We are using the <code>grails.util.Environment</code> class to determine whether we are running in development mode or in a deployed artefact, and setting the URL mappings appropriately.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With this new mapping config, when we build our executable JAR file, the <code>/</code> URL will be mapped to <code>/index.html</code>, which happens to also be the landing page for our React application.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/react-combined"><img src="https://travis-ci.org/grails-guides/react-combined.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/react-combined">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/react-combined.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-combined.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-combined'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/react-combined.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/react-combined/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
