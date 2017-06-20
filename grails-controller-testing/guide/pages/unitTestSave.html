@@ -112,12 +112,15 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+
 <span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
 <span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
 <span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
 <span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">StudentController</span> {
@@ -127,6 +130,8 @@ function addJsClass() {
                              <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
 
     StudentService studentService
+
+    MessageSource messageSource
 
     <span class="annotation">@CompileDynamic</span>
     <span class="keyword">def</span> <span class="function">save</span>(StudentSaveCommand cmd) {
@@ -143,7 +148,8 @@ function addJsClass() {
 
         request.withFormat {  <i class="conum" data-value="4"></i><b>(4)</b>
             form multipartForm {  <i class="conum" data-value="5"></i><b>(5)</b>
-                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.created.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">student.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Student</span><span class="delimiter">'</span></span>), student.id])
+                <span class="predefined-type">String</span> msg = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">student.label</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="string"><span class="delimiter">'</span><span class="content">Student</span><span class="delimiter">'</span></span>, request.locale)
+                flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">default.created.message</span><span class="delimiter">'</span></span>, [msg, student.id] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="string"><span class="delimiter">'</span><span class="content">Student created</span><span class="delimiter">'</span></span>, request.locale)
                 redirect(<span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>, <span class="key">id</span>: student.id)
             }
             <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond student, [<span class="key">status</span>: CREATED] }
@@ -185,9 +191,10 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
 
 <span class="annotation">@TestFor</span>(StudentController)
 <span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification {
@@ -228,9 +235,10 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
 
 <span class="annotation">@TestFor</span>(StudentController)
 <span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification {
@@ -239,9 +247,9 @@ function addJsClass() {
         <span class="key">given</span>:
         <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>
         <span class="predefined-type">BigDecimal</span> grade = <span class="integer">100</span>
-        <span class="predefined-type">Long</span> id = <span class="integer">1</span>
+        <span class="predefined-type">Long</span> id = <span class="integer">1L</span>
         controller.studentService = <span class="predefined-type">Stub</span>(StudentService) {
-            save(_,_) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
+            save(_, _) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
             read(_) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
         }
         <span class="key">when</span>:
@@ -293,9 +301,10 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
 
 <span class="annotation">@TestFor</span>(StudentController)
 <span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification {
@@ -304,14 +313,14 @@ function addJsClass() {
         <span class="key">given</span>:
         <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>
         <span class="predefined-type">BigDecimal</span> grade = <span class="integer">100</span>
-        <span class="predefined-type">Long</span> id = <span class="integer">1</span>
+        <span class="predefined-type">Long</span> id = <span class="integer">1L</span>
         controller.studentService = <span class="predefined-type">Stub</span>(StudentService) {
-            save(_,_) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
+            save(_, _) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
         }
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">json request is sent with domain conversion</span><span class="delimiter">'</span></span>
         request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
-        request.json = <span class="string"><span class="delimiter">'</span><span class="content">{&quot;name&quot;:&quot;</span><span class="delimiter">'</span></span>+name+<span class="string"><span class="delimiter">'</span><span class="content">&quot;,&quot;grade&quot;:</span><span class="delimiter">'</span></span>+grade+<span class="string"><span class="delimiter">'</span><span class="content">}</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+        request.json = <span class="string"><span class="delimiter">'</span><span class="content">{&quot;name&quot;:&quot;</span><span class="delimiter">'</span></span> + name + <span class="string"><span class="delimiter">'</span><span class="content">&quot;,&quot;grade&quot;:</span><span class="delimiter">'</span></span> + grade + <span class="string"><span class="delimiter">'</span><span class="content">}</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
         controller.save()
 
         <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">CREATED status code is set</span><span class="delimiter">'</span></span>
