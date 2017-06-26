@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2.1 Setup Multi-Tenancy</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/integrationTest.html"><strong>4</strong><span>Functional Tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#multiTenancyMode"><strong>2.1</strong><span>The Multi-Tenancy Mode</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#multiTenancyResolver"><strong>2.2</strong><span>The TenantResolver</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h2 id="setupMultitenancy">2.1 Setup Multi-Tenancy</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/discriminator-per-tenant/edit/master/src/main/docs/guide/setupMultitenancy.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="multiTenancyMode">2.1.1 The Multi-Tenancy Mode</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/discriminator-per-tenant/edit/master/src/main/docs/guide/writingTheApp/setupMultitenancy/multiTenancyMode.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In order to use Multi-Tenancy you need to setup the Multi-Tenancy mode that GORM uses, given that three distinct modes are supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#DATABASE">DATABASE</a> - Use a distinct database connection per tenant</p>
+</li>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#SCHEMA">SCHEMA</a> - Use a single database, but different physical schemas per tenant</p>
+</li>
+<li>
+<p><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html#DISCRIMINATOR">DISCRIMINATOR</a> - Use a single database, but partition the data using a discriminator column</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Generally <code>DATABASE</code> and <code>SCHEMA</code> modes can both be considered to be physically separated, whilst <code>DISCRIMINATOR</code> mode requires more care since different tenants' data is stored in the same physical database:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/multi-tenancy-modes.png" alt="multi tenancy modes">
+</div>
+</div>
+<div class="paragraph">
+<p>In this case the required Multi-Tenancy mode is <code>DISCRIMINATOR</code> and it can be configured using the <code>grails.gorm.multiTenancy.mode</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: DISCRIMINATOR
+            <span class="key">tenantResolverClass</span>: org.grails.datastore.mapping.multitenancy.web.SessionTenantResolver</code></pre>
+</div>
+</div>
+
+
+<h2 id="multiTenancyResolver">2.1.2 The TenantResolver</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/discriminator-per-tenant/edit/master/src/main/docs/guide/writingTheApp/setupMultitenancy/multiTenancyResolver.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Note that, in addition to the mode, the above example configures the <code>tenantResolverClass</code> to use to resolve the tenant.</p>
+</div>
+<div class="paragraph">
+<p>The <code>tenantResolverClass</code> is a class that implements the <a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a> interface.</p>
+</div>
+<div class="paragraph">
+<p>Included within GORM there are several built-in <code>TenantResolver</code> implementations including:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Available TenantResolver Implementations</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/SessionTenantResolver.html">SessionTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the HTTP session using an attribute called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/CookieTenantResolver.html">CookieTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the HTTP cookie using an attribute called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/web/SubDomainTenantResolver.html">SubDomainTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the current sub-domain. For example if the subdomain is <code>foo.mycompany.com</code>, the tenant id would be <code>foo</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://gorm.grails.org/latest/api//org/grails/datastore/mapping/multitenancy/resolvers/SystemPropertyTenantResolver.html">SystemPropertyTenantResolver</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from a system property called <code>gorm.tenantId</code>. Mainly useful for testing</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The above implementations are useful to have out-of-the-box, however GORM is flexible and you can implement your own strategy by implementing the <code>TenantResolver</code> interface.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For example if you are using Spring Security you could write a <code>TenantResolver</code> that resolves the tenant id from the currently logged in user.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For this example we are going to be using <code>SessionTenantResolver</code> and storing the tenant id within the current user session.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/testingTheApp.html"><strong>3</strong><span>Multi-Tenancy Unit Testing</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/discriminator-per-tenant"><img src="https://travis-ci.org/grails-guides/discriminator-per-tenant.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/discriminator-per-tenant">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/discriminator-per-tenant.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/discriminator-per-tenant.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/discriminator-per-tenant'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/discriminator-per-tenant.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/discriminator-per-tenant/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
