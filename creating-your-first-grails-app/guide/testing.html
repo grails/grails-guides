@@ -139,19 +139,19 @@ $ ./grailsw test-app -integration</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app demo.MyTestSpec</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app org.grails.guides.MyTestSpec</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Writing tests is a very broad topic and worthy of its own guide. In practice, the simplest (and often most useful) tests are unit tests, so let&#8217;s write a simple unit test to exercise our <code>ValueEstimateService</code>.</p>
 </div>
 <div class="paragraph">
-<p>Grails automatically creates a test spec for services created with the <code>create-service</code> command. Open <code>src/test/groovy/demo/ValueEstimateServiceSpec</code>.</p>
+<p>Grails automatically creates a test spec for services created with the <code>create-service</code> command. Open <code>src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</code>.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/test/groovy/demo/ValueEstimateServiceSpec</div>
+<div class="title">src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
 <span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
@@ -183,7 +183,7 @@ $ ./grailsw test-app -integration</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ /grailsw test-app demo.ValueEstimateServiceSpec
+<pre class="CodeRay highlight"><code data-lang="bash">$ /grailsw test-app org.grails.guides.ValueEstimateServiceSpec
 
 ...
 &gt; There were failing tests. See the report at: file:///Users/dev/projects/creating-your-first-grails-app/complete/build/reports/tests/test/index.html
@@ -195,12 +195,41 @@ Total time: 6.353 secs
 </div>
 </div>
 <div class="paragraph">
-<p>Now that we&#8217;ve confirmed our test is failing, let&#8217;s edit this test case to exercise our <code>getEstimate</code> method. Edit <code>src/test/groovy/demo/ValueEstimateServiceSpec</code>.</p>
+<p>Now that we&#8217;ve confirmed our test is failing, let&#8217;s edit this test case to exercise our <code>getEstimate</code> method. Edit <code>src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</code>.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/test/groovy/demo/ValueEstimateServiceSpec.groovy</div>
+<div class="title">src/test/groovy/org/grails/guides/ValueEstimateServiceSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/creating-your-first-grails-app/complete/src/test/groovy/demo/ValueEstimateServiceSpec.groovy<span class="type">[]</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
+
+<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
+<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="comment">/**
+ * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
+ */</span>
+
+<span class="annotation">@Mock</span>([Make, Model, Vehicle]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@TestFor</span>(ValueEstimateService)
+<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="type">void</span> testEstimateRetrieval() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">'</span><span class="content">a vehicle</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> make = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>)
+        <span class="keyword">def</span> model = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>, <span class="key">make</span>: make)
+        <span class="keyword">def</span> vehicle = <span class="keyword">new</span> Vehicle(<span class="key">year</span>: <span class="integer">2000</span>, <span class="key">make</span>: make, <span class="key">model</span>: model, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test Vehicle</span><span class="delimiter">'</span></span>)
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">service is called</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> estimate = service.getEstimate(vehicle)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a non-zero result is returned</span><span class="delimiter">'</span></span>
+        estimate &gt; <span class="integer">0</span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">estimate is not too large</span><span class="delimiter">'</span></span>
+        estimate &lt; <span class="integer">1000000</span>
+    }
+}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -232,7 +261,7 @@ Total time: 6.353 secs
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app demo.ValueEstimateServiceSpec
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app org.grails.guides.ValueEstimateServiceSpec
 
 ...
 
