@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Adding Client security</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/server.html"><strong>4</strong><span>Building the Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/client.html"><strong>5</strong><span>Building the Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheSecurity.html"><strong>6</strong><span>Adding Client security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/puttingItAllTogether.html"><strong>7</strong><span>Putting it all together</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/client.html">&lt;&lt; <strong>5</strong><span>Building the Client</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/puttingItAllTogether.html"><strong>7</strong><span>Putting it all together</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#clientSecurityConfig"><strong>6.1</strong><span>Creating our Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingAuth"><strong>6.2</strong><span>Handling Authentication</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingHandlers"><strong>6.3</strong><span>Writing the Response Handlers</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingResponseHandlers"><strong>6.4</strong><span>Creating our Response Handlers</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#writingErrorHandlers"><strong>6.5</strong><span>Creating a Default Error Handler</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheSecurity">6 Adding Client security</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/writingTheSecurity.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="clientSecurityConfig">6.1 Creating our Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/clientSecurityConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>At this point we will begin adding the security configuration to the React app. Let&#8217;s begin by creating a <code>security</code> directory underneath <code>client/src</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ cd client/src
+~ mkdir security</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a file named <code>auth.js</code> in your new <code>security</code> directory</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ cd security
+~ touch auth.js</code></pre>
+</div>
+</div>
+
+
+<h2 id="writingAuth">6.2 Handling Authentication</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/writingAuth.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s continue by editing <code>auth.js</code>. This file is a "plain" JavaScript file (not a React component), and will contain four core authentication-related functions (<code>logIn</code>, <code>logOut</code>, <code>`refreshToken</code>, and <code>isLoggedIn</code>). These functions will be exported as a <a href="http://2ality.com/2014/09/es6-modules-final.html"><strong>module</strong></a>, so they can be imported and used in any React component (or JavaScript file).  We will be making use of HTML5&#8217;s <code>localStorage</code> object to store the user&#8217;s token after a successful login.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/security/auth.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> {SERVER_URL} from <span class="string"><span class="delimiter">'</span><span class="content">./../config</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {checkResponseStatus} from <span class="string"><span class="delimiter">'</span><span class="content">./../handlers/responseHandlers</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> headers from <span class="string"><span class="delimiter">'</span><span class="content">./../security/headers</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> qs from <span class="string"><span class="delimiter">'</span><span class="content">qs</span><span class="delimiter">'</span></span>;
+
+<i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">export</span> <span class="keyword">default</span> {
+  logIn(auth) { <i class="conum" data-value="2"></i><b>(2)</b>
+    localStorage.auth = JSON.stringify(auth);
+  },
+
+  logOut() { <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="keyword">delete</span> localStorage.auth;
+  },
+
+  refreshToken() { <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="keyword">return</span> fetch(
+      <span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/oauth/access_token<span class="error">`</span>,
+      { <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: {
+          <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/x-www-form-urlencoded;charset=UTF-8</span><span class="delimiter">'</span></span>
+        },
+        <span class="key">body</span>: qs.stringify({
+          <span class="key">grant_type</span>: <span class="string"><span class="delimiter">'</span><span class="content">refresh_token</span><span class="delimiter">'</span></span>,
+          <span class="key">refresh_token</span>: JSON.parse(localStorage.auth).refresh_token
+        })
+      })
+      .then(checkResponseStatus)
+      .then((a) =&gt; localStorage.auth = JSON.stringify(a))
+      .<span class="keyword">catch</span>(() =&gt; { <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string"><span class="delimiter">&quot;</span><span class="content">Unable to refresh!</span><span class="delimiter">&quot;</span></span>)})
+  },
+
+  loggedIn() {  <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="keyword">return</span> localStorage.auth &amp;&amp; fetch(
+        <span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, <i class="conum" data-value="6"></i><b>(6)</b>
+        {<span class="key">headers</span>: headers()})
+        .then(checkResponseStatus)
+        .then(() =&gt; { <span class="keyword">return</span> <span class="predefined-constant">true</span> })
+        .<span class="keyword">catch</span>(<span class="local-variable">this</span>.refreshToken)
+        .<span class="keyword">catch</span>(() =&gt; { <span class="keyword">return</span> <span class="predefined-constant">false</span> });
+  }
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>export</code> keyword indicates that this is a JavaScript <strong>module</strong>, which can be imported using the <strong>import</strong> keyword. A single JavaScript file can export multiple modules, so the <code>default</code> indicates which module is imported by default (without specifying a particular module).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>logIn</code> takes in an auth object, converts it into a JSON string, and stores it in our <code>localStorage</code> for later use.
+use.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>logOut</code> is  even simpler - we simply remove the object that was stored at <code>localStorage.auth</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>refreshToken</code> is the most complex function. It makes a <code>POST</code> request against the <code>/oauth/access_token</code> endpoint (which is set up by default by Spring Security REST), including the <code>refresh_token</code> as a URL parameter. If successful, it will receive the same JWT token response that a normal login would have - in which case we store the new token in our <code>localStorage</code> as before (overwriting the earlier one).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>isLoggedIn</code> returns whether we have an <code>auth</code> object in <code>localStorage</code>, and in addition verifies that our token is still valid by making a <code>fetch</code> request against the secured API and checking the response (in a real-world app, you would probably have a special endpoint for this purpose). If the <code>checkResponseStatus</code> function throws an error, the first <code>catch</code> statement is called, which will call the <code>refreshToken</code> function described above. If <strong>that</strong> function throws another error, the final <code>catch</code> statement will fire and the authentication will fail.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>We are using backticks instead of quotes to denote our strings. This is an ES6 syntax called <a href="https://developers.google.com/web/updates/2015/01/ES6-Template-Strings">"template strings"</a>, and they allow us to write multi-line strings as well as use expressions in our strings with the <code>${expression}</code> syntax.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The server&#8217;s <code>api/login</code> endpoint responds us with an <code>access_token</code> which will expire and a refresh token which never expires and which allows us to refresh the <code>access_token</code> via the <code>oauth/access_token</code> endpoint. Checkout the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/#_token_storage">plugin documentation</a> to learn more about access token expiration and refresh options.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Notice that in our <code>fetch</code> call in <code>isLoggedIn</code>, we are calling a <code>headers()</code> function (imported from <code>headers.js</code>). This function will return an object containing our request headers, including the token from <code>localStorage</code>. Let&#8217;s create this function now.</p>
+</div>
+<div class="paragraph">
+<p>Create a new JavaScript file under <code>client/src/security</code>, called <code>headers.js</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/security/headers.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">export</span> <span class="keyword">default</span> () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="keyword">return</span> {
+    <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>,
+    <span class="key"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>: <span class="error">`</span>Bearer <span class="predefined">$</span>{localStorage.auth ? JSON.parse(localStorage.auth).access_token : <span class="predefined-constant">null</span>}<span class="error">`</span>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Again we&#8217;re exporting a module, but this time the module is itself a function (using the ES6 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">"arrow function"</a> syntax, which is analogous to a Groovy closure). The function is anonymous, so the name will be whatever variable is used to <code>import</code> the module (e.g, <code>import headers from './headers'</code>).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The function from the <code>headers.js</code> module returns an object with an "Authorization" header, and adds the <code>access_token</code> (which is obtained by parsing the <code>localStorage.auth</code> JSON object). We will use this function later on when it&#8217;s time to authenticate our API calls.</p>
+</div>
+<div class="paragraph">
+<p>Now that we have our client-side authentication in place, let&#8217;s move on and see how we use it.</p>
+</div>
+
+
+<h2 id="writingHandlers">6.3 Writing the Response Handlers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/writingHandlers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In order to implement our authentication we will write several "handler" functions that we can import and reuse throughout our app.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s begin by creating a <code>handlers</code> directory under <code>client/src</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ cd client/src
+~ mkdir handlers</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we are ready to write our first handlers. Create the following two files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ touch responseHandlers.js
+~ touch errorHandlers.js</code></pre>
+</div>
+</div>
+
+
+<h2 id="writingResponseHandlers">6.4 Creating our Response Handlers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/writingResponseHandlers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our first handler will be <code>checkResponseStatus</code>. This function will check the HTTP status of a response, and either return the JSON of the response or throw an error. We can chain this function with our REST calls using the <code>fetch</code> API.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/handlers/responseHandlers.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> Auth from <span class="string"><span class="delimiter">'</span><span class="content">../security/auth</span><span class="delimiter">'</span></span>;
+
+<i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">export</span> const checkResponseStatus = (response) =&gt; {
+    <span class="keyword">if</span>(response.status &gt;= <span class="integer">200</span> &amp;&amp; response.status &lt; <span class="integer">300</span>) {
+        <span class="keyword">return</span> response.json()
+    } <span class="keyword">else</span> {
+        let error = <span class="keyword">new</span> Error(response.statusText);
+        error.response = response;
+        <span class="keyword">throw</span> error;
+    }
+};
+
+<span class="reserved">export</span> const loginResponseHandler = (response, handler) =&gt; {
+    Auth.logIn(response);
+
+    <span class="keyword">if</span>(handler) {
+        handler.call();
+    }
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>export</code> keyword makes this function available to any JavaScript file that imports this file.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>checkResponseStatus</code> function takes an HTTP response and checks that the status code is in the successful range, then returns the JSON body of the response. If the HTTP status code is outside that range then an error will be thrown.</p>
+</div>
+<div class="paragraph">
+<p><code>loginResponseHandler</code> uses the <code>Auth.login(response)</code> function that we wrote previously. If an additional function is passed in as the second argument, it will then execute that function.</p>
+</div>
+
+
+<h2 id="writingErrorHandlers">6.5 Creating a Default Error Handler</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/writingErrorHandlers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Along the same lines as the <code>checkStatusResponse</code> function, we&#8217;ll write a <code>defaultErrorHandler</code> which will take a JavaScript error object along with an custom handler (to be called after the default error handling).</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/handlers/errorHandlers.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">export</span> const defaultErrorHandler = (error, handler) =&gt; {
+    console.error(error);
+
+    <span class="keyword">if</span>(handler) {
+        handler.call();
+    }
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>defaultErrorHandler</code> function is quite simple: it logs the error to the console. If an additional handler was passed in the second argument,
+it will then call that function.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/client.html">&lt;&lt; <strong>5</strong><span>Building the Client</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/puttingItAllTogether.html"><strong>7</strong><span>Putting it all together</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/react-spring-security"><img src="https://travis-ci.org/grails-guides/react-spring-security.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/react-spring-security">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/react-spring-security.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/react-spring-security.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/react-spring-security/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

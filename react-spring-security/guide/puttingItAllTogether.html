@@ -1,0 +1,659 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>7 Putting it all together</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/server.html"><strong>4</strong><span>Building the Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/client.html"><strong>5</strong><span>Building the Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheSecurity.html"><strong>6</strong><span>Adding Client security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/puttingItAllTogether.html"><strong>7</strong><span>Putting it all together</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheSecurity.html">&lt;&lt; <strong>6</strong><span>Adding Client security</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#appState"><strong>7.1</strong><span>Creating our state</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#lifecycle"><strong>7.2</strong><span>React Lifecycle Methods</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#routing"><strong>7.3</strong><span>Routing</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#inputChangeHandler"><strong>7.4</strong><span>Login Form Change Handler</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#login"><strong>7.5</strong><span>Handling Login</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#logout"><strong>7.6</strong><span>Handling Logout</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#garage"><strong>7.7</strong><span>Authenticating our REST Calls</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="puttingItAllTogether">7 Putting it all together</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/puttingItAllTogether.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now we can finally wire these pieces together in order to get our client-side security functioning. Here&#8217;s the steps we need to take:</p>
+</div>
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-square-o"></i> Update our <code>App</code> component&#8217;s state to include the user details for the <code>Login</code> form.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Check whether we&#8217;re logged in, and display the <code>Login</code> component if the user is not authenticated.</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Submit the <code>Login</code> form details to the server and obtain (and store) the resulting token</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Provide a way to logout (delete the token from <code>localStorage</code>)</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> Use the token in our REST calls to the API</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Please reference the full <code>App.js</code> file in the <code>complete</code> project as needed - in the sections below we will go piece by piece through this component to complete the above steps.</p>
+</div>
+
+
+<h2 id="appState">7.1 Creating our state</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/appState.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>First thing, let&#8217;s build our <code>App</code> state object. You should recognize our user and error fields in our state as
+we have used them already in some of our functions. In addition, we&#8217;ll add a <code>route</code> variable for use later on.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">constructor() {
+  <span class="reserved">super</span>();
+
+  <span class="local-variable">this</span>.state = {
+    <span class="key">userDetails</span>: {
+      <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    },
+    <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+    <span class="key">error</span>: <span class="predefined-constant">null</span>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to creating our initial state, we will also add a <code>reset</code> function so that we can easily return
+to our initial state when needed:</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">reset = () =&gt; {
+  <span class="local-variable">this</span>.setState({
+    <span class="key">userDetails</span>: {
+      <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    },
+    <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>,
+    <span class="key">error</span>: <span class="predefined-constant">null</span>
+  });
+};</code></pre>
+</div>
+</div>
+
+
+<h2 id="lifecycle">7.2 React Lifecycle Methods</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/lifecycle.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next we need to implement two of React&#8217;s "lifecycle" methods, in order to check whether we are logged in or not.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See the <a href="https://facebook.github.io/react/docs/react-component.html">React documentation</a> for more information on the component lifecycle.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">componentDidMount() {
+  console.log(<span class="string"><span class="delimiter">'</span><span class="content">app mounting...</span><span class="delimiter">'</span></span>);
+
+  (async () =&gt; {
+    <span class="keyword">if</span> (await Auth.loggedIn()) {
+      <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>})
+    } <span class="keyword">else</span> {
+      <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>});
+    }
+  })();
+}
+
+componentDidUpdate() {
+  <span class="keyword">if</span> (<span class="local-variable">this</span>.state.route !== <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span> &amp;&amp; !Auth.loggedIn()) {
+    <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>})
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In <code>componentDidMount</code>, we are using the <code>Auth.isLoggedIn()</code> function to see whether we&#8217;re logged in. Because <code>isLoggedIn</code> uses a <code>fetch</code> call, which is asynchronous, we&#8217;re using the <code>async</code>/<code>await</code> keywords to prevent our check from returning before the <code>fetch</code> call completes. Assuming that <code>isLoggedIn</code> returns true, we set our <code>route</code> state variable to 'garage' - otherwise, set it <code>login</code>.</p>
+</div>
+<div class="paragraph">
+<p>We perform a similar check in <code>componentDidUpdate</code>, redirecting to the <code>login</code> route if we are no longer logged in.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For more information on <code>await</code>, see the documentation at <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">https://developer.mozilla.org</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now we&#8217;re ready to set up our routing.</p>
+</div>
+
+
+<h2 id="routing">7.3 Routing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/routing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Routing, in Single Page Applications, gives the user the ability to navigate through your application as though it were made of multiple "pages". In many React apps, the <a href="https://reacttraining.com/react-router/">React Router</a> library is used to handle this requirement. However, we will take a simplistic approach for this guide by storing our current "route" in our state, and choosing which component to render based on that variable.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">contentForRoute() {
+  const {error, userDetails, route} = <span class="local-variable">this</span>.state;
+
+  const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span>
+                              <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
+                              <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
+                              <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+  const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+  <span class="keyword">switch</span> (route) {
+    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
+      <span class="keyword">return</span> loginContent;
+    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
+      <span class="keyword">return</span> garageContent;
+    <span class="keyword">default</span>:
+      <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+  }
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve created a <code>contentForRoute</code> function, which will select the proper component to render based on <code>this.state.route</code>. If there is no route set yet, we display a "Loading&#8230;&#8203;" message. Note that this is where we are passing in our <code>inputChangeHandler</code>, <code>login</code>, and <code>logoutHandler</code> handlers into those components as props.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Note how we pass our handler functions as <strong>references</strong> (<code>onSubmit={this.login}</code>), not function calls (<code>onSubmit={this.login()}</code>). This is because we want our child components to have access to these functions and call them later - we don&#8217;t want to call them when the component is rendered!
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="inputChangeHandler">7.4 Login Form Change Handler</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/inputChangeHandler.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As we discussed while we were creating the <code>Login</code> component (see <a href="#loginScreen">[loginScreen]</a>), we need to define a handler function to update our <code>userDetails</code> state object when the username/password values are changed.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">  inputChangeHandler = (event) =&gt; {
+    let {userDetails} = <span class="local-variable">this</span>.state;
+    const target = event.target;
+
+    userDetails[target.name] = target.value;
+
+    <span class="local-variable">this</span>.setState({userDetails});
+  };
+
+  customLoginHandler = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>});
+  };
+
+  customErrorHandler = (error) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="local-variable">this</span>.reset();
+    <span class="local-variable">this</span>.setState({<span class="key">error</span>: error.message});
+  };
+
+  logoutHandler = () =&gt; {
+    Auth.logOut();
+    <span class="local-variable">this</span>.reset();
+  };
+
+  contentForRoute() {
+    const {error, userDetails, route} = <span class="local-variable">this</span>.state;
+
+    const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span>
+                                <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
+                                <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
+                                <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+    const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+    <span class="keyword">switch</span> (route) {
+      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
+        <span class="keyword">return</span> loginContent;
+      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
+        <span class="keyword">return</span> garageContent;
+      <span class="keyword">default</span>:
+        <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+    }
+  };
+
+  render() {
+    const content = <span class="local-variable">this</span>.contentForRoute();
+
+    <span class="keyword">return</span> (
+      <span class="tag">&lt;Grid&gt;</span>
+        {content}
+      <span class="tag">&lt;/Grid&gt;</span>
+    );
+  };
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> App;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we use the same handler for both username and password, as the <code>name</code> attributes set on each input can be used to assign the correct variable.</p>
+</div>
+
+
+<h2 id="login">7.5 Handling Login</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/login.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Finally, let&#8217;s look at our actual login process and finish connecting everything up. This is the glue to
+everything we have already done at this point and makes use of our 2 response handlers and our error
+handler as well as using class specific custom handlers to deal with our current state.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">login = (e) =&gt; {
+  console.log(<span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>);
+  e.preventDefault(); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/login<span class="error">`</span>, { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+    <span class="key">headers</span>: {
+      <span class="key"><span class="delimiter">'</span><span class="content">Accept</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>,
+      <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+    },
+    <span class="key">body</span>: JSON.stringify(<span class="local-variable">this</span>.state.userDetails)
+  }).then(checkResponseStatus) <i class="conum" data-value="3"></i><b>(3)</b>
+    .then(response =&gt; loginResponseHandler(response, <span class="local-variable">this</span>.customLoginHandler)) <i class="conum" data-value="4"></i><b>(4)</b>
+    .<span class="keyword">catch</span>(error =&gt; defaultErrorHandler(error, <span class="local-variable">this</span>.customErrorHandler)); <i class="conum" data-value="5"></i><b>(5)</b>
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We call <code>e.preventDefault();</code> to disable the <code>Login</code> form&#8217;s default submit event.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Using <code>fetch</code>, we make a POST request containing the credentials entered by the user via the <code>Login</code> form.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We chain the <code>checkResponseStatus</code> to our <code>fetch</code> call to validate that the request was successful.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Assuming success, we add <code>loginResponseHandler</code> to the chain to complete the login process.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Any errors are passed to the <code>defaultErrorHandler</code> function, along with our <code>customErrorHandler</code>.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">customLoginHandler = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>});
+};
+
+customErrorHandler = (error) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="local-variable">this</span>.reset();
+  <span class="local-variable">this</span>.setState({<span class="key">error</span>: error.message});
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note the use of the "custom" handler functions:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>customLoginHandler</code> updates <code>this.state.route</code> upon a successful login.</p>
+</li>
+<li>
+<p><code>customErrorHandler`clears the `userDetails</code> state variable, and sets an error message.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>At this point you should be able to successfully login to the application but there are a few more things
+to do before we are done.</p>
+</div>
+
+
+<h2 id="logout">7.6 Handling Logout</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/logout.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now to ensure completeness we want to add the ability to logout as well. As seen above in our
+<a href="#routing">[routing]</a>, when we are routed to the garage we are passing a logoutHandler</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The logout handler simply calls the <code>Auth.logOut()</code> function we wrote earlier.  We then call <code>reset()</code>, which gets us back our initial state.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">logoutHandler = () =&gt; {
+  Auth.logOut();
+  <span class="local-variable">this</span>.reset();
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lastly, in our <code>Garage</code> component, we need to add a logout button:</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/Garage.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;Button</span> <span class="attribute-name">bsStyle</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">warning</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">pull-right</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.props.logoutHandler</span><span class="error">}</span> <span class="tag">&gt;</span>Log Out<span class="tag">&lt;/Button&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When this button is clicked, React will execute the <code>logoutHandler</code> function.</p>
+</div>
+
+
+<h2 id="garage">7.7 Authenticating our REST Calls</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/garage.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>At this point our login and logout functionality is complete. The last step is to authenticate our REST calls back to our API</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/Garage.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">componentDidMount() {
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+    .then(r =&gt; r.json())
+    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
+    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/make<span class="error">`</span>, {
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+    .then(r =&gt; r.json())
+    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
+    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/model<span class="error">`</span>, {
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+  })
+    .then(r =&gt; r.json())
+    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
+    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
+
+  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/driver<span class="error">`</span>, {
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+  })
+    .then(r =&gt; r.json())
+    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
+    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+}
+
+submitNewVehicle = (vehicle) =&gt; {
+  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
+    <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+    <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">body</span>: JSON.stringify(vehicle)
+  }).then(r =&gt; r.json())
+    .then(json =&gt; {
+      let vehicles = <span class="local-variable">this</span>.state.vehicles;
+      vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
+      <span class="local-variable">this</span>.setState({vehicles});
+    })
+    .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note the use of the <code>headers()</code> function again to return our token-bearing request headers for all of our API calls.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Start up the app and verify that you can login and authenticate successfully. Congratulations! You have secured your React app with Grails and Spring Security!</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/writingTheSecurity.html">&lt;&lt; <strong>6</strong><span>Adding Client security</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/react-spring-security"><img src="https://travis-ci.org/grails-guides/react-spring-security.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/react-spring-security">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/react-spring-security.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/react-spring-security.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/react-spring-security/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

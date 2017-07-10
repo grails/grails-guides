@@ -1,0 +1,597 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Building the Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/server.html"><strong>4</strong><span>Building the Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/client.html"><strong>5</strong><span>Building the Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheSecurity.html"><strong>6</strong><span>Adding Client security</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/puttingItAllTogether.html"><strong>7</strong><span>Putting it all together</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/client.html"><strong>5</strong><span>Building the Client</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#serverDependencies"><strong>4.1</strong><span>Installing Spring Security</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#springSecurityConfig"><strong>4.2</strong><span>Configuring Spring Security</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#appSecurityConfig"><strong>4.3</strong><span>Securing our API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bootstrapData"><strong>4.4</strong><span>Updating our Initial Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runningTheSecuredApp"><strong>4.5</strong><span>Test-driving our Secured API</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="server">4 Building the Server</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/server.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>initial</code> project is based on the completed project from the <a href="http://guides.grails.org/building-a-react-app/guide/index.html">Building a React App</a> Guide. Please refer to that guide for details on the provided code.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Our first step in adding security to this project is to install the Spring Security plugin/s in our Grails app, and secure our API endpoints. The Spring Security REST plugin supports a stateless, token-based authentication model that is ideal for securing APIs and Single Page Applications. See the diagram below for an overview of the security model.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/rest.png" alt="Stateless Authentication Model">
+</div>
+</div>
+
+
+<h2 id="serverDependencies">4.1 Installing Spring Security</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/serverDependencies.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To secure our application, we will use the Spring Security Core plugin as well as the Spring Security REST plugin. Install these plugins in the project by adding these lines to <code>build.gradle</code> (under the <code>dependencies</code> section):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-core:3.2.0.M1</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Please see the documentation for more information on the <a href="https://grails-plugins.github.io/grails-spring-security-core/v3/index.html">Spring Security Core plugin</a> and <a href="https://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/">Spring Security REST plugin</a>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="springSecurityConfig">4.2 Configuring Spring Security</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/springSecurityConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that Spring Security has been added to our application, we can generate the default Spring Security
+configuration. The plugin provides a <code>s2-quickstart</code> command that will generate a set of domain classes and configuration to get us started.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">cd initial/server</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then execute the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">grails s2-quickstart demo User Role</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should generate the following domain classes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>/server/grails-app/domain/demo/User.groovy
+/server/grails-app/domain/demo/Role.groovy
+/server/grails-app/domain/demo/UserRole.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, the <code>s2-quickstart</code> has added some extra configuration at <code>server/grails-app/conf/application.groovy</code>. Remove <code>application.groovy. We want to keep all the configuration in a single file. Add the next snippet at the end of `aplication.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="head"><span class="head">---</span></span>
+<span class="key">grails</span>:
+    <span class="key">plugin</span>:
+        <span class="key">springsecurity</span>:
+            <span class="key">userLookup</span>:
+                <span class="key">userDomainClassName</span>: <span class="string"><span class="content">demo.User</span></span>
+                <span class="key">authorityJoinClassName</span>: <span class="string"><span class="content">demo.UserRole</span></span>
+            <span class="key">authority</span>:
+                <span class="key">className</span>: <span class="string"><span class="content">demo.Role</span></span>
+            <span class="key">filterChain</span>:
+                <span class="key">chainMap</span>:
+                    -
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/assets/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">none</span></span>
+                    -
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/**/js/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">none</span></span>
+                    -
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/**/css/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">none</span></span>
+                    -
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/**/images/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">none</span></span>
+                    - <span class="comment"># Stateless chain</span>
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/api/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter</span></span>
+                    - <span class="comment"># Traditional Chain</span>
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter</span></span>
+                <span class="key">controllerAnnotations</span>:
+                    <span class="key">staticRules</span>:
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/error</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/index</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/index.gsp</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/shutdown</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/assets/**</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/**/js/**</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/**/css/**</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/**/images/**</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span>
+                        -
+                            <span class="key">pattern</span>: <span class="string"><span class="content">/**/favicon.ico/**</span></span>
+                            <span class="key">access</span>:
+                                - <span class="string"><span class="content">permitAll</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please refer to the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/">Spring Security REST documentation</a> and <a href="https://grails-plugins.github.io/grails-spring-security-core/latest/">Spring Security Core Documentation</a> for more details.</p>
+</div>
+
+
+<h2 id="appSecurityConfig">4.3 Securing our API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/appSecurityConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our first step in securing our API is to update our <code>Driver</code> Domain Class. In our app, <code>Driver</code> would be a "user", however Spring Security has generated a <code>User</code> class for authentication purposes. We could modify the configuration to use <code>Driver</code> instead, however we&#8217;ll take another approach and make <code>Driver</code> a subclass of <code>User</code>.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/grails-app/domain/demo/Driver.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Driver.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_DRIVER</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/api/driver</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Driver</span> <span class="directive">extends</span> User {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> hasMany = [ <span class="key">vehicles</span>: Vehicle ]
+
+    <span class="directive">static</span> constraints = {
+        vehicles <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to extending the <code>User</code> class, we have also restricted access to this domain resource to users with the <code>ROLE_DRIVER</code> role, using the <code>@Secured</code> annotation. We haven&#8217;t created this role yet, but we&#8217;ll fix that shortly.</p>
+</div>
+<div class="paragraph">
+<p>If you were now to run the server application, you would get a 401 response to any attempt to access <code>/api/driver</code>.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s secure the remaining domain resources, as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Make.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_DRIVER</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/api/make</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Make</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Model.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_DRIVER</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/api/model</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Model</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_DRIVER</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/api/vehicle</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="predefined-type">String</span> name
+
+    Make make
+    Model model
+
+    <span class="directive">static</span> belongsTo = [<span class="key">driver</span>: <span class="predefined-type">Driver</span>]
+
+    <span class="directive">static</span> constraints = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="bootstrapData">4.4 Updating our Initial Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/bootstrapData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Believe it or not, we&#8217;re done with the server-side security portion of our application! The last thing we need to do is to create the <code>ROLE_DRIVER</code> role that we mentioned earlier. We also should prepopulate our database with some user/passwords that we can use to login.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/grails-app/init/demo/BootStrap.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">def</span> driver1 = <span class="keyword">new</span> <span class="predefined-type">Driver</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>, <span class="key">username</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">susan</span><span class="delimiter">&quot;</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">password1</span><span class="delimiter">&quot;</span></span>).save() <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="keyword">def</span> driver2 = <span class="keyword">new</span> <span class="predefined-type">Driver</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Pedro</span><span class="delimiter">&quot;</span></span>, <span class="key">username</span>:  <span class="string"><span class="delimiter">&quot;</span><span class="content">pedro</span><span class="delimiter">&quot;</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">password2</span><span class="delimiter">&quot;</span></span>).save()
+
+        <span class="predefined-type">Role</span> role = <span class="keyword">new</span> <span class="predefined-type">Role</span>(<span class="key">authority</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_DRIVER</span><span class="delimiter">&quot;</span></span>).save()  <i class="conum" data-value="2"></i><b>(2)</b>
+
+        UserRole.create(driver1, role, <span class="predefined-constant">true</span>)  <i class="conum" data-value="3"></i><b>(3)</b>
+        UserRole.create(driver2, role, <span class="predefined-constant">true</span>)
+
+        <span class="keyword">def</span> nissan = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>).save()
+        <span class="keyword">def</span> ford = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span>).save()
+
+        <span class="keyword">def</span> titan = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Titan</span><span class="delimiter">&quot;</span></span>).save()
+        <span class="keyword">def</span> leaf = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Leaf</span><span class="delimiter">&quot;</span></span>).save()
+        <span class="keyword">def</span> windstar = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Windstar</span><span class="delimiter">&quot;</span></span>).save()
+
+        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>, <span class="key">driver</span>: driver1, <span class="key">make</span>: nissan, <span class="key">model</span>: titan).save()</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Since we&#8217;ve extended the <code>User</code> class, we can now set a <code>username</code> and <code>password</code> property on our <code>Driver</code> domain objects. The <code>password</code> will be encrypted prior to persistence.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re creating our <code>ROLE_DRIVER</code> role - we can create as many roles as we need, and even create role hierarchies to support complex access controls.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>UserRole</code> represents the join table between <code>User</code> and <code>Role</code>. The class includes a <code>create</code> method which we can use to quickly associate our <code>User</code> and <code>Role</code> objects.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="runningTheSecuredApp">4.5 Test-driving our Secured API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/runningTheSecuredApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Start up the server app (if it&#8217;s not already running):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./gradlew server:bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In another terminal session, if you make a <code>curl</code> request to one of our resources, you&#8217;ll get a 401 response.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">~ curl -i <span class="integer">0</span>:<span class="integer">8080</span>/api/vehicle
+HTTP/<span class="float">1.1</span> <span class="integer">401</span>
+WWW-Authenticate: Bearer
+Content-Type: application/json;charset=UTF-<span class="integer">8</span>
+Transfer-Encoding: chunked
+Date: Thu, <span class="integer">08</span> Jun <span class="integer">2017</span> <span class="octal">05</span>:<span class="integer">42</span>:<span class="octal">05</span> GMT
+
+{<span class="key"><span class="delimiter">&quot;</span><span class="content">timestamp</span><span class="delimiter">&quot;</span></span>:<span class="integer">1496900525475</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">status</span><span class="delimiter">&quot;</span></span>:<span class="integer">401</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Unauthorized</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">No message available</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">path</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/api/vehicle</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to make a secure request, we need to first authenticate with the server using valid user credentials. By default, we can use the <code>/api/login</code> endpoint for this purpose.</p>
+</div>
+<div class="paragraph">
+<p>Make a request to <code>/api/login</code> using the credentials for one of our <code>Driver</code> objects in <code>BootStrap.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">curl -i -H <span class="string"><span class="delimiter">&quot;</span><span class="content">Content-Type: application/json</span><span class="delimiter">&quot;</span></span> --data <span class="string"><span class="delimiter">'</span><span class="content">{&quot;username&quot;:&quot;susan&quot;,&quot;password&quot;:&quot;password1&quot;}</span><span class="delimiter">'</span></span> <span class="integer">0</span>:<span class="integer">8080</span>/api/login
+HTTP/<span class="float">1.1</span> <span class="integer">200</span>
+Cache-Control: no-store
+Pragma: no-cache
+Content-Type: application/json;charset=UTF-<span class="integer">8</span>
+Content-Length: <span class="integer">2157</span>
+Date: Thu, <span class="integer">08</span> Jun <span class="integer">2017</span> <span class="octal">05</span>:<span class="integer">45</span>:<span class="integer">44</span> GMT
+
+{<span class="key"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">susan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">roles</span><span class="delimiter">&quot;</span></span>:[<span class="string"><span class="delimiter">&quot;</span><span class="content">ROLE_DRIVER</span><span class="delimiter">&quot;</span></span>],<span class="key"><span class="delimiter">&quot;</span><span class="content">token_type</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">access_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eyJhbGciOiJIUzI1NiJ9...</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">expires_in</span><span class="delimiter">&quot;</span></span>:<span class="integer">3600</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">refresh_token</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eyJhbGciOiJIUzI1NiJ9...</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that in the response, in addition to user details/granted roles, we received an <code>access_token</code> - this is what we need to provide to our server in order to authenticate our request. We do this by setting the <code>Authorization</code> header with our token. Let&#8217;s try our <code>/api/vehicle</code> request again, using this <code>access_token</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">curl -i -H <span class="string"><span class="delimiter">&quot;</span><span class="content">Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...</span><span class="delimiter">&quot;</span></span> <span class="integer">0</span>:<span class="integer">8080</span>/api/vehicle
+HTTP/<span class="float">1.1</span> <span class="integer">200</span>
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-<span class="integer">8</span>
+Transfer-Encoding: chunked
+Date: Thu, <span class="integer">08</span> Jun <span class="integer">2017</span> <span class="octal">05</span>:<span class="integer">49</span>:<span class="octal">01</span> GMT
+
+[{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">make</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">model</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Titan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">driver</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>}},{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">2</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Economy</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">make</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">model</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Leaf</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">2</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">driver</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>}},{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">3</span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Minivan</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">make</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">2</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">model</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Windstar</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">3</span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">driver</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Pedro</span><span class="delimiter">&quot;</span></span>,<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">2</span>}}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Congratulations, your API is now secured! Now we can move on to supporting authentication in our React client app.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Notice there&#8217;s actually another token in the <code>/api/login</code> response: <code>refresh_token</code>. When the <code>access_token</code> expires, you can use the <code>refresh_token</code> to obtain a new <code>access_token</code>. We&#8217;ll see how that works later on in this guide.
+</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/client.html"><strong>5</strong><span>Building the Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/react-spring-security"><img src="https://travis-ci.org/grails-guides/react-spring-security.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/react-spring-security">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/react-spring-security.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/react-spring-security'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/react-spring-security.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/react-spring-security/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
