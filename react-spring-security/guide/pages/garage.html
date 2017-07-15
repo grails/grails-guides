@@ -91,58 +91,101 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>At this point our login and logout functionality is complete. The last step is to authenticate our REST calls back to our API</p>
+<p>At this point our login and logout functionality is complete. The last step is to authenticate our REST calls back to our API. This takes place in the <code>Garage</code> component, which is shown below.</p>
 </div>
 <div class="listingblock">
 <div class="title">client/src/Garage.js</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">componentDidMount() {
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Vehicles from <span class="string"><span class="delimiter">'</span><span class="content">./Vehicles</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> AddVehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./AddVehicleForm</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> { Row, Jumbotron, Button } from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> { SERVER_URL } from <span class="string"><span class="delimiter">'</span><span class="content">./config</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> headers from <span class="string"><span class="delimiter">'</span><span class="content">./security/headers</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
+
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">vehicles</span>: [],
+      <span class="key">makes</span>: [],
+      <span class="key">models</span>: [],
+      <span class="key">drivers</span>: []
+    }
+  }
+
+  componentDidMount() {
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
+      })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/make<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+      })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/model<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/driver<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+  }
+
+  submitNewVehicle = (vehicle) =&gt; {
     fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
       <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
-    })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+      <span class="key">body</span>: JSON.stringify(vehicle)
+    }).then(r =&gt; r.json())
+      .then(json =&gt; {
+        let vehicles = <span class="local-variable">this</span>.state.vehicles;
+        vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
+        <span class="local-variable">this</span>.setState({vehicles});
+      })
+      .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
+  };
 
-    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/make<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-    })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+  render() {
+    const {vehicles, makes, models, drivers} = <span class="local-variable">this</span>.state;
+    <i class="conum" data-value="2"></i><b>(2)</b>
+    const logoutButton = <span class="tag">&lt;Button</span> <span class="attribute-name">bsStyle</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">warning</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">pull-right</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.props.logoutHandler</span><span class="error">}</span> <span class="tag">&gt;</span>Log Out<span class="tag">&lt;/Button&gt;</span>;
 
-    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/model<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-  })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
-
-  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/driver<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-  })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+    <span class="keyword">return</span> <span class="tag">&lt;Row&gt;</span>
+      <span class="tag">&lt;Jumbotron&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Welcome to the Garage<span class="tag">&lt;/h1&gt;</span>
+        {logoutButton}
+      <span class="tag">&lt;/Jumbotron&gt;</span>
+      <span class="tag">&lt;Row&gt;</span>
+        <span class="tag">&lt;AddVehicleForm</span> <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.submitNewVehicle</span><span class="error">}</span> <span class="attribute-name">makes</span>=<span class="error">{</span><span class="attribute-value">makes</span><span class="error">}</span> <span class="attribute-name">models</span>=<span class="error">{</span><span class="attribute-value">models</span><span class="error">}</span> <span class="attribute-name">drivers</span>=<span class="error">{</span><span class="attribute-value">drivers</span><span class="error">}</span><span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Row&gt;</span>
+      <span class="tag">&lt;Row&gt;</span>
+        <span class="tag">&lt;Vehicles</span> <span class="attribute-name">vehicles</span>=<span class="error">{</span><span class="attribute-value">vehicles</span><span class="error">}</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Row&gt;</span>
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">Row&gt;;
+  }
 }
 
-submitNewVehicle = (vehicle) =&gt; {
-  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
-    <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-    <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="key">body</span>: JSON.stringify(vehicle)
-  }).then(r =&gt; r.json())
-    .then(json =&gt; {
-      let vehicles = <span class="local-variable">this</span>.state.vehicles;
-      vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
-      <span class="local-variable">this</span>.setState({vehicles});
-    })
-    .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
-};</code></pre>
+export default Garage;</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -151,10 +194,12 @@ submitNewVehicle = (vehicle) =&gt; {
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>Note the use of the <code>headers()</code> function again to return our token-bearing request headers for all of our API calls.</td>
 </tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The logout button will execute the <code>logoutHandler</code> function when clicked.
+Start up the app and verify that you can login and authenticate successfully. Congratulations! You have secured your React app with Grails and Spring Security!</td>
+</tr>
 </table>
-</div>
-<div class="paragraph">
-<p>Start up the app and verify that you can login and authenticate successfully. Congratulations! You have secured your React app with Grails and Spring Security!</p>
 </div>
 
 

@@ -1143,7 +1143,152 @@ it will then call that function.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Please reference the full <code>App.js</code> file in the <code>complete</code> project as needed - in the sections below we will go piece by piece through this component to complete the above steps.</p>
+<p>For your reference the full <code>App.js</code> file is shown below - in the remaining sections  we will go piece by piece through this component (going from top to bottom) and show how to complete the above steps.</p>
+</div>
+<div class="listingblock">
+<div class="title">client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Garage from <span class="string"><span class="delimiter">'</span><span class="content">./Garage</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Auth from <span class="string"><span class="delimiter">'</span><span class="content">./security/auth</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Login from <span class="string"><span class="delimiter">'</span><span class="content">./Login</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {Grid} from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {SERVER_URL} from <span class="string"><span class="delimiter">'</span><span class="content">./config</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {defaultErrorHandler} from <span class="string"><span class="delimiter">'</span><span class="content">./handlers/errorHandlers</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {checkResponseStatus, loginResponseHandler} from <span class="string"><span class="delimiter">'</span><span class="content">./handlers/responseHandlers</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">class</span> App <span class="reserved">extends</span> Component {
+
+  <span class="comment">//tag::state[]</span>
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">userDetails</span>: {
+        <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+        <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+      },
+      <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">error</span>: <span class="predefined-constant">null</span>
+    }
+  }
+
+  reset = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="local-variable">this</span>.setState({
+      <span class="key">userDetails</span>: {
+        <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+        <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+      },
+      <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>,
+      <span class="key">error</span>: <span class="predefined-constant">null</span>
+    });
+  };
+  <span class="comment">//end::state[]</span>
+
+  <span class="comment">//tag::lifecycle[]</span>
+  componentDidMount() {
+    console.log(<span class="string"><span class="delimiter">'</span><span class="content">app mounting...</span><span class="delimiter">'</span></span>);
+
+    (async () =&gt; {
+      <span class="keyword">if</span> (await Auth.loggedIn()) {
+        <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>})
+      } <span class="keyword">else</span> {
+        <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>});
+      }
+    })();
+  }
+
+  componentDidUpdate() {
+    <span class="keyword">if</span> (<span class="local-variable">this</span>.state.route !== <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span> &amp;&amp; !Auth.loggedIn()) {
+      <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>})
+    }
+  }
+  <span class="comment">//end::lifecycle[]</span>
+
+  <span class="comment">//tag::inputChangeHandler[]</span>
+  inputChangeHandler = (event) =&gt; {
+    let {userDetails} = <span class="local-variable">this</span>.state;
+    const target = event.target;
+
+    userDetails[target.name] = target.value; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="local-variable">this</span>.setState({userDetails});
+  };
+  <span class="comment">//end::inputChangeHandler[]</span>
+
+  <span class="comment">//tag::login[]</span>
+  login = (e) =&gt; {
+    console.log(<span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>);
+    e.preventDefault(); <i class="conum" data-value="1"></i><b>(1)</b>
+
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/login<span class="error">`</span>, { <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+      <span class="key">headers</span>: {
+        <span class="key"><span class="delimiter">'</span><span class="content">Accept</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>,
+        <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+      },
+      <span class="key">body</span>: JSON.stringify(<span class="local-variable">this</span>.state.userDetails)
+    }).then(checkResponseStatus) <i class="conum" data-value="3"></i><b>(3)</b>
+      .then(response =&gt; loginResponseHandler(response, <span class="local-variable">this</span>.customLoginHandler)) <i class="conum" data-value="4"></i><b>(4)</b>
+      .<span class="keyword">catch</span>(error =&gt; defaultErrorHandler(error, <span class="local-variable">this</span>.customErrorHandler)); <i class="conum" data-value="5"></i><b>(5)</b>
+  };
+  <span class="comment">//end::login[]</span>
+
+  <span class="comment">//tag::handler[]</span>
+  customLoginHandler = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>});
+  };
+
+  customErrorHandler = (error) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="local-variable">this</span>.reset();
+    <span class="local-variable">this</span>.setState({<span class="key">error</span>: error.message});
+  };
+  <span class="comment">//end::handler[]</span>
+
+
+  <span class="comment">//tag::logout[]</span>
+  logoutHandler = () =&gt; {
+    Auth.logOut();
+    <span class="local-variable">this</span>.reset();
+  };
+  <span class="comment">//end::logout[]</span>
+
+
+  <span class="comment">//tag::routing[]</span>
+  contentForRoute() { <i class="conum" data-value="1"></i><b>(1)</b>
+    const {error, userDetails, route} = <span class="local-variable">this</span>.state;
+
+    const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                                <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
+                                <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
+                                <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+    const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+    <span class="keyword">switch</span> (route) {
+      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
+        <span class="keyword">return</span> loginContent;
+      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
+        <span class="keyword">return</span> garageContent;
+      <span class="keyword">default</span>:
+        <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+    }
+  };
+
+  render() { <i class="conum" data-value="3"></i><b>(3)</b>
+    const content = <span class="local-variable">this</span>.contentForRoute();
+
+    <span class="keyword">return</span> (
+      <span class="tag">&lt;Grid&gt;</span>
+        {content}
+      <span class="tag">&lt;/Grid&gt;</span>
+    );
+  };
+  <span class="comment">//end::routing[]</span>
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> App;</code></pre>
+</div>
 </div>
 
 
@@ -1157,7 +1302,7 @@ it will then call that function.</p>
 
 
 <div class="paragraph">
-<p>First thing, let&#8217;s build our <code>App</code> state object. You should recognize our user and error fields in our state as
+<p>First thing, let&#8217;s build our <code>App</code> state object. This is done in the component constructor. You should recognize our user and error fields in our state as
 we have used them already in some of our functions. In addition, we&#8217;ll add a <code>route</code> variable for use later on.</p>
 </div>
 <div class="listingblock">
@@ -1174,17 +1319,9 @@ we have used them already in some of our functions. In addition, we&#8217;ll add
     <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
     <span class="key">error</span>: <span class="predefined-constant">null</span>
   }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In addition to creating our initial state, we will also add a <code>reset</code> function so that we can easily return
-to our initial state when needed:</p>
-</div>
-<div class="listingblock">
-<div class="title">client/src/App.js</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">reset = () =&gt; {
+}
+
+reset = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
   <span class="local-variable">this</span>.setState({
     <span class="key">userDetails</span>: {
       <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
@@ -1195,6 +1332,15 @@ to our initial state when needed:</p>
   });
 };</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;ve added a <code>reset</code> function so that we can easily return
+to our initial state when needed:</td>
+</tr>
+</table>
 </div>
 
 
@@ -1208,7 +1354,7 @@ to our initial state when needed:</p>
 
 
 <div class="paragraph">
-<p>Next we need to implement two of React&#8217;s "lifecycle" methods, in order to check whether we are logged in or not.</p>
+<p>Next in our <code>App</code> component, we need to implement two of React&#8217;s "lifecycle" methods, which will check whether we are logged in or not.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1257,70 +1403,14 @@ componentDidUpdate() {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-For more information on <code>await</code>, see the documentation at <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">https://developer.mozilla.org</a>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Now we&#8217;re ready to set up our routing.</p>
-</div>
-
-
-<h2 id="routing">7.3 Routing</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/routing.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>Routing, in Single Page Applications, gives the user the ability to navigate through your application as though it were made of multiple "pages". In many React apps, the <a href="https://reacttraining.com/react-router/">React Router</a> library is used to handle this requirement. However, we will take a simplistic approach for this guide by storing our current "route" in our state, and choosing which component to render based on that variable.</p>
-</div>
-<div class="listingblock">
-<div class="title">client/src/App.js</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">contentForRoute() {
-  const {error, userDetails, route} = <span class="local-variable">this</span>.state;
-
-  const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span>
-                              <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
-                              <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
-                              <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
-
-  const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
-
-  <span class="keyword">switch</span> (route) {
-    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
-      <span class="keyword">return</span> loginContent;
-    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
-      <span class="keyword">return</span> garageContent;
-    <span class="keyword">default</span>:
-      <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
-  }
-};</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>We&#8217;ve created a <code>contentForRoute</code> function, which will select the proper component to render based on <code>this.state.route</code>. If there is no route set yet, we display a "Loading&#8230;&#8203;" message. Note that this is where we are passing in our <code>inputChangeHandler</code>, <code>login</code>, and <code>logoutHandler</code> handlers into those components as props.</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-Note how we pass our handler functions as <strong>references</strong> (<code>onSubmit={this.login}</code>), not function calls (<code>onSubmit={this.login()}</code>). This is because we want our child components to have access to these functions and call them later - we don&#8217;t want to call them when the component is rendered!
+For more information on <code>async</code>/<code>await</code>, see the documentation at <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">https://developer.mozilla.org</a>
 </td>
 </tr>
 </table>
 </div>
 
 
-<h2 id="inputChangeHandler">7.4 Login Form Change Handler</h2>
+<h2 id="inputChangeHandler">7.3 Login Form Change Handler</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/inputChangeHandler.adoc"'>
@@ -1335,69 +1425,27 @@ Note how we pass our handler functions as <strong>references</strong> (<code>onS
 <div class="listingblock">
 <div class="title">client/src/App.js</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">  inputChangeHandler = (event) =&gt; {
-    let {userDetails} = <span class="local-variable">this</span>.state;
-    const target = event.target;
+<pre class="CodeRay highlight"><code data-lang="javascript">inputChangeHandler = (event) =&gt; {
+  let {userDetails} = <span class="local-variable">this</span>.state;
+  const target = event.target;
 
-    userDetails[target.name] = target.value;
+  userDetails[target.name] = target.value; <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="local-variable">this</span>.setState({userDetails});
-  };
-
-  customLoginHandler = () =&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="local-variable">this</span>.setState({<span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>});
-  };
-
-  customErrorHandler = (error) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="local-variable">this</span>.reset();
-    <span class="local-variable">this</span>.setState({<span class="key">error</span>: error.message});
-  };
-
-  logoutHandler = () =&gt; {
-    Auth.logOut();
-    <span class="local-variable">this</span>.reset();
-  };
-
-  contentForRoute() {
-    const {error, userDetails, route} = <span class="local-variable">this</span>.state;
-
-    const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span>
-                                <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
-                                <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
-                                <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
-
-    const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
-
-    <span class="keyword">switch</span> (route) {
-      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
-        <span class="keyword">return</span> loginContent;
-      <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
-        <span class="keyword">return</span> garageContent;
-      <span class="keyword">default</span>:
-        <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
-    }
-  };
-
-  render() {
-    const content = <span class="local-variable">this</span>.contentForRoute();
-
-    <span class="keyword">return</span> (
-      <span class="tag">&lt;Grid&gt;</span>
-        {content}
-      <span class="tag">&lt;/Grid&gt;</span>
-    );
-  };
-}
-
-<span class="reserved">export</span> <span class="keyword">default</span> App;</code></pre>
+  <span class="local-variable">this</span>.setState({userDetails});
+};</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Note that we use the same handler for both username and password, as the <code>name</code> attributes set on each input can be used to assign the correct variable.</p>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note that we will use the same handler for both username and password, as the <code>name</code> attributes set on each form input can be used to assign the correct variable.</td>
+</tr>
+</table>
 </div>
 
 
-<h2 id="login">7.5 Handling Login</h2>
+<h2 id="login">7.4 Handling Login</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/login.adoc"'>
@@ -1406,11 +1454,6 @@ Note how we pass our handler functions as <strong>references</strong> (<code>onS
 </div>
 
 
-<div class="paragraph">
-<p>Finally, let&#8217;s look at our actual login process and finish connecting everything up. This is the glue to
-everything we have already done at this point and makes use of our 2 response handlers and our error
-handler as well as using class specific custom handlers to deal with our current state.</p>
-</div>
 <div class="listingblock">
 <div class="title">client/src/App.js</div>
 <div class="content">
@@ -1487,7 +1530,7 @@ to do before we are done.</p>
 </div>
 
 
-<h2 id="logout">7.6 Handling Logout</h2>
+<h2 id="logout">7.5 Handling Logout</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/logout.adoc"'>
@@ -1496,16 +1539,6 @@ to do before we are done.</p>
 </div>
 
 
-<div class="paragraph">
-<p>Now to ensure completeness we want to add the ability to logout as well. As seen above in our
-<a href="#routing">[routing]</a>, when we are routed to the garage we are passing a logoutHandler</p>
-</div>
-<div class="listingblock">
-<div class="title">client/src/App.js</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>The logout handler simply calls the <code>Auth.logOut()</code> function we wrote earlier.  We then call <code>reset()</code>, which gets us back our initial state.</p>
 </div>
@@ -1518,17 +1551,81 @@ to do before we are done.</p>
 };</code></pre>
 </div>
 </div>
+
+
+<h2 id="routing">7.6 Routing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/react-spring-security/edit/master/src/main/docs/guide/routing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
 <div class="paragraph">
-<p>Lastly, in our <code>Garage</code> component, we need to add a logout button:</p>
+<p>Routing, in Single Page Applications, gives the user the ability to navigate through your application as though it were made of multiple "pages". In many React apps, the <a href="https://reacttraining.com/react-router/">React Router</a> library is used to handle this requirement. However, we will take a simplistic approach for this guide by storing our current "route" in our state, and choosing which component to render based on that variable.</p>
 </div>
 <div class="listingblock">
-<div class="title">client/src/Garage.js</div>
+<div class="title">client/src/App.js</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;Button</span> <span class="attribute-name">bsStyle</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">warning</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">pull-right</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.props.logoutHandler</span><span class="error">}</span> <span class="tag">&gt;</span>Log Out<span class="tag">&lt;/Button&gt;</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="javascript">contentForRoute() { <i class="conum" data-value="1"></i><b>(1)</b>
+  const {error, userDetails, route} = <span class="local-variable">this</span>.state;
+
+  const loginContent = <span class="tag">&lt;Login</span> <span class="attribute-name">error</span>=<span class="error">{</span><span class="attribute-value">error</span><span class="error">}</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                              <span class="attribute-name">userDetails</span>=<span class="error">{</span><span class="attribute-value">userDetails</span><span class="error">}</span>
+                              <span class="attribute-name">inputChangeHandler</span>=<span class="error">{</span><span class="attribute-value">this.inputChangeHandler</span><span class="error">}</span>
+                              <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.login</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+  const garageContent = <span class="tag">&lt;Garage</span> <span class="attribute-name">logoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.logoutHandler</span><span class="error">}</span><span class="tag">/&gt;</span>;
+
+  <span class="keyword">switch</span> (route) {
+    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>:
+      <span class="keyword">return</span> loginContent;
+    <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">garage</span><span class="delimiter">'</span></span>:
+      <span class="keyword">return</span> garageContent;
+    <span class="keyword">default</span>:
+      <span class="keyword">return</span> <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>;
+  }
+};
+
+render() { <i class="conum" data-value="3"></i><b>(3)</b>
+  const content = <span class="local-variable">this</span>.contentForRoute();
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;Grid&gt;</span>
+      {content}
+    <span class="tag">&lt;/Grid&gt;</span>
+  );
+};</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>When this button is clicked, React will execute the <code>logoutHandler</code> function.</p>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;ve created a <code>contentForRoute</code> function, which will select the proper component to render based on <code>this.state.route</code>. If there is no route set yet, we display a "Loading&#8230;&#8203;" message.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Note that this is where we are passing in our <code>inputChangeHandler</code>, <code>login</code>, and <code>logoutHandler</code> handlers into those components as props.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Finally, in our <code>render</code> function, we render out the content that we calculated earlier based on our route.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Note how we pass our handler functions as <strong>references</strong> (<code>onSubmit={this.login}</code>), not function calls (<code>onSubmit={this.login()}</code>). This is because we want our child components to have access to these functions and call them later - we don&#8217;t want to call them when the component is rendered!
+</td>
+</tr>
+</table>
 </div>
 
 
@@ -1542,58 +1639,101 @@ to do before we are done.</p>
 
 
 <div class="paragraph">
-<p>At this point our login and logout functionality is complete. The last step is to authenticate our REST calls back to our API</p>
+<p>At this point our login and logout functionality is complete. The last step is to authenticate our REST calls back to our API. This takes place in the <code>Garage</code> component, which is shown below.</p>
 </div>
 <div class="listingblock">
 <div class="title">client/src/Garage.js</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">componentDidMount() {
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Vehicles from <span class="string"><span class="delimiter">'</span><span class="content">./Vehicles</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> AddVehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./AddVehicleForm</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> { Row, Jumbotron, Button } from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> { SERVER_URL } from <span class="string"><span class="delimiter">'</span><span class="content">./config</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> headers from <span class="string"><span class="delimiter">'</span><span class="content">./security/headers</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
+
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">vehicles</span>: [],
+      <span class="key">makes</span>: [],
+      <span class="key">models</span>: [],
+      <span class="key">drivers</span>: []
+    }
+  }
+
+  componentDidMount() {
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
+      })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/make<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+      })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+
+      fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/model<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
+
+    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/driver<span class="error">`</span>, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
+    })
+      .then(r =&gt; r.json())
+      .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
+      .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+  }
+
+  submitNewVehicle = (vehicle) =&gt; {
     fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
       <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
-    })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
+      <span class="key">body</span>: JSON.stringify(vehicle)
+    }).then(r =&gt; r.json())
+      .then(json =&gt; {
+        let vehicles = <span class="local-variable">this</span>.state.vehicles;
+        vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
+        <span class="local-variable">this</span>.setState({vehicles});
+      })
+      .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
+  };
 
-    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/make<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-    })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">makes</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error));
+  render() {
+    const {vehicles, makes, models, drivers} = <span class="local-variable">this</span>.state;
+    <i class="conum" data-value="2"></i><b>(2)</b>
+    const logoutButton = <span class="tag">&lt;Button</span> <span class="attribute-name">bsStyle</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">warning</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">pull-right</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.props.logoutHandler</span><span class="error">}</span> <span class="tag">&gt;</span>Log Out<span class="tag">&lt;/Button&gt;</span>;
 
-    fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/model<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-  })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">models</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models </span><span class="delimiter">'</span></span> + error));
-
-  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/driver<span class="error">`</span>, {
-      <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
-      <span class="key">headers</span>: headers() <i class="conum" data-value="1"></i><b>(1)</b>
-  })
-    .then(r =&gt; r.json())
-    .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">drivers</span>: json}))
-    .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error));
+    <span class="keyword">return</span> <span class="tag">&lt;Row&gt;</span>
+      <span class="tag">&lt;Jumbotron&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Welcome to the Garage<span class="tag">&lt;/h1&gt;</span>
+        {logoutButton}
+      <span class="tag">&lt;/Jumbotron&gt;</span>
+      <span class="tag">&lt;Row&gt;</span>
+        <span class="tag">&lt;AddVehicleForm</span> <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">this.submitNewVehicle</span><span class="error">}</span> <span class="attribute-name">makes</span>=<span class="error">{</span><span class="attribute-value">makes</span><span class="error">}</span> <span class="attribute-name">models</span>=<span class="error">{</span><span class="attribute-value">models</span><span class="error">}</span> <span class="attribute-name">drivers</span>=<span class="error">{</span><span class="attribute-value">drivers</span><span class="error">}</span><span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Row&gt;</span>
+      <span class="tag">&lt;Row&gt;</span>
+        <span class="tag">&lt;Vehicles</span> <span class="attribute-name">vehicles</span>=<span class="error">{</span><span class="attribute-value">vehicles</span><span class="error">}</span> <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Row&gt;</span>
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">Row&gt;;
+  }
 }
 
-submitNewVehicle = (vehicle) =&gt; {
-  fetch(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, {
-    <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-    <span class="key">headers</span>: headers(), <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="key">body</span>: JSON.stringify(vehicle)
-  }).then(r =&gt; r.json())
-    .then(json =&gt; {
-      let vehicles = <span class="local-variable">this</span>.state.vehicles;
-      vehicles.push({<span class="key">id</span>: json.id, <span class="key">name</span>: json.name, <span class="key">make</span>: json.make, <span class="key">model</span>: json.model, <span class="key">driver</span>: json.driver});
-      <span class="local-variable">this</span>.setState({vehicles});
-    })
-    .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex));
-};</code></pre>
+export default Garage;</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1602,10 +1742,12 @@ submitNewVehicle = (vehicle) =&gt; {
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>Note the use of the <code>headers()</code> function again to return our token-bearing request headers for all of our API calls.</td>
 </tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The logout button will execute the <code>logoutHandler</code> function when clicked.
+Start up the app and verify that you can login and authenticate successfully. Congratulations! You have secured your React app with Grails and Spring Security!</td>
+</tr>
 </table>
-</div>
-<div class="paragraph">
-<p>Start up the app and verify that you can login and authenticate successfully. Congratulations! You have secured your React app with Grails and Spring Security!</p>
 </div>
 
 
@@ -1811,13 +1953,13 @@ matured and maintain Grails.</h3>
                                                 
                                                 <div class="toc-item" style="margin-left:10px"><a href="#lifecycle"><strong>7.2</strong><span>React Lifecycle Methods</span></a></div>
                                                 
-                                                <div class="toc-item" style="margin-left:10px"><a href="#routing"><strong>7.3</strong><span>Routing</span></a></div>
+                                                <div class="toc-item" style="margin-left:10px"><a href="#inputChangeHandler"><strong>7.3</strong><span>Login Form Change Handler</span></a></div>
                                                 
-                                                <div class="toc-item" style="margin-left:10px"><a href="#inputChangeHandler"><strong>7.4</strong><span>Login Form Change Handler</span></a></div>
+                                                <div class="toc-item" style="margin-left:10px"><a href="#login"><strong>7.4</strong><span>Handling Login</span></a></div>
                                                 
-                                                <div class="toc-item" style="margin-left:10px"><a href="#login"><strong>7.5</strong><span>Handling Login</span></a></div>
+                                                <div class="toc-item" style="margin-left:10px"><a href="#logout"><strong>7.5</strong><span>Handling Logout</span></a></div>
                                                 
-                                                <div class="toc-item" style="margin-left:10px"><a href="#logout"><strong>7.6</strong><span>Handling Logout</span></a></div>
+                                                <div class="toc-item" style="margin-left:10px"><a href="#routing"><strong>7.6</strong><span>Routing</span></a></div>
                                                 
                                                 <div class="toc-item" style="margin-left:10px"><a href="#garage"><strong>7.7</strong><span>Authenticating our REST Calls</span></a></div>
                                                 
