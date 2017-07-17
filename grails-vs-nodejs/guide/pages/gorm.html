@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.3 GORM</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/requirements.html"><strong>2</strong><span>Requirements</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="gorm">3.3 GORM</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/gorm.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>GORM works with any JDBC-compatible database, which includes Postgres
+(as well as over 200 other databases). To begin using Postgres with our
+new Grails app, we have 2 steps to complete:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step #1</dt>
+<dd>
+<p>Install the JDBC driver in our <code>server</code> project. Edit
+<code>server/build.gradle</code>, and find the section named <code>dependencies</code>. Add
+the following line of code:
+<code>runtime 'org.postgresql:postgresql:9.4.1212'</code> This will tell Gradle to
+download version 9.4.1212 of the <code>org.postgresql.postgresql</code> library
+from the Maven Central repository, and install it in our app.</p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">org.postgresql:postgresql:9.4.1212</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can think of <code>build.gradle</code> as filling a similar purpose to a <code>package.json</code> file in a Node.js project. It specifies <a href="https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#sec:repositories_tutorial">repositories</a>, <a href="https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#sec:declaring_your_dependencies">dependencies</a>, and <a href="https://docs.gradle.org/current/userguide/tutorial_using_tasks.html">custom tasks</a> (similar to npm scripts) for your project.
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step #2</dt>
+<dd>
+<p>Configure GORM to use our PostgreSQL database instead of the default
+H2 database. Edit <code>server/grails-app/conf/application.yml</code>, scroll down
+to the section starting with <code>datasource</code>, and replace it with the
+following content:</p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">dataSource</span>:
+    <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">org.postgresql.Driver</span></span>
+    <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.PostgreSQLDialect</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">postgres</span></span>
+    <span class="key">password</span>:
+    <span class="key">url</span>: <span class="string"><span class="content">jdbc:postgresql://localhost:5432/ice_cream_db_2</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now our Grails app is connected to our database, but we haven’t created
+any tables yet. With Grails, there’s no need to create the database
+schema manually (although you certainly can do so if you want). Instead,
+we’ll specify our domain model in code, by writing <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html"><strong>Domain Classes</strong></a>.</p>
+</div>
+<div class="paragraph">
+<p>By convention, Grails will load any Groovy classes located under
+<code>grails-app/domain</code> as Domain Classes. This means that GORM will map
+these classes to tables in the database, and map the properties of these
+classes to columns in the respective tables. Optionally, GORM will
+create these tables for us, which we have already enabled in our
+<code>application.yml</code> file with the <code>dbCreate: update</code> setting.</p>
+</div>
+<div class="paragraph">
+<p>This means it’s actually quite trivial to set up the database schema
+from the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">original article</a>.</p>
+</div>
+<div class="paragraph">
+<p>The React + Node/express used the next database schema:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="class">create</span> <span class="type">table</span> ice_creams (
+  id serial <span class="directive">primary</span> <span class="type">key</span>,
+  flavor <span class="predefined-type">text</span>
+);
+
+<span class="class">create</span> <span class="type">table</span> users (
+  username <span class="predefined-type">text</span> <span class="directive">primary</span> <span class="type">key</span>,
+  password <span class="predefined-type">text</span> <span class="comment">-- encrypted length</span>
+);
+
+<span class="class">create</span> <span class="type">table</span> user_ice_creams (
+  username <span class="predefined-type">text</span> <span class="keyword">references</span> users(username),
+  ice_cream_id <span class="predefined-type">integer</span> <span class="keyword">references</span> ice_creams(id)
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM is the data access toolkit used by Grails by default.
+We can customize how the generated database schema looks like.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/ref/Database%20Mapping/Usage.html">Database Mapping</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Domain classes in Grails by default dictate the way they are mapped to the database using sensible defaults. You can customize these with the ORM Mapping DSL.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>For each of the tables we need in our
+app, we will create a domain class under the <code>grails-app/domain</code>
+directory.</p>
+</div>
+<div class="paragraph">
+<p>Run the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./grailsw create-domain-class demo.IceCream
+~ ./grailsw create-domain-class demo.User
+~ ./grailsw create-domain-class demo.UserIceCream</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These commands will generate three Groovy classes, under
+<code>grails-app/domain/demo</code>. Edit these files with the following
+content to generate an identical database schema as in the previous app:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/User</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">users</span><span class="delimiter">'</span></span>
+        password <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        id <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, <span class="key">generator</span>: <span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You may have noticed we have not encrypted our <code>password</code> column
+- don’t worry, we’ll get to that later on.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/IceCream</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">IceCream</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    <span class="predefined-type">String</span> flavor
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">ice_creams</span><span class="delimiter">'</span></span>
+        flavor <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/UserIceCream</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UserIceCream</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    User user
+    IceCream iceCream
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">user_ice_creams</span><span class="delimiter">'</span></span>
+        id <span class="key">composite</span>: [<span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">iceCream</span><span class="delimiter">'</span></span>]
+        user <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>
+        iceCream <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">ice_cream_id</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous domain class represents a join table for our <code>User</code> and <code>IceCream</code>
+classes.</p>
+</div>
+<div class="sect2">
+<h3 id="_package_naming">Package Naming</h3>
+<div class="paragraph">
+<p>As is common in Java projects, we have created a “package” for our
+domain classes. Packages help distinguish our classes from classes from
+libraries or plugins that we might use later. The package is reflected
+in the directory structure as well: these two files will be created
+under <code>grails-app/domain/demo/</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Why are we using period instead of dash separators, as was shown in the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">previous article</a>?
+In Java it is generally considered against convention to use dashes (hyphen) in package names.
+<a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.1">See this link for details on the Java naming conventions</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-vs-nodejs"><img src="https://travis-ci.org/grails-guides/grails-vs-nodejs.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-vs-nodejs">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-vs-nodejs.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-vs-nodejs.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-vs-nodejs/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

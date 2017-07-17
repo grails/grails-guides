@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.6 Authentication</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/requirements.html"><strong>2</strong><span>Requirements</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="authentication">3.6 Authentication</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/authentication.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Because Grails is based upon Spring Boot, it is compatible with many
+other projects in the Spring Ecosystem. One of the most popular such
+projects is <a href="https://projects.spring.io/spring-security/">Spring
+Security</a>. It provides powerful authentication and access control for
+Java web apps, and supports many authentication methods, from LDAP to
+OAuth2. Even better, there is a set of
+<a href="http://plugins.grails.org/plugin/grails/spring-security-core">Grails
+plugins</a> that make Spring Security a breeze to set up.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/build.gradle</code> again, and add the following two lines:
+<code>server/build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.0.M1</span><span class="delimiter">'</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have placed the Spring Security Core and REST plugins configuration in <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+    <span class="key">plugin</span>:
+        <span class="key">springsecurity</span>:
+            <span class="key">userLookup</span>:
+                <span class="key">userDomainClassName</span>: demo.User
+                <span class="key">authorityJoinClassName</span>: demo.UserRole
+            <span class="key">authority</span>:
+                <span class="key">className</span>: demo.Role
+            <span class="key">rest</span>:
+                <span class="key">login</span>:
+                    <span class="key">endpointUrl</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">login</span></span><span class="error">
+</span>            <span class="key">useSecurityEventListener</span>: <span class="predefined-constant">true</span>
+            <span class="key">controllerAnnotations</span>:
+                <span class="key">staticRules</span>:
+                    -
+                        <span class="key">pattern</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">stomp</span><span class="delimiter">/</span></span>**
+                        <span class="key">access</span>:
+                            - permitAll
+                    -
+                        <span class="key">pattern</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">signup</span><span class="delimiter">/</span></span>**
+                        <span class="key">access</span>:
+                            - permitAll
+            <span class="key">filterChain</span>:
+                <span class="key">chainMap</span>:
+                    - <span class="error">#</span> Stateless chain
+                        <span class="key">pattern</span>: <span class="comment">/**
+                        filters: 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please consult the
+<a href="https://docs.spring.io/spring-security/site/docs/3.0.x/reference/security-filter-chain.html">Spring
+Security docs</a> and the
+<a href="http://grails-plugins.github.io/grails-spring-security-core/3.2.x/index.html">Grails
+Spring Security plugin</a> docs for more information.</p>
+</div>
+<div class="paragraph">
+<p>We have modified slightly the <code>User</code> domain class. Moreover, we added two other domain classes to map roles and the relationship
+between roles and users.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/User.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+    <span class="predefined-type">Date</span> lastLogin = <span class="predefined-constant">null</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">boolean</span> enabled = <span class="predefined-constant">true</span>
+    <span class="type">boolean</span> accountExpired
+    <span class="type">boolean</span> accountLocked
+    <span class="type">boolean</span> passwordExpired
+
+    <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt; getAuthorities() {
+        (UserRole.findAllByUser(<span class="local-variable">this</span>) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;UserRole&gt;)*.role <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt;
+    }
+
+    <span class="directive">static</span> constraints = {
+        password <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">password</span>: <span class="predefined-constant">true</span>
+        username <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        lastLogin <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">users</span><span class="delimiter">'</span></span>
+        password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        id <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, <span class="key">generator</span>: <span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;ll use this property to keep track of expired sessions</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/Role.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">Role</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span>, GrantedAuthority {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+    <span class="predefined-type">String</span> authority
+
+    <span class="directive">static</span> constraints = {
+        authority <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        cache <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/UserRole.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="keyword">import</span> <span class="include">org.codehaus.groovy.util.HashCodeHelper</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@ToString</span>(cache=<span class="predefined-constant">true</span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">UserRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+    User user
+    <span class="predefined-type">Role</span> role
+
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> equals(other) {
+        <span class="keyword">if</span> (other <span class="keyword">instanceof</span> UserRole) {
+            other.userId == user?.username &amp;&amp; other.roleId == role?.id
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">int</span> hashCode() {
+        <span class="type">int</span> hashCode = HashCodeHelper.initHash()
+        <span class="keyword">if</span> (user) {
+            hashCode = HashCodeHelper.updateHash(hashCode, user.username)
+        }
+        <span class="keyword">if</span> (role) {
+            hashCode = HashCodeHelper.updateHash(hashCode, role.id)
+        }
+        hashCode
+    }
+
+    <span class="directive">static</span> UserRole get(<span class="predefined-type">String</span> username, <span class="type">long</span> roleId) {
+        criteriaFor(username, roleId).get()
+    }
+
+    <span class="directive">static</span> <span class="type">boolean</span> exists(<span class="predefined-type">String</span> username, <span class="type">long</span> roleId) {
+        criteriaFor(username, roleId).count()
+    }
+
+    <span class="directive">private</span> <span class="directive">static</span> DetachedCriteria criteriaFor(<span class="predefined-type">String</span> name, <span class="type">long</span> roleId) {
+        UserRole.where {
+            user.username == name &amp;&amp;
+                    role == <span class="predefined-type">Role</span>.load(roleId)
+        }
+    }
+
+    <span class="directive">static</span> UserRole create(User user, <span class="predefined-type">Role</span> role, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        <span class="keyword">def</span> instance = <span class="keyword">new</span> UserRole(<span class="key">user</span>: user, <span class="key">role</span>: role)
+        instance.save(<span class="key">flush</span>: flush)
+        instance
+    }
+
+    <span class="directive">static</span> <span class="type">boolean</span> remove(User u, <span class="predefined-type">Role</span> r) {
+        <span class="keyword">if</span> (u != <span class="predefined-constant">null</span> &amp;&amp; r != <span class="predefined-constant">null</span>) {
+            UserRole.where { user == u &amp;&amp; role == r }.deleteAll()
+        }
+    }
+
+    <span class="directive">static</span> <span class="type">int</span> removeAll(User u) {
+        u == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserRole.where { user == u }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+    }
+
+    <span class="directive">static</span> <span class="type">int</span> removeAll(<span class="predefined-type">Role</span> r) {
+        r == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserRole.where { role == r }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+    }
+
+    <span class="directive">static</span> constraints = {
+        user <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        role <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">validator</span>: { <span class="predefined-type">Role</span> r, UserRole ur -&gt;
+            <span class="keyword">if</span> (ur.user?.id) {
+                <span class="keyword">if</span> (UserRole.exists(ur.user.username, r.id)) {
+                    <span class="keyword">return</span> [<span class="string"><span class="delimiter">'</span><span class="content">userRole.exists</span><span class="delimiter">'</span></span>]
+                }
+            }
+        }
+    }
+
+    <span class="directive">static</span> mapping = {
+        id <span class="key">composite</span>: [<span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">role</span><span class="delimiter">'</span></span>]
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have added a “listener” which will encrypt our <code>password</code> field whenever a new <code>User</code> is created.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/UserPasswordEncoderListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
+<span class="keyword">import</span> <span class="include">org.hibernate.event.spi.PreDeleteEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> {
+
+    <span class="annotation">@Autowired</span>
+    SpringSecurityService springSecurityService
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreInsertEvent(PreInsertEvent event) {
+        encodeUserPasswordForEvent(event)
+    }
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreUpdateEvent(PreUpdateEvent event) {
+        encodeUserPasswordForEvent(event)
+    }
+
+    <span class="directive">private</span> <span class="type">void</span> encodeUserPasswordForEvent(AbstractPersistenceEvent event) {
+        <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
+            User u = (event.entityObject <span class="keyword">as</span> User)
+            <span class="keyword">if</span> (u.password &amp;&amp; ((event <span class="keyword">instanceof</span>  PreInsertEvent) || (event <span class="keyword">instanceof</span> PreUpdateEvent &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+            }
+        }
+    }
+
+    <span class="directive">private</span> <span class="predefined-type">String</span> encodePassword(<span class="predefined-type">String</span> password) {
+        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We register this listener as a Bean in <code>resources.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.UserPasswordEncoderListener</span>
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener)
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-vs-nodejs"><img src="https://travis-ci.org/grails-guides/grails-vs-nodejs.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-vs-nodejs">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-vs-nodejs.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-vs-nodejs.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-vs-nodejs/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.12 Websockets</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/requirements.html"><strong>2</strong><span>Requirements</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="websockets">3.12 Websockets</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/websockets.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our final server-side feature is to push “session timeout” events to the
+client over a websocket connection. We’ll use another Grails plugin, the
+<a href="https://plugins.grails.org/plugin/zyro/grails-spring-websocket">Spring
+Websocket plugin</a>, to support this feature.</p>
+</div>
+<div class="paragraph">
+<p>Install the plugin by adding another line to our <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:grails-spring-websocket:2.3.0</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We now have to implement three classes to get our web socket session
+timeout working:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A configuration class to configure our websocket connection</p>
+</li>
+<li>
+<p>A “listener” class to keep track of when new authentication tokens
+are created</p>
+</li>
+<li>
+<p>A “scheduler” class to periodically check for “expired” sessions and
+push events over the websocket connection.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Because these classes are not Grails-specific, we will create them as
+Groovy classes under <code>server/src/main/groovy</code>.</p>
+</div>
+<div class="paragraph">
+<p>Here is the complete code for these three classes:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/CustomWebSocketConfig.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springwebsocket.DefaultWebSocketConfig</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.socket.config.annotation.StompEndpointRegistry</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Configuration</span>
+<span class="annotation">@EnableWebSocketMessageBroker</span>
+<span class="type">class</span> <span class="class">CustomWebSocketConfig</span> <span class="directive">extends</span> DefaultWebSocketConfig {
+
+    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${allowedOrigin}</span><span class="delimiter">'</span></span>)
+    <span class="predefined-type">String</span> allowedOrigin <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) { <i class="conum" data-value="2"></i><b>(2)</b>
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">registerStompEndpoints with allowedOrigin: {}</span><span class="delimiter">'</span></span>, allowedOrigin
+        stompEndpointRegistry.addEndpoint(<span class="string"><span class="delimiter">&quot;</span><span class="content">/stomp</span><span class="delimiter">&quot;</span></span>).setAllowedOrigins(allowedOrigin).withSockJS()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Loads our <code>allowedOrigin</code> config property from application.yml</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Configures the websocket connection to accept requests from our client server</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/TokenCreationEventListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">org.springframework.context.ApplicationListener</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.RestTokenCreationEvent</span>
+
+<span class="type">class</span> <span class="class">TokenCreationEventListener</span> <span class="directive">implements</span> ApplicationListener&lt;RestTokenCreationEvent&gt; {
+
+    <span class="type">void</span> onApplicationEvent(RestTokenCreationEvent event) { <i class="conum" data-value="1"></i><b>(1)</b>
+
+        User.withTransaction { <i class="conum" data-value="2"></i><b>(2)</b>
+            User user = User.where { username == event.principal.username }.first()
+            user.lastLogin = <span class="keyword">new</span> <span class="predefined-type">Date</span>()
+            user.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We are extending a <code>ApplicationListener</code> interface, which is part of the Spring Framework and allows us to "listen" to specific application events. In this case, we are listening for <code>RestTokenCreationEvent</code>. You can find other events to listen for in the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/#_events">Spring Security REST plugin documentation</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>withTransaction</code> method is needed here because our custom class doesn&#8217;t have access to GORM by default (unlike controllers and services). The <code>User</code> domain class is not actually important - we could use any domain class here. <code>withNewSession</code> will initiate a GORM/Hibernate transaction and allow us to query the database and persist changes. See the <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#persistenceBasics">GORM documentation for more details.</a></td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/SessionExpirationJobHolder.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">groovy.time.TimeCategory</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">org.springframework.messaging.simp.SimpMessagingTemplate</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.annotation.Scheduled</span>
+
+<span class="type">class</span> <span class="class">SessionExpirationJobHolder</span> {
+
+    <span class="annotation">@Autowired</span>
+    SimpMessagingTemplate brokerMessagingTemplate <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${timeout.minutes}</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Integer</span> timeout
+
+    <span class="annotation">@Scheduled</span>(cron = <span class="string"><span class="delimiter">&quot;</span><span class="content">0 * * * * *</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="type">void</span> findExpiredSessions() {
+        <span class="predefined-type">Date</span> timeoutDate
+        use( TimeCategory ) { <i class="conum" data-value="4"></i><b>(4)</b>
+            timeoutDate = <span class="keyword">new</span> <span class="predefined-type">Date</span>() - timeout.minutes
+        }
+
+        User.withTransaction {
+            <span class="predefined-type">List</span>&lt;User&gt; expiredUsers = User.where { <span class="comment">//Query for loggedIn users with a lastLogin date after the timeout limit</span>
+                lastLogin != <span class="predefined-constant">null</span>
+                lastLogin &lt; timeoutDate
+            }.list()
+
+            <span class="comment">//Iterate over the expired users</span>
+            expiredUsers.each { user -&gt;
+                user.lastLogin = <span class="predefined-constant">null</span> <span class="comment">//Reset lastLogin date</span>
+                user.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+                <i class="conum" data-value="5"></i><b>(5)</b>
+                brokerMessagingTemplate.convertAndSend <span class="string"><span class="delimiter">&quot;</span><span class="content">/topic/</span><span class="inline"><span class="inline-delimiter">${</span>user.username<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toString(), <span class="string"><span class="delimiter">&quot;</span><span class="content">logout</span><span class="delimiter">&quot;</span></span>
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This class is provided by the spring-websocket plugin and allows us to push an event over a websocket channel</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Loads our timeout.minutes property from application.yml</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Run method every minute</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Use Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/api/groovy/time/TimeCategory.html"><code>TimeCategory</code></a> DSL for time operations</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Send a websocket message to a user-specific "channel" for each expired user - we&#8217;re using their username as the unique key for each channel</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With these classes in place, we need to plug them into the Spring
+context by adding them as “beans” in our <code>resources.groovy</code> file. Edit
+the file as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.UserPasswordEncoderListener</span>
+<span class="keyword">import</span> <span class="include">demo.SessionExpirationJobHolder</span>
+<span class="keyword">import</span> <span class="include">demo.TokenCreationEventListener</span>
+<span class="keyword">import</span> <span class="include">demo.CustomWebSocketConfig</span>
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener) <i class="conum" data-value="1"></i><b>(1)</b>
+    webSocketConfig(CustomWebSocketConfig)                 <i class="conum" data-value="2"></i><b>(2)</b>
+    tokenCreationEventListener(TokenCreationEventListener) <i class="conum" data-value="3"></i><b>(3)</b>
+    sessionExpirationJobHolder(SessionExpirationJobHolder) <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Register the password encoder listener</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Custom settings for websockets</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Listens for new access tokens and sets the loginDate</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Checks for expired sessions</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, in order for our scheduled <code>SessionExpirationJobHolder</code> class to
+actually fire as scheduled, we have to enable scheduling in our
+application (it’s not on by default). We do that by editing our app’s
+<code>Application.groovy</code> file (note the capitalization!).</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/init/demo/Application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.boot.GrailsApp</span>
+<span class="keyword">import</span> <span class="include">grails.boot.config.GrailsAutoConfiguration</span>
+
+<span class="annotation">@EnableScheduling</span>
+<span class="type">class</span> <span class="class">Application</span> <span class="directive">extends</span> GrailsAutoConfiguration {
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        GrailsApp.run(Application, args)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally, you may remember we referenced a couple of new config
+properties in the classes above. Let’s add those to our
+<code>application.yml</code> file (add the lines below to the end of the file).</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">allowedOrigin</span>: <span class="string"><span class="content">https://localhost:3000</span></span> <span class="comment"># accepted origin URL for websocket connections</span>
+<span class="key">timeout</span>:
+    <span class="key">minutes</span>: <span class="string"><span class="content">1</span></span> <span class="comment">#config setting for timeout</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Grails applications can read config values set in a variety of
+ways, including YAML files, Groovy files, and system properties. See the
+<a href="http://docs.grails.org/latest/guide/conf.html">Grails documentation</a> for
+more on how to use configuration files.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>That’s all for the Grails backend server - we have support for CORS (out
+of the box), websockets, authentication, RESTful web services,
+scheduled methods, and persistence to PostgresSQL.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-vs-nodejs"><img src="https://travis-ci.org/grails-guides/grails-vs-nodejs.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-vs-nodejs">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-vs-nodejs.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-vs-nodejs.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-vs-nodejs/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

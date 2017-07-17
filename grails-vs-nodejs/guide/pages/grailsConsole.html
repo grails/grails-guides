@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.4 Grails Console</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/requirements.html"><strong>2</strong><span>Requirements</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="grailsConsole">3.4 Grails Console</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/grailsConsole.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you were to start up your app now, Grails will connect to the
+Postgres database, create the tables and columns needed to persist your
+domain objects. Of course, there would be no data in the database
+initially. We will solve that issue shortly, but for now, we can run a
+Grails command that will give as an interactive console where we can
+create, update, delete and query our domain objects.</p>
+</div>
+<div class="paragraph">
+<p>Run the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./grailsw console</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(If you have Grails installed locally on your machine, you can run the
+<code>grails</code> command directly, e.g.: <code>grails console</code>. However, Grails
+projects include the <code>grailsw</code> "wrapper" command which will install the
+correct version of Grails for you.)</p>
+</div>
+<div class="paragraph">
+<p>Now you should see the Grails Console. You can import any classes from
+your project (both your own code as well as any dependencies) and run
+any Groovy code you&#8217;d like.</p>
+</div>
+<div class="paragraph">
+<p>The following code will show how to accomplish the database operations
+from the previous <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">"Web App" article</a>, using GORM and the Groovy language:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.*</span>
+
+<span class="comment">// Delete all rows from these tables:</span>
+<span class="comment">// user and ice_cream via HQL updates (efficient for batch operations)</span>
+IceCream.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete from IceCream</span><span class="delimiter">&quot;</span></span>)
+User.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete from User</span><span class="delimiter">&quot;</span></span>)
+
+<span class="comment">// Insert three new rows corresponding to three flavors.</span>
+<span class="keyword">def</span> iceCreams = [<span class="string"><span class="delimiter">'</span><span class="content">vanilla</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">chocolate</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">strawberry</span><span class="delimiter">'</span></span>].collect { flavor -&gt;
+    <span class="keyword">new</span> IceCream(<span class="key">flavor</span>: flavor).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">// Get an array of the ids of the new rows.</span>
+<span class="keyword">def</span> ids = iceCreams*.id
+println <span class="string"><span class="delimiter">&quot;</span><span class="content">Inserted records with ids </span><span class="inline"><span class="inline-delimiter">${</span>ids.join(<span class="string"><span class="delimiter">'</span><span class="content">,</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+<span class="comment">// Delete the first row (vanilla)</span>
+<span class="keyword">def</span> vanilla = IceCream.get(ids[<span class="integer">0</span>])
+vanilla.delete()
+
+<span class="comment">// Change the flavor of the second row (chocolate) to &quot;chocolate chip&quot;.</span>
+<span class="keyword">def</span> chocolate = IceCream.findByFlavor(<span class="string"><span class="delimiter">'</span><span class="content">chocolate</span><span class="delimiter">'</span></span>)
+chocolate.flavor = <span class="string"><span class="delimiter">'</span><span class="content">chocolate chip</span><span class="delimiter">'</span></span>
+chocolate.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+<span class="comment">// Get all the rows in the table.</span>
+iceCreams = IceCream.list()
+
+<span class="comment">// Output their ids and flavors.</span>
+iceCreams.each { iceCream -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>iceCream.id<span class="inline-delimiter">}</span></span><span class="content">: </span><span class="inline"><span class="inline-delimiter">${</span>iceCream.flavor<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enter the above code into the Grails Console (launched with the previous
+command), and click the "Run" button to execute the script. If you like,
+you can save the script to be reused later (note that this Groovy script
+will only work in the Grails Console, not via the "plain" Groovy Console
+or Groovy compiler (<code>groovyc</code>) - this is because our domain classes need
+to be loaded by Grails in order for this code to work).</p>
+</div>
+<div class="paragraph">
+<p>You might think this method could be used to populate our database with
+some initial data, and you&#8217;d be correct - any inserts/updates we make in
+the Console are persisted to the database we configured in our
+<code>application.yml</code> file. However, Grails provides a <code>BootStrap.groovy</code>
+file which is much better suited to this task as you will see in the next section.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-vs-nodejs"><img src="https://travis-ci.org/grails-guides/grails-vs-nodejs.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-vs-nodejs">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-vs-nodejs.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-vs-nodejs.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-vs-nodejs/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

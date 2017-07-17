@@ -1,0 +1,2487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/requirements.html"><strong>2</strong><span>Requirements</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#reactProfile"><strong>3.1</strong><span>React Profile</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#datasource"><strong>3.2</strong><span>Datasource</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gorm"><strong>3.3</strong><span>GORM</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#grailsConsole"><strong>3.4</strong><span>Grails Console</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#seedData"><strong>3.5</strong><span>Seed Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#authentication"><strong>3.6</strong><span>Authentication</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#restServices"><strong>3.7</strong><span>REST Services</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#signup"><strong>3.8</strong><span>Signup Endpoint</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#flavorsByUser"><strong>3.9</strong><span>Flavors by User Endpoint</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#saveFlavorsByUser"><strong>3.10</strong><span>Save User favourite Flavor</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#deleteFlavorsByUser"><strong>3.11</strong><span>Delete User's Flavor</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#websockets"><strong>3.12</strong><span>Websockets</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#react"><strong>3.13</strong><span>React</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The completed sample project for this article can be found at</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/grails-guides/grails-vs-nodejs/tree/master/complete" class="bare">https://github.com/grails-guides/grails-vs-nodejs/tree/master/complete</a></p>
+</div>
+
+
+<h2 id="reactProfile">3.1 React Profile</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/reactProfile.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Every Grails project begins with a single <code>create-app</code> command. For the
+purposes of following along with this guide, you may choose to <a href="https://grails.org/download.html">install</a>
+Grails via the official website, or using <a href="http://sdkman.io">sdkman</a> (recommended).
+However, there is no need to install the framework on your machine to
+create your Grails app - instead, let&#8217;s browse to
+<a href="http://start.grails.org" class="bare">http://start.grails.org</a> and create our application using the <strong>Grails
+Application Forge</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Choose the latest version of Grails (3.3.0.RC1 as of the time of writing)
+and select the <code>react</code> profile.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+With the use of <strong>application profiles</strong>, Grails allows you to build modern web applications. There are profiles to facilitate the construction
+of REST APIs or Web applications with a Javascript front-end
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_start_both_client_and_server_applications">Start both client and server applications</h3>
+<div class="paragraph">
+<p>Once you&#8217;ve downloaded your application, expand it into a directory of
+your choice, <code>cd</code> into the project, and run the following two commands
+(in two separate terminal sessions):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./gradlew server:bootRun   //Windows users use &quot;gradlew.bat&quot;
+
+//in a second terminal session
+~ ./gradlew client:bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>gradlew</code> command launches the Gradle "wrapper”, which is provided
+by the <a href="https://gradle.org/">Gradle build tool</a> that is used in all Grails projects since Grails 3.0.
+The wrapper is a special script that actually download and install the Gradle
+build tool (if necessary) before running your commands. Gradle will then
+download all needed dependencies (including Grails) and install them in your project (caching them for future
+use as well). This is why you don’t need to install Grails on your
+machine: if your project includes the Gradle wrapper, it will handle
+that for you.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can think of Gradle roughly as an alternative to npm (which "does
+not" stand for <a href="https://www.npmjs.com">Node Package Manager</a>). It doesn&#8217;t
+provide the CLI that npm offers but it fulfills a similar purpose in dependency
+management and build-processing. When a Gradle command (or "task") is run,
+Gradle will first download all dependencies listed in the project&#8217;s <code>build.gradle</code>
+file, similar to running <code>npm install</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>What about the <code>server</code> and <code>client</code> portion of those two commands?
+Because we’re using the <code>react</code> profile, Grails has actually created two
+separate “apps” for us - the backend Grails application, and the React
+application (which in turn is generated via <code>create-react-app</code>). Gradle
+treats these two apps as independent subprojects, with the above names.
+This is called a
+<a href="http://guides.grails.org/grails-quickcasts-multi-project-builds/guide/index.html">multi-project
+build</a>.</p>
+</div>
+<div class="paragraph">
+<p>When running a Gradle “task” from the project root directory, anything
+after <code>./gradlew [project_name]:</code> will match a task specific to that
+subproject. The <code>bootRun</code> task is configured in both projects to start
+the respective app.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Where does <code>bootRun</code> come from? This Gradle task is inherited from the Spring Boot framework, upon which Grails is based. Of course
+<code>create-react-app</code> projects don’t have such a task by default. The React profile provides the <code>client:bootRun</code> task as a wrapper around the npm/yarn <code>start</code> script.
+This allows you to use advanced Gradle features like running both <code>server</code> and <code>client</code> in
+parallel mode with one command. For developers, running <code>../gradlew client:bootRun</code> is the same
+as running <code>npm start</code> (or <code>yarn start</code>) in a stock <code>create-react-app</code>
+project, and in fact you can run the <code>client</code> app exactly that way if
+you have <code>npm</code>/<code>yarn</code> installed on your machine.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once the <code>gradlew</code> commands have completed downloading dependencies and
+launching their respective apps, you should be able to browse to
+<code><a href="http://localhost:8080" class="bare">http://localhost:8080</a></code> to see the Grails backend application, and
+<code><a href="http://localhost:3000" class="bare">http://localhost:3000</a></code> to view the React app.</p>
+</div>
+<div class="paragraph">
+<p>Before we continue implementing our application, take a moment to
+explore the app we have right now. The Grails application by default is
+providing some useful metadata in JSON format, and the React app is
+consuming that data via a REST call and displaying it via the app’s
+navigation menus. This isn’t a very useful app, but you can see
+a lot of boilerplate has already been set up for you.</p>
+</div>
+</div>
+
+
+<h2 id="datasource">3.2 Datasource</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/datasource.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that we have our basic application structure, its’s time to set up
+our database. We are trying to migrate a <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">REACT + Node/express application</a> which used PostgreSQL.
+However, it’s worth noting that Grails has already set up a basic
+datasource for us, in the form on an in-memory H2 database. This
+database is destroyed and recreated every time the app is run, and it
+will even be updated during runtime if new tables/columns are added to
+the domain classes (more on those later). For many apps, this default
+database will be very well suited for the initial stages of app
+development, especially if you’re making many iterative changes to your
+data model. However, in keeping with the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">app being migrated</a>, we are going
+to replace this default H2 datasource with our desired PostgreSQL database.</p>
+</div>
+<div class="paragraph">
+<p>Let’s recap the steps to install PostgresSQL on your machine:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>To install PostgreSQL in Windows, see <a href="https://www.postgresql.org/download/windows/" class="bare">https://www.postgresql.org/download/windows/</a>.</p>
+</div>
+<div class="paragraph">
+<p>To install PostgreSQL in macOS:</p>
+</div>
+<div class="paragraph">
+<p>Install Homebrew by following the instructions at <a href="http://brew.sh/" class="bare">http://brew.sh/</a>.
+Enter the following: brew install postgresql
+To start the database server, enter <code>pg_ctl -D /usr/local/var/postgres start</code>.</p>
+</div>
+<div class="paragraph">
+<p>To stop the database server later, enter <code>pg_ctl -D /usr/local/var/postgres stop -m fast</code>.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Web App<br>
+<cite>Step by Step -- Mark Volkmann</cite>
+</div>
+</div>
+<div class="paragraph">
+<p>Once you’ve installed Postgres (or if you already have it installed),
+create a new database for our app using <code>createdb</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ createdb ice_cream_db_2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you recall in the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">previous article</a> (where the above installation
+steps were taken from), the next steps here would be to create the
+database tables needed for our app. However, we won’t be using any SQL
+in this project. That’s because Grails offers a powerful and
+developer-friendly alternative: the <a href="http://gorm.grails.org/">GORM</a>; a data access toolkit for the JVM.</p>
+</div>
+
+
+<h2 id="gorm">3.3 GORM</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/gorm.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>GORM works with any JDBC-compatible database, which includes Postgres
+(as well as over 200 other databases). To begin using Postgres with our
+new Grails app, we have 2 steps to complete:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step #1</dt>
+<dd>
+<p>Install the JDBC driver in our <code>server</code> project. Edit
+<code>server/build.gradle</code>, and find the section named <code>dependencies</code>. Add
+the following line of code:
+<code>runtime 'org.postgresql:postgresql:9.4.1212'</code> This will tell Gradle to
+download version 9.4.1212 of the <code>org.postgresql.postgresql</code> library
+from the Maven Central repository, and install it in our app.</p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">org.postgresql:postgresql:9.4.1212</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can think of <code>build.gradle</code> as filling a similar purpose to a <code>package.json</code> file in a Node.js project. It specifies <a href="https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#sec:repositories_tutorial">repositories</a>, <a href="https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html#sec:declaring_your_dependencies">dependencies</a>, and <a href="https://docs.gradle.org/current/userguide/tutorial_using_tasks.html">custom tasks</a> (similar to npm scripts) for your project.
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step #2</dt>
+<dd>
+<p>Configure GORM to use our PostgreSQL database instead of the default
+H2 database. Edit <code>server/grails-app/conf/application.yml</code>, scroll down
+to the section starting with <code>datasource</code>, and replace it with the
+following content:</p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">dataSource</span>:
+    <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">org.postgresql.Driver</span></span>
+    <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.PostgreSQLDialect</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">postgres</span></span>
+    <span class="key">password</span>:
+    <span class="key">url</span>: <span class="string"><span class="content">jdbc:postgresql://localhost:5432/ice_cream_db_2</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now our Grails app is connected to our database, but we haven’t created
+any tables yet. With Grails, there’s no need to create the database
+schema manually (although you certainly can do so if you want). Instead,
+we’ll specify our domain model in code, by writing <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html"><strong>Domain Classes</strong></a>.</p>
+</div>
+<div class="paragraph">
+<p>By convention, Grails will load any Groovy classes located under
+<code>grails-app/domain</code> as Domain Classes. This means that GORM will map
+these classes to tables in the database, and map the properties of these
+classes to columns in the respective tables. Optionally, GORM will
+create these tables for us, which we have already enabled in our
+<code>application.yml</code> file with the <code>dbCreate: update</code> setting.</p>
+</div>
+<div class="paragraph">
+<p>This means it’s actually quite trivial to set up the database schema
+from the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">original article</a>.</p>
+</div>
+<div class="paragraph">
+<p>The React + Node/express used the next database schema:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="class">create</span> <span class="type">table</span> ice_creams (
+  id serial <span class="directive">primary</span> <span class="type">key</span>,
+  flavor <span class="predefined-type">text</span>
+);
+
+<span class="class">create</span> <span class="type">table</span> users (
+  username <span class="predefined-type">text</span> <span class="directive">primary</span> <span class="type">key</span>,
+  password <span class="predefined-type">text</span> <span class="comment">-- encrypted length</span>
+);
+
+<span class="class">create</span> <span class="type">table</span> user_ice_creams (
+  username <span class="predefined-type">text</span> <span class="keyword">references</span> users(username),
+  ice_cream_id <span class="predefined-type">integer</span> <span class="keyword">references</span> ice_creams(id)
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM is the data access toolkit used by Grails by default.
+We can customize how the generated database schema looks like.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/ref/Database%20Mapping/Usage.html">Database Mapping</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Domain classes in Grails by default dictate the way they are mapped to the database using sensible defaults. You can customize these with the ORM Mapping DSL.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>For each of the tables we need in our
+app, we will create a domain class under the <code>grails-app/domain</code>
+directory.</p>
+</div>
+<div class="paragraph">
+<p>Run the following commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./grailsw create-domain-class demo.IceCream
+~ ./grailsw create-domain-class demo.User
+~ ./grailsw create-domain-class demo.UserIceCream</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These commands will generate three Groovy classes, under
+<code>grails-app/domain/demo</code>. Edit these files with the following
+content to generate an identical database schema as in the previous app:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/User</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">users</span><span class="delimiter">'</span></span>
+        password <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        id <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, <span class="key">generator</span>: <span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You may have noticed we have not encrypted our <code>password</code> column
+- don’t worry, we’ll get to that later on.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/IceCream</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">IceCream</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    <span class="predefined-type">String</span> flavor
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">ice_creams</span><span class="delimiter">'</span></span>
+        flavor <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/UserIceCream</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UserIceCream</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    User user
+    IceCream iceCream
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">user_ice_creams</span><span class="delimiter">'</span></span>
+        id <span class="key">composite</span>: [<span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">iceCream</span><span class="delimiter">'</span></span>]
+        user <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>
+        iceCream <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">ice_cream_id</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous domain class represents a join table for our <code>User</code> and <code>IceCream</code>
+classes.</p>
+</div>
+<div class="sect2">
+<h3 id="_package_naming">Package Naming</h3>
+<div class="paragraph">
+<p>As is common in Java projects, we have created a “package” for our
+domain classes. Packages help distinguish our classes from classes from
+libraries or plugins that we might use later. The package is reflected
+in the directory structure as well: these two files will be created
+under <code>grails-app/domain/demo/</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Why are we using period instead of dash separators, as was shown in the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">previous article</a>?
+In Java it is generally considered against convention to use dashes (hyphen) in package names.
+<a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.1">See this link for details on the Java naming conventions</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="grailsConsole">3.4 Grails Console</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/grailsConsole.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you were to start up your app now, Grails will connect to the
+Postgres database, create the tables and columns needed to persist your
+domain objects. Of course, there would be no data in the database
+initially. We will solve that issue shortly, but for now, we can run a
+Grails command that will give as an interactive console where we can
+create, update, delete and query our domain objects.</p>
+</div>
+<div class="paragraph">
+<p>Run the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ ./grailsw console</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(If you have Grails installed locally on your machine, you can run the
+<code>grails</code> command directly, e.g.: <code>grails console</code>. However, Grails
+projects include the <code>grailsw</code> "wrapper" command which will install the
+correct version of Grails for you.)</p>
+</div>
+<div class="paragraph">
+<p>Now you should see the Grails Console. You can import any classes from
+your project (both your own code as well as any dependencies) and run
+any Groovy code you&#8217;d like.</p>
+</div>
+<div class="paragraph">
+<p>The following code will show how to accomplish the database operations
+from the previous <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">"Web App" article</a>, using GORM and the Groovy language:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.*</span>
+
+<span class="comment">// Delete all rows from these tables:</span>
+<span class="comment">// user and ice_cream via HQL updates (efficient for batch operations)</span>
+IceCream.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete from IceCream</span><span class="delimiter">&quot;</span></span>)
+User.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete from User</span><span class="delimiter">&quot;</span></span>)
+
+<span class="comment">// Insert three new rows corresponding to three flavors.</span>
+<span class="keyword">def</span> iceCreams = [<span class="string"><span class="delimiter">'</span><span class="content">vanilla</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">chocolate</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">strawberry</span><span class="delimiter">'</span></span>].collect { flavor -&gt;
+    <span class="keyword">new</span> IceCream(<span class="key">flavor</span>: flavor).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">// Get an array of the ids of the new rows.</span>
+<span class="keyword">def</span> ids = iceCreams*.id
+println <span class="string"><span class="delimiter">&quot;</span><span class="content">Inserted records with ids </span><span class="inline"><span class="inline-delimiter">${</span>ids.join(<span class="string"><span class="delimiter">'</span><span class="content">,</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+<span class="comment">// Delete the first row (vanilla)</span>
+<span class="keyword">def</span> vanilla = IceCream.get(ids[<span class="integer">0</span>])
+vanilla.delete()
+
+<span class="comment">// Change the flavor of the second row (chocolate) to &quot;chocolate chip&quot;.</span>
+<span class="keyword">def</span> chocolate = IceCream.findByFlavor(<span class="string"><span class="delimiter">'</span><span class="content">chocolate</span><span class="delimiter">'</span></span>)
+chocolate.flavor = <span class="string"><span class="delimiter">'</span><span class="content">chocolate chip</span><span class="delimiter">'</span></span>
+chocolate.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+<span class="comment">// Get all the rows in the table.</span>
+iceCreams = IceCream.list()
+
+<span class="comment">// Output their ids and flavors.</span>
+iceCreams.each { iceCream -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>iceCream.id<span class="inline-delimiter">}</span></span><span class="content">: </span><span class="inline"><span class="inline-delimiter">${</span>iceCream.flavor<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Enter the above code into the Grails Console (launched with the previous
+command), and click the "Run" button to execute the script. If you like,
+you can save the script to be reused later (note that this Groovy script
+will only work in the Grails Console, not via the "plain" Groovy Console
+or Groovy compiler (<code>groovyc</code>) - this is because our domain classes need
+to be loaded by Grails in order for this code to work).</p>
+</div>
+<div class="paragraph">
+<p>You might think this method could be used to populate our database with
+some initial data, and you&#8217;d be correct - any inserts/updates we make in
+the Console are persisted to the database we configured in our
+<code>application.yml</code> file. However, Grails provides a <code>BootStrap.groovy</code>
+file which is much better suited to this task as you will see in the next section.</p>
+</div>
+
+
+<h2 id="seedData">3.5 Seed Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/seedData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Edit the file <code>server/grails-app/init/demo/BootStrap.groovy</code> and add the
+following code:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    UserService userService
+    UserRoleService userRoleService
+    RoleService roleService
+    IceCreamService iceCreamService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
+
+        <span class="keyword">if</span> (!iceCreamService.count()) {
+
+            <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; ids = <span class="type">[]</span>
+            <span class="keyword">for</span> (<span class="predefined-type">String</span> flavor : [<span class="string"><span class="delimiter">'</span><span class="content">vanilla</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">chocolate</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">strawberry</span><span class="delimiter">'</span></span>]) {
+                IceCream iceCream = iceCreamService.saveIcream(flavor)
+                ids &lt;&lt; iceCream.id
+            }
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Inserted records with ids </span><span class="inline"><span class="inline-delimiter">${</span>ids.join(<span class="string"><span class="delimiter">'</span><span class="content">,</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        }
+
+        <span class="keyword">if</span> (!roleService.count()) {
+            <span class="predefined-type">Role</span> role = roleService.saveRole( <span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>)
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Inserted role...</span><span class="delimiter">&quot;</span></span>
+
+            User user = userService.createUser(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Inserted user...</span><span class="delimiter">&quot;</span></span>
+
+            userRoleService.saveUserRole(user, role)
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Associated user with role...</span><span class="delimiter">&quot;</span></span>
+        }
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, we use several Grails Services (more about services in the next section) as collaborators. Grails encourages
+to keep all your business logic in the service layer.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/IceCreamService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.validation.ObjectError</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">IceCreamService</span> {
+    IceCream saveIcream(<span class="predefined-type">String</span> flavor, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        IceCream iceCream = <span class="keyword">new</span> IceCream(<span class="key">flavor</span>: flavor)
+        <span class="keyword">if</span> ( !iceCream.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Failure while saving icream {}</span><span class="delimiter">'</span></span>, iceCream.errors.toString()
+        }
+        iceCream
+    }
+    <span class="annotation">@ReadOnly</span>
+    <span class="type">int</span> count() {
+        IceCream.count() <span class="keyword">as</span> <span class="type">int</span>
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/RoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">RoleService</span> {
+    <span class="predefined-type">Role</span> saveRole(<span class="predefined-type">String</span> authority, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        <span class="predefined-type">Role</span> r = <span class="keyword">new</span> <span class="predefined-type">Role</span>(<span class="key">authority</span>: authority)
+        <span class="keyword">if</span> ( !r.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Failure while saving role {}</span><span class="delimiter">'</span></span>, r.errors.toString()
+        }
+        r
+    }
+    <span class="annotation">@ReadOnly</span>
+    <span class="type">int</span> count() {
+        <span class="predefined-type">Role</span>.count() <span class="keyword">as</span> <span class="type">int</span>
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">UserService</span> {
+    User createUser(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        User user = <span class="keyword">new</span> User(<span class="key">username</span>: username, <span class="key">password</span>: password)
+        <span class="keyword">if</span> ( !user.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Unable to save user {}</span><span class="delimiter">'</span></span>, user.errors.toString()
+        }
+        user
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/UserRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserRoleService</span> {
+    UserRole saveUserRole(User user, <span class="predefined-type">Role</span> role, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        UserRole ur = <span class="keyword">new</span> UserRole(<span class="key">user</span>: user, <span class="key">role</span>: role)
+        <span class="keyword">if</span> ( !ur.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Failure while saving user {}</span><span class="delimiter">'</span></span>, ur.errors.toString()
+        }
+        ur
+    }</code></pre>
+</div>
+</div>
+
+
+<h2 id="authentication">3.6 Authentication</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/authentication.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Because Grails is based upon Spring Boot, it is compatible with many
+other projects in the Spring Ecosystem. One of the most popular such
+projects is <a href="https://projects.spring.io/spring-security/">Spring
+Security</a>. It provides powerful authentication and access control for
+Java web apps, and supports many authentication methods, from LDAP to
+OAuth2. Even better, there is a set of
+<a href="http://plugins.grails.org/plugin/grails/spring-security-core">Grails
+plugins</a> that make Spring Security a breeze to set up.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>server/build.gradle</code> again, and add the following two lines:
+<code>server/build.gradle</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.0.M1</span><span class="delimiter">'</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have placed the Spring Security Core and REST plugins configuration in <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+    <span class="key">plugin</span>:
+        <span class="key">springsecurity</span>:
+            <span class="key">userLookup</span>:
+                <span class="key">userDomainClassName</span>: demo.User
+                <span class="key">authorityJoinClassName</span>: demo.UserRole
+            <span class="key">authority</span>:
+                <span class="key">className</span>: demo.Role
+            <span class="key">rest</span>:
+                <span class="key">login</span>:
+                    <span class="key">endpointUrl</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">login</span></span><span class="error">
+</span>            <span class="key">useSecurityEventListener</span>: <span class="predefined-constant">true</span>
+            <span class="key">controllerAnnotations</span>:
+                <span class="key">staticRules</span>:
+                    -
+                        <span class="key">pattern</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">stomp</span><span class="delimiter">/</span></span>**
+                        <span class="key">access</span>:
+                            - permitAll
+                    -
+                        <span class="key">pattern</span>: <span class="regexp"><span class="delimiter">/</span><span class="content">signup</span><span class="delimiter">/</span></span>**
+                        <span class="key">access</span>:
+                            - permitAll
+            <span class="key">filterChain</span>:
+                <span class="key">chainMap</span>:
+                    - <span class="error">#</span> Stateless chain
+                        <span class="key">pattern</span>: <span class="comment">/**
+                        filters: 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please consult the
+<a href="https://docs.spring.io/spring-security/site/docs/3.0.x/reference/security-filter-chain.html">Spring
+Security docs</a> and the
+<a href="http://grails-plugins.github.io/grails-spring-security-core/3.2.x/index.html">Grails
+Spring Security plugin</a> docs for more information.</p>
+</div>
+<div class="paragraph">
+<p>We have modified slightly the <code>User</code> domain class. Moreover, we added two other domain classes to map roles and the relationship
+between roles and users.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/User.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+    <span class="predefined-type">Date</span> lastLogin = <span class="predefined-constant">null</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">boolean</span> enabled = <span class="predefined-constant">true</span>
+    <span class="type">boolean</span> accountExpired
+    <span class="type">boolean</span> accountLocked
+    <span class="type">boolean</span> passwordExpired
+
+    <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt; getAuthorities() {
+        (UserRole.findAllByUser(<span class="local-variable">this</span>) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;UserRole&gt;)*.role <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt;
+    }
+
+    <span class="directive">static</span> constraints = {
+        password <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">password</span>: <span class="predefined-constant">true</span>
+        username <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        lastLogin <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        table <span class="string"><span class="delimiter">'</span><span class="content">users</span><span class="delimiter">'</span></span>
+        password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        id <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, <span class="key">generator</span>: <span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;ll use this property to keep track of expired sessions</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/Role.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">Role</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span>, GrantedAuthority {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+    <span class="predefined-type">String</span> authority
+
+    <span class="directive">static</span> constraints = {
+        authority <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+        cache <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/domain/demo/UserRole.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="keyword">import</span> <span class="include">org.codehaus.groovy.util.HashCodeHelper</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@ToString</span>(cache=<span class="predefined-constant">true</span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">UserRole</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+    User user
+    <span class="predefined-type">Role</span> role
+
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> equals(other) {
+        <span class="keyword">if</span> (other <span class="keyword">instanceof</span> UserRole) {
+            other.userId == user?.username &amp;&amp; other.roleId == role?.id
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">int</span> hashCode() {
+        <span class="type">int</span> hashCode = HashCodeHelper.initHash()
+        <span class="keyword">if</span> (user) {
+            hashCode = HashCodeHelper.updateHash(hashCode, user.username)
+        }
+        <span class="keyword">if</span> (role) {
+            hashCode = HashCodeHelper.updateHash(hashCode, role.id)
+        }
+        hashCode
+    }
+
+    <span class="directive">static</span> UserRole get(<span class="predefined-type">String</span> username, <span class="type">long</span> roleId) {
+        criteriaFor(username, roleId).get()
+    }
+
+    <span class="directive">static</span> <span class="type">boolean</span> exists(<span class="predefined-type">String</span> username, <span class="type">long</span> roleId) {
+        criteriaFor(username, roleId).count()
+    }
+
+    <span class="directive">private</span> <span class="directive">static</span> DetachedCriteria criteriaFor(<span class="predefined-type">String</span> name, <span class="type">long</span> roleId) {
+        UserRole.where {
+            user.username == name &amp;&amp;
+                    role == <span class="predefined-type">Role</span>.load(roleId)
+        }
+    }
+
+    <span class="directive">static</span> UserRole create(User user, <span class="predefined-type">Role</span> role, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        <span class="keyword">def</span> instance = <span class="keyword">new</span> UserRole(<span class="key">user</span>: user, <span class="key">role</span>: role)
+        instance.save(<span class="key">flush</span>: flush)
+        instance
+    }
+
+    <span class="directive">static</span> <span class="type">boolean</span> remove(User u, <span class="predefined-type">Role</span> r) {
+        <span class="keyword">if</span> (u != <span class="predefined-constant">null</span> &amp;&amp; r != <span class="predefined-constant">null</span>) {
+            UserRole.where { user == u &amp;&amp; role == r }.deleteAll()
+        }
+    }
+
+    <span class="directive">static</span> <span class="type">int</span> removeAll(User u) {
+        u == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserRole.where { user == u }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+    }
+
+    <span class="directive">static</span> <span class="type">int</span> removeAll(<span class="predefined-type">Role</span> r) {
+        r == <span class="predefined-constant">null</span> ? <span class="integer">0</span> : UserRole.where { role == r }.deleteAll() <span class="keyword">as</span> <span class="type">int</span>
+    }
+
+    <span class="directive">static</span> constraints = {
+        user <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        role <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">validator</span>: { <span class="predefined-type">Role</span> r, UserRole ur -&gt;
+            <span class="keyword">if</span> (ur.user?.id) {
+                <span class="keyword">if</span> (UserRole.exists(ur.user.username, r.id)) {
+                    <span class="keyword">return</span> [<span class="string"><span class="delimiter">'</span><span class="content">userRole.exists</span><span class="delimiter">'</span></span>]
+                }
+            }
+        }
+    }
+
+    <span class="directive">static</span> mapping = {
+        id <span class="key">composite</span>: [<span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">role</span><span class="delimiter">'</span></span>]
+        version <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have added a “listener” which will encrypt our <code>password</code> field whenever a new <code>User</code> is created.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/UserPasswordEncoderListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
+<span class="keyword">import</span> <span class="include">org.hibernate.event.spi.PreDeleteEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> {
+
+    <span class="annotation">@Autowired</span>
+    SpringSecurityService springSecurityService
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreInsertEvent(PreInsertEvent event) {
+        encodeUserPasswordForEvent(event)
+    }
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreUpdateEvent(PreUpdateEvent event) {
+        encodeUserPasswordForEvent(event)
+    }
+
+    <span class="directive">private</span> <span class="type">void</span> encodeUserPasswordForEvent(AbstractPersistenceEvent event) {
+        <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
+            User u = (event.entityObject <span class="keyword">as</span> User)
+            <span class="keyword">if</span> (u.password &amp;&amp; ((event <span class="keyword">instanceof</span>  PreInsertEvent) || (event <span class="keyword">instanceof</span> PreUpdateEvent &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+            }
+        }
+    }
+
+    <span class="directive">private</span> <span class="predefined-type">String</span> encodePassword(<span class="predefined-type">String</span> password) {
+        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We register this listener as a Bean in <code>resources.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.UserPasswordEncoderListener</span>
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="restServices">3.7 REST Services</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/restServices.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that we have our database configured and populated, it&#8217;s time to set
+up our service layer. Before we do this, it&#8217;s important to understand
+the two main data-handling "artifacts" provided by the Grails framework.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Controllers</strong>: Grails is a MVC framework, where "C" stands for
+Controller. In an MVC app, controllers define the logic of the web
+application, and manage the communication between the model and the
+view. Controllers respond to <em>requests</em>, interact with data from the
+model, and then <em>respond</em> with either a view (HTML page) or some other
+consumable format (such as JSON). Controllers are Groovy classes located
+in <code>grails-app/controllers</code></p>
+</li>
+<li>
+<p><strong>Services</strong>: Many times we need to do more with our data than simply
+take a request and return a response. Real-world apps typically include
+a substantial amount of code dedicated to "business logic". Grails
+supports "services" which are classes that have full access to the
+model, but are not tied to a request. Controllers, as well as other
+parts of your app, can call services (which are made available via
+Spring’s dependency injection) to get back the data they need to respond
+to their requests. Services are Groovy classes located in
+<code>grails-app/services</code> and can be injected by name into other Grails
+artifacts.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>To implement our RESTful API in our app, we&#8217;ll use controllers to
+respond to API requests (POST, GET, PUT, DELETE), and services to handle
+our "business logic" (which is pretty simple in our case). Let&#8217;s start
+with a controller:</p>
+</div>
+<div class="paragraph">
+<p>The React app consumes several endpoints.</p>
+</div>
+
+
+<h2 id="signup">3.8 Signup Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/signup.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_signup">Signup</h3>
+<div class="paragraph">
+<p>To signup into the application the REACT app sends a <em>POST</em> request to the <em>/signup</em> endpoint.
+It includes a JSON  Payload containing username and password. We are going to map this with Grails.</p>
+</div>
+<div class="paragraph">
+<p>First, we register the endpoint in URLMappings by adding the next line into the mappings:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        post <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">signup</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next we create an controller which binds the JSON payload with the help of a command object.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/SignupCommand.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
+
+<span class="type">class</span> <span class="class">SignupCommand</span> <span class="directive">implements</span> Validateable {
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+
+    <span class="directive">static</span> constraints = {
+        username <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        password <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/SignupController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.AccessToken</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.generation.TokenGenerator</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.rendering.AccessTokenJsonRenderer</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.userdetails.GrailsUser</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
+
+<i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">IS_AUTHENTICATED_ANONYMOUSLY</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">SignupController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">xml</span><span class="delimiter">'</span></span>]
+
+    UserRoleService userRoleService
+    UserService userService
+    RoleService roleService
+    TokenGenerator tokenGenerator
+    AccessTokenJsonRenderer accessTokenJsonRenderer
+
+    <span class="keyword">def</span> <span class="function">signup</span>(SignupCommand cmd) {
+        <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">if</span> ( userService.existsUserByUsername(cmd.username) ) {
+            render <span class="key">status</span>: HttpStatus.UNPROCESSABLE_ENTITY.value(), <span class="string"><span class="delimiter">&quot;</span><span class="content">duplicate key</span><span class="delimiter">&quot;</span></span>
+            <span class="keyword">return</span>
+        }
+
+        <span class="predefined-type">Role</span> roleUser = roleService.findByRoleName(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>)
+        <span class="keyword">if</span> ( !roleUser ) {
+            render <span class="key">status</span>: HttpStatus.UNPROCESSABLE_ENTITY.value(), <span class="string"><span class="delimiter">&quot;</span><span class="content">default role: ROLE_USER does not exist</span><span class="delimiter">&quot;</span></span>
+            <span class="keyword">return</span>
+        }
+        User user = userService.createUser(cmd.username, cmd.password)
+        userRoleService.saveUserRole(user, roleUser)
+
+        <i class="conum" data-value="3"></i><b>(3)</b>
+        UserDetails userDetails = <span class="keyword">new</span> GrailsUser(user.username, user.password, user.enabled, !user.accountExpired,
+                !user.passwordExpired, !user.accountLocked, user.authorities <span class="keyword">as</span> <span class="predefined-type">Collection</span>&lt;GrantedAuthority&gt;, user.id)
+        AccessToken token = tokenGenerator.generateAccessToken(userDetails)
+        render <span class="key">status</span>: HttpStatus.OK.value(), accessTokenJsonRenderer.generateJson(token)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Secured</code> annotation specifies the access controls for this controller - anonymous access is permitted</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Check for duplicate usernames</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Authenticate the newly created user, and generate the authentication token. This step saves the React app from having to make a second login request after the <code>/signup</code> request</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The controller uses several services as collaborators:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/RoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">RoleService</span> {
+    <span class="predefined-type">Role</span> findByRoleName(<span class="predefined-type">String</span> roleName) {
+        <span class="predefined-type">Role</span>.where { authority == roleName }.get()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">UserService</span> {
+    <span class="annotation">@ReadOnly</span>
+    <span class="type">boolean</span> existsUserByUsername(<span class="predefined-type">String</span> username) {
+        findQueryByUsername(username).count()
+    }
+    DetachedCriteria&lt;User&gt; findQueryByUsername(<span class="predefined-type">String</span> name) {
+        User.where { username == name }
+    }
+    User createUser(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        User user = <span class="keyword">new</span> User(<span class="key">username</span>: username, <span class="key">password</span>: password)
+        <span class="keyword">if</span> ( !user.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Unable to save user {}</span><span class="delimiter">'</span></span>, user.errors.toString()
+        }
+        user
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/UserRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserRoleService</span> {
+    UserRole saveUserRole(User user, <span class="predefined-type">Role</span> role, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        UserRole ur = <span class="keyword">new</span> UserRole(<span class="key">user</span>: user, <span class="key">role</span>: role)
+        <span class="keyword">if</span> ( !ur.save(<span class="key">flush</span>: flush) ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">Failure while saving user {}</span><span class="delimiter">'</span></span>, ur.errors.toString()
+        }
+        ur
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="flavorsByUser">3.9 Flavors by User Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/flavorsByUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When the logs into the application or inmediately after signup, app he is presented with a list of his
+favourite flavors.</p>
+</div>
+<div class="paragraph">
+<p>To fetch those flavors, the REACT app sends a <em>GET</em> request to the <em>/ice-cream/$username</em> endpoint.
+We are going to map this with Grails.</p>
+</div>
+<div class="paragraph">
+<p>First, we register the endpoint in URLMappings by adding the next line into the mappings:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/ice-cream/</span><span class="inline"><span class="inline-delimiter">$</span>username</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">iceCream</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, we create a controller action which fetches a list of flavors for the logged username</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/IceCreamController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">IceCreamController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
+    IceCreamService iceCreamService
+
+    UserIceCreamService userIceCreamService
+
+    SpringSecurityService springSecurityService
+
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        <span class="keyword">if</span> ( !username ) {
+            render <span class="key">status</span>: <span class="integer">404</span>
+            <span class="keyword">return</span>
+        }
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="predefined-type">List</span>&lt;IceCream&gt; iceCreams = userIceCreamService.findAllIceCreamsByUsername(username)
+        [<span class="key">iceCreams</span>: iceCreams] <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">protected</span> <span class="predefined-type">String</span> loggedUsername() {
+        springSecurityService.principal?.username <span class="keyword">as</span> <span class="predefined-type">String</span>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Secured</code> annotation specifies the access controls for this controller - authentication &amp; ROLE_USER is required</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The controller action uses a service as a collaborators:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/UserIceCreamService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.validation.ObjectError</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserIceCreamService</span> {
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;IceCream&gt; findAllIceCreamsByUsername(<span class="predefined-type">String</span> loggedUsername) {
+        UserIceCream.where {
+            user.username == loggedUsername
+        }.list()*.iceCream <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;IceCream&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We render JSON with the help of <a href="http://views.grails.org">JSON Views</a></p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/views/iceCream/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.IceCream</span>
+
+model {
+    <span class="predefined-type">Iterable</span>&lt;IceCream&gt; iceCreams
+}
+
+json tmpl.icecream(iceCreams)</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/views/iceCream/_iceCream.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/grails-vs-nodejs/complete/server/grails-app/views/iceCream/_iceCream.gson<span class="type">[]</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="saveFlavorsByUser">3.10 Save User favourite Flavor</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/saveFlavorsByUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A user can add a flavor from his profile.</p>
+</div>
+<div class="paragraph">
+<p>To do that, the REACT app sends a <em>POST</em> request to the <em>/ice-cream/$username</em> endpoint.</p>
+</div>
+<div class="paragraph">
+<p>We are going to map this with Grails.</p>
+</div>
+<div class="paragraph">
+<p>First, we register the endpoint in URLMappings by adding the next line into the mappings:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        post <span class="string"><span class="delimiter">&quot;</span><span class="content">/ice-cream/</span><span class="inline"><span class="inline-delimiter">$</span>username</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">iceCream</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">save</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, we create a controller action which adds a flavor for the logged username:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/IceCreamController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">IceCreamController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
+    IceCreamService iceCreamService
+
+    UserIceCreamService userIceCreamService
+
+    SpringSecurityService springSecurityService
+
+    <span class="keyword">def</span> <span class="function">save</span>(<span class="predefined-type">String</span> flavor) {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        <span class="keyword">if</span> ( !username ) {
+            render <span class="key">status</span>: <span class="integer">404</span>
+            <span class="keyword">return</span>
+        }
+        <span class="keyword">def</span> id = iceCreamService.addIceCreamToUser(username, flavor)?.id
+        render id ?: [<span class="key">status</span>: <span class="integer">500</span>]
+    }
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">protected</span> <span class="predefined-type">String</span> loggedUsername() {
+        springSecurityService.principal?.username <span class="keyword">as</span> <span class="predefined-type">String</span>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Secured</code> annotation specifies the access controls for this controller - authentication &amp; ROLE_USER is required</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The controller action uses a service as a collaborators:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/IceCreamService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.validation.ObjectError</span>
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">IceCreamService</span> {
+    <span class="comment">/**
+     * @return null if an error occurs while saving the ice cream or the association between icream and user
+     */</span>
+    <span class="annotation">@GrailsCompileStatic</span>
+    IceCream addIceCreamToUser(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> iceCreamFlavor, <span class="type">boolean</span> flush = <span class="predefined-constant">false</span>) {
+        User user = userService.findByUsername(username)
+        <span class="keyword">if</span> ( !user ) {
+            log.error <span class="string"><span class="delimiter">'</span><span class="content">User {} does not exist</span><span class="delimiter">'</span></span>, username
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        IceCream iceCream = findQueryByFlavor(iceCreamFlavor).get() ?: <span class="keyword">new</span> IceCream(<span class="key">flavor</span>: iceCreamFlavor)
+
+        <span class="keyword">if</span>(!iceCream.save(<span class="key">flush</span>: flush)) {
+            iceCream.errors.allErrors.each { ObjectError error -&gt;
+                log.error(error.toString())
+            }
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        UserIceCream userIceCream = userIceCreamService.create(user, iceCream, flush)
+        <span class="keyword">if</span> ( userIceCream.hasErrors() ) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        iceCream
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="deleteFlavorsByUser">3.11 Delete User's Flavor</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/deleteFlavorsByUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The user can remove a flavor from his profile.</p>
+</div>
+<div class="paragraph">
+<p>To do that, the REACT app sends a <em>DELETE</em> request to the <em>/ice-cream/$username/$id</em> endpoint.</p>
+</div>
+<div class="paragraph">
+<p>We are going to map this with Grails.</p>
+</div>
+<div class="paragraph">
+<p>First, we register the endpoint in URLMappings by adding the next line into the mappings:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        delete <span class="string"><span class="delimiter">&quot;</span><span class="content">/ice-cream/</span><span class="inline"><span class="inline-delimiter">$</span>username</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">iceCream</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">delete</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, we create a controller action which deletes a particular flavor for the logged username:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/controllers/demo/IceCreamController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>([<span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>]) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">IceCreamController</span> {
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
+    IceCreamService iceCreamService
+
+    UserIceCreamService userIceCreamService
+
+    SpringSecurityService springSecurityService
+
+    <span class="keyword">def</span> <span class="function">delete</span>(<span class="predefined-type">Long</span> id) {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        <span class="keyword">if</span> ( !username ) {
+            render <span class="key">status</span>: <span class="integer">404</span>
+            <span class="keyword">return</span>
+        }
+        respond iceCreamService.removeIceCreamFromUser(username, id) ?: [<span class="key">status</span>: <span class="integer">500</span>]
+    }
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">protected</span> <span class="predefined-type">String</span> loggedUsername() {
+        springSecurityService.principal?.username <span class="keyword">as</span> <span class="predefined-type">String</span>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Secured</code> annotation specifies the access controls for this controller - authentication &amp; ROLE_USER is required</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The controller action uses a service as a collaborators:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/services/demo/IceCreamService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.validation.ObjectError</span>
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">IceCreamService</span> {
+    <span class="predefined-type">Boolean</span> removeIceCreamFromUser(<span class="predefined-type">String</span> loggedUsername, <span class="predefined-type">Long</span> id) {
+        IceCream iceCreamEntity = IceCream.load(id)
+        User loggedUser = User.load(loggedUsername)
+        UserIceCream.where {
+            user == loggedUser &amp;&amp; iceCream == iceCreamEntity
+        }.deleteAll()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="websockets">3.12 Websockets</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/websockets.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our final server-side feature is to push “session timeout” events to the
+client over a websocket connection. We’ll use another Grails plugin, the
+<a href="https://plugins.grails.org/plugin/zyro/grails-spring-websocket">Spring
+Websocket plugin</a>, to support this feature.</p>
+</div>
+<div class="paragraph">
+<p>Install the plugin by adding another line to our <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:grails-spring-websocket:2.3.0</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We now have to implement three classes to get our web socket session
+timeout working:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A configuration class to configure our websocket connection</p>
+</li>
+<li>
+<p>A “listener” class to keep track of when new authentication tokens
+are created</p>
+</li>
+<li>
+<p>A “scheduler” class to periodically check for “expired” sessions and
+push events over the websocket connection.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Because these classes are not Grails-specific, we will create them as
+Groovy classes under <code>server/src/main/groovy</code>.</p>
+</div>
+<div class="paragraph">
+<p>Here is the complete code for these three classes:</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/CustomWebSocketConfig.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springwebsocket.DefaultWebSocketConfig</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.socket.config.annotation.StompEndpointRegistry</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@Configuration</span>
+<span class="annotation">@EnableWebSocketMessageBroker</span>
+<span class="type">class</span> <span class="class">CustomWebSocketConfig</span> <span class="directive">extends</span> DefaultWebSocketConfig {
+
+    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${allowedOrigin}</span><span class="delimiter">'</span></span>)
+    <span class="predefined-type">String</span> allowedOrigin <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) { <i class="conum" data-value="2"></i><b>(2)</b>
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">registerStompEndpoints with allowedOrigin: {}</span><span class="delimiter">'</span></span>, allowedOrigin
+        stompEndpointRegistry.addEndpoint(<span class="string"><span class="delimiter">&quot;</span><span class="content">/stomp</span><span class="delimiter">&quot;</span></span>).setAllowedOrigins(allowedOrigin).withSockJS()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Loads our <code>allowedOrigin</code> config property from application.yml</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Configures the websocket connection to accept requests from our client server</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/TokenCreationEventListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">org.springframework.context.ApplicationListener</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.RestTokenCreationEvent</span>
+
+<span class="type">class</span> <span class="class">TokenCreationEventListener</span> <span class="directive">implements</span> ApplicationListener&lt;RestTokenCreationEvent&gt; {
+
+    <span class="type">void</span> onApplicationEvent(RestTokenCreationEvent event) { <i class="conum" data-value="1"></i><b>(1)</b>
+
+        User.withTransaction { <i class="conum" data-value="2"></i><b>(2)</b>
+            User user = User.where { username == event.principal.username }.first()
+            user.lastLogin = <span class="keyword">new</span> <span class="predefined-type">Date</span>()
+            user.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We are extending a <code>ApplicationListener</code> interface, which is part of the Spring Framework and allows us to "listen" to specific application events. In this case, we are listening for <code>RestTokenCreationEvent</code>. You can find other events to listen for in the <a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/#_events">Spring Security REST plugin documentation</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>withTransaction</code> method is needed here because our custom class doesn&#8217;t have access to GORM by default (unlike controllers and services). The <code>User</code> domain class is not actually important - we could use any domain class here. <code>withNewSession</code> will initiate a GORM/Hibernate transaction and allow us to query the database and persist changes. See the <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#persistenceBasics">GORM documentation for more details.</a></td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/server/src/main/groovy/demo/SessionExpirationJobHolder.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">groovy.time.TimeCategory</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">org.springframework.messaging.simp.SimpMessagingTemplate</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.annotation.Scheduled</span>
+
+<span class="type">class</span> <span class="class">SessionExpirationJobHolder</span> {
+
+    <span class="annotation">@Autowired</span>
+    SimpMessagingTemplate brokerMessagingTemplate <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Value</span>(<span class="string"><span class="delimiter">'</span><span class="content">${timeout.minutes}</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Integer</span> timeout
+
+    <span class="annotation">@Scheduled</span>(cron = <span class="string"><span class="delimiter">&quot;</span><span class="content">0 * * * * *</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="type">void</span> findExpiredSessions() {
+        <span class="predefined-type">Date</span> timeoutDate
+        use( TimeCategory ) { <i class="conum" data-value="4"></i><b>(4)</b>
+            timeoutDate = <span class="keyword">new</span> <span class="predefined-type">Date</span>() - timeout.minutes
+        }
+
+        User.withTransaction {
+            <span class="predefined-type">List</span>&lt;User&gt; expiredUsers = User.where { <span class="comment">//Query for loggedIn users with a lastLogin date after the timeout limit</span>
+                lastLogin != <span class="predefined-constant">null</span>
+                lastLogin &lt; timeoutDate
+            }.list()
+
+            <span class="comment">//Iterate over the expired users</span>
+            expiredUsers.each { user -&gt;
+                user.lastLogin = <span class="predefined-constant">null</span> <span class="comment">//Reset lastLogin date</span>
+                user.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+                <i class="conum" data-value="5"></i><b>(5)</b>
+                brokerMessagingTemplate.convertAndSend <span class="string"><span class="delimiter">&quot;</span><span class="content">/topic/</span><span class="inline"><span class="inline-delimiter">${</span>user.username<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toString(), <span class="string"><span class="delimiter">&quot;</span><span class="content">logout</span><span class="delimiter">&quot;</span></span>
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This class is provided by the spring-websocket plugin and allows us to push an event over a websocket channel</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Loads our timeout.minutes property from application.yml</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Run method every minute</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Use Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/api/groovy/time/TimeCategory.html"><code>TimeCategory</code></a> DSL for time operations</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Send a websocket message to a user-specific "channel" for each expired user - we&#8217;re using their username as the unique key for each channel</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With these classes in place, we need to plug them into the Spring
+context by adding them as “beans” in our <code>resources.groovy</code> file. Edit
+the file as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.UserPasswordEncoderListener</span>
+<span class="keyword">import</span> <span class="include">demo.SessionExpirationJobHolder</span>
+<span class="keyword">import</span> <span class="include">demo.TokenCreationEventListener</span>
+<span class="keyword">import</span> <span class="include">demo.CustomWebSocketConfig</span>
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener) <i class="conum" data-value="1"></i><b>(1)</b>
+    webSocketConfig(CustomWebSocketConfig)                 <i class="conum" data-value="2"></i><b>(2)</b>
+    tokenCreationEventListener(TokenCreationEventListener) <i class="conum" data-value="3"></i><b>(3)</b>
+    sessionExpirationJobHolder(SessionExpirationJobHolder) <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Register the password encoder listener</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Custom settings for websockets</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Listens for new access tokens and sets the loginDate</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Checks for expired sessions</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, in order for our scheduled <code>SessionExpirationJobHolder</code> class to
+actually fire as scheduled, we have to enable scheduling in our
+application (it’s not on by default). We do that by editing our app’s
+<code>Application.groovy</code> file (note the capitalization!).</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/init/demo/Application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.boot.GrailsApp</span>
+<span class="keyword">import</span> <span class="include">grails.boot.config.GrailsAutoConfiguration</span>
+
+<span class="annotation">@EnableScheduling</span>
+<span class="type">class</span> <span class="class">Application</span> <span class="directive">extends</span> GrailsAutoConfiguration {
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        GrailsApp.run(Application, args)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally, you may remember we referenced a couple of new config
+properties in the classes above. Let’s add those to our
+<code>application.yml</code> file (add the lines below to the end of the file).</p>
+</div>
+<div class="listingblock">
+<div class="title">/server/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">allowedOrigin</span>: <span class="string"><span class="content">https://localhost:3000</span></span> <span class="comment"># accepted origin URL for websocket connections</span>
+<span class="key">timeout</span>:
+    <span class="key">minutes</span>: <span class="string"><span class="content">1</span></span> <span class="comment">#config setting for timeout</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Grails applications can read config values set in a variety of
+ways, including YAML files, Groovy files, and system properties. See the
+<a href="http://docs.grails.org/latest/guide/conf.html">Grails documentation</a> for
+more on how to use configuration files.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>That’s all for the Grails backend server - we have support for CORS (out
+of the box), websockets, authentication, RESTful web services,
+scheduled methods, and persistence to PostgresSQL.</p>
+</div>
+
+
+<h2 id="react">3.13 React</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-vs-nodejs/edit/master/src/main/docs/guide/react.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now we’re ready to turn to the client-side portion of our app. For this
+step, we are going to be using the code found in the Github repo for the
+<a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">previous “Web App” article</a>. You can access the code here:
+<a href="https://github.com/mvolkmann/ice-cream-app/tree/master/src" class="bare">https://github.com/mvolkmann/ice-cream-app/tree/master/src</a></p>
+</div>
+<div class="paragraph">
+<p>Download (or <code>git clone</code>) the source files at the URL above, and copy
+them into the <code>client/src</code> directory (overwriting any existing files).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ cd ../
+~ git clone https://github.com/mvolkmann/ice-cream-app tmp
+~ cp -Rv tmp/* ice-cream/client/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will make the <code>client</code> subproject identical to the Ice Cream app
+from the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">previous article</a>.</p>
+</div>
+<div class="paragraph">
+<p>Now, let’s delete the files we don’t need.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ cd ice-cream/client
+~ rm -rf database/ server/ css/ images/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should leave you with the following directories under <code>client</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">-rw-r--r--  LICENSE
+-rw-r--r--  README.md
+drwxr-xr-x  build
+-rw-r--r--  build.gradle
+drwxr-xr-x  node_modules
+-rw-r--r--  package.json
+drwxr-xr-x  public
+drwxr-xr-x  src
+-rw-r--r--  yarn.lock</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the following files under <code>client/src</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">-rw-r--r--  App.css
+-rw-r--r--  App.js
+-rw-r--r--  App.test.js
+-rw-r--r--  config.js
+-rw-r--r--  ice-cream-entry.js
+-rw-r--r--  ice-cream-list.js
+-rw-r--r--  ice-cream-row.js
+-rw-r--r--  index.css
+-rw-r--r--  index.js
+-rw-r--r--  login.js
+-rw-r--r--  main.js</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We only have to edit 2 of these <code>src</code> files, and update our
+<code>package.json</code>, in order to hook up the React app with our new Grails
+backend.</p>
+</div>
+<div class="paragraph">
+<p>First, edit <code>client/package.json</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/package.json</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">ice-cream-app</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0.1.0</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">private</span><span class="delimiter">&quot;</span></span>: <span class="predefined-constant">true</span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">devDependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">eslint</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^3.17.1</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">eslint-plugin-flowtype</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^2.30.3</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">eslint-plugin-react</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^6.10.0</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react-scripts</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0.8.4</span><span class="delimiter">&quot;</span></span>
+  },
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">dependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^15.4.2</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react-dom</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^15.4.2</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">sockjs-client</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^1.1.4</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">stompjs</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^2.3.3</span><span class="delimiter">&quot;</span></span>
+  },
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">scripts</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">build</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts build</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">coverage</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">npm test -- --coverage</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">lint</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">eslint src/**/*.js server/**/*.js</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts start</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts test --env=jsdom</span><span class="delimiter">&quot;</span></span>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We’ve removed several packages that were needed by the Node Express
+server, and we’ve replaced the <code>socket.io</code> package with <code>sockjs-client</code>
+and <code>stompjs</code>, which is supported by the Spring Websockets library we’ve
+configured previously (<code>socket.io</code> is designed for Node apps and is not
+compatible with Spring Websockets).</p>
+</div>
+<div class="paragraph">
+<p>We also need to edit the <code>config.js</code> file. This is provided by the React
+profile for Grails and simply holds a few config variables, including a
+<code>SERVER_URL</code> value which sets the API base URL. Edit the file as shown
+below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/config.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> pjson from <span class="string"><span class="delimiter">'</span><span class="content">./../package.json</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">export</span> const SERVER_URL = <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8080</span><span class="delimiter">'</span></span>;
+<span class="reserved">export</span> const CLIENT_VERSION = pjson.version;
+<span class="reserved">export</span> const REACT_VERSION = pjson.dependencies.react;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have to update two of the React components in our Ice Cream app,
+<code>Login</code> and <code>App</code>.</p>
+</div>
+<div class="paragraph">
+<p>Edit the <code>login.js</code> file as shown below (changes from the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">original
+code</a> are marked with <code>//NEW:</code> comments).</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/login.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component, PropTypes as t} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>;
+
+<span class="keyword">function</span> <span class="function">onChangePassword</span>(event) {
+  React.setState({<span class="key">password</span>: event.target.value});
+}
+
+<span class="keyword">function</span> <span class="function">onChangeUsername</span>(event) {
+  React.setState({<span class="key">username</span>: event.target.value});
+}
+
+<span class="reserved">class</span> Login <span class="reserved">extends</span> Component {
+  <span class="reserved">static</span> propTypes = {
+    <span class="key">password</span>: t.string.isRequired,
+    <span class="key">restUrl</span>: t.string.isRequired,
+    <span class="key">username</span>: t.string.isRequired,
+    <span class="key">timeoutHandler</span>: t.func <span class="comment">//NEW: propType for our timeoutHander function</span>
+  };
+
+  <span class="comment">// This is called when the &quot;Log In&quot; button is pressed.</span>
+  onLogin = async () =&gt; {
+    const {password, restUrl, username, timeoutHandler} = <span class="local-variable">this</span>.props;
+    const url = <span class="error">`</span><span class="predefined">$</span>{restUrl}/login<span class="error">`</span>;
+
+    <span class="keyword">try</span> {
+      <span class="comment">// Send username and password to login REST service.</span>
+      const res = await fetch(url, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: {<span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>},
+        <span class="key">body</span>: JSON.stringify({username, password})
+      });
+
+      <span class="keyword">if</span> (res.ok) { <span class="comment">// successful login</span>
+        const text = await res.text(); <span class="comment">// returns a promise</span>
+
+        <span class="comment">//NEW: Spring Security REST returns the token in the response body, not the Authorization header</span>
+        const token = <span class="error">`</span>Bearer <span class="predefined">$</span>{JSON.parse(text).access_token}<span class="error">`</span>;
+
+        React.setState({
+          <span class="key">authenticated</span>: <span class="predefined-constant">true</span>,
+          <span class="key">error</span>: <span class="predefined-constant">null</span>, <span class="comment">// clear previous error</span>
+          <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">main</span><span class="delimiter">'</span></span>,
+          token
+        });
+
+        timeoutHandler(username) <span class="comment">//NEW: Connects to a user-specific websocket channel</span>
+
+      } <span class="keyword">else</span> { <span class="comment">//NEW: Any error response from the server indicates a failed login</span>
+        const msg = <span class="string"><span class="delimiter">&quot;</span><span class="content">Invalid username or password</span><span class="delimiter">&quot;</span></span>;
+        React.setState({<span class="key">error</span>: msg});
+      }
+    } <span class="keyword">catch</span> (e) {
+      React.setState({<span class="key">error</span>: <span class="error">`</span><span class="predefined">$</span>{url}; <span class="predefined">$</span>{e.message}<span class="error">`</span>});
+    }
+  }
+
+  <span class="comment">// This is called when the &quot;Signup&quot; button is pressed.</span>
+  onSignup = async () =&gt; {
+    const {password, restUrl, username, timeoutHandler} = <span class="local-variable">this</span>.props;
+    const url = <span class="error">`</span><span class="predefined">$</span>{restUrl}/signup<span class="error">`</span>;
+
+    <span class="keyword">try</span> {
+      const res = await fetch(url, {
+        <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+        <span class="key">headers</span>: {<span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>},
+        <span class="key">body</span>: JSON.stringify({username, password})
+      });
+
+      <span class="keyword">if</span> (res.ok) { <span class="comment">// successful signup</span>
+        const text = await res.text(); <span class="comment">// returns a promise</span>
+        const token = <span class="error">`</span>Bearer <span class="predefined">$</span>{JSON.parse(text).access_token}<span class="error">`</span>; <span class="comment">//NEW: See above</span>
+
+        React.setState({
+          <span class="key">authenticated</span>: <span class="predefined-constant">true</span>,
+          <span class="key">error</span>: <span class="predefined-constant">null</span>, <span class="comment">// clear previous error</span>
+          <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">main</span><span class="delimiter">'</span></span>,
+          token
+        });
+
+        timeoutHandler(username) <span class="comment">//NEW: Connect to user-specific websocket channel</span>
+
+
+      } <span class="keyword">else</span> { <span class="comment">// unsuccessful signup</span>
+        let text = await res.text(); <span class="comment">// returns a promise</span>
+        <span class="keyword">if</span> (<span class="regexp"><span class="delimiter">/</span><span class="content">duplicate key</span><span class="delimiter">/</span></span>.test(text)) {
+          text = <span class="error">`</span>User <span class="predefined">$</span>{username} already exists<span class="error">`</span>;
+        }
+        React.setState({<span class="key">error</span>: text});
+      }
+    } <span class="keyword">catch</span> (e) {
+      React.setState({<span class="key">error</span>: <span class="error">`</span><span class="predefined">$</span>{url}; <span class="predefined">$</span>{e.message}<span class="error">`</span>});
+    }
+  };
+
+  render() {
+    const {password, username} = <span class="local-variable">this</span>.props;
+    const canSubmit = username &amp;&amp; password;
+
+    <span class="comment">// We are handling sending the username and password</span>
+    <span class="comment">// to a REST service above, so we don't want</span>
+    <span class="comment">// the HTML form to submit anything for us.</span>
+    <span class="comment">// That is the reason for the call to preventDefault.</span>
+    <span class="keyword">return</span> (
+      <span class="tag">&lt;form</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">login-form</span><span class="delimiter">&quot;</span></span>
+            <span class="attribute-name">onSubmit</span>=<span class="error">{</span><span class="attribute-value">event</span> <span class="error">=</span><span class="tag">&gt;</span> event.preventDefault()}<span class="error">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label&gt;</span>Username:<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span>
+                 <span class="attribute-name">autoFocus</span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">onChangeUsername</span><span class="error">}</span>
+                 <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">username</span><span class="error">}</span>
+          <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label&gt;</span>Password:<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">onChangePassword</span><span class="error">}</span>
+                 <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">password</span><span class="error">}</span>
+          <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row submit</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          {/* Pressing enter in either input invokes the first button. */}
+          <span class="tag">&lt;button</span> <span class="attribute-name">disabled</span>=<span class="error">{</span><span class="error">!</span><span class="attribute-value">canSubmit</span><span class="error">}</span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.onLogin</span><span class="error">}</span><span class="tag">&gt;</span>
+            Log In
+          <span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attribute-name">disabled</span>=<span class="error">{</span><span class="error">!</span><span class="attribute-value">canSubmit</span><span class="error">}</span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.onSignup</span><span class="error">}</span><span class="tag">&gt;</span>
+            Signup
+          <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/form&gt;</span>
+    );
+  }
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> Login;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, we can edit the <code>App.js</code> file to support our new websocket
+channels, as well as our <code>SERVER_URL</code> config setting. Like above, all
+changes relative to the <a href="https://objectcomputing.com/resources/publications/sett/april-2017-web-app-step-by-step">original code</a> are marked with <code>NEW</code> comments.</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/App.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Login from <span class="string"><span class="delimiter">'</span><span class="content">./login</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> Main from <span class="string"><span class="delimiter">'</span><span class="content">./main</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>; <span class="comment">// for REST calls</span>
+<span class="reserved">import</span> {SERVER_URL} from <span class="string"><span class="delimiter">'</span><span class="content">./config</span><span class="delimiter">'</span></span>; <span class="comment">//NEW: Base url for REST calls</span>
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./App.css</span><span class="delimiter">'</span></span>;
+
+<span class="comment">// This allows the client to listen to sockJS events</span>
+<span class="comment">// emitted from the server.  It is used to proactively</span>
+<span class="comment">// terminate sessions when the session timeout expires.</span>
+<span class="reserved">import</span> SockJS from <span class="string"><span class="delimiter">'</span><span class="content">sockjs-client</span><span class="delimiter">'</span></span>; <span class="comment">//NEW: SockJS &amp; Stomp instead of socket.io</span>
+<span class="reserved">import</span> Stomp from <span class="string"><span class="delimiter">'</span><span class="content">stompjs</span><span class="delimiter">'</span></span>;
+
+<span class="reserved">class</span> App <span class="reserved">extends</span> Component {
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="comment">// Redux is a popular library for managing state in a React application.</span>
+    <span class="comment">// This application, being somewhat small, opts for a simpler approach</span>
+    <span class="comment">// where the top-most component manages all of the state.</span>
+    <span class="comment">// Placing a bound version of the setState method on the React object</span>
+    <span class="comment">// allows other components to call it in order to modify state.</span>
+    <span class="comment">// Each call causes the UI to re-render,</span>
+    <span class="comment">// using the &quot;Virtual DOM&quot; to make this efficient.</span>
+    React.setState = <span class="local-variable">this</span>.setState.bind(<span class="local-variable">this</span>);
+  }
+
+  <span class="comment">//NEW: Remove the top-level websocket config in favor of user-specific channels (set on login)</span>
+
+  <span class="comment">// This is the initial state of the application.</span>
+  state = {
+    <span class="key">authenticated</span>: <span class="predefined-constant">false</span>,
+    <span class="key">error</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+    <span class="key">flavor</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+    <span class="key">iceCreamMap</span>: {},
+    <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+    <span class="key">restUrl</span>: SERVER_URL, <span class="comment">//NEW: Use our SERVER_URL variable</span>
+    <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>, <span class="comment">// controls the current page</span>
+    <span class="key">token</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+    <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+  };
+
+  <span class="comment">/**
+   * NEW: Clears the token and redirects to the login page.
+   * No logout API call is needed because JWT tokens
+   * expire w/o state changes on the server */</span>
+  logout = async () =&gt; {
+      React.setState({
+        <span class="key">authenticated</span>: <span class="predefined-constant">false</span>,
+        <span class="key">route</span>: <span class="string"><span class="delimiter">'</span><span class="content">login</span><span class="delimiter">'</span></span>,
+        <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+        <span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+      });
+  };
+
+  <span class="comment">/**
+  * NEW: This function will be passed into the Login component as a prop
+  * This gets a SockJS connection from the server
+  * and subscribes to a &quot;topic/[username]&quot; channel for timeout events.
+  * If one is received, the user is logged out. */</span>
+  timeoutHandler = (username) =&gt; {
+    const socket = <span class="keyword">new</span> SockJS(<span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/stomp<span class="error">`</span>);
+    const client = Stomp.over(socket);
+
+    client.connect({}, () =&gt; {
+      client.subscribe(<span class="error">`</span><span class="regexp"><span class="delimiter">/</span><span class="content">topic</span><span class="delimiter">/</span></span><span class="predefined">$</span>{username}<span class="error">`</span>, () =&gt; {
+        alert(<span class="string"><span class="delimiter">'</span><span class="content">Your session timed out.</span><span class="delimiter">'</span></span>);
+        <span class="local-variable">this</span>.logout();
+      });
+    }, () =&gt; {
+      console.error(<span class="string"><span class="delimiter">'</span><span class="content">unable to connect</span><span class="delimiter">'</span></span>);
+    });
+  };
+
+  render() {
+    <span class="comment">// Use destructuring to extract data from the state object.</span>
+    const {
+      authenticated, error, flavor, iceCreamMap,
+      password, restUrl, route, token, username
+    } = <span class="local-variable">this</span>.state;
+
+    <span class="keyword">return</span> (
+      <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">App</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;header&gt;</span>
+          <span class="tag">&lt;img</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">header-img</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">ice-cream.png</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">alt</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">ice cream</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+          Ice cream, we all scream for it!
+          {
+            authenticated ?
+              <span class="tag">&lt;button</span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.logout</span><span class="error">}</span><span class="tag">&gt;</span>Log out<span class="tag">&lt;/button&gt;</span> :
+              null
+          }
+        <span class="tag">&lt;/header&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">App-body</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          {
+            // This is an alternative to controlling routing to pages
+            // that is far simpler than more full-blown solutions
+            // like react-router.
+            route === 'login' ?
+              <span class="tag">&lt;Login</span>
+                <span class="attribute-name">username</span>=<span class="error">{</span><span class="attribute-value">username</span><span class="error">}</span>
+                <span class="attribute-name">password</span>=<span class="error">{</span><span class="attribute-value">password</span><span class="error">}</span>
+                <span class="attribute-name">restUrl</span>=<span class="error">{</span><span class="attribute-value">restUrl</span><span class="error">}</span>
+                <span class="attribute-name">timeoutHandler</span>=<span class="error">{</span><span class="attribute-value">this.timeoutHandler</span><span class="error">}</span> <span class="error">/</span><span class="error">/</span><span class="attribute-name">NEW:</span> <span class="attribute-name">Pass</span> <span class="attribute-name">our</span> <span class="attribute-name">timeoutHandler</span> <span class="attribute-name">as</span> <span class="attribute-name">a</span> <span class="attribute-name">prop</span> <span class="attribute-name">to</span> <span class="error">&lt;</span><span class="attribute-name">Login</span><span class="tag">&gt;</span>
+              /<span class="error">&gt;</span> :
+            route === 'main' ?
+              <span class="tag">&lt;Main</span>
+                <span class="attribute-name">flavor</span>=<span class="error">{</span><span class="attribute-value">flavor</span><span class="error">}</span>
+                <span class="attribute-name">iceCreamMap</span>=<span class="error">{</span><span class="attribute-value">iceCreamMap</span><span class="error">}</span>
+                <span class="attribute-name">restUrl</span>=<span class="error">{</span><span class="attribute-value">restUrl</span><span class="error">}</span>
+                <span class="attribute-name">token</span>=<span class="error">{</span><span class="attribute-value">token</span><span class="error">}</span>
+                <span class="attribute-name">username</span>=<span class="error">{</span><span class="attribute-value">username</span><span class="error">}</span>
+              <span class="tag">/&gt;</span> :
+              <span class="tag">&lt;div&gt;</span>Unknown route {route}<span class="tag">&lt;/div&gt;</span>
+          }
+          {
+            <span class="comment">// If an error has occurred, render it at the bottom of any page.</span>
+            error ? <span class="tag">&lt;div</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>{error}<span class="tag">&lt;/div&gt;</span> : <span class="predefined-constant">null</span>
+          }
+        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;
+      &lt;</span><span class="delimiter">/</span></span>div&gt;
+    );
+  }
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> App;</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/requirements.html">&lt;&lt; <strong>2</strong><span>Requirements</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-vs-nodejs"><img src="https://travis-ci.org/grails-guides/grails-vs-nodejs.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-vs-nodejs">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-vs-nodejs.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-vs-nodejs'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-vs-nodejs.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-vs-nodejs/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
