@@ -119,7 +119,7 @@ function addJsClass() {
         <span class="key">headers</span>: {
           <span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/x-www-form-urlencoded;charset=UTF-8</span><span class="delimiter">'</span></span>
         },
-        <span class="key">body</span>: qs.stringify({
+        <span class="key">body</span>: qs.stringify({ <i class="conum" data-value="5"></i><b>(5)</b>
           <span class="key">grant_type</span>: <span class="string"><span class="delimiter">'</span><span class="content">refresh_token</span><span class="delimiter">'</span></span>,
           <span class="key">refresh_token</span>: JSON.parse(localStorage.auth).refresh_token
         })
@@ -129,9 +129,9 @@ function addJsClass() {
       .<span class="keyword">catch</span>(() =&gt; { <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string"><span class="delimiter">&quot;</span><span class="content">Unable to refresh!</span><span class="delimiter">&quot;</span></span>)})
   },
 
-  loggedIn() {  <i class="conum" data-value="5"></i><b>(5)</b>
+  loggedIn() {  <i class="conum" data-value="6"></i><b>(6)</b>
     <span class="keyword">return</span> localStorage.auth &amp;&amp; fetch(
-        <span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/api/vehicle<span class="error">`</span>, <i class="conum" data-value="7"></i><b>(7)</b>
         {<span class="key">headers</span>: headers()})
         .then(checkResponseStatus)
         .then(() =&gt; { <span class="keyword">return</span> <span class="predefined-constant">true</span> })
@@ -162,10 +162,14 @@ use.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td><code>isLoggedIn</code> returns whether we have an <code>auth</code> object in <code>localStorage</code>, and in addition verifies that our token is still valid by making a <code>fetch</code> request against the secured API and checking the response (in a real-world app, you would probably have a special endpoint for this purpose). If the <code>checkResponseStatus</code> function throws an error, the first <code>catch</code> statement is called, which will call the <code>refreshToken</code> function described above. If <strong>that</strong> function throws another error, the final <code>catch</code> statement will fire and the authentication will fail.</td>
+<td>Because the refresh endpoint expects <code>form-urlencoded</code> body, we&#8217;re using the <code>stringify</code> function from the <a href="https://www.npmjs.com/package/qs"><code>qs</code></a> package to convert our JavaScript object into the correct format.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><code>isLoggedIn</code> returns whether we have an <code>auth</code> object in <code>localStorage</code>, and in addition verifies that our token is still valid by making a <code>fetch</code> request against the secured API and checking the response (in a real-world app, you would probably have a special endpoint for this purpose). If the <code>checkResponseStatus</code> function throws an error, the first <code>catch</code> statement is called, which will call the <code>refreshToken</code> function described above. If <strong>that</strong> function throws another error, the final <code>catch</code> statement will fire and the authentication will fail.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
 <td>We are using backticks instead of quotes to denote our strings. This is an ES6 syntax called <a href="https://developers.google.com/web/updates/2015/01/ES6-Template-Strings">"template strings"</a>, and they allow us to write multi-line strings as well as use expressions in our strings with the <code>${expression}</code> syntax.</td>
 </tr>
 </table>
@@ -182,6 +186,8 @@ The server&#8217;s <code>api/login</code> endpoint responds us with an <code>acc
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_write_the_headers_function">Write the headers() function</h3>
 <div class="paragraph">
 <p>Notice that in our <code>fetch</code> call in <code>isLoggedIn</code>, we are calling a <code>headers()</code> function (imported from <code>headers.js</code>). This function will return an object containing our request headers, including the token from <code>localStorage</code>. Let&#8217;s create this function now.</p>
 </div>
@@ -210,8 +216,57 @@ The server&#8217;s <code>api/login</code> endpoint responds us with an <code>acc
 <div class="paragraph">
 <p>The function from the <code>headers.js</code> module returns an object with an "Authorization" header, and adds the <code>access_token</code> (which is obtained by parsing the <code>localStorage.auth</code> JSON object). We will use this function later on when it&#8217;s time to authenticate our API calls.</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_install_the_qs_package">Install the qs package</h3>
 <div class="paragraph">
-<p>Now that we have our client-side authentication in place, let&#8217;s move on and see how we use it.</p>
+<p>Remember that we used the <a href="https://www.npmjs.com/package/qs"><code>qs</code> package</a> in our <code>refreshToken()</code> function above. This is a useful utility package that performs many types of conversions. In <code>refreshToken</code> we are using this package to convert our request body to <code>form-urlencoded</code> format. Now we need to add that package to our <code>package.json</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">client/package.json</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">client</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0.1.0</span><span class="delimiter">&quot;</span></span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">private</span><span class="delimiter">&quot;</span></span>: <span class="predefined-constant">true</span>,
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">devDependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react-scripts</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0.9.5</span><span class="delimiter">&quot;</span></span>
+  },
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">dependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">qs</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^6.4.0</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^15.4.2</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react-bootstrap</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^0.30.8</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">react-dom</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^15.4.2</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">whatwg-fetch</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^2.0.3</span><span class="delimiter">&quot;</span></span>
+  },
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">scripts</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">start</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts start</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">build</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts build</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts test --env=jsdom</span><span class="delimiter">&quot;</span></span>,
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">eject</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">react-scripts eject</span><span class="delimiter">&quot;</span></span>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add this line to add the <code>qs</code> dependency to our project.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you have <code>yarn</code> or <code>npm</code> installed locally, you may run the <code>install</code> command to install the new package.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ yarn install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, the Gradle tasks for running the <code>client</code> app will perform the install automatically, so you are not required to perform the above step.</p>
+</div>
 </div>
 
 
