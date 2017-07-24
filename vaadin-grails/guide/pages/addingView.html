@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.6 Adding your view</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/aboutVaadin.html"><strong>2</strong><span>About Vaadin</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>4</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/themingTheApp.html"><strong>5</strong><span>Theming the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/nextSteps.html"><strong>6</strong><span>Next Steps</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/themingTheApp.html"><strong>5</strong><span>Theming the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="addingView">4.6 Adding your view</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/vaadin-grails/edit/master/src/main/docs/guide/addingView.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now to add the view which is the bulk of our Vaadin code. Create a new file located in
+<code>grails-app/vaadin/demo</code> called <code>GarageView.groovy</code>.</p>
+</div>
+<div class="paragraph">
+<p>Next make the necessary updates.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/vaadin/demo/GarageView.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.vaadin.data.HasValue</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.data.ValueProvider</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.event.selection.SelectionEvent</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.event.selection.SelectionListener</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.event.selection.SingleSelectionEvent</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.event.selection.SingleSelectionListener</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.navigator.View</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.navigator.ViewChangeListener</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.spring.annotation.SpringView</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.Button</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.ComboBox</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.Grid</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.HorizontalLayout</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.ItemCaptionGenerator</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.Label</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.TextField</span>
+<span class="keyword">import</span> <span class="include">com.vaadin.ui.VerticalLayout</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">javax.annotation.PostConstruct</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@SpringView</span>(name = GarageView.VIEW_NAME) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">GarageView</span> <span class="directive">extends</span> VerticalLayout <span class="directive">implements</span> <span class="predefined-type">View</span> { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> VIEW_NAME = <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+
+    <span class="annotation">@Autowired</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="directive">private</span> DriverService driverService
+
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> MakeService makeService
+
+    <span class="annotation">@Autowired</span>
+
+    <span class="directive">private</span> ModelService modelService
+
+    <span class="annotation">@Autowired</span>
+    <span class="directive">private</span> VehicleService vehicleService
+
+    <span class="directive">private</span> Vehicle vehicle = <span class="keyword">new</span> Vehicle()
+
+    <span class="annotation">@PostConstruct</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="type">void</span> init() {
+        <span class="comment">/** Display Row One: (Add panel title) ---------------------------------------------------------------------- */</span>
+        <span class="directive">final</span> HorizontalLayout titleRow = <span class="keyword">new</span> HorizontalLayout()
+        titleRow.setWidth(<span class="string"><span class="delimiter">&quot;</span><span class="content">100%</span><span class="delimiter">&quot;</span></span>)
+        addComponent(titleRow)
+
+        <span class="directive">final</span> <span class="predefined-type">Label</span> title = <span class="keyword">new</span> <span class="predefined-type">Label</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Add a Vehicle:</span><span class="delimiter">&quot;</span></span>)
+        titleRow.addComponent(title)
+        titleRow.setExpandRatio(title, <span class="float">1.0f</span>) <span class="comment">// Expand</span>
+
+        <span class="comment">/** Display Row Two: (Build data input) --------------------------------------------------------------------- */</span>
+        <span class="directive">final</span> HorizontalLayout inputRow = <span class="keyword">new</span> HorizontalLayout()
+        inputRow.setWidth(<span class="string"><span class="delimiter">&quot;</span><span class="content">100%</span><span class="delimiter">&quot;</span></span>)
+        addComponent(inputRow)
+
+        <span class="comment">// Build data input constructs</span>
+        <span class="directive">final</span> <span class="predefined-type">TextField</span> vehicleName = <span class="local-variable">this</span>.buildNewVehicleName()
+        <span class="directive">final</span> ComboBox&lt;Make&gt; vehicleMake = <span class="local-variable">this</span>.buildMakeComponent()
+        <span class="directive">final</span> ComboBox&lt;Model&gt; vehicleModel = <span class="local-variable">this</span>.buildModelComponent()
+        <span class="directive">final</span> ComboBox&lt;<span class="predefined-type">Driver</span>&gt; vehicleDriver = <span class="local-variable">this</span>.buildDriverComponent()
+        <span class="directive">final</span> <span class="predefined-type">Button</span> submitBtn = <span class="local-variable">this</span>.buildSubmitButton()
+
+        <span class="comment">// Add listeners to capture data change</span>
+        <span class="comment">//tag::listeners[]</span>
+        vehicleName.addValueChangeListener(<span class="keyword">new</span> UpdateVehicleValueChangeListener(<span class="string"><span class="delimiter">'</span><span class="content">NAME</span><span class="delimiter">'</span></span>))
+        vehicleMake.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">MAKE</span><span class="delimiter">'</span></span>))
+        vehicleModel.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">MODEL</span><span class="delimiter">'</span></span>))
+        vehicleDriver.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">DRIVER</span><span class="delimiter">'</span></span>))
+        submitBtn.addClickListener { event -&gt;
+            <span class="local-variable">this</span>.submit()
+        }
+        <span class="comment">//end::listeners[]</span>
+
+        <span class="comment">// Add data constructs to row</span>
+        [vehicleName, vehicleMake, vehicleModel, vehicleDriver, submitBtn].each {
+            inputRow.addComponent(<span class="local-variable">it</span>)
+        }
+
+        <span class="comment">/** Display Row Three: (Display all vehicles in database) --------------------------------------------------- */</span>
+        <span class="directive">final</span> HorizontalLayout dataDisplayRow = <span class="keyword">new</span> HorizontalLayout()
+        dataDisplayRow.setWidth(<span class="string"><span class="delimiter">&quot;</span><span class="content">100%</span><span class="delimiter">&quot;</span></span>)
+        addComponent(dataDisplayRow)
+        dataDisplayRow.addComponent(<span class="local-variable">this</span>.buildVehicleComponent())
+    }
+
+    <span class="type">class</span> <span class="class">UpdateVehicleValueChangeListener</span> <span class="directive">implements</span> HasValue.ValueChangeListener {
+        <span class="predefined-type">String</span> eventType
+
+        UpdateVehicleValueChangeListener(<span class="predefined-type">String</span> eventType) {
+            <span class="local-variable">this</span>.eventType = eventType
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="type">void</span> valueChange(HasValue.ValueChangeEvent event) {
+            updateVehicle(eventType, event.value)
+        }
+    }
+    <span class="type">class</span> <span class="class">UpdateVehicleComboBoxSelectionLister</span> <span class="directive">implements</span> SingleSelectionListener {
+        <span class="predefined-type">String</span> eventType
+
+        UpdateVehicleComboBoxSelectionLister(<span class="predefined-type">String</span> eventType) {
+            <span class="local-variable">this</span>.eventType = eventType
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="type">void</span> selectionChange(SingleSelectionEvent event) {
+            updateVehicle(eventType, event.firstSelectedItem)
+        }
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> enter(ViewChangeListener.ViewChangeEvent event) {
+        <span class="comment">// This view is constructed in the init() method()</span>
+    }
+
+    <span class="comment">/** Private UI component builders ------------------------------------------------------------------------------- */</span>
+    <span class="directive">static</span> <span class="directive">private</span> <span class="predefined-type">TextField</span> buildNewVehicleName() {
+        <span class="directive">final</span> <span class="predefined-type">TextField</span> vehicleName = <span class="keyword">new</span> <span class="predefined-type">TextField</span>()
+        vehicleName.setPlaceholder(<span class="string"><span class="delimiter">&quot;</span><span class="content">Enter a name...</span><span class="delimiter">&quot;</span></span>)
+
+        vehicleName
+    }
+
+    <span class="directive">private</span> ComboBox&lt;Make&gt; buildMakeComponent() {
+        <span class="directive">final</span> <span class="predefined-type">List</span>&lt;Make&gt; makes = makeService.listAll()
+
+        <span class="directive">final</span> ComboBox&lt;Make&gt; select = <span class="keyword">new</span> ComboBox&lt;&gt;()
+        select.setEmptySelectionAllowed(<span class="predefined-constant">false</span>)
+        select.setPlaceholder(<span class="string"><span class="delimiter">&quot;</span><span class="content">Select a Make</span><span class="delimiter">&quot;</span></span>)
+        select.setItemCaptionGenerator(<span class="keyword">new</span> CustomItemCaptionGenerator())
+        select.setItems(makes)
+
+        select
+    }
+
+    <span class="type">class</span> <span class="class">CustomItemCaptionGenerator</span> <span class="directive">implements</span> ItemCaptionGenerator {
+
+        <span class="annotation">@Override</span>
+        <span class="predefined-type">String</span> apply(<span class="predefined-type">Object</span> item) {
+            <span class="keyword">if</span> (item <span class="keyword">instanceof</span> Make ) {
+                <span class="keyword">return</span> (item <span class="keyword">as</span> Make).name
+            }
+            <span class="keyword">if</span> ( item <span class="keyword">instanceof</span> <span class="predefined-type">Driver</span> ) {
+                <span class="keyword">return</span> (item <span class="keyword">as</span> <span class="predefined-type">Driver</span>).name
+            }
+            <span class="keyword">if</span> ( item <span class="keyword">instanceof</span> Model ) {
+                <span class="keyword">return</span> (item <span class="keyword">as</span> Model).name
+            }
+            <span class="predefined-constant">null</span>
+        }
+    }
+
+    <span class="directive">private</span> ComboBox&lt;Model&gt; buildModelComponent() {
+        <span class="directive">final</span> <span class="predefined-type">List</span>&lt;Model&gt; models = modelService.listAll()
+
+        <span class="directive">final</span> ComboBox&lt;Model&gt; select = <span class="keyword">new</span> ComboBox&lt;&gt;()
+        select.setEmptySelectionAllowed(<span class="predefined-constant">false</span>)
+        select.setPlaceholder(<span class="string"><span class="delimiter">&quot;</span><span class="content">Select a Model</span><span class="delimiter">&quot;</span></span>)
+        select.setItemCaptionGenerator(<span class="keyword">new</span> CustomItemCaptionGenerator())
+        select.setItems(models)
+
+        select
+    }
+
+    <span class="directive">private</span> ComboBox&lt;<span class="predefined-type">Driver</span>&gt; buildDriverComponent() {
+        <span class="directive">final</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Driver</span>&gt; drivers = driverService.listAll()
+
+        <span class="directive">final</span> ComboBox&lt;<span class="predefined-type">Driver</span>&gt; select = <span class="keyword">new</span> ComboBox&lt;&gt;()
+        select.setEmptySelectionAllowed(<span class="predefined-constant">false</span>)
+        select.setPlaceholder(<span class="string"><span class="delimiter">&quot;</span><span class="content">Select a Driver</span><span class="delimiter">&quot;</span></span>)
+        select.setItemCaptionGenerator(<span class="keyword">new</span> CustomItemCaptionGenerator())
+        select.setItems(drivers)
+
+        select
+    }
+
+    <span class="directive">private</span> Grid buildVehicleComponent() {
+        <span class="directive">final</span> <span class="predefined-type">List</span>&lt;Vehicle&gt; vehicles = vehicleService.listAll(<span class="predefined-constant">false</span>) <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="directive">final</span> Grid grid = <span class="keyword">new</span> Grid&lt;&gt;()
+        grid.setSizeFull()  <span class="comment">// ensures grid fills width</span>
+        grid.setItems(vehicles)
+        grid.addColumn(<span class="keyword">new</span> VehicleValueProvider(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)).setCaption(<span class="string"><span class="delimiter">&quot;</span><span class="content">ID</span><span class="delimiter">&quot;</span></span>)
+        grid.addColumn(<span class="keyword">new</span> VehicleValueProvider(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)).setCaption(<span class="string"><span class="delimiter">&quot;</span><span class="content">Name</span><span class="delimiter">&quot;</span></span>)
+        grid.addColumn(<span class="keyword">new</span> VehicleValueProvider(<span class="string"><span class="delimiter">'</span><span class="content">make.name</span><span class="delimiter">'</span></span>)).setCaption(<span class="string"><span class="delimiter">&quot;</span><span class="content">Make</span><span class="delimiter">&quot;</span></span>)
+        grid.addColumn(<span class="keyword">new</span> VehicleValueProvider(<span class="string"><span class="delimiter">'</span><span class="content">model.name</span><span class="delimiter">'</span></span>)).setCaption(<span class="string"><span class="delimiter">&quot;</span><span class="content">Model</span><span class="delimiter">&quot;</span></span>)
+        grid.addColumn(<span class="keyword">new</span> VehicleValueProvider(<span class="string"><span class="delimiter">'</span><span class="content">driver.name</span><span class="delimiter">'</span></span>)).setCaption(<span class="string"><span class="delimiter">&quot;</span><span class="content">Name</span><span class="delimiter">&quot;</span></span>)
+
+        grid
+    }
+
+    <span class="type">class</span> <span class="class">VehicleValueProvider</span> <span class="directive">implements</span> ValueProvider {
+        <span class="predefined-type">String</span> propertyName
+
+        VehicleValueProvider(<span class="predefined-type">String</span> propertyName) {
+            <span class="local-variable">this</span>.propertyName = propertyName
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="predefined-type">Object</span> apply(<span class="predefined-type">Object</span> o) {
+            <span class="keyword">switch</span> (propertyName) {
+                <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>:
+                    <span class="keyword">if</span> ( o <span class="keyword">instanceof</span> Vehicle) {
+                        <span class="keyword">return</span> (o <span class="keyword">as</span> Vehicle).id
+                    }
+                    <span class="keyword">break</span>
+                <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>:
+                    <span class="keyword">if</span> ( o <span class="keyword">instanceof</span> Vehicle) {
+                        <span class="keyword">return</span> (o <span class="keyword">as</span> Vehicle).name
+                    }
+                    <span class="keyword">break</span>
+                <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">model.name</span><span class="delimiter">'</span></span>:
+                    <span class="keyword">if</span> ( o <span class="keyword">instanceof</span> Vehicle) {
+                        <span class="keyword">return</span> (o <span class="keyword">as</span> Vehicle).model.name
+                    }
+                    <span class="keyword">break</span>
+                <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">make.name</span><span class="delimiter">'</span></span>:
+                    <span class="keyword">if</span> ( o <span class="keyword">instanceof</span> Vehicle) {
+                        <span class="keyword">return</span> (o <span class="keyword">as</span> Vehicle).make.name
+                    }
+                    <span class="keyword">break</span>
+                <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">driver.name</span><span class="delimiter">'</span></span>:
+                    <span class="keyword">if</span> ( o <span class="keyword">instanceof</span> Vehicle) {
+                        <span class="keyword">return</span> (o <span class="keyword">as</span> Vehicle).driver.name
+                    }
+                    <span class="keyword">break</span>
+
+            }
+            <span class="predefined-constant">null</span>
+        }
+    }
+
+    <span class="directive">static</span> <span class="directive">private</span> <span class="predefined-type">Button</span> buildSubmitButton() {
+        <span class="directive">final</span> <span class="predefined-type">Button</span> submitBtn = <span class="keyword">new</span> <span class="predefined-type">Button</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Add to Garage</span><span class="delimiter">&quot;</span></span>)
+        submitBtn.setStyleName(<span class="string"><span class="delimiter">&quot;</span><span class="content">friendly</span><span class="delimiter">&quot;</span></span>)
+
+        submitBtn
+    }
+
+    <span class="directive">private</span> updateVehicle(<span class="directive">final</span> <span class="predefined-type">String</span> eventType, <span class="directive">final</span> eventValue) {
+        <span class="keyword">switch</span> (eventType) {
+            <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">NAME</span><span class="delimiter">'</span></span>:
+                <span class="keyword">if</span> ( eventValue <span class="keyword">instanceof</span> <span class="predefined-type">String</span> ) {
+                    <span class="local-variable">this</span>.vehicle.name = eventValue <span class="keyword">as</span> <span class="predefined-type">String</span>
+                }
+                <span class="keyword">break</span>
+            <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">MAKE</span><span class="delimiter">'</span></span>:
+                <span class="keyword">if</span> ( eventValue <span class="keyword">instanceof</span> Optional&lt;Make&gt; ) {
+                    <span class="local-variable">this</span>.vehicle.make = (eventValue <span class="keyword">as</span> Optional&lt;Make&gt;).get()
+                }
+                <span class="keyword">break</span>
+            <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">MODEL</span><span class="delimiter">'</span></span>:
+                <span class="keyword">if</span> ( eventValue <span class="keyword">instanceof</span> Optional&lt;Model&gt; ) {
+                    <span class="local-variable">this</span>.vehicle.model = (eventValue <span class="keyword">as</span> Optional&lt;Model&gt;).get()
+                }
+                <span class="keyword">break</span>
+            <span class="keyword">case</span> <span class="string"><span class="delimiter">'</span><span class="content">DRIVER</span><span class="delimiter">'</span></span>:
+                <span class="keyword">if</span> ( eventValue <span class="keyword">instanceof</span> Optional&lt;<span class="predefined-type">Driver</span>&gt; ) {
+                    <span class="local-variable">this</span>.vehicle.driver = (eventValue <span class="keyword">as</span> Optional&lt;<span class="predefined-type">Driver</span>&gt;).get()
+                }
+                <span class="keyword">break</span>
+            <span class="keyword">default</span>:
+                log.error <span class="string"><span class="delimiter">'</span><span class="content">updateVehicle invoked with wrong eventType: {}</span><span class="delimiter">'</span></span>, eventType
+        }
+    }
+
+    <span class="directive">private</span> submit() {
+        vehicleService.save(<span class="local-variable">this</span>.vehicle)
+        <span class="comment">// tag::navigateTo[]</span>
+        getUI().getNavigator().navigateTo(VIEW_NAME)
+        <span class="comment">// end::navigateTo[]</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add <code>@SpringView</code> annotation and set the name so that your view can be found.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The view should extend the layout style that is desired</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Set the actual view name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Services will not be injected automatically into Vaadin Views. You need to use <code>@Autowired</code> annotation in order to get dependency injection to work properly.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Tells the view <code>init()</code> to execute after the main UI <code>init()</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Loads Vehicles and its associations eagerly.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The usage of eager loading in the <code>vehicleService.listAll(false)</code> warrants further explanation.</p>
+</div>
+<div class="paragraph">
+<p>When a Vaadin component calls a Grails service, once the service method completes, the Hibernate session is closed which means that any associations not loaded by the query could lead to a <code>LazyInitializationException</code> due to the closed session.</p>
+</div>
+<div class="paragraph">
+<p>It is therefore critical that your queries always return the data that is required to render the view. This typically leads to better performing queries anyway and will in fact help you design a better performing application.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Grails auto dependency injection is not able to detect services in Vaadin,
+thus we require using the more traditional Spring annotation @Autowired in order
+to get dependency injection to work properly.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Our view is trying to mimic the layout of much of modern web design by making use of "Rows"
+in our case we have 3 rows, a header, data collection, and data display (grid). As we develop
+a pattern start to emerge in Vaadin for views.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create layout</p>
+</li>
+<li>
+<p>Create UI component</p>
+</li>
+<li>
+<p>Add UI component to layout</p>
+</li>
+<li>
+<p>Add layout to view</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When adding layout to the view you can just use <code>addComponent()</code> as it is aware that it is
+adding to itself, unlike the top level UI where <code>root.addComponent()</code> is required.</p>
+</div>
+<div class="paragraph">
+<p>To keep a clean file continue building each UI component as its own private method.</p>
+</div>
+<div class="paragraph">
+<p>Once we have built our UI components now we need to be able to interact with them. To do this
+we add listeners to our components making use of groovy closures to specify what would happen
+when an event occurs. In our case we are <code>updateVehicle()</code> which we then <code>submit()</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/vaadin/demo/GarageView.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">vehicleName.addValueChangeListener(<span class="keyword">new</span> UpdateVehicleValueChangeListener(<span class="string"><span class="delimiter">'</span><span class="content">NAME</span><span class="delimiter">'</span></span>))
+vehicleMake.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">MAKE</span><span class="delimiter">'</span></span>))
+vehicleModel.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">MODEL</span><span class="delimiter">'</span></span>))
+vehicleDriver.addSelectionListener(<span class="keyword">new</span> UpdateVehicleComboBoxSelectionLister(<span class="string"><span class="delimiter">'</span><span class="content">DRIVER</span><span class="delimiter">'</span></span>))
+submitBtn.addClickListener { event -&gt;
+    <span class="local-variable">this</span>.submit()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using the listeners we build the vehicle object which is then submitted when the button is clicked.
+The last line of our submit method reloads our view to refresh the newly updated data.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/vaadin/demo/GarageView.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">getUI().getNavigator().navigateTo(VIEW_NAME)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that everything is in place return to <a href="#runningTheApp">[runningTheApp]</a> to run your app. If everything is as
+it should be you will see the following.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/runningGarageApp.png" alt="runningGarageApp">
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/themingTheApp.html"><strong>5</strong><span>Theming the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/vaadin-grails"><img src="https://travis-ci.org/grails-guides/vaadin-grails.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/vaadin-grails">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/vaadin-grails.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/vaadin-grails.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/vaadin-grails'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/vaadin-grails.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/vaadin-grails/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
