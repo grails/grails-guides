@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {AppService, Guide} from '../app.service';
 import {FormControl} from '@angular/forms';
 import 'rxjs/add/operator/debounceTime';
@@ -16,13 +17,19 @@ export class IndexComponent implements OnInit {
   filter = '';
   filterControl: FormControl = new FormControl();
 
-  constructor(private appService: AppService) {
+  constructor(private appService: AppService, private router: Router) {
+      this.filter = router.parseUrl(router.url).queryParams['tag'];
   }
 
   ngOnInit(): void {
     this.appService.getGuides().subscribe((guides: Guide[]) => {
       this.guides = guides;
       this.filteredGuides = guides;
+
+      if(this.filter != '') {
+          this.filterGuides();
+      }
+
       guides.forEach((guide: Guide) => {
         if (this.categories.indexOf(guide.category) === -1) {
           this.categories.push(guide.category);
