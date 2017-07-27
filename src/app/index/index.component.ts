@@ -11,7 +11,7 @@ import {async} from 'rxjs/scheduler/async';
   styleUrls: ['./index.component.css']
 })
 export class IndexComponent implements OnInit {
-  categories: string[] = ['Grails Apprentice', 'GORM', 'Grails Testing', 'Advanced Grails', 'Grails + Google Cloud', 'Grails + Angular / React / Vaadin', 'Grails + Javascript', 'Grails + iOS', 'Grails + Android'];
+  categories: string[] = ['Grails Apprentice', 'GORM', 'Grails Testing', 'Advanced Grails', 'Grails + Google Cloud', 'Grails + Angular', 'Grails + React', 'Grails + RIA (Rich Internet Application)', 'Grails + iOS', 'Grails + Android'];
   guides: Guide[] = [];
   filteredGuides: Guide[] = [];
   filter = '';
