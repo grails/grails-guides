@@ -100,7 +100,7 @@ function addJsClass() {
 
 <div class="paragraph">
 <p>You may not have wanted to enable <em>all</em> of the default actuator endpoints.
-If you wanted to just enable the info endpoint you&#8217;ll want to set <code>endpoints.info.enabled=true</code> via config and leave <code>endpoints.enabled=false</code>:</p>
+If you wanted to just enable the <code>info</code> endpoint you&#8217;ll want to set <code>endpoints.info.enabled=true</code> via config and leave <code>endpoints.enabled=false</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -136,7 +136,7 @@ Some of the endpoints expose sensitive information and you may have to secure or
 
 
 <div class="paragraph">
-<p>You may have noticed that the <code>/info</code> endpoint only a subset of the properties in <code>git.properties</code> such as the abbreviated sha, commit time and branch.
+<p>You may have noticed that the <code>/info</code> endpoint is only a subset of the properties in <code>git.properties</code> such as the abbreviated sha, commit time and branch.
 You can display the full git properties via configuration by setting <code>management.info.git.mode=full</code></p>
 </div>
 <div class="paragraph">
@@ -145,9 +145,10 @@ You can display the full git properties via configuration by setting <code>manag
 <div class="listingblock">
 <div class="title">/complete/grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="comment"># Spring Actuator Endpoints are Disabled by Default</span>
-<span class="key">endpoints</span>:
-    <span class="key">enabled</span>: <span class="string"><span class="content">false</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">management</span>:
+    <span class="key">info</span>:
+        <span class="key">git</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">full</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -206,7 +207,7 @@ The <a href="https://github.com/spring-projects/spring-boot/blob/master/spring-b
 <div class="listingblock">
 <div class="title">/complete/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -215,7 +216,7 @@ The <a href="https://github.com/spring-projects/spring-boot/blob/master/spring-b
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
@@ -268,11 +269,12 @@ For example if you only wanted simple mode enabled in production you might use t
 <div class="listingblock">
 <div class="title">/complete/grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml">    <span class="key">development</span>:
-        <span class="key">dataSource</span>:
-            <span class="key">dbCreate</span>: <span class="string"><span class="content">create-drop</span></span>
-            <span class="key">url</span>: <span class="string"><span class="content">jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE</span></span>
-    <span class="key">test</span>:</code></pre>
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">environments</span>:
+    <span class="key">production</span>:
+        <span class="key">management</span>:
+            <span class="key">info</span>:
+                <span class="key">git</span>:
+                    <span class="key">mode</span>: <span class="string"><span class="content">simple</span></span></code></pre>
 </div>
 </div>
 
