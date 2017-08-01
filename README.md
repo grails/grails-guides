@@ -38,6 +38,7 @@ $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 2. Don't include unimplemented tests.
 3. Use `@CompileStatic` as much as possible
 4. Always write the guide against the latest stable version of Grails.
+5. Root `gradlew` should have execution permission
 
 ### Start your guide's documentation
 
