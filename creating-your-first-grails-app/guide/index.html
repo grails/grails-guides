@@ -82,7 +82,7 @@ function addJsClass(el) {
                                                 <p></p>
                                                 <p>Learn how to create your first Grails app</p>
                                                 <p><strong>Authors:</strong> Zachary Klein</p>
-                                                <p><strong>Grails Version:</strong> 3.2.10</p>
+                                                <p><strong>Grails Version:</strong> 3.3.0</p>
 
                                             </div>
 
@@ -2531,14 +2531,11 @@ $ ./grailsw test-app -integration</code></pre>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
-<span class="comment">/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */</span>
-<span class="annotation">@TestFor</span>(ValueEstimateService)
-<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification {
+<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;ValueEstimateService&gt;, DataTest {
 
     <span class="keyword">def</span> <span class="function">setup</span>() {
     }
@@ -2580,17 +2577,17 @@ Total time: 6.353 secs
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
-<span class="comment">/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */</span>
+<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;ValueEstimateService&gt;, DataTest {
 
-<span class="annotation">@Mock</span>([Make, Model, Vehicle]) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="annotation">@TestFor</span>(ValueEstimateService)
-<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification {
+    <span class="type">void</span> setupSpec() { <i class="conum" data-value="1"></i><b>(1)</b>
+        mockDomain Make
+        mockDomain Model
+        mockDomain Vehicle
+    }
 
     <span class="type">void</span> testEstimateRetrieval() {
         <span class="key">given</span>: <span class="string"><span class="delimiter">'</span><span class="content">a vehicle</span><span class="delimiter">'</span></span>
@@ -2614,7 +2611,8 @@ Total time: 6.353 secs
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>We&#8217;re using the <a href="https://docs.grails.org/latest/api/grails/test/mixin/Mock.html"><code>Mock</code></a> annotation (provided by Grails) to mock our domain classes, as GORM is not set up by default in a unit test.</td>
+<td>When mocking multiple objects using the updated testing framework in Grails 3.3 we now perform mocks during setup and no
+longer require the @Mock annotation.</td>
 </tr>
 </table>
 </div>
