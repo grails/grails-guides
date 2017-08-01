@@ -31,6 +31,14 @@ $ git init
 $ git add --all
 $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 ```
+
+## Guide Style Guide
+
+1. Use package `demo`
+2. Don't include unimplemented tests.
+3. Use `@CompileStatic` as much as possible
+4. Always write the guide against the latest stable version of Grails.
+
 ### Start your guide's documentation
 
 Documentation for your guide is located in `src/main/docs/guide/` and driven by `toc.yml`
