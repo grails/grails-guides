@@ -153,7 +153,7 @@ dataSources {
 </div>
 </div>
 <div class="paragraph">
-<p>Remove from <code>application.yml</code> the environment production datasource block. We define production datasource configuration in <code>application-production.groovy</code></p>
+<p>Remove the environment production datasource block from <code>application.yml</code>. We define production datasource configuration in <code>application-production.groovy</code></p>
 </div>
 <div class="paragraph">
 <p>That it is to say:</p>
@@ -161,23 +161,15 @@ dataSources {
 <div class="listingblock">
 <div class="title">/grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">---
-<span class="key">hibernate</span>:
-    <span class="key">cache</span>:
-        <span class="key">queries</span>: <span class="predefined-constant">false</span>
-        <span class="key">use_second_level_cache</span>: <span class="predefined-constant">true</span>
-        <span class="key">use_query_cache</span>: <span class="predefined-constant">false</span>
-        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
-
-<span class="key">dataSource</span>:
-    <span class="key">pooled</span>: <span class="predefined-constant">true</span>
-    <span class="key">jmxExport</span>: <span class="predefined-constant">true</span>
-    <span class="key">driverClassName</span>: org.h2.Driver
-    <span class="key">username</span>: sa
-    <span class="key">password</span>:
-
-<span class="key">environments</span>:
-    <span class="key">development</span>:</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: create-drop
+            <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:devDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE
+    <span class="key">test</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: update
+            <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">h2</span>:<span class="key">mem</span>:testDb;MVCC=TRUE;LOCK_TIMEOUT=<span class="integer">10000</span>;DB_CLOSE_ON_EXIT=FALSE</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -186,7 +178,7 @@ dataSources {
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:5.1.40</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:scaffolding</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 
