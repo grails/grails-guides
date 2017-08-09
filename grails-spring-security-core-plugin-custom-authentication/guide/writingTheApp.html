@@ -141,7 +141,7 @@ to achieve such a login in a Grails 3 application.</p>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.1.1</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.0.M1</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 
@@ -164,18 +164,20 @@ to achieve such a login in a Grails 3 application.</p>
 </div>
 </div>
 <div class="paragraph">
-<p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>Role</code> and <code>UserRole</code>. Service injection in GORM entities is disabled by default since Grails 3.2.8. Because of that, if you want the service <code>springSecurityService</code> to get injected
-in the <code>User</code> domain class you would need to turn on <code>autowire</code>.  Another option would be to move the password encoding logic outside of the domain class.</p>
+<p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>Role</code> and <code>UserRole</code>. It is recommended to
+move the password encoding logic outside of the domain class.</p>
 </div>
-<div class="listingblock">
-<div class="title">grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
-    <span class="key">gorm</span>:
-        <span class="error">#</span> Whether to autowire entities.
-        <span class="error">#</span> Disabled by <span class="keyword">default</span> <span class="keyword">for</span> performance reasons.
-        autowire: <span class="predefined-constant">true</span></code></pre>
-</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Service injection in GORM entities is disabled by default since Grails 3.2.8.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Each user is going to have a coordinate card. Thus we have modified the User domain class slightly:</p>
@@ -231,6 +233,7 @@ in the <code>User</code> domain class you would need to turn on <code>autowire</
 
         <span class="directive">static</span> mapping = {
                 password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>
+                autowire <span class="predefined-constant">true</span>
         }
 }</code></pre>
 </div>
@@ -954,7 +957,7 @@ a functional test for our custom login form.</p>
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
 
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">BankControllerSpec</span> <span class="directive">extends</span> GebSpec {
