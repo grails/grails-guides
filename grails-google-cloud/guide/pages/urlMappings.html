@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>7.3 SpringBoot Jetty</title>
+    <title>5.2 Display Books</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -87,11 +87,11 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/cloudSDK.html">&lt;&lt; <strong>6</strong><span>Cloud SDK</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/howToComplete.html">&lt;&lt; <strong>4</strong><span>How to Complete</span></a></div>
                 
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/cloudSQL.html"><strong>8</strong><span>Cloud SQL</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/cloudSDK.html"><strong>6</strong><span>Cloud SDK</span> >></a></div>
                 
 
 
@@ -99,71 +99,59 @@ function addJsClass() {
 
                 
 
-<h2 id="springBootJetty">7.3 SpringBoot Jetty</h2>
+<h2 id="urlMappings">5.2 Display Books</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-cloud/edit/master/src/main/docs/guide/springBootJetty.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-google-cloud/edit/master/src/main/docs/guide/urlMappings.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>As shown in the previous app engine configuration file, we are using Jetty.</p>
+<p>As the home page of the application, we want to display the books persisted when the application starts;
+those we saved in <em>BootStrap.groovy</em></p>
 </div>
 <div class="paragraph">
-<p>Grails is built on top of SpringBoot. Following SpringBoot’s documentation, we need to do the following changes to [deploy to Jetty instead of Tomcat](<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html" class="bare">https://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html</a>).</p>
+<p>We map the home page to be resolved by <code>BookController</code> by modifying <code>UrlMappings.groovy</code></p>
 </div>
 <div class="paragraph">
 <p>Replace:</p>
 </div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
+<div class="paragraph">
+<p><code>grails-app/controllers/demo/UrlMappings.groovy</code></p>
+</div>
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre>"/"(view:"/index")</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>with:</p>
 </div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
+<div class="paragraph">
+<p><code>grails-app/controllers/demo/UrlMappings.groovy</code></p>
+</div>
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">provided <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-jetty</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre>'/'(controller: 'book')</pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-it is important you set the <code>spring-boot-starter-jetty</code> dependency as <code>provided</code>.
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>We need to exclude several dependencies too:</p>
+<p>We have modified slightly the output of Grails static scaffolding command
+<code>generate-all</code> to provide CRUD functionality for the domain class <code>Book</code>.</p>
 </div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations {
-    compile.exclude <span class="key">module</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">tomcat-juli</span><span class="delimiter">&quot;</span></span>
-    compile.exclude <span class="key">module</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
-    compile.exclude <span class="key">group</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">com.google.guava</span><span class="delimiter">&quot;</span></span>, <span class="key">module</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">guava-jdk5</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
+<div class="paragraph">
+<p>You can find the code: <code>BookController</code>, <code>BookGormService</code> and GSP views in
+the initial project.</p>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/cloudSDK.html">&lt;&lt; <strong>6</strong><span>Cloud SDK</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/howToComplete.html">&lt;&lt; <strong>4</strong><span>How to Complete</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/cloudSQL.html"><strong>8</strong><span>Cloud SQL</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/cloudSDK.html"><strong>6</strong><span>Cloud SDK</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
