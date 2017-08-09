@@ -82,7 +82,7 @@ function addJsClass(el) {
                                                 <p></p>
                                                 <p>In this guide we are going to explore Service testing in Grails. Unit test GORM, Integration Tests, Mocking collaborators...</p>
                                                 <p><strong>Authors:</strong> Nirav Assar</p>
-                                                <p><strong>Grails Version:</strong> 3.2.9</p>
+                                                <p><strong>Grails Version:</strong> 3.3.0</p>
 
                                             </div>
 
@@ -153,23 +153,51 @@ about:</p>
 
 
 <div class="paragraph">
-<p>To complete this guide, you will need to checkout the source from Github and work through the steps presented by the guide.</p>
-</div>
-<div class="paragraph">
 <p>To get started do the following:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/grails-guides/grails-mock-basics/archive/master.zip">Download</a> and unzip the source or if you already have <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-mock-basics.git" class="bare">https://github.com/grails-guides/grails-mock-basics.git</a></code></p>
+<p><a href="https://github.com/grails-guides/grails-mock-basics/archive/master.zip">Download</a> and unzip the source</p>
 </li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-mock-basics.git" class="bare">https://github.com/grails-guides/grails-mock-basics.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with additional some code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p><code>cd</code> into <code>grails-guides/grails-mock-basics/initial</code></p>
 </li>
-<li>
-<p>Head on over to the next section</p>
-</li>
 </ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -178,7 +206,7 @@ about:</p>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can go right to the completed example if you <code>cd</code> into <code>grails-guides/grails-mock-basics/complete</code>
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-mock-basics/complete</code>
 </td>
 </tr>
 </table>
@@ -277,14 +305,15 @@ A <code>Student</code> can be enrolled in one <code>Classroom</code> or none.</p
 
 
 <div class="paragraph">
-<p>We are using the GORM 6.0.10.RELEASE.</p>
+<p>We are using the GORM 6.1.6.RELEASE.</p>
 </div>
 <div class="listingblock">
 <div class="title">gradle.properties</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.2</span><span class="float">.9</span>
-gormVersion=<span class="float">6.0</span><span class="float">.10</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.4</span><span class="float">.1</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.0</span>
+grailsWrapperVersion=<span class="float">1.0</span><span class="float">.0</span>
+gormVersion=<span class="float">6.1</span><span class="float">.6</span>.RELEASE
+gradleWrapperVersion=<span class="float">3.5</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -297,7 +326,7 @@ gradleWrapperVersion=<span class="float">3.4</span><span class="float">.1</span>
     }
     dependencies {
         classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.1</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2</span><span class="delimiter">&quot;</span></span>
         classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }
@@ -309,8 +338,8 @@ apply <span class="key">plugin</span>:<span class="string"><span class="delimite
 apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">idea</span><span class="delimiter">&quot;</span></span>
 apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">war</span><span class="delimiter">&quot;</span></span>
 apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-web</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
 apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">asset-pipeline</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
 apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">codenarc</span><span class="delimiter">'</span></span>
 
 repositories {
@@ -324,20 +353,30 @@ dependencies {
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-core</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-actuator</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-boot</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-logging</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-rest</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-databinding</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-i18n</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-services</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-url-mappings</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-interceptors</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:cache</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:async</span><span class="delimiter">&quot;</span></span>
     compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:scaffolding</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.3.Final</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-ehcache:5.1.3.Final</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-test:</span><span class="inline"><span class="inline-delimiter">$</span>gormVersion</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="2"></i><b>(2)</b>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:events</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.5.Final</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:gsp</span><span class="delimiter">&quot;</span></span>
     console <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-console</span><span class="delimiter">&quot;</span></span>
     profile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.profiles:web</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:2.14.1</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.glassfish.web:el-impl:2.1.2-b03</span><span class="delimiter">&quot;</span></span>
     runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-testing</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat:tomcat-jdbc</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:2.14.2</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gorm-testing-support</span><span class="delimiter">&quot;</span></span>
     testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-testing-support</span><span class="delimiter">&quot;</span></span>
     testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1</span><span class="delimiter">&quot;</span></span>
     testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.18</span><span class="delimiter">&quot;</span></span>
 }
@@ -364,10 +403,6 @@ codenarc {
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>For this guide we are using GORM Hibernate implementation</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Include the <code>grails-datastore-gorm-test</code> dependency to test GORM</td>
 </tr>
 </table>
 </div>
@@ -423,11 +458,10 @@ codenarc {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
 <span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 
 <span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
-<span class="annotation">@TestFor</span>(StudentService)
-<span class="type">class</span> <span class="class">StudentServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+<span class="type">class</span> <span class="class">StudentServiceSpec</span> <span class="directive">extends</span> HibernateSpec <span class="directive">implements</span> ServiceUnitTest&lt;StudentService&gt; {
 
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Student] } <i class="conum" data-value="1"></i><b>(1)</b>
     <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test find students with grades above</span><span class="delimiter">'</span></span>() {
@@ -530,7 +564,7 @@ codenarc {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
-<span class="keyword">import</span> <span class="include">grails.test.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
 <span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
@@ -540,8 +574,7 @@ codenarc {
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">ClassroomServiceIntegrationSpec</span> <span class="directive">extends</span> Specification {
 
-    <span class="annotation">@Autowired</span>
-    ClassroomService service
+    <span class="annotation">@Autowired</span> ClassroomService service
 
     <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test calculate average grade of classroom</span><span class="delimiter">'</span></span>() {
         <span class="key">when</span>:
@@ -656,18 +689,22 @@ learn how to mock collaborators to test the service logic in isolation.</p>
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
 
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span>
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.Mock</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
 
 <span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
-<span class="annotation">@TestFor</span>(ClassroomGradesNotificationService)
-<span class="annotation">@Mock</span>([Student, Classroom]) <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification {
+<span class="type">class</span> <span class="class">ClassroomGradesNotificationServiceSpec</span> <span class="directive">extends</span> Specification
+        <span class="directive">implements</span> DataTest, ServiceUnitTest&lt;ClassroomGradesNotificationService&gt; {
 
     <span class="annotation">@Shared</span> Classroom classroom
+
+    <span class="keyword">def</span> <span class="function">setupSpec</span>() { <i class="conum" data-value="1"></i><b>(1)</b>
+        mockDomain Student
+        mockDomain Classroom
+    }
 
     <span class="keyword">def</span> <span class="function">setup</span>() {
         classroom = <span class="keyword">new</span> Classroom(<span class="key">teacher</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>)
@@ -689,7 +726,7 @@ learn how to mock collaborators to test the service logic in isolation.</p>
         <span class="type">int</span> emailCount = service.emailClassroomStudents(classroom) <i class="conum" data-value="4"></i><b>(4)</b>
 
         <span class="key">then</span>:
-        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 95</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 95</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span> <i class="conum" data-value="5"></i><b>(5)</b>
         <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 91</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span>
         <span class="integer">1</span> * mockService.sendEmail([<span class="key">to</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">Smith</span><span class="delimiter">'</span></span>, <span class="key">note</span>: <span class="string"><span class="delimiter">'</span><span class="content">Grade is 93</span><span class="delimiter">'</span></span>]) &gt;&gt; <span class="integer">1</span>
         emailCount == <span class="integer">3</span>
@@ -774,6 +811,14 @@ learn how to mock collaborators to test the service logic in isolation.</p>
 <pre class="CodeRay highlight"><code data-lang="bash">./grailsw
 grails&gt; test-app
 grails&gt; open test-report</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew test</code></pre>
 </div>
 </div>
 
