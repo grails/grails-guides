@@ -1,0 +1,1349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Consume and test a third-party REST API</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />        
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+
+        <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />        
+        <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+        <link rel="stylesheet" type="text/css" href="../css/stMenu.css" />      
+
+    </head>
+
+    <body class="body" onload="addJsClass();">
+
+    <a href="https://github.com/grails/grails-core" target="_blank">
+      <div id="fork-me">
+        <p>Fork me on Github</p>
+      </div>
+    </a>
+    <div id="st-container" class="st-container st-effect-9">
+      <nav class="st-menu st-effect-9" id="menu-12">
+        <h2 class="icon icon-lab">Socialize</h2>
+        <ul>
+          <li><a href="http://grails.org/mailing-lists.html" class="icon"><span class="fa fa-envelope"></span> Discuss on the Mailing List</a></li>
+          <li><a href="http://slack-signup.grails.org" class="icon"><span class="fa fa-slack"></span> Discuss on Slack</a></li>
+          <li><a href="https://twitter.com/grailsframework" class="icon"><span class="fa fa-twitter"></span> Grails on Twitter</a></li>
+          <li><a href="http://grails.org/events.html" class="icon"><span class="fa fa-calendar"></span> Events and conferences</a></li>
+          <li><a href="https://github.com/grails/grails-core" class="icon"><span class="fa fa-github"></span> Source code on GitHub</a></li>
+          <li><a href="http://grails.org/contribute.html#reporting-issues" class="icon"><span class="fa fa-bug"></span> Report issues on Github</a></li>
+          <li><a href="http://stackoverflow.com/questions/tagged/grails" class="icon"><span class="fa fa-stack-overflow"></span> Stack Overflow questions</a></li>
+        </ul>
+      </nav>
+      <div class="st-pusher">
+        <div class="st-content">
+          <div class="st-content">
+            <div class="grailsnavbar grailsnavbar-default">
+              <div class="grailsnavbar-container">
+                <div class="grailsnavbar-header">
+                  <a class="grailsnavbar-brand" href="index.html"><i class="fa grails-icon"><img src="../img/grails-cupsonly-logo-white.svg"></i> Grails</a>
+                </div>
+                <a id="nav-icon" href="javascript:toggleNavIcon();">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </a>
+                <div class="grailsnavbar-collapse collapse">
+                  <ul id="grailsnavbar-nav" class="grailsnavbar-nav grailsnavbar-right closemobile">
+                    <li><a href="http://grails.org/learn.html">Learn</a></li>
+                    <li><a href="http://guides.grails.org">Guides</a></li>
+                    <li><a href="http://grails.org/documentation.html">Documentation</a></li>
+                    <li><a href="http://grails.org/download.html">Download</a></li>
+                    <li><a href="http://plugins.grails.org">Plugins</a></li>
+                    <li><a href="http://grails.org/community.html">Community</a></li>
+                    <li><a href="http://grails.org/support.html">Support</a></li>
+                    <li><a data-effect="st-effect-9" class="st-trigger" href="#">Socialize</a></li>
+                    <li><a href="http://grails.org/search.html"><i class="fa fa-search"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- CONTENT -->
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="col1">
+                                        <div id="main" class="corner-all">
+
+                                            <div class="project">
+                                                <h1>Consume and test a third-party REST API</h1>
+                                                <p></p>
+                                                <p>Use Ersatz, a &quot;mock&quot; HTTP library, for testing code dealing with HTTP requests</p>
+                                                <p><strong>Authors:</strong> Sergio del Amo</p>
+                                                <p><strong>Grails Version:</strong> 3.3.0</p>
+
+                                            </div>
+
+                                            
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+var ociTrainingTrack = 11;
+getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to create a Grails app which consumes a third party REST API. Moreover, we will use a "mock" HTTP library to test the code which interacts with this external service.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-mock-http-server/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-mock-http-server.git" class="bare">https://github.com/grails-guides/grails-mock-http-server.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with additional some code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-mock-http-server/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-mock-http-server/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The first step is to add a HTTP client library to our project. Add the next dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="openweather">3.1 Open Weather Map</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/openweather.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://openweathermap.org">OpenWeatherMap</a> is a web application which offers an API which allows you to:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Get current weather, daily forecast for 16 days, and 3-hourly forecast 5 days for your city. Helpful stats, graphics, and this day in history charts are available for your reference. Interactive maps show precipitation, clouds, pressure, wind around your location.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>They have a FREE plan which allows you to get the <a href="https://openweathermap.org/current">Current Weather Data</a> of a city.</p>
+</div>
+<div class="paragraph">
+<p>After you register, you get an API Key. You will need an API key to interact with the Open Weather Map API.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/apiKey.png" alt="apiKey">
+</div>
+</div>
+<div class="paragraph">
+<p>INFO: the API key may take several minutes to become active.</p>
+</div>
+
+
+<h2 id="pogos">3.2 Parse Response into Groovy classes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/pogos.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create several Groovy POGOs (Plain Old Groovy Objects) to map the <code>OpenWeatherMap</code> JSON response to classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/CurrentWeather.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CurrentWeather</span> {
+    Main main
+    Coordinate coordinate
+    <span class="predefined-type">List</span>&lt;Weather&gt; weatherList
+    Wind wind
+    Sys sys
+    Rain rain
+    Clouds clouds
+    <span class="predefined-type">String</span> base
+    <span class="predefined-type">Integer</span> dt
+    <span class="predefined-type">Long</span> cityId
+    <span class="predefined-type">String</span> cityName
+    <span class="predefined-type">Integer</span> code
+    <span class="predefined-type">Integer</span> visibility
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Clouds.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="type">class</span> <span class="class">Clouds</span> {
+    <span class="predefined-type">Integer</span> cloudiness
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Coordinate.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Coordinate</span> {
+    <span class="predefined-type">BigDecimal</span> longitude
+    <span class="predefined-type">BigDecimal</span> latitude
+
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Rain.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Rain</span> {
+    <span class="predefined-type">Integer</span> lastThreeHours
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Unit.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">enum</span> Unit {
+    Standard, Imperial, Metric
+
+    <span class="directive">static</span> Unit unitWithString(<span class="predefined-type">String</span> str) {
+        <span class="keyword">if</span> ( str ) {
+            <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span> ) {
+                <span class="keyword">return</span> Unit.Metric
+            } <span class="keyword">else</span> <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span> ) {
+                <span class="keyword">return</span> Unit.Imperial
+            }
+        }
+        Unit.Standard
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Weather.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Weather</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> main
+    <span class="predefined-type">String</span> description
+    <span class="predefined-type">String</span> icon
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Sys.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Sys</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> type
+    <span class="predefined-type">String</span> message
+    <span class="predefined-type">String</span> country
+    <span class="predefined-type">Integer</span> sunrise
+    <span class="predefined-type">Integer</span> sunset
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/org/openweathermap/Wind.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Wind</span> {
+    <span class="predefined-type">BigDecimal</span> speed
+    <span class="predefined-type">BigDecimal</span> deg
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="service">3.3 Open Weather Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/service.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the next service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/org/openweathermap/OpenweathermapService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">OpenweathermapService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+    <span class="predefined-type">String</span> appid
+    <span class="predefined-type">String</span> cityName
+    <span class="predefined-type">String</span> countryCode
+    <span class="predefined-type">String</span> openWeatherUrl
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        openWeatherUrl = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.url</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, <span class="string"><span class="delimiter">'</span><span class="content">http://api.openweathermap.org</span><span class="delimiter">'</span></span>)
+        appid = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.appid</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+        cityName = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.cityName</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+        countryCode = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.countryCode</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+    }
+    <span class="annotation">@CompileDynamic</span>
+    CurrentWeather currentWeather(Unit units = Unit.Standard) {
+        currentWeather(cityName, countryCode, units)
+    }
+
+
+    <span class="annotation">@CompileDynamic</span>
+    CurrentWeather currentWeather(<span class="predefined-type">String</span> cityName, <span class="predefined-type">String</span> countryCode, Unit unit = Unit.Standard) {
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+        <span class="predefined-type">String</span> url = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>openWeatherUrl<span class="inline-delimiter">}</span></span><span class="content">/data/2.5/weather?q={city},{countryCode}&amp;appid={appid}</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">Map</span> params = [<span class="key">city</span>: cityName, <span class="key">countryCode</span>: countryCode, <span class="key">appid</span>: appid]
+        <span class="predefined-type">String</span> unitParam = unitParameter(unit)
+        <span class="keyword">if</span> ( unitParam ) {
+            params.units = unitParam
+            url += <span class="string"><span class="delimiter">&quot;</span><span class="content">&amp;units={units}</span><span class="delimiter">&quot;</span></span>
+        }
+        RestResponse restResponse = rest.get(url) { <i class="conum" data-value="1"></i><b>(1)</b>
+            urlVariables params
+        }
+
+        <span class="keyword">if</span> ( restResponse.statusCode.value() == <span class="integer">200</span> &amp;&amp; restResponse.json ) {
+            <span class="keyword">return</span> OpenweathermapParser.currentWeatherFromJSONElement(restResponse.json) <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+        <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+  <span class="comment">/**
+    * @return null if Standard Unit
+    */</span>
+    <span class="predefined-type">String</span> unitParameter(Unit unit)  {
+        <span class="keyword">switch</span> ( unit ) {
+            <span class="keyword">case</span> Unit.Metric:
+                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span>
+            <span class="keyword">case</span> Unit.Imperial:
+                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span>
+            <span class="keyword">default</span>:
+                <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To get the current weather, do a GET request providing the city name, country code and API Key as query parameters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In case of a 200 - OK - response, parse the JSON data into Groovy classes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>if the answer is not 200. For example, 401; the method returns null.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The previous service uses several configuration parameters. Define them in <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">openweather</span>:
+    <span class="key">appid</span>: <span class="string"><span class="content">1f6c7d09a28f1ddccf70c06e2cb75ee4</span></span>
+    <span class="key">cityName</span>: <span class="string"><span class="content">London</span></span>
+    <span class="key">countryCode</span>: <span class="string"><span class="content">uk</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="parse">3.4 Parse Response into Groovy Classes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/parse.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the next class to encapsulte the parsing of JSON payload into Groovy Classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/utils/org/openweathermap/OpenweathermapParser.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.web.json.JSONElement</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">OpenweathermapParser</span>  {
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> Coordinate coordinateFromJsonElement(JSONElement json) {
+        Coordinate coordinate = <span class="keyword">new</span> Coordinate()
+        <span class="keyword">if</span> ( json.long ) {
+            coordinate.longitude = json.long <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.lat ) {
+            coordinate.latitude = json.lat <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        coordinate
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> Main mainFromJsonElement(JSONElement json) {
+        Main main = <span class="keyword">new</span> Main()
+        <span class="keyword">if</span> ( json.temp ) {
+            main.temperature = json.temp <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.pressure ) {
+            main.pressure = json.pressure <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.humidity ) {
+            main.humidity = json.humidity <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+        }
+        <span class="keyword">if</span> ( json.temp_min ) {
+            main.tempMin = json.temp_min <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.temp_max ) {
+            main.tempMax = json.temp_max <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.seaLevel ) {
+            main.seaLevel = json.seaLevel <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.groundLevel ) {
+            main.groundLevel = json.groundLevel <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        main
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> Wind windFromJsonElement(JSONElement json) {
+        Wind wind = <span class="keyword">new</span> Wind()
+        <span class="keyword">if</span> ( json.speed ) {
+            wind.speed = json.speed <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        <span class="keyword">if</span> ( json.deg ) {
+            wind.deg = json.deg <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+        }
+        wind
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> Sys sysFromJsonElement(JSONElement json) {
+        Sys sys = <span class="keyword">new</span> Sys()
+        <span class="keyword">if</span> ( json.id ) {
+            sys.id = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
+        }
+        <span class="keyword">if</span> ( json.type ) {
+            sys.type = json.type
+        }
+        <span class="keyword">if</span> ( json.message ) {
+            sys.message = json.message
+        }
+        <span class="keyword">if</span> ( json.country ) {
+            sys.country = json.country
+        }
+        <span class="keyword">if</span> ( json.sunrise ) {
+            sys.sunrise = json.sunrise <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+        }
+        <span class="keyword">if</span> ( json.sunset ) {
+            sys.sunset = json.sunset <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+        }
+        sys
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> Weather weatherFromJsonElement(JSONElement json) {
+        Weather weather = <span class="keyword">new</span> Weather()
+        <span class="keyword">if</span> ( json.id ) {
+            weather.id = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
+        }
+        <span class="keyword">if</span> ( json.main ) {
+            weather.main = json.main
+        }
+        <span class="keyword">if</span> ( json.description ) {
+            weather.description = json.description
+        }
+        <span class="keyword">if</span> ( json.icon ) {
+            weather.icon = json.icon
+        }
+        weather
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">static</span> CurrentWeather currentWeatherFromJSONElement(JSONElement json) {
+        CurrentWeather currentWeather = <span class="keyword">new</span> CurrentWeather()
+
+        <span class="keyword">if</span> ( json.coord ) {
+            currentWeather.coordinate = coordinateFromJsonElement(json.coord)
+        }
+        <span class="keyword">if</span> ( json.main ) {
+            currentWeather.main = mainFromJsonElement(json.main)
+        }
+        <span class="keyword">if</span> ( json.wind ) {
+            currentWeather.wind = windFromJsonElement(json.wind)
+        }
+        <span class="keyword">if</span> ( json.clouds ) {
+            currentWeather.clouds = <span class="keyword">new</span> Clouds()
+            <span class="keyword">if</span> ( json.clouds.all ) {
+                currentWeather.clouds.cloudiness = json.clouds.all <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+            }
+        }
+        <span class="keyword">if</span> ( json.sys ) {
+            currentWeather.sys = sysFromJsonElement(json.sys)
+        }
+        <span class="keyword">if</span> ( json.id ) {
+            currentWeather.cityId = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
+        }
+        <span class="keyword">if</span> ( json.base ) {
+            currentWeather.base = json.base
+        }
+        <span class="keyword">if</span> ( json.name ) {
+            currentWeather.cityName = json.name
+        }
+        <span class="keyword">if</span> ( json.cod ) {
+            currentWeather.code = json.cod <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+        }
+        <span class="keyword">if</span> ( json.visibility ) {
+            currentWeather.visibility = json.visibility
+        }
+        <span class="keyword">if</span> ( json.dt ) {
+            currentWeather.dt = json.dt <span class="keyword">as</span> <span class="predefined-type">Integer</span>
+        }
+
+        <span class="keyword">if</span> ( json.weather ) {
+            currentWeather.weatherList = <span class="type">[]</span>
+            <span class="keyword">for</span> ( <span class="predefined-type">Object</span> obj : json.weather ) {
+                Weather weather = weatherFromJsonElement(obj)
+                currentWeather.weatherList &lt;&lt; weather
+            }
+        }
+        currentWeather
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="ersatz">3.5 Ersatz</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/ersatz.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To test the networking code, add a dependency to <a href="http://stehno.com/ersatz/">Ersatz</a></p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.4.0</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Ersatz Server is a "mock" HTTP server library for testing HTTP clients. It allows for server-side request/response expectations to be configured so that your client library can make real HTTP calls and get back real pre-configured responses rather than fake stubs.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>First, implement a test which verifies that the <code>OpenweathermapService.currentWeather</code> method returns
+null when the REST API returns 401. For example, when the API Key is invalid.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/openweathermap/OpenweathermapServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">For an unauthorized key, null is return</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        ErsatzServer ersatz = <span class="keyword">new</span> ErsatzServer()
+        <span class="predefined-type">String</span> city = <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
+        ersatz.expectations {
+            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+                called(<span class="integer">1</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+                responder {
+                    code(<span class="integer">401</span>) <i class="conum" data-value="3"></i><b>(3)</b>
+                }
+            }
+        }
+        ersatz.start()
+        service.openWeatherUrl = ersatz.httpUrl <i class="conum" data-value="4"></i><b>(4)</b>
+        service.appid = appid
+
+        <span class="key">when</span>:
+        CurrentWeather currentWeather = service.currentWeather(city, countryCode)
+
+        <span class="key">then</span>:
+        !currentWeather
+
+        <span class="key">and</span>:
+        ersatz.verify() <i class="conum" data-value="5"></i><b>(5)</b>
+
+        <span class="key">cleanup</span>:
+        ersatz.stop() <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare expectations, a GET request to the <code>OpenWeather</code> path with query parameters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Declare conditions to be verified, in this example we want to to verify the endpoint is hit only one time.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Tell the mock server to return 401 for this test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Ersatz starts an embedded Undertow server, root the networking requests to this server instead of to the OpenWeather API server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Verify the ersatz servers conditions.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Rember to stop the server</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, test that when the server returns 200 and a JSON payload, the JSON payload is parsed correctly into Groovy classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/openweathermap/OpenweathermapServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">A CurrentWeather object is built from JSON Payload</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        ErsatzServer ersatz = <span class="keyword">new</span> ErsatzServer()
+        <span class="predefined-type">String</span> city = <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> expected = <span class="string"><span class="delimiter">'''</span><span class="content">{&quot;coord&quot;:{&quot;lon&quot;:-0.13,&quot;lat&quot;:51.51},&quot;weather&quot;:[{&quot;id&quot;:803,&quot;main&quot;:&quot;Clouds&quot;,&quot;description&quot;:&quot;broken clouds&quot;,&quot;icon&quot;:&quot;04d&quot;}],&quot;base&quot;:&quot;stations&quot;,&quot;main&quot;:{&quot;temp&quot;:20.81,&quot;pressure&quot;:1017,&quot;humidity&quot;:53,&quot;temp_min&quot;:19,&quot;temp_max&quot;:22},&quot;visibility&quot;:10000,&quot;wind&quot;:{&quot;speed&quot;:3.6,&quot;deg&quot;:180,&quot;gust&quot;:9.8},&quot;clouds&quot;:{&quot;all&quot;:75},&quot;dt&quot;:1502707800,&quot;sys&quot;:{&quot;type&quot;:1,&quot;id&quot;:5091,&quot;message&quot;:0.0029,&quot;country&quot;:&quot;GB&quot;,&quot;sunrise&quot;:1502685920,&quot;sunset&quot;:1502738622},&quot;id&quot;:2643743,&quot;name&quot;:&quot;London&quot;,&quot;cod&quot;:200}</span><span class="delimiter">'''</span></span>
+        ersatz.expectations {
+            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
+                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+                called(<span class="integer">1</span>)
+                responder {
+                    code(<span class="integer">200</span>)
+                    content expected,<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+                }
+            }
+        }
+        ersatz.start()
+        service.openWeatherUrl = ersatz.httpUrl
+        service.appid = appid
+
+        <span class="key">when</span>:
+        CurrentWeather currentWeather = service.currentWeather(city, countryCode)
+
+        <span class="key">then</span>:
+        currentWeather
+        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.cityName == <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        currentWeather.code == <span class="integer">200</span>
+        currentWeather.cityId == <span class="integer">2643743</span>
+        currentWeather.main.temperature == <span class="float">20.81</span>
+        currentWeather.main.pressure == <span class="integer">1017</span>
+        currentWeather.main.humidity == <span class="integer">53</span>
+        currentWeather.main.tempMin == <span class="integer">19</span>
+        currentWeather.main.tempMax == <span class="integer">22</span>
+        currentWeather.weatherList[<span class="integer">0</span>].id == <span class="integer">803</span>
+        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weatherList[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weatherList[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
+        currentWeather.visibility == <span class="integer">10000</span>
+        currentWeather.wind.speed == <span class="float">3.6</span>
+        currentWeather.wind.deg == <span class="integer">180</span>
+        currentWeather.clouds.cloudiness == <span class="integer">75</span>
+        currentWeather.base == <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>
+        currentWeather.dt == <span class="integer">1502707800</span>
+        currentWeather.coordinate
+
+        <span class="key">and</span>:
+        ersatz.verify()
+
+        <span class="key">cleanup</span>:
+        ersatz.stop()
+    }
+
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="testapp">3.6 Run Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/testapp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw
+grails&gt; test-app
+grails&gt; open test-report</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew check
+open build/reports/tests/index.html</code></pre>
+</div>
+</div>
+
+
+<h2 id="controller">3.7 Root Url to Weather Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <code>HomeController</code> which uses the previous service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/HomeController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.openweathermap.CurrentWeather</span>
+<span class="keyword">import</span> <span class="include">org.openweathermap.OpenweathermapService</span>
+<span class="keyword">import</span> <span class="include">org.openweathermap.Unit</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">HomeController</span> {
+    OpenweathermapService openweathermapService
+
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">String</span> unit) {
+        Unit unitEnum = Unit.unitWithString(unit)
+        CurrentWeather currentWeather = openweathermapService.currentWeather(unitEnum)
+        [<span class="key">currentWeather</span>: currentWeather, <span class="key">unit</span>: unitEnum]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In <code>UrlMapping.groovy</code> map the root URL to this controller:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">home</span><span class="delimiter">'</span></span>)<span class="error">`</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="taglib">3.8 TagLib</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/taglib.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a taglib to help you, to encapsulate some rendering aspects:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/taglib/org/openweathermap/OpenweathermapTagLib.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="type">class</span> <span class="class">OpenweathermapTagLib</span> {
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">&quot;</span><span class="content">openweather</span><span class="delimiter">&quot;</span></span>
+
+    <span class="keyword">def</span> image = { attrs -&gt;
+        out &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;img src=</span><span class="char">\&quot;</span><span class="content">http://openweathermap.org/img/w/</span><span class="inline"><span class="inline-delimiter">${</span>attrs.icon<span class="inline-delimiter">}</span></span><span class="content">.png</span><span class="char">\&quot;</span><span class="content">/&gt;</span><span class="delimiter">&quot;</span></span>
+    }
+
+    <span class="keyword">def</span> temperatureSymbol = { attrs -&gt;
+        <span class="keyword">if</span> ( attrs.unit == Unit.Imperial ) {
+            out &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">°F</span><span class="delimiter">'</span></span>
+        } <span class="keyword">else</span> <span class="keyword">if</span> ( attrs.unit == Unit.Metric ) {
+            out &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">°C</span><span class="delimiter">'</span></span>
+        }
+
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="view">3.9 View</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/view.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the next GSPs to render the gathered Weather information as an HTML page.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/home/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Current Weather&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>&lt;body&gt;
+    &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;section <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>currentWeather<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="key">g</span>:render template=<span class="string"><span class="delimiter">&quot;</span><span class="content">/openweather/currentWeather</span><span class="delimiter">&quot;</span></span>
+                          model=<span class="string"><span class="delimiter">&quot;</span><span class="content">[currentWeather: currentWeather, unit: unit]</span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">section&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/openweather/_currentWeather.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>currentWeather.weatherList<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;<span class="key">g</span>:each <span class="keyword">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>currentWeather.weatherList<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> var=<span class="string"><span class="delimiter">&quot;</span><span class="content">weather</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">weatherBlock</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">h2</span>&gt;&lt;b&gt;<span class="error">$</span>{currentWeather.cityName}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">b&gt;&lt;</span><span class="delimiter">/</span></span>h2&gt;
+            &lt;h3&gt;<span class="error">$</span>{currentWeather.main?.temperature} &lt;<span class="key">openweather</span>:temperatureSymbol unit=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>unit<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h3&gt;</span></span><span class="error">
+</span>            &lt;<span class="key">openweather</span>:image icon=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>weather.icon<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+            &lt;h4&gt;<span class="error">$</span>{weather.description}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h4&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:each&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the next CSS snippet to style the weather forecast.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/assets/stylesheets/main.css</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="css"><span class="class">.weatherBlock</span> {
+     <span class="key">width</span>: <span class="float">150px</span>;
+     <span class="key">height</span>: <span class="float">200px</span>;
+     <span class="key">margin</span>: <span class="float">10px</span> <span class="value">auto</span>;
+     <span class="key">text-align</span>: <span class="value">center</span>;
+     <span class="key">border</span>: <span class="float">1px</span> <span class="value">solid</span> <span class="color">#c0d3db</span>;
+     <span class="key">float</span>: <span class="value">left</span>;
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="runningTheApp">4 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+<div class="paragraph">
+<p>If you setup a valid API Key in <code>application.yml</code>, you will see the London weather prediction.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/homepage.png" alt="homepage">
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">5 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+                                        </div>
+                                    </td>
+                                    <td id="col2">
+                                        <div class="local clearfix">
+                                            <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-mock-http-server"><img src="https://travis-ci.org/grails-guides/grails-mock-http-server.svg?branch=master" /></a></div>            
+
+                                            <div class="local-title">
+                                                <a href="https://github.com/grails-guides/grails-mock-http-server">
+                                                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                                                </div>
+                                                <div class="menu">
+                                                    <div class="input-group">                        
+                                                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-mock-http-server.git'" class="codeButton">SSH</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-http-server.git'" class="codeButton">HTTPS</button>
+                                                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-http-server'" class="codeButton">Subversion</button>
+                                                    </div>
+
+                                                    <div class="input-group">                    
+                                                        <!-- Target -->
+                                                        <input id="github-url" value="git@github.com:grails-guides/grails-mock-http-server.git" type="text" />
+
+                                                        <!-- Trigger -->
+                                                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                                                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                                                        </button>       
+
+                                                    </div>
+                                                    <div class="input-group">
+                                                      <a href="https://github.com/grails-guides/grails-mock-http-server/archive/master.zip" class="downloadButton">Download ZIP</a>
+                                                  </div>
+                                              </div>
+                                              
+                                              <div id="table-of-content">
+                                                <h2>Table of Contents</h2>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#openweather"><strong>3.1</strong><span>Open Weather Map</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#pogos"><strong>3.2</strong><span>Parse Response into Groovy classes</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#service"><strong>3.3</strong><span>Open Weather Service</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#parse"><strong>3.4</strong><span>Parse Response into Groovy Classes</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#ersatz"><strong>3.5</strong><span>Ersatz</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#testapp"><strong>3.6</strong><span>Run Tests</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#controller"><strong>3.7</strong><span>Root Url to Weather Controller</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#taglib"><strong>3.8</strong><span>TagLib</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:10px"><a href="#view"><strong>3.9</strong><span>View</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+                                                
+                                                <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Help with Grails</span></a></div>
+                                                
+                            <div style="clear:both" ></div>
+                        </div>
+                                            
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+            
+        </div>
+
+            <!-- END CONTENT -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    new Clipboard('.clipbtn');
+</script>
+<script type="text/javascript" src="../js/docs.js"></script>
+<script type="text/javascript" src="../js/classie.js"></script>        
+<script type="text/javascript" src="../js/sidebarEffects.js"></script>
+<script type="text/javascript" src="../js/navbar.js"></script> 
+<style type="text/css">
+    #colset {
+        background-color: #f5f5f5;
+    }
+    .grailsnavbar {
+        padding-right: 0;
+    }
+    #fork-me {
+        display: none;
+    }
+</style>       
+    </body>
+</html>
