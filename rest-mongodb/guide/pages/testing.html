@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.7 Testing the Search Endpoint</title>
+    <title>3.7 Testing the Search Endpoint</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -30,16 +30,19 @@ function addJsClass() {
 
                     <div id="nav-summary-childs" style="display:none;">
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -57,11 +60,11 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
                 
 
 
@@ -69,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="testing">2.7 Testing the Search Endpoint</h2>
+<h2 id="testing">3.7 Testing the Search Endpoint</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-mongodb/edit/master/src/main/docs/guide/testing.adoc"'>
@@ -83,70 +86,42 @@ function addJsClass() {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-unit-test mongodb.example.ProductController</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-unit-test demo.ProductController</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Or alternatively just create a <code>src/test/groovy/mongodb/example/ProductControllerSpec.groovy</code> file using your favourite text editor or IDE.</p>
+<p>Or alternatively just create a <code>src/test/groovy/demo/ProductControllerSpec.groovy</code> file using your favourite text editor or IDE.</p>
 </div>
 <div class="paragraph">
-<p>Like the previously implemented <code>ProductSpec</code> it should extend <code>MongoSpec</code>, but this time the <code>TestFor</code> definition should be for <code>ProductController</code>:</p>
+<p>Write the next unit test:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductControllerSpec.groovy</div>
+<div class="title">src/test/groovy/demo/ProductControllerSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
-<span class="annotation">@TestFor</span>(ProductController)
-<span class="type">class</span> <span class="class">ProductControllerSpec</span> <span class="directive">extends</span> MongoSpec {
-    ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In addition, the test should override the <code>createMongoClient</code> method to enable embedded MongoDB and define a <code>doWithSpring</code> block to enable JSON views:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductControllerSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> doWithSpring = {
-    jsonSmartViewResolver(JsonViewResolver)
-}
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="annotation">@Override</span>
-MongoClient createMongoClient() {
-    MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo()
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>doWithSpring</code> block is used to register additional Spring configuration (beans) for the context of the test. In this case we wish to test the controller responds with JSON views, so a <code>jsonSmartViewResolver</code> bean is registered.</p>
-</div>
-<div class="paragraph">
-<p>Next in order to prepare the test we setup some test data using the <code>setup</code> method:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductControllerSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> setup() {
-    Product.saveAll(
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Apple</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">2.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Orange</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">3.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">1.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cake</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">4.0</span>)
-    )
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>setup</code> method uses the <code>saveAll</code> method to save multiple domain classes to serve as test data.</p>
-</div>
-<div class="paragraph">
-<p>Finally, we are ready to implement the test and can perform a search by executing the <code>search</code> method, passing appropriate arguments and verifying the JSON written to the response:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductControllerSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test the search action finds results</span><span class="delimiter">'</span></span>() {
+<span class="keyword">import</span> <span class="include">com.github.fakemongo.Fongo</span>
+<span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
+<span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">ProductControllerSpec</span> <span class="directive">extends</span> MongoSpec <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="directive">implements</span> ControllerUnitTest&lt;ProductController&gt; {  <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="annotation">@Override</span>
+    MongoClient createMongoClient() {  <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="keyword">new</span> Fongo(getClass().name).mongo
+    }
+    <span class="type">void</span> setup() { <i class="conum" data-value="4"></i><b>(4)</b>
+        Product.saveAll(
+            <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Apple</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">2.0</span>),
+            <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Orange</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">3.0</span>),
+            <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">1.0</span>),
+            <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cake</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">4.0</span>)
+        )
+    }
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test the search action finds results</span><span class="delimiter">'</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A query is executed that finds results</span><span class="delimiter">'</span></span>
         controller.search(<span class="string"><span class="delimiter">'</span><span class="content">pp</span><span class="delimiter">'</span></span>, <span class="integer">10</span>)
 
@@ -157,8 +132,29 @@ MongoClient createMongoClient() {
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>MongoSpec is an abstract class that will initialise GORM in the setup phase of the specification being executed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Override the <code>createMongoClient</code> method of the <code>MongoSpec</code> base class. Use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>; an in-memory java implementation of MongoDB.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use the <a href="https://testing.grails.org/latest/guide/index.html#unitTestingControllers">grails.testing.web.controllers.ControllerUnitTest</a> trait to unit test controllers.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>setup</code> method uses the <code>saveAll</code> method to save multiple domain classes to serve as test data.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>As you can see from the example above, we are asserting the value of the <code>json</code> property of the <code>response</code>. The resulting JSON rendered by Grails looks like:</p>
+<p>The test performs a search by executing the <code>search</code> method, passing appropriate arguments and verifying the JSON written to the response.
+The tests asserts the value of the <code>json</code> property of the <code>response</code>. The resulting JSON rendered by Grails looks like:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -172,9 +168,9 @@ MongoClient createMongoClient() {
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.3 Apply Domain Constraints</title>
+    <title>3.3 Apply Domain Constraints</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -30,16 +30,19 @@ function addJsClass() {
 
                     <div id="nav-summary-childs" style="display:none;">
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>2</strong><span>Writing the Application</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -57,11 +60,11 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
                 
 
 
@@ -69,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="applyConstraints">2.3 Apply Domain Constraints</h2>
+<h2 id="applyConstraints">3.3 Apply Domain Constraints</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/rest-mongodb/edit/master/src/main/docs/guide/applyConstraints.adoc"'>
@@ -79,10 +82,11 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>If you wish to define <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#constraints">validation constraints</a> on properties defined in a GORM domain class, you can do so using the <code>constraints</code> property:</p>
+<p>If you wish to define <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#constraints">validation constraints</a>
+on properties defined in a GORM domain class, you can do so using the <code>constraints</code> property:</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/domain/mongodb/example/Product.groovy</div>
+<div class="title">grails-app/domain/demo/Product.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> constraints = {
     name <span class="key">blank</span>: <span class="predefined-constant">false</span>
@@ -104,115 +108,113 @@ function addJsClass() {
 </ul>
 </div>
 <div class="paragraph">
-<p>To verify these constraints work to our expectation you can write a test. If you used the <code>create-domain-class</code> a test called <code>src/test/groovy/mongodb/example/ProductSpec.groovy</code> was generated for you already. Otherwise simply creating an appropriately named test in <code>src/test/groovy</code> using your IDE or text editor will suffice.</p>
+<p>To verify these constraints work to our expectation you can write a test. If you used the <code>create-domain-class</code> a test
+called <code>src/test/groovy/demo/ProductSpec.groovy</code> was generated for you already. Otherwise simply creating an appropriately
+named test in <code>src/test/groovy</code> using your IDE or text editor will suffice.</p>
 </div>
 <div class="paragraph">
-<p>To effectively test interactions with MongoDB in a unit test it is recommended you use <code>grails.test.mongodb.MongoSpec</code> combined with <a href="https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo">Embedded MongoDB</a>.</p>
+<p>Tests in Grails are written with <a href="http://spockframework.org">Spock Framework</a>,
+tests including having spaces in the test name.</p>
 </div>
 <div class="paragraph">
-<p>To achieve this first modify the imports of the <code>ProductSpec</code> class as follows:</p>
+<p>To write unit tests with MongoDB and Spock, you can simply extend from <code>grails.test.mongodb.MongoSpec</code>.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
+<div class="title">src/test/groovy/demo/ProductSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
-<span class="keyword">import</span> <span class="include">de.flapdoodle.embed.mongo.distribution.Version</span>
-<span class="keyword">import</span> <span class="include">de.flapdoodle.embed.mongo.tests.MongodForTestsFactory</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
 <span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.TestFor</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then ensure the <code>ProductSpec</code> extends the <code>MongoSpec</code> base class:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
-<span class="annotation">@TestFor</span>(Product)
-<span class="type">class</span> <span class="class">ProductSpec</span> <span class="directive">extends</span> MongoSpec {</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Next override the <code>createMongoClient</code> method of the <code>MongoSpec</code> base class return an instance of embedded MongoDB:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-MongoClient createMongoClient() {
-    MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo()
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DomainUnitTest</span>
+<span class="keyword">import</span> <span class="include">com.github.fakemongo.Fongo</span>
+<span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">TrailingWhitespace</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">ProductSpec</span> <span class="directive">extends</span> MongoSpec <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="directive">implements</span> DomainUnitTest&lt;Product&gt; {  <i class="conum" data-value="4"></i><b>(4)</b>
+
+    <span class="annotation">@Override</span>
+    MongoClient createMongoClient() {  <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">new</span> Fongo(getClass().name).mongo
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">a negative value is not a valid price</span><span class="delimiter">'</span></span>() { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">given</span>:
+        domain.price = -<span class="float">2.0d</span>
+
+        <span class="key">expect</span>:
+        !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">price</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">a blank name is not save</span><span class="delimiter">'</span></span>() { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">given</span>:
+        domain.name = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+
+        <span class="key">expect</span>:
+        !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">A valid domain is saved</span><span class="delimiter">'</span></span>() {  <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">given</span>:
+        domain.name = <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>
+        domain.price = <span class="float">2.15d</span>
+
+        <span class="key">when</span>:
+        domain.save()
+
+        <span class="key">then</span>:
+        Product.count() == old(Product.count()) + <span class="integer">1</span>
+    }
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>The above code will startup a MongoDB server used only for the execution of the test.</p>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Spock allows you to define much more readable</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Override the <code>createMongoClient</code> method of the <code>MongoSpec</code> base class. Use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>; an in-memory java implementation of MongoDB.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>MongoSpec is an abstract class that will initialise GORM in the setup phase of the specification being executed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Use the <a href="https://testing.grails.org/latest/guide/index.html#unitTestingDomainClasses">grails.testing.gorm.DomainUnitTest</a> trait to unit test single domain class.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>With the test prepared you are ready to write a test. Tests in Grails are written with <a href="http://spockframework.org">Spock Framework</a>, which allows you to define much more readable tests including having spaces in the name:</p>
+<p>Add the fongo dependency to <code>build.gradle</code></p>
 </div>
 <div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
+<div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test domain class validation</span><span class="delimiter">'</span></span>() {
-    ...
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.github.fakemongo:fongo:2.1.0</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>First lets write a test for the invalid case. You can do so using Spock <code>when</code> and <code>then</code> blocks to make the test more readable:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A domain class is saved with invalid data</span><span class="delimiter">'</span></span>
-Product product = <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">price</span>: -<span class="float">2.0d</span>)
-product.save()
-
-<span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">There were errors and the data was not saved</span><span class="delimiter">'</span></span>
-product.hasErrors()
-product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">price</span><span class="delimiter">'</span></span>)
-product.errors.getFieldError(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-Product.count() == <span class="integer">0</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above example sets the <code>name</code> to a blank value and the <code>price</code> to a negative value and attempts to save the instance using the <a href="http://gorm.grails.org/latest/mongodb/api/org/grails/datastore/gorm/GormEntity.html#save()">save()</a> method.</p>
-</div>
-<div class="paragraph">
-<p>The <code>then</code> block asserts that the object is invalid and was not saved.</p>
-</div>
-<div class="paragraph">
-<p>To write a test for the valid case populate some valid data and try and assert that the object was saved:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/mongodb/example/ProductSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A valid domain is saved</span><span class="delimiter">'</span></span>
-product.name = <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>
-product.price = <span class="float">2.15d</span>
-product.save()
-
-<span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The product was saved successfully</span><span class="delimiter">'</span></span>
-Product.count() == <span class="integer">1</span>
-Product.first().price == <span class="float">2.15d</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>All done! Now to run the test you can run <code>./gradlew check</code> from a terminal window or run the test within your IDE if the IDE supports it:</p>
+<p>Now to run the test you can run <code>./gradlew check</code> from a terminal window or run the test within your IDE if the IDE supports it:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew check</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Checkout <a href="http://guides.grails.org/grails-test-domain-class-constraints/guide/index.html">How to test domain class constraints?</a> guide to learn more about testing constraints.</p>
+</div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
