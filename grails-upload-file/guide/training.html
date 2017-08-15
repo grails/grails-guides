@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Writing the Application</title>
+    <title>1 Grails Training</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -69,138 +69,76 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
-                
 
                 
-                    <div class="toc-item next-right"><a href="../guide/restaurant.html"><strong>4</strong><span>Restaurant - Upload and save as byte[]</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
                 
 
 
                 
-                <div id="table-of-content">
-                    <h2>Table of Contents</h2>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#featuredImageCommand"><strong>3.1</strong><span>Featured Image Command Object</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#increaseFileSize"><strong>3.2</strong><span>Increase allowed file size</span></a>
-                    </div>
-                    
-                </div>
-                
 
                 
 
-<h1 id="writingTheApp">3 Writing the Application</h1>
+<h1 id="training">1 Grails Training</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/training.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>We are going to create an app to list tourism resources; hotels, restaurants, and points of interest.</p>
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
 </div>
-<div class="paragraph">
-<p>In the next sections, you are going to see in more detail those domain classes.</p>
-</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+var ociTrainingTrack = 11;
+getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
 
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
 
-<h2 id="featuredImageCommand">3.1 Featured Image Command Object</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/featuredImageCommand.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>Each of our application entities ( hotels, restaurants and point of interest )  will have a featured image.</p>
-</div>
-<div class="paragraph">
-<p>To encapsulate the validation of the file being upload; we use a <a href="http://guides.grails.org/command-objects-and-forms/guide/index.html">Grails Command Object</a></p>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/controllers/demo/FeaturedImageCommand.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
-
-<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
-<span class="keyword">import</span> <span class="include">org.springframework.web.multipart.MultipartFile</span>
-
-<span class="type">class</span> <span class="class">FeaturedImageCommand</span> <span class="directive">implements</span> Validateable {
-    MultipartFile featuredImageFile
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">Integer</span> version
-
-    <span class="directive">static</span> constraints = {
-        id <span class="key">nullable</span>: <span class="predefined-constant">false</span>
-        version <span class="key">nullable</span>: <span class="predefined-constant">false</span>
-        featuredImageFile  <span class="key">validator</span>: { val, obj -&gt;
-            <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
-                <span class="keyword">return</span> <span class="predefined-constant">false</span>
-            }
-            <span class="keyword">if</span> ( val.empty ) {
-                <span class="keyword">return</span> <span class="predefined-constant">false</span>
-            }
-
-            [<span class="string"><span class="delimiter">'</span><span class="content">jpeg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">jpg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">png</span><span class="delimiter">'</span></span>].any { extension -&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-                 val.originalFilename?.toLowerCase()?.endsWith(extension)
-            }
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
         }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Only files ending with JPG or PNG are allowed</td>
-</tr>
-</table>
-</div>
-
-
-<h2 id="increaseFileSize">3.2 Increase allowed file size</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/increaseFileSize.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>Grails 3&#8217;s default file size is 128000 (~128KB).</p>
-</div>
-<div class="paragraph">
-<p>We are going to allow 25MB files uploads.</p>
-</div>
-<div class="paragraph">
-<p>25 * 1024 * 1024 = 26.214.400 bytes</p>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
- <span class="key">controllers</span>:
-  <span class="key">upload</span>:
-    <span class="key">maxFileSize</span>: <span class="integer">26214400</span>
-    <span class="key">maxRequestSize</span>: <span class="integer">26214400</span></code></pre>
-</div>
-</div>
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
-                
-                    <div class="toc-item next-right"><a href="../guide/restaurant.html"><strong>4</strong><span>Restaurant - Upload and save as byte[]</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
