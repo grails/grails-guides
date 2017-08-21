@@ -82,13 +82,15 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Create a controllered named <code>CitiesController</code> which uses the previous service method:</p>
+<p>Create a controller named <code>CitiesController</code> which uses the previous service method:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/controllers/demo/CitiesController.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">grails.async.Promise</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.async.Promises.*</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">org.openweathermap.CurrentWeather</span>
 <span class="keyword">import</span> <span class="include">org.openweathermap.OpenweathermapService</span>
@@ -101,16 +103,37 @@ function addJsClass() {
 
     <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">String</span> unit, <span class="type">boolean</span> async) {
         Unit unitEnum = Unit.unitWithString(unit)
-        <span class="predefined-type">List</span>&lt;CurrentWeather&gt; currentWeatherList
-        <span class="keyword">if</span> ( async ) {
-                currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCodeWithPromises(LargestUSCities.CITIES, <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>, unitEnum)
-        } <span class="keyword">else</span> {
-                currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCode(LargestUSCities.CITIES, <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>, unitEnum)
+
+        <span class="keyword">if</span> ( async ) { <i class="conum" data-value="1"></i><b>(1)</b>
+            Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCodeWithPromises(LargestUSCities.CITIES, <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>, unitEnum)
+            <span class="keyword">return</span> tasks( <i class="conum" data-value="2"></i><b>(2)</b>
+                    <span class="key">currentWeatherList</span>: currentWeatherList,
+                    <span class="key">unit</span>: createBoundPromise(unitEnum)
+            )
+        } <span class="keyword">else</span> { <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="predefined-type">List</span>&lt;CurrentWeather&gt; currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCode(LargestUSCities.CITIES, <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>, unitEnum)
+            <span class="keyword">return</span> [<span class="key">currentWeatherList</span>: currentWeatherList, <span class="key">unit</span>: unitEnum]
         }
-        [<span class="key">currentWeatherList</span>: currentWeatherList, <span class="key">unit</span>: unitEnum]
+
     }
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If the <code>async</code> parameter is <code>true</code> then use the previously created service method that returns a promise.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A set of named tasks is returned from the controller where each key becomes a resolved value in the model of the view. Grails will detect the fact that a promise is returned a create a non-blocking response. The <code>createBoundPromise</code> method is used to define a <code>Promise</code> that is already bound and doesn&#8217;t need to be resolved asynchronously.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If the <code>async</code> parameter is <code>false</code> then create the model synchronously.</td>
+</tr>
+</table>
 </div>
 
 

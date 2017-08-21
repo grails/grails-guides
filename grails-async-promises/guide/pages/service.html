@@ -98,20 +98,19 @@ function addJsClass() {
 </div>
 </div>
 <div class="paragraph">
-<p>Add to <code>OpenweathermapService</code> the next methods:</p>
+<p>Add to <code>OpenweathermapService</code> the following methods:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/services/org/openweathermap/OpenweathermapService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;CurrentWeather&gt; findCurrentWeatherByCitiesAndCountryCodeWithPromises(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; cities, <span class="predefined-type">String</span> countryCode, Unit unit) {
-        <span class="predefined-type">List</span> list = <span class="type">[]</span>
+<pre class="CodeRay highlight"><code data-lang="groovy">    Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; findCurrentWeatherByCitiesAndCountryCodeWithPromises(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; cities, <span class="predefined-type">String</span> countryCode, Unit unit) {
+        PromiseList&lt;CurrentWeather&gt; list = <span class="keyword">new</span> PromiseList&lt;CurrentWeather&gt;()
         cities.each { <span class="predefined-type">String</span> city -&gt;
             list &lt;&lt; task { <i class="conum" data-value="1"></i><b>(1)</b>
                 currentWeather(city, countryCode, unit)
             }
         }
-        <span class="predefined-type">List</span> l = waitAll(list) <i class="conum" data-value="2"></i><b>(2)</b>
-        l.flatten() <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;CurrentWeather&gt;
+        <span class="keyword">return</span> list <i class="conum" data-value="2"></i><b>(2)</b>
     }</code></pre>
 </div>
 </div>
@@ -119,11 +118,11 @@ function addJsClass() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>task</code> method, which returns an instance of the grails.async.Promise</td>
+<td>The <code>task</code> method, which returns an instance of the <code>grails.async.Promise</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>waitAll</code> method waits synchronously, blocking the current thread, for all of the concurrent tasks to complete and returns the results.</td>
+<td>A <code>PromiseList</code> is returned which contains a union of all of the created <code>grails.async.Promise</code> instances</td>
 </tr>
 </table>
 </div>
