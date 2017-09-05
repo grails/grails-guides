@@ -83,27 +83,54 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">grails.events.EventPublisher</span>
+<span class="keyword">import</span> <span class="include">grails.events.annotation.Publisher</span>
 <span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.validation.ValidationException</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
-<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+<span class="keyword">import</span> <span class="include">org.springframework.dao.DuplicateKeyException</span>
 
 <span class="annotation">@CompileStatic</span>
-<span class="annotation">@Slf4j</span>
-<span class="type">class</span> <span class="class">RegisterService</span> <span class="directive">implements</span> EventPublisher { <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">RegisterService</span> {
+
+    MessageSource messageSource
 
     <span class="annotation">@Transactional</span>
-    User register(RegisterCommand cmd) {
-        <span class="predefined-type">String</span> email = cmd.email
-        User user = cmd <span class="keyword">as</span> User
-        <span class="keyword">if</span> ( !user.save() ) {
-            log.error <span class="string"><span class="delimiter">'</span><span class="content">Unable to save user {}</span><span class="delimiter">'</span></span>, user.errors.toString()
-            <span class="keyword">return</span> user
-        }
-
-        notify(<span class="string"><span class="delimiter">'</span><span class="content">userSaved</span><span class="delimiter">'</span></span>, email) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="annotation">@Publisher</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    User saveUser(User user) {
+        user.save(<span class="key">failOnError</span>: <span class="predefined-constant">true</span>) <i class="conum" data-value="2"></i><b>(2)</b>
         user
     }
+
+    SaveUserResult register(RegisterCommand cmd, <span class="predefined-type">Locale</span> locale) {
+        User user = cmd <span class="keyword">as</span> User
+        <span class="keyword">try</span> {
+            saveUser(user)
+            <span class="keyword">return</span> <span class="keyword">new</span> SaveUserResult(<span class="key">message</span>: userSavedMessage(cmd.email, locale))
+        } <span class="keyword">catch</span> (ValidationException | DuplicateKeyException validationException) {
+            <span class="keyword">return</span> <span class="keyword">new</span> SaveUserResult(<span class="key">error</span>: userSavedErrorMessage(cmd.email, locale))
+        }
+    }
+
+    <span class="predefined-type">String</span> userSavedErrorMessage(<span class="predefined-type">String</span> email, <span class="predefined-type">Locale</span> locale) {
+        messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">user.saved.error</span><span class="delimiter">'</span></span>,
+                [email] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">Error while saving user with </span><span class="inline"><span class="inline-delimiter">${</span>email<span class="inline-delimiter">}</span></span><span class="content"> email address</span><span class="delimiter">&quot;</span></span>,
+                locale)
+    }
+
+    <span class="predefined-type">String</span> userSavedMessage(<span class="predefined-type">String</span> email, <span class="predefined-type">Locale</span> locale) {
+        messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">user.saved</span><span class="delimiter">'</span></span>,
+                [email] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                <span class="string"><span class="delimiter">&quot;</span><span class="content">User saved with </span><span class="inline"><span class="inline-delimiter">${</span>email<span class="inline-delimiter">}</span></span><span class="content"> email address</span><span class="delimiter">&quot;</span></span>,
+                locale)
+    }
+}
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">SaveUserResult</span> {
+    <span class="predefined-type">String</span> message
+    <span class="predefined-type">String</span> error
 }</code></pre>
 </div>
 </div>
@@ -111,16 +138,18 @@ function addJsClass() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Implement explicitely  <a href="https://async.grails.org/latest/api/grails/events/EventPublisher.html">EventPublisher</a> trait</td>
+<td>Annotate the method with <code>@Publisher</code>. The event Id uses the method name <code>saveUser</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Instead of annotating the method with <code>@Publisher</code> which is usually the recommended approach to publish an event, we do it here manually with <code>notify</code> method.</td>
+<td>Raise an exception if the validation fails. This rollbacks the transaction. If the transaction is rollbacked, no event is triggered.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>We consume the event in a different service. The consumer is completely decoupled from the sender. In a real application you will probably send an email to the user who just registered asking him to verify his email address. In this guide, we save a <code>Notification</code> in the database.</p>
+<p>We consume the event in a different service. The consumer is completely decoupled from the sender.
+In a real application you will probably send an email to the user who just registered asking him to verify his email address.
+In this guide, we save a <code>Notification</code> in the database.</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/services/demo/WelcomeEmailService.groovy</div>
@@ -137,9 +166,9 @@ function addJsClass() {
 <span class="type">class</span> <span class="class">WelcomeEmailService</span> {
 
     <span class="annotation">@Transactional</span>
-    <span class="annotation">@Subscriber</span>(<span class="string"><span class="delimiter">'</span><span class="content">userSaved</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
-    <span class="type">void</span> onUserSaved(<span class="predefined-type">String</span> email) {
-        <span class="predefined-type">Notification</span> notification = <span class="keyword">new</span> <span class="predefined-type">Notification</span>(<span class="key">email</span>: email, <span class="key">subject</span>: <span class="string"><span class="delimiter">'</span><span class="content">Welcome to Grails App</span><span class="delimiter">'</span></span>)
+    <span class="annotation">@Subscriber</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> saveUser(User user) {
+        <span class="predefined-type">Notification</span> notification = <span class="keyword">new</span> <span class="predefined-type">Notification</span>(<span class="key">email</span>: user.email, <span class="key">subject</span>: <span class="string"><span class="delimiter">'</span><span class="content">Welcome to Grails App</span><span class="delimiter">'</span></span>)
         <span class="comment">// TODO Send Email</span>
         <span class="keyword">if</span> ( !notification.save() ) {
             log.error(<span class="string"><span class="delimiter">'</span><span class="content">unable to save notification {}</span><span class="delimiter">'</span></span>, notification.errors.toString())
@@ -152,7 +181,7 @@ function addJsClass() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>To consume an event use the <a href="https://async.grails.org/latest/api/grails/events/annotation/Subscriber.html">Subscriber</a> annotation. We use the event id to subscribe to.</td>
+<td>To consume an event use the <a href="https://async.grails.org/latest/api/grails/events/annotation/Subscriber.html">Subscriber</a> annotation. The method name <code>saveUser</code> is  used by default for the event id, although it can start with the word "on". In other words either a method name of <code>saveUser</code> or <code>onSaveUser</code> would work for the this guide example.</td>
 </tr>
 </table>
 </div>

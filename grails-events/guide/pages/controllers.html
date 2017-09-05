@@ -126,7 +126,6 @@ function addJsClass() {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
-<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">RegisterController</span> {
@@ -134,8 +133,6 @@ function addJsClass() {
     <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>]
 
     RegisterService registerService
-
-    MessageSource messageSource
 
     <span class="keyword">def</span> <span class="function">index</span>() {
         [<span class="key">signUpInstance</span>:  <span class="keyword">new</span> RegisterCommand()]
@@ -148,11 +145,13 @@ function addJsClass() {
             <span class="keyword">return</span>
         }
 
-        User user = registerService.register(cmd)
-        flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">user.saved</span><span class="delimiter">'</span></span>,
-                [user.email] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
-                <span class="string"><span class="delimiter">&quot;</span><span class="content">User saved with </span><span class="inline"><span class="inline-delimiter">${</span>user?.email<span class="inline-delimiter">}</span></span><span class="content"> email address</span><span class="delimiter">&quot;</span></span>,
-                request.locale)
+        SaveUserResult result = registerService.register(cmd, request.locale)
+        flash.message = result.message
+        <span class="keyword">if</span> ( result.error ) {
+            flash.error = result.error
+            render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">signUpInstance</span>: cmd]
+            <span class="keyword">return</span>
+        }
         redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>
     }
 }</code></pre>

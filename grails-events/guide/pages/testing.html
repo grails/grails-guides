@@ -98,16 +98,29 @@ function addJsClass() {
 
     <span class="annotation">@Rollback</span>
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">If you signup a User, an Event triggers which causes a Notification to be saved</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">when</span>:
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">you signup with a non existing user</span><span class="delimiter">'</span></span>
         go <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>
         <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>
         <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>
         <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>
         <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>).click()
 
-        <span class="key">then</span>:
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the user gets created and a notification is saved due to the event being triggered</span><span class="delimiter">'</span></span>
         userService.count() == old(userService.count()) + <span class="integer">1</span>
         notificationService.count() == old(notificationService.count()) + <span class="integer">1</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">you try to signup with a user which is already in the database</span><span class="delimiter">'</span></span>
+        go <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>
+        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>
+        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>
+        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>).click()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The user is not saved and no event gets triggered</span><span class="delimiter">'</span></span>
+        noExceptionThrown()
+        userService.count() == old(userService.count())
+        notificationService.count() == old(notificationService.count())
+
 
         <span class="key">cleanup</span>:
         userService.deleteByEmail(<span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>)
