@@ -222,7 +222,7 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
 <div class="ulist">
 <ul>
 <li>
-<p><code>initial</code>  Initial project. Often a simple Grails app with additional some code to give you a head-start.</p>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
 </li>
 <li>
 <p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
@@ -306,8 +306,17 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <img src="../img/apiKey.png" alt="apiKey">
 </div>
 </div>
-<div class="paragraph">
-<p>INFO: the API key may take several minutes to become active.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+the API key may take several minutes to become active.
+</td>
+</tr>
+</table>
 </div>
 
 
@@ -757,7 +766,7 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.4.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.5.0</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="quoteblock">
@@ -769,13 +778,15 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 </div>
 <div class="paragraph">
 <p>First, implement a test which verifies that the <code>OpenweathermapService.currentWeather</code> method returns
-null when the REST API returns 401. For example, when the API Key is invalid.</p>
+null when the REST API returns <code>401</code>. For example, when the API Key is invalid.</p>
 </div>
 <div class="listingblock">
 <div class="title">src/test/groovy/org/openweathermap/OpenweathermapServiceSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
@@ -798,7 +809,6 @@ null when the REST API returns 401. For example, when the API Key is invalid.</p
                 }
             }
         }
-        ersatz.start()
         service.openWeatherUrl = ersatz.httpUrl <i class="conum" data-value="4"></i><b>(4)</b>
         service.appid = appid
 
@@ -853,6 +863,8 @@ null when the REST API returns 401. For example, when the API Key is invalid.</p
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
@@ -865,19 +877,31 @@ null when the REST API returns 401. For example, when the API Key is invalid.</p
         <span class="predefined-type">String</span> city = <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
-        <span class="predefined-type">String</span> expected = <span class="string"><span class="delimiter">'''</span><span class="content">{&quot;coord&quot;:{&quot;lon&quot;:-0.13,&quot;lat&quot;:51.51},&quot;weather&quot;:[{&quot;id&quot;:803,&quot;main&quot;:&quot;Clouds&quot;,&quot;description&quot;:&quot;broken clouds&quot;,&quot;icon&quot;:&quot;04d&quot;}],&quot;base&quot;:&quot;stations&quot;,&quot;main&quot;:{&quot;temp&quot;:20.81,&quot;pressure&quot;:1017,&quot;humidity&quot;:53,&quot;temp_min&quot;:19,&quot;temp_max&quot;:22},&quot;visibility&quot;:10000,&quot;wind&quot;:{&quot;speed&quot;:3.6,&quot;deg&quot;:180,&quot;gust&quot;:9.8},&quot;clouds&quot;:{&quot;all&quot;:75},&quot;dt&quot;:1502707800,&quot;sys&quot;:{&quot;type&quot;:1,&quot;id&quot;:5091,&quot;message&quot;:0.0029,&quot;country&quot;:&quot;GB&quot;,&quot;sunrise&quot;:1502685920,&quot;sunset&quot;:1502738622},&quot;id&quot;:2643743,&quot;name&quot;:&quot;London&quot;,&quot;cod&quot;:200}</span><span class="delimiter">'''</span></span>
         ersatz.expectations {
             get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
-                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
                 query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
                 called(<span class="integer">1</span>)
                 responder {
+                    encoder(ContentType.APPLICATION_JSON, <span class="predefined-type">Map</span>, Encoders.json) <i class="conum" data-value="1"></i><b>(1)</b>
                     code(<span class="integer">200</span>)
-                    content expected,<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+                    content([
+                        coord     : [<span class="key">lon</span>: -<span class="float">0.13</span>, <span class="key">lat</span>: <span class="float">51.51</span>],
+                        weather   : [[<span class="key">id</span>: <span class="integer">803</span>, <span class="key">main</span>: <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>, <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>, <span class="key">icon</span>: <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>]],
+                        base      : <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>,
+                        main      : [<span class="key">temp</span>: <span class="float">20.81</span>, <span class="key">pressure</span>: <span class="integer">1017</span>, <span class="key">humidity</span>: <span class="integer">53</span>, <span class="key">temp_min</span>: <span class="integer">19</span>, <span class="key">temp_max</span>: <span class="integer">22</span>],
+                        <span class="key">visibility</span>: <span class="integer">10000</span>,
+                        wind      : [<span class="key">speed</span>: <span class="float">3.6</span>, <span class="key">deg</span>: <span class="integer">180</span>, <span class="key">gust</span>: <span class="float">9.8</span>],
+                        clouds    : [<span class="key">all</span>: <span class="integer">75</span>],
+                        dt        : <span class="integer">1502707800</span>,
+                        sys       : [<span class="key">type</span>: <span class="integer">1</span>, <span class="key">id</span>: <span class="integer">5091</span>, <span class="key">message</span>: <span class="float">0.0029</span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">GB</span><span class="delimiter">&quot;</span></span>, <span class="key">sunrise</span>: <span class="integer">1502685920</span>, <span class="key">sunset</span>: <span class="integer">1502738622</span>],
+                        id        : <span class="integer">2643743</span>,
+                        name      : <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>,
+                        cod       : <span class="integer">200</span>
+                    ], ContentType.APPLICATION_JSON) <i class="conum" data-value="2"></i><b>(2)</b>
                 }
             }
         }
-        ersatz.start()
         service.openWeatherUrl = ersatz.httpUrl
         service.appid = appid
 
@@ -916,6 +940,30 @@ null when the REST API returns 401. For example, when the API Key is invalid.</p
 
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare a response encoder to convert a <code>Map</code> into <code>application/json</code> content using an Ersatz-provided encoder.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define the response content as a <code>Map</code> which will be converted to JSON by the defined encoder (above).</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+As of Ersatz version 1.5.0 the internal Undertow embedded server version is out of sync with Grails. If you use Undertow as your server for Grails you may have classpath collisions or odd errors. This can be avoided by using the "safe" (shadowed) version of the Ersatz dependency (see the <a href="http://stehno.com/ersatz/asciidoc/html5/#_shadow_jar">Shadow Jar section of the Ersatz User Guide</a> for more details).
+</td>
+</tr>
+</table>
 </div>
 
 
