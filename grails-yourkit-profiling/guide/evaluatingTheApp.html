@@ -1,0 +1,683 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Evaluating the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/evaluatingTheApp.html"><strong>3</strong><span>Evaluating the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/inefficientDelete.html"><strong>4</strong><span>Inefficient Delete</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveGarbageCollection.html"><strong>5</strong><span>Excessive Garbage Collection</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveHeapMemory.html"><strong>6</strong><span>Excessive Heap Memory</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/inefficientDelete.html"><strong>4</strong><span>Inefficient Delete</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#installYourKit"><strong>3.1</strong><span>Install YourKit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#startProfiling"><strong>3.2</strong><span>Start Profiling</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#insertStudents"><strong>3.3</strong><span>Insert Students</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="evaluatingTheApp">3 Evaluating the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/evaluatingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The guide comes built with a simple application created for you.  The purpose of the application is to have ready-made
+contrived examples of code which trigger performance issues and cause the tool to display memory, CPU, and heap problems.</p>
+</div>
+<div class="paragraph">
+<p>The application is titled Grails YourKit Profile and has a simple domain object <code>Student</code>. The application has several links
+that trigger operations for the purpose of inducing performance issues. In summary, the application has the ability to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>insert a large amount of students in the database (with random names and grades)</p>
+</li>
+<li>
+<p>delete students that have a grade less that an A</p>
+</li>
+<li>
+<p>print the students to the screen</p>
+</li>
+<li>
+<p>import a spreadsheet of student entries</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_browse_the_code">Browse the Code</h3>
+<div class="paragraph">
+<p>Please take a moment to browse through the code and familiarize yourself with the important classes of the application.</p>
+</div>
+<div class="paragraph">
+<p><code>StudentController</code> which routes to service functionality of insert, delete, print, import.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/StudentController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">StudentController</span> {
+
+    <span class="directive">static</span> <span class="directive">final</span> <span class="type">int</span> LARGE_NUMBER = <span class="integer">20000</span>
+    <span class="directive">static</span> scaffold = Student
+    MessageSource messageSource
+
+    StudentService studentService
+    StudentDataService studentDataService
+
+    <span class="keyword">def</span> <span class="function">insert</span>() {
+        studentService.insertStudents(LARGE_NUMBER)
+        render studentCountMessage()
+    }
+
+    <span class="keyword">def</span> <span class="function">delete</span>() {
+        studentService.deleteStudentsWithGradleLessThanA()
+        render studentCountMessage()
+    }
+
+    <span class="keyword">def</span> <span class="function">print</span>() {
+        render studentService.htmlUnorderedListOfStudents()
+    }
+
+    <span class="keyword">def</span> <span class="function">import25kStudents</span>() {
+        studentService.saveExcelStudents(<span class="string"><span class="delimiter">&quot;</span><span class="content">studentImport-25krows.xlsx</span><span class="delimiter">&quot;</span></span>)
+        render studentCountMessage()
+    }
+
+    <span class="keyword">def</span> <span class="function">import75kStudents</span>() {
+        studentService.saveExcelStudents(<span class="string"><span class="delimiter">&quot;</span><span class="content">studentImport-75krows.xlsx</span><span class="delimiter">&quot;</span></span>)
+        render studentCountMessage()
+    }
+
+    <span class="directive">protected</span> <span class="predefined-type">String</span> studentCountMessage() {
+        <span class="type">int</span> count = studentDataService.count()
+        <span class="predefined-type">String</span> defaultMsg = <span class="string"><span class="delimiter">&quot;</span><span class="content">Student Count: </span><span class="inline"><span class="inline-delimiter">${</span>count<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">student.count</span><span class="delimiter">'</span></span>, [count] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, defaultMsg, request.locale)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>StudentDataService</code>: a <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Service</a> which
+ takes the work out of implemented service layer logic.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Service</span>(Student)
+<span class="type">interface</span> StudentDataService {
+    <span class="predefined-type">List</span>&lt;Student&gt; findAll()
+    <span class="predefined-type">List</span>&lt;Student&gt; findByGradeLessThan(<span class="predefined-type">BigDecimal</span> grade)
+    <span class="type">int</span> count()
+    Student save(<span class="predefined-type">String</span> name, <span class="predefined-type">BigDecimal</span> grade)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Student</code> - Domain object used to store a student</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Student.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Student</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">BigDecimal</span> grade
+
+    <span class="predefined-type">String</span> toString() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>name<span class="inline-delimiter">}</span></span><span class="content">-Grade:</span><span class="inline"><span class="inline-delimiter">$</span>grade</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>StudentService</code> - Service which implements the operations of the application</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.apache.poi.ss.usermodel.Workbook</span>
+<span class="keyword">import</span> <span class="include">org.apache.poi.ss.usermodel.WorkbookFactory</span>
+<span class="keyword">import</span> <span class="include">org.grails.plugins.excelimport.ExcelImportService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">StudentService</span> {
+
+    StudentDataService studentDataService
+
+    <span class="directive">static</span> <span class="directive">final</span> <span class="type">int</span> boundary = <span class="integer">100</span>
+    <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">BigDecimal</span> A_GRADE = <span class="integer">90</span>
+    <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Map</span> CONFIG_STUDENT_COLUMN_MAP = [
+            <span class="key">sheet</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sheet1</span><span class="delimiter">'</span></span>,
+            <span class="key">startRow</span>: <span class="integer">1</span>,
+            <span class="key">columnMap</span>: [
+                    <span class="string"><span class="delimiter">'</span><span class="content">A</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>,
+                    <span class="string"><span class="delimiter">'</span><span class="content">B</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">grade</span><span class="delimiter">'</span></span>
+            ]
+    ]
+
+    <span class="predefined-type">Random</span> random = <span class="keyword">new</span> <span class="predefined-type">Random</span>()
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> insertStudents(<span class="type">int</span> numberOfStudents) {
+        numberOfStudents.times {
+            <span class="predefined-type">BigDecimal</span> grade = random.nextInt(boundary) <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
+            studentDataService.save(produceRandomName(), grade)
+        }
+    }
+
+    <span class="comment">//tag::deleteStudents[]</span>
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> deleteStudentsWithGradleLessThanA() {
+        <span class="predefined-type">List</span>&lt;Student&gt; students = studentDataService.findByGradeLessThan(A_GRADE)
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">#{} students with less than A</span><span class="delimiter">'</span></span>, students.size()
+        <span class="keyword">for</span> (Student s <span class="keyword">in</span> students) {
+            s.delete(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+        }
+    }
+    <span class="comment">//end::deleteStudents[]</span>
+
+    <span class="comment">//tag::htmlUnorderedListOfStudents[]</span>
+    <span class="predefined-type">String</span> htmlUnorderedListOfStudents() {
+        <span class="predefined-type">List</span>&lt;Student&gt; students = studentDataService.findAll()
+        <span class="predefined-type">String</span> result = <span class="string"><span class="delimiter">'</span><span class="content">&lt;ul&gt;</span><span class="delimiter">'</span></span>
+        <span class="keyword">for</span> (s <span class="keyword">in</span> students) {
+            result += <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;li&gt;</span><span class="inline"><span class="inline-delimiter">${</span>s.toString()<span class="inline-delimiter">}</span></span><span class="content">&lt;/li&gt;</span><span class="delimiter">&quot;</span></span>
+        }
+        result += <span class="string"><span class="delimiter">'</span><span class="content">&lt;/ul&gt;</span><span class="delimiter">'</span></span>
+        result
+    }
+    <span class="comment">//end::htmlUnorderedListOfStudents[]</span>
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> saveExcelStudents(<span class="predefined-type">String</span> fileName) {
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; studentData = importStudents(fileName)
+        <span class="keyword">for</span> (<span class="predefined-type">Map</span> s <span class="keyword">in</span> studentData) {
+            studentDataService.save(s.name <span class="keyword">as</span> <span class="predefined-type">String</span>, s.grade <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>)
+        }
+    }
+
+    <span class="comment">//tag::importStudents[]</span>
+    <span class="directive">protected</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; importStudents(<span class="predefined-type">String</span> fileName) {
+        Workbook workbook = WorkbookFactory.create(<span class="keyword">new</span> <span class="predefined-type">File</span>(fileName))
+        ExcelImportService excelImportService = <span class="keyword">new</span> ExcelImportService()
+        excelImportService.convertColumnMapConfigManyRows(workbook, CONFIG_STUDENT_COLUMN_MAP) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;
+    }
+    <span class="comment">//end::importStudents[]</span>
+
+    <span class="directive">protected</span> <span class="predefined-type">String</span> produceRandomName() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">Name</span><span class="inline"><span class="inline-delimiter">${</span>random.nextInt(<span class="integer">2</span>*boundary)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>index.gsp</code> - The UI of the application which contains the links of the front page</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Grails Yourkit Profile&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>/&gt;
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>&lt;body&gt;
+&lt;content tag=<span class="string"><span class="delimiter">&quot;</span><span class="content">nav</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;li <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">a</span> href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-toggle</span><span class="delimiter">&quot;</span></span> <span class="class">data</span>-toggle=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">button</span><span class="delimiter">&quot;</span></span> aria-haspopup=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span> aria-expanded=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>&gt;Application Status &lt;span <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">caret</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">span&gt;&lt;</span><span class="delimiter">/</span></span><span class="class">a</span>&gt;
+        &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-menu</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">li</span>&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;<span class="key">Environment</span>: <span class="error">$</span>{grails.util.Environment.current.name}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;App <span class="key">profile</span>: <span class="error">$</span>{grailsApplication.config.grails?.profile}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;App <span class="key">version</span>:
+                &lt;<span class="key">g</span>:meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">info.app.version</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>            &lt;li role=<span class="string"><span class="delimiter">&quot;</span><span class="content">separator</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">divider</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>            &lt;<span class="class">li</span>&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;Grails <span class="key">version</span>:
+                &lt;<span class="key">g</span>:meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">info.app.grailsVersion</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;Groovy <span class="key">version</span>: <span class="error">$</span>{GroovySystem.getVersion()}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;JVM <span class="key">version</span>: <span class="error">$</span>{<span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">java.version</span><span class="delimiter">'</span></span>)}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li role=<span class="string"><span class="delimiter">&quot;</span><span class="content">separator</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">divider</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>            &lt;<span class="class">li</span>&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;Reloading <span class="key">active</span>: <span class="error">$</span>{grails.util.Environment.reloadingAgentEnabled}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>    &lt;li <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">a</span> href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-toggle</span><span class="delimiter">&quot;</span></span> <span class="class">data</span>-toggle=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">button</span><span class="delimiter">&quot;</span></span> aria-haspopup=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span> aria-expanded=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>&gt;Artefacts &lt;span <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">caret</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">span&gt;&lt;</span><span class="delimiter">/</span></span><span class="class">a</span>&gt;
+        &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-menu</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">li</span>&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;<span class="key">Controllers</span>: <span class="error">$</span>{grailsApplication.controllerClasses.size()}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;<span class="key">Domains</span>: <span class="error">$</span>{grailsApplication.domainClasses.size()}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;<span class="key">Services</span>: <span class="error">$</span>{grailsApplication.serviceClasses.size()}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;Tag <span class="key">Libraries</span>: <span class="error">$</span>{grailsApplication.tagLibClasses.size()}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>    &lt;li <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">a</span> href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-toggle</span><span class="delimiter">&quot;</span></span> <span class="class">data</span>-toggle=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">button</span><span class="delimiter">&quot;</span></span> aria-haspopup=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span> aria-expanded=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>&gt;Installed Plugins &lt;span <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">caret</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">span&gt;&lt;</span><span class="delimiter">/</span></span><span class="class">a</span>&gt;
+        &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-menu</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">g</span>:each var=<span class="string"><span class="delimiter">&quot;</span><span class="content">plugin</span><span class="delimiter">&quot;</span></span> <span class="keyword">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>applicationContext.getBean(<span class="string"><span class="delimiter">'</span><span class="content">pluginManager</span><span class="delimiter">'</span></span>).allPlugins<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;li&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{plugin.name} - <span class="error">$</span>{plugin.version}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;&lt;</span><span class="delimiter">/</span></span>li&gt;
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:each&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">content&gt;</span></span><span class="error">
+</span>
+    &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;section <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="class">h1</span>&gt;Grails Yourkit Profile&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>
+            &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">controllers</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">navigation</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;h2&gt;Available <span class="key">Controllers</span>:&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h2&gt;</span></span><span class="error">
+</span>                &lt;ul&gt;
+                    &lt;<span class="key">g</span>:each var=<span class="string"><span class="delimiter">&quot;</span><span class="content">c</span><span class="delimiter">&quot;</span></span> <span class="keyword">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>grailsApplication.controllerClasses.sort { <span class="local-variable">it</span>.fullName } <span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                        &lt;li <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">controller</span><span class="delimiter">&quot;</span></span>&gt;
+                            &lt;<span class="class">g</span>:link controller=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>c.logicalPropertyName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{c.name}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;</span></span><span class="error">
+</span>                        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>                    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:each&gt;</span></span><span class="error">
+</span>                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>
+                &lt;h2&gt;Grails YourKit Profiling Operations&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h2&gt;</span></span><span class="error">
+</span>                &lt;table id=<span class="string"><span class="delimiter">&quot;</span><span class="content">profileOperations</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink (<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">student</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">insert</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;Insert Students&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>                     &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">tr&gt;</span></span><span class="error">
+</span>                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink (<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">student</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">delete</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;Delete Students&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>                    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">tr&gt;</span></span><span class="error">
+</span>                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink (<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">student</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">print</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;Print Students&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>                    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">tr&gt;</span></span><span class="error">
+</span>                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink (<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">student</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">import25kStudents</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;Import <span class="integer">25</span>k Students&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>                    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">tr&gt;</span></span><span class="error">
+</span>                    &lt;tr&gt;
+                        &lt;td&gt;&lt;a href=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>createLink (<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">student</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">import75kStudents</span><span class="delimiter">&quot;</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;Import <span class="integer">75</span>k Students&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">a&gt;</span></span><span class="error">
+</span>                    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">tr&gt;</span></span><span class="error">
+</span>                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">table&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">section&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>StudentServiceSpec</code> and <code>StudentServiceIntegrationSpec</code> - Test classes used to validate the functionality of the service. (For convenience)</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">StudentServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;StudentService&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test produceRandomName</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        <span class="predefined-type">String</span> name = service.produceRandomName()
+
+        <span class="key">then</span>:
+        !name.isEmpty()
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test importStudents</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; studentData = service.importStudents(<span class="string"><span class="delimiter">&quot;</span><span class="content">src/test/resources/studentImport-3rows.xlsx</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        studentData.size() == <span class="integer">3</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/StudentServiceIntegrationSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Rollback</span>
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">StudentServiceIntegrationSpec</span> <span class="directive">extends</span> Specification {
+
+    StudentService studentService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test insertStudents</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        studentService.insertStudents(<span class="integer">100</span>)
+
+        <span class="key">then</span>:
+        Student.count() == old(Student.count()) + <span class="integer">100</span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test deleteStudents</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        studentService.insertStudents(<span class="integer">100</span>)
+        studentService.deleteStudentsWithGradleLessThanA()
+
+        <span class="key">then</span>:
+        Student.count() &lt; (old(Student.count()) + <span class="integer">100</span>)
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test htmlUnorderedListOfStudents</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        studentService.insertStudents(<span class="integer">100</span>)
+        <span class="predefined-type">String</span> results = studentService.htmlUnorderedListOfStudents()
+
+        <span class="key">then</span>:
+        !results.isEmpty()
+        results.count(<span class="string"><span class="delimiter">'</span><span class="content">&lt;ul&gt;</span><span class="delimiter">'</span></span>) == <span class="integer">1</span>
+        results.count(<span class="string"><span class="delimiter">'</span><span class="content">&lt;li&gt;</span><span class="delimiter">'</span></span>) == <span class="integer">100</span>
+        results.count(<span class="string"><span class="delimiter">'</span><span class="content">&lt;/li&gt;</span><span class="delimiter">'</span></span>) == <span class="integer">100</span>
+        results.count(<span class="string"><span class="delimiter">'</span><span class="content">&lt;/ul&gt;</span><span class="delimiter">'</span></span>) == <span class="integer">1</span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test saveExcelStudents</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        studentService.saveExcelStudents(<span class="string"><span class="delimiter">&quot;</span><span class="content">src/integration-test/resources/studentImport-3rows.xlsx</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        Student.count() == old(Student.count()) + <span class="integer">3</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_the_application">Run the application</h3>
+<div class="paragraph">
+<p>Use the command below to run the app. Trigger some of the functionality initially to get familiar. Later we will run the
+operation within the context of the profiler.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_application_front_page">Application Front Page</h5>
+<div class="paragraph">
+<p><span class="image"><img src="../img/app_front.png" alt="792" width="518"></span></p>
+</div>
+</div>
+</div>
+
+
+<h2 id="installYourKit">3.1 Install YourKit</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/installYourKit.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Go to the <a href="https://www.yourkit.com/java/profiler/">YourKit</a> page and download the appropriate installation package. YourKit
+offers a 15 day evaluation license. It also has options for a per-seat and corporate licenses. Note that YourKit offers a
+cheaper license for students, while also offering a free license for open-source projects.</p>
+</div>
+<div class="sect2">
+<h3 id="_ide_integration">IDE Integration</h3>
+<div class="paragraph">
+<p>Once the YourKit profile is installed, we can integrate the tool into an IDE. Note that this guide uses IntelliJ IDEA.
+Follow the instructions for <a href="https://www.yourkit.com/docs/java/help/ide_integration.jsp">IDE integration</a></p>
+</div>
+</div>
+
+
+<h2 id="startProfiling">3.2 Start Profiling</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/startProfiling.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There are two ways to bind the profiler to a running application. Either one is preferable:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Bind After Application Running</p>
+<div class="ulist">
+<ul>
+<li>
+<p>This type of binding relies on the conventional Grails startup of the application, but at times binding may not be instant
+with the attachment or other profiling functions.</p>
+</li>
+<li>
+<p>Start the application with the command <code>grails run-app</code> or use the Run Configuration in the IDE <code>Grails: initial</code></p>
+</li>
+<li>
+<p>Start the YourKit Profiler and in the Monitor Local Applications section, click on the <code>Application</code> PID.</p>
+</li>
+<li>
+<p>Initiate the binding early in the application startup process for best results.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Bind on Startup</p>
+<div class="ulist">
+<ul>
+<li>
+<p>This type of binding results in quicker response times, but requires some startup configuration.</p>
+</li>
+<li>
+<p>Create a Run Configuration with the main class <code>demo.Application</code>. Be sure to set the <code>Working Directory</code> to
+<code>grails-yourkit-profiling\initial</code>, and also set the <code>Use of classpath module</code> to <code>initial_main</code>.</p>
+</li>
+<li>
+<p>In the <code>VM Options:</code> set it to <code>-Xmx512m -Xms512m</code>. The VM in this Startup ignores the build.gradle entry.</p>
+</li>
+<li>
+<p>Start the application with the pinwheel icon  from your IDE. Since Grails 3 relies on Gradle for its lifecyle management,
+in IntelliJ, the pinwheel icon is not active unless you start the application from <code>Application.groovy</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="sect4">
+<h5 id="_pinwheel_icon">Pinwheel icon</h5>
+<div class="imageblock">
+<div class="content">
+<img src="../img/pinwheel.jpg" alt="20" width="20">
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_monitor_local_applications">Monitor Local Applications</h5>
+<div class="imageblock">
+<div class="content">
+<img src="../img/monitoring.jpg" alt="500" width="500">
+</div>
+</div>
+</div>
+
+
+<h2 id="insertStudents">3.3 Insert Students</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/insertStudents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Once the application is binded to the profiler we are ready to execute operations. We will need to generate some data into
+the application.</p>
+</div>
+<div class="paragraph">
+<p>Execute the <code>Insert Students</code> operation, which will generate 20,000 student entries with random names and
+grades. At this point we are ready to continue with profiling in the following sections.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/inefficientDelete.html"><strong>4</strong><span>Inefficient Delete</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-yourkit-profiling"><img src="https://travis-ci.org/grails-guides/grails-yourkit-profiling.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-yourkit-profiling">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-yourkit-profiling.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-yourkit-profiling.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-yourkit-profiling/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

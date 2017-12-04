@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Excessive Heap Memory</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/evaluatingTheApp.html"><strong>3</strong><span>Evaluating the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/inefficientDelete.html"><strong>4</strong><span>Inefficient Delete</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveGarbageCollection.html"><strong>5</strong><span>Excessive Garbage Collection</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveHeapMemory.html"><strong>6</strong><span>Excessive Heap Memory</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/excessiveGarbageCollection.html">&lt;&lt; <strong>5</strong><span>Excessive Garbage Collection</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="excessiveHeapMemory">6 Excessive Heap Memory</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/excessiveHeapMemory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The application JVM memory is set <code>512m</code>. This is sufficient for a moderate load of xls imports, but will fail as the load
+increases. Let&#8217;s first attempt to import a moderate load of students. Click <code>Import 25k Students</code> and observe that the application
+is responsive and successfully imports the records.</p>
+</div>
+<div class="paragraph">
+<p>An increase on the load of import will cause an Out of Memory exception. Before we run into this scenario we must start
+profiling.</p>
+</div>
+<div class="sect2">
+<h3 id="_analyze_in_profiler">Analyze In Profiler</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start Object Allocation Recording.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/memory_profile.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Proceed to the Memory Tab&#8594;Memory &amp; GC Telemetry. Here you can see the live graph of the Heap in real time.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/memory_gctelemetry.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Execute <code>Import 75k Students</code>. Note that processing will occur for a few minutes then Out of Memory exceptions will occur. Upon
+the error, YourKit will autogenerate an <code>.hprof</code> memory dump file. This is the standard JVM profiling format. Load the file
+and click on <code>Class</code> and see the first object <code>Xobj$AttrXobj</code>.  This class has instances that are exceeding the current JVM Heap
+size.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/memory_hprof1.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Now let&#8217;s <code>Capture Memory Snapshot</code>. The snapshot will have a more detailed views and let us pinpoint the problematic areas
+of memory usage.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/memory_snapshot.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Go to <code>Allocations by site</code>, then <code>Hot spots by object count</code>, click on the Method Area (1st item), then
+<code>Back Traces</code> tab at the bottom right. Expand the trace to see <code>demo.StudentService.importStudents(String)</code>. This method is
+where the objects are being generated.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/memory_error.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_examine_the_code">Examine the Code</h3>
+<div class="paragraph">
+<p>The code for <code>importStudents()</code> invokes the POI API to load a <code>WorkbookFactory.</code> It is at this invocation where the JVM Heap
+memory increases significantly. The object instances of <code>Xobj$AttrXobj</code>, along with <code>chars</code> and <code>Strings</code> increase proportionally
+with the the size of the <code>xlsx</code> file. As a result, the JVM Heap is exceeded.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="directive">protected</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; importStudents(<span class="predefined-type">String</span> fileName) {
+        Workbook workbook = WorkbookFactory.create(<span class="keyword">new</span> <span class="predefined-type">File</span>(fileName))
+        ExcelImportService excelImportService = <span class="keyword">new</span> ExcelImportService()
+        excelImportService.convertColumnMapConfigManyRows(workbook, CONFIG_STUDENT_COLUMN_MAP) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;
+    }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_increase_the_memory">Increase the Memory</h3>
+<div class="paragraph">
+<p>This type of memory issue is difficult to track down but fortunately the solution is straight forward. A reasonable increase
+in memory will solve the object allocation. No code change is needed. Adjust the file below:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">bootRun {
+    jvmArgs = [<span class="string"><span class="delimiter">'</span><span class="content">-Xmx1024m</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">-Xms1024m</span><span class="delimiter">'</span></span>]
+    addResources = <span class="predefined-constant">true</span>
+}</code></pre>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/excessiveGarbageCollection.html">&lt;&lt; <strong>5</strong><span>Excessive Garbage Collection</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-yourkit-profiling"><img src="https://travis-ci.org/grails-guides/grails-yourkit-profiling.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-yourkit-profiling">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-yourkit-profiling.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-yourkit-profiling.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-yourkit-profiling/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

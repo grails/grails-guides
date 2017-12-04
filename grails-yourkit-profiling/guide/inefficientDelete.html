@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Inefficient Delete</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/evaluatingTheApp.html"><strong>3</strong><span>Evaluating the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/inefficientDelete.html"><strong>4</strong><span>Inefficient Delete</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveGarbageCollection.html"><strong>5</strong><span>Excessive Garbage Collection</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/excessiveHeapMemory.html"><strong>6</strong><span>Excessive Heap Memory</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/evaluatingTheApp.html">&lt;&lt; <strong>3</strong><span>Evaluating the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/excessiveGarbageCollection.html"><strong>5</strong><span>Excessive Garbage Collection</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="inefficientDelete">4 Inefficient Delete</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-yourkit-profiling/edit/master/src/main/docs/guide/inefficientDelete.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The application has inefficient delete functionality. Upon <code>Delete Students</code>, the application takes an excessive amount of
+time to delete students that have grades less that 90. Let&#8217;s demonstrate how this can be analyzed with YourKit.</p>
+</div>
+<div class="sect2">
+<h3 id="_analyze_in_profiler">Analyze In Profiler</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start CPU Profiling with Sampling option - this tracks method times with low overhead.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/cpu_profile.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Execute <code>Delete Students</code>. Observe that delete functionality takes a long while. Note the log output to the console has
+repeated delete hql statements. Pause for about 2-3 minutes while delete takes place.</p>
+</li>
+<li>
+<p>Now we must Capture Performance Snapshot. A snapshot view has much more detailed information than the CPU profile. We
+will be able to dig into the performance statistics of the application. The snapshot will capture statistics from the time
+the profiler was started till the moment the snapshot was initiated. Once the snapshot is prepared, open it.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/cpu_snapshot.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Navigate to Java EE Statistics&#8594;Database. Here we can see the excessive amount of delete statements made to the database,
+along with the length of time. In the Reverse Call Tree, we can see the application method call responsible:
+<code>demo.StudentService.deleteStudents()</code>. You may right-click and Open in IDE, which will take you directly to the code.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><span class="image"><img src="../img/cpu_database.jpg" alt="700" width="700"></span></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_examine_the_code">Examine the Code</h3>
+<div class="paragraph">
+<p>The code for <code>deleteStudents()</code> finds all students less than A grade. It then proceeds to cycle through each object and
+issue a delete statement. Obviously this is responsible for the slowdown.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> deleteStudentsWithGradleLessThanA() {
+        <span class="predefined-type">List</span>&lt;Student&gt; students = studentDataService.findByGradeLessThan(A_GRADE)
+        log.info <span class="string"><span class="delimiter">'</span><span class="content">#{} students with less than A</span><span class="delimiter">'</span></span>, students.size()
+        <span class="keyword">for</span> (Student s <span class="keyword">in</span> students) {
+            s.delete(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+        }
+    }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_improve_the_code">Improve the Code</h3>
+<div class="paragraph">
+<p>It is much more efficient to simply issue one delete SQL query with a <code>where</code> clause.</p>
+</div>
+<div class="paragraph">
+<p>We are going to use the <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Service</a> with a delete operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> deleteStudentsWithGradleLessThanA() {
+        studentDataService.deleteByGradleLessThan(A_GRADE)
+    }</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/StudentDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Service</span>(Student)
+<span class="type">interface</span> StudentDataService {
+  ...
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete </span><span class="inline"><span class="inline-delimiter">${</span>Student student<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>student</span><span class="content">.grade &lt;= </span><span class="inline"><span class="inline-delimiter">$</span>grade</span><span class="delimiter">&quot;</span></span>)
+    <span class="type">void</span> deleteByGradleLessThan(<span class="predefined-type">BigDecimal</span> grade)
+}
+...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that the code improvement is made, we should restart the application with the profiler. Repeat <code>Insert Students</code> again. Repeat the steps in
+<code>Analyze in Profiler</code> and observe the database <code>delete</code> call get reduced to 1.</p>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/evaluatingTheApp.html">&lt;&lt; <strong>3</strong><span>Evaluating the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/excessiveGarbageCollection.html"><strong>5</strong><span>Excessive Garbage Collection</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-yourkit-profiling"><img src="https://travis-ci.org/grails-guides/grails-yourkit-profiling.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-yourkit-profiling">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-yourkit-profiling.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-yourkit-profiling'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-yourkit-profiling.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-yourkit-profiling/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
