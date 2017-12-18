@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>7 Mutations</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configuringGormGraphQL.html"><strong>3</strong><span>Configuring GORM for GraphQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/playGraphQL.html"><strong>4</strong><span>Playing with the GraphQL browser</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/installApollo.html"><strong>5</strong><span>Install and Configure Apollo</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/queryGraphQL.html"><strong>6</strong><span>Querying GraphQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/mutations.html"><strong>7</strong><span>Mutations</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>8</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>9</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/queryGraphQL.html">&lt;&lt; <strong>6</strong><span>Querying GraphQL</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>8</strong><span>Conclusion</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="mutations">7 Mutations</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/mutations.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned earlier, <strong>mutations</strong> are GraphQL&#8217;s mechanism for changing the data via the GraphQL schema. The available mutations are defined in the schema. The GORM GraphQL plugin generates several basic mutations, described in the documentation. For example, for our <code>Speaker</code> domain class, the plugin provides the following mutations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>speakerCreate(book: {})</code></p>
+</li>
+<li>
+<p><code>speaker(id: .., book: {})</code></p>
+</li>
+<li>
+<p><code>speaker(id: ..)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Of course, custom mutations can be defined as well - the <a href="https://grails.github.io/gorm-graphql/snapshot/guide/index.html#operations">plugin documentation</a> describes how.</p>
+</div>
+<div class="paragraph">
+<p>Our React app already uses REST calls to create and delete talks for a given speaker. Let&#8217;s replace these REST calls with GraphQL mutations.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>/src/main/webapp/Speaker.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const talkCreate = gql<span class="error">`</span>
+  mutation talkCreate(<span class="predefined">$talk</span>: TalkCreate!) {
+    talkCreate(talk: <span class="predefined">$talk</span>) {
+      id
+      title
+      duration
+    }
+  }
+<span class="error">`</span>;
+
+const talkDelete = gql<span class="error">`</span>
+  mutation talkDelete(<span class="predefined">$id</span>: Long!) {
+    talkDelete(id: <span class="predefined">$id</span>) {
+    error
+  }
+}
+<span class="error">`</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve defined GraphQL fragments for two mutations, <code>talkCreate</code> and <code>talkDelete</code>. These fragments specify the inputs required by each mutation, and their types. You can type these mutations into the GraphiQL browser and see their required inputs.</p>
+</div>
+<div class="paragraph">
+<p>Now we need to bind these mutations to our component props, so we can call them from our component. Again, we use the higher-order <code>graphql</code> component for this task. Because we have multiple mutations, we will import Apollo&#8217;s <code>compose</code> function to streamline the "chaining" of these mutations.</p>
+</div>
+<div class="paragraph">
+<p>First, import the <code>compose</code> function at the top of <code>Speaker.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>import {graphql, compose} from 'react-apollo'
+import gql from 'graphql-tag'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can use <code>compose</code> to bind these mutations to our <code>Speaker</code> component.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const SpeakerWithMutations = compose(
+  graphql(talkCreate, {
+    <span class="key">props</span>: ({mutate}) =&gt; ({
+      <span class="key">talkCreate</span>: ({talk}) =&gt;
+        mutate({
+          <span class="key">variables</span>: {talk},
+        })
+    })
+  }),
+  graphql(talkDelete, {
+    <span class="key">props</span>: ({mutate}) =&gt; ({
+      <span class="key">talkDelete</span>: ({id}) =&gt;
+        mutate({
+          <span class="key">variables</span>: {id},
+        })
+    })
+  })
+)(Speaker)
+
+<span class="reserved">export</span> <span class="keyword">default</span> SpeakerWithMutations;</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For more information regarding the use of mutations and <code>compose</code>, please refer to <a href="https://www.apollographql.com/docs/react/basics/mutations.html">the Apollo documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The last step is to call our mutations in place of REST calls. Find the <code>addNewTalk</code> and <code>deleteTalk</code> functions in <code>Speaker.js</code>, and edit them as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">addNewTalk = () =&gt; {
+  const {title, duration} = <span class="local-variable">this</span>.state;
+  const {speaker} = <span class="local-variable">this</span>.props;
+
+  <span class="local-variable">this</span>.setState({<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>});
+
+  <span class="local-variable">this</span>.props.talkCreate({<span class="key">talk</span>: {title, duration, <span class="key">speaker</span>: {<span class="key">id</span>: speaker.id}}})
+    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">create response:</span><span class="delimiter">'</span></span>, data))
+    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+};
+
+deleteTalk = (id) =&gt; {
+  <span class="local-variable">this</span>.props.talkDelete({<span class="key">id</span>: id})
+    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">delete response: </span><span class="delimiter">'</span></span>, data))
+    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each of the mutations we&#8217;ve bound to our component are available as functions off of <code>this.props</code>: <code>talkCreate()</code> and <code>talkDelete()</code>. Each function takes a single argument, which is a JavaScript object containing all the parameters required by our mutation. When the mutation resolves, the <code>then()</code> function will be called with the data that is returned by the mutation. For this sample, we are simply logging out the data, but you could also use this to update the Apollo cache as <a href="https://www.apollographql.com/docs/react/basics/mutations.html#store-updates">described in the documentation</a>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+For simplicity, this guide is relying on the <code>pollingInterval</code> we set up earlier to refresh the data and remove/add talks from the cache. In a real-world application, you will want to update the data in memory using the result of the mutation.
+</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/queryGraphQL.html">&lt;&lt; <strong>6</strong><span>Querying GraphQL</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/conclusion.html"><strong>8</strong><span>Conclusion</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo"><img src="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-graphql-with-react-and-apollo'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

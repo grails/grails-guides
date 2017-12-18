@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Building a GORM/GraphQL App with React and Apollo | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Building a GORM/GraphQL App with React and Apollo. Build a Grails app and use GORM's GraphQL support to serve React app using Apollo' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo"><img src="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/gorm-graphql-with-react-and-apollo&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#configuringGormGraphQL"><strong>3</strong><span>Configuring GORM for GraphQL</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#playGraphQL"><strong>4</strong><span>Playing with the GraphQL browser</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#installApollo"><strong>5</strong><span>Install and Configure Apollo</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#queryGraphQL"><strong>6</strong><span>Querying GraphQL</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#mutations"><strong>7</strong><span>Mutations</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#conclusion"><strong>8</strong><span>Conclusion</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>9</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Building a GORM/GraphQL App with React and Apollo</h1>
+        <p>Build a Grails app and use GORM's GraphQL support to serve React app using Apollo</p>
+        <p><strong>Authors:</strong> Zachary Klein</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+var ociTrainingTrack = 11;
+getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you will learn how to leverage GORM&#8217;s support for GraphQL. You will configure Grails to act as a GraphQL server,</p>
+</div>
+<div class="paragraph">
+<p>The <code>initial</code> sample project already has a simple conference-related REST API (consisting of two domain classes, <code>Speaker</code> and <code>Talk</code>) configured using the <a href="http://docs.grails.org/latest/guide/single.html#domainResources">@Resource annotation</a>. The project is using the <a href="https://grails-profiles.github.io/react-webpack/latest/guide/index.html">react-webpack profile</a>, and a simple React app has been provided which will list out the speakers, as well as the talks belonging to each speaker.</p>
+</div>
+<div class="paragraph">
+<p>The React app is quite trivial and naively uses the default REST API provided by Grails - e.g, the app makes one REST call to list the speakers, and then iterates over the talk ids for each speaker, making a separate REST call to get the details for each talk. This means that a single load of the app can require many REST calls simply to acquire the data needed to render the app.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>http://localhost:8080/speaker	200	fetch	1.6 KB	851 ms
+http://localhost:8080/talk/1	200	fetch	260 B	262 ms
+http://localhost:8080/talk/2	200	fetch	273 B	310 ms
+http://localhost:8080/talk/3	200	fetch	254 B	299 ms
+http://localhost:8080/talk/4	200	fetch	261 B	297 ms
+http://localhost:8080/talk/5	200	fetch	293 B	284 ms</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Of course there are a few ways we could resolve this problem using standard REST techniques, including hypermedia, or customized endpoints (using <a href="http://views.grails.org">JSON Views</a>, for example) - however in more complex apps it is possible that this could lead to a proliferation of custom endpoints providing different combinations of data. In addition, some endpoints might provide more data than the app actually requires -  there is no way to express the desired "piece" of data in a typical REST API.</p>
+</div>
+<div class="paragraph">
+<p>This is where GraphQL shines - it allows consumers of our API, whether private clients (like our own Single-Page Applications) or public users, to specify the exact pieces of data that they need, in a declarative way. GraphQL queries can even be <a href="https://dev-blog.apollodata.com/a-stronger-typed-react-apollo-c43bd52be0d8">codifed as Flow types</a>, making the data requirements of your components explicit and testable.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/graphql.png" alt="GraphQL">
+</div>
+</div>
+<div class="paragraph">
+<p>Please refer to the excellent documentation and other resources at the <a href="http://graphql.org">official GraphQL project website</a> for more information.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo.git" class="bare">https://github.com/grails-guides/gorm-graphql-with-react-and-apollo.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/gorm-graphql-with-react-and-apollo/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/gorm-graphql-with-react-and-apollo/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="configuringGormGraphQL">3 Configuring GORM for GraphQL</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/configuringGormGraphQL.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Install the <a href="https://grails.github.io/gorm-graphql/latest/guide/index.html">GORM GraphQL</a> plugin by adding this line to the <code>dependencies</code> section in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:gorm-graphql:1.0.0</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, to generate a GraphQL schema for your domain classes, all that is needed is to add a <code>static graphql</code> property to the domain class in question.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/gormgraphql/Talk.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> gormgraphql
+
+<span class="reserved">import</span> grails.rest.Resource
+
+<span class="error">@</span>Resource(uri=<span class="string"><span class="delimiter">'</span><span class="content">/talk</span><span class="delimiter">'</span></span>)
+<span class="reserved">class</span> Talk {
+
+    String title
+    <span class="reserved">int</span> duration
+
+    <span class="reserved">static</span> graphql = <span class="predefined-constant">true</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="reserved">static</span> belongsTo = [speaker: Speaker]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This will cause a GraphQL schema to be generated based on the properties in the domain class, following the constraints specified in the <code>constraints</code> block.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you need to customize the behavior of the GraphQL schema, you can assign the <code>graphql</code> property to a custom <code>GraphQLMapping</code>, using the DSL provided by the plugin. This is not a requirement for this guide, however a few of the supported options are shown in the <code>Speaker</code> domain class.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/gormgraphql/Speaker.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> gormgraphql
+
+<span class="reserved">import</span> grails.rest.Resource
+<span class="reserved">import</span> org.grails.gorm.graphql.entity.dsl.GraphQLMapping
+<span class="reserved">import</span> java.time.LocalDate
+<span class="reserved">import</span> java.time.Period
+
+<span class="error">@</span>Resource(uri=<span class="string"><span class="delimiter">'</span><span class="content">/speaker</span><span class="delimiter">'</span></span>)
+<span class="reserved">class</span> Speaker {
+
+    String firstName
+    String lastName
+    String name
+    String email
+    String bio
+    LocalDate birthday
+
+    <span class="reserved">static</span> hasMany = [talks: Talk]
+
+    <span class="reserved">static</span> graphql = GraphQLMapping.build {
+
+        property <span class="string"><span class="delimiter">'</span><span class="content">lastName</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="integer">1</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        property <span class="string"><span class="delimiter">'</span><span class="content">firstName</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="integer">2</span>
+        property <span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="integer">3</span>
+
+        exclude <span class="string"><span class="delimiter">'</span><span class="content">birthday</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+        property <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>, <span class="key">deprecationReason</span>: <span class="string"><span class="delimiter">'</span><span class="content">To be removed August 1st, 2018</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+
+        property(<span class="string"><span class="delimiter">'</span><span class="content">bio</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="4"></i><b>(4)</b>
+            order <span class="integer">4</span>
+            dataFetcher { Speaker speaker -&gt;
+                speaker.bio ?: <span class="string"><span class="delimiter">&quot;</span><span class="content">No biography provided</span><span class="delimiter">&quot;</span></span>
+            }
+        }
+
+        add(<span class="string"><span class="delimiter">'</span><span class="content">age</span><span class="delimiter">'</span></span>, Integer) { <i class="conum" data-value="5"></i><b>(5)</b>
+            dataFetcher { Speaker speaker -&gt;
+                Period.between(speaker.birthday, LocalDate.now()).years
+            }
+            input <span class="predefined-constant">false</span>
+        }
+    }
+
+    <span class="reserved">static</span> constraints = {
+        email nullable: <span class="predefined-constant">true</span>, <span class="key">email</span>: <span class="predefined-constant">true</span>
+        bio nullable: <span class="predefined-constant">true</span>
+    }
+
+    <span class="reserved">static</span> mapping = {
+        bio type: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+        name formula: <span class="string"><span class="delimiter">'</span><span class="content">concat(FIRST_NAME,</span><span class="char">\'</span><span class="content"> </span><span class="char">\'</span><span class="content">,LAST_NAME)</span><span class="delimiter">'</span></span>
+        talks sort: <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set property ordering</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Exclude property from the schema</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Deprecate a property (can also be set to <code>deprecated: true</code>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Custom data fetcher, for providing custom logic when retrieving the property</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Adding a (non persistent) property to the GraphQL schema</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can learn all the available features of the GORM GraphQL plugin <a href="https://grails.github.io/gorm-graphql/snapshot/guide/index.html">from the plugin documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="playGraphQL">4 Playing with the GraphQL browser</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/playGraphQL.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The GORM GraphQL plugin provides an interactive  GraphQL browser (<a href="https://github.com/graphql/graphiql">GraphiQL</a>) which makes it easy to explore the GraphQL schema. The browser is available when the Grails app is running, at the URL <code>/graphql/browser</code>. The browser features include autocompletion based on your schema, making it easy to explore the available types of queries and <strong>mutations</strong> (GraphQL terminology for requests that create/update/delete data from the schema).</p>
+</div>
+<div class="paragraph">
+<p>Start up the app with either <code>grails run-app</code> or <code>./gradlew bootRun</code>, and browse to <code><a href="http://localhost:8080/graphql/browser" class="bare">http://localhost:8080/graphql/browser</a></code>.</p>
+</div>
+<div class="paragraph">
+<p>You can now run queries against your new GraphQL schema, as well as mutations. Here&#8217;s a few queries and mutations to get your started - refer to the GORM GraphQL plugin documentation and the <a href="http://graphql.org">GraphQL project website</a> to learn more about the syntax and features of GraphQL.</p>
+</div>
+<div class="sect1">
+<h2 id="_queries">Queries</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//List speaker ids
+query {
+  speakerList(max: 10) {
+    id
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Return total speakers
+query {
+	speakerCount
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Retrieve speaker details by id
+query {
+  speaker(id: 1) {
+    firstName
+    lastName
+    bio
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Return list of talks with speaker details embedded
+query {
+	talkList(max:10) {
+    title
+    speaker {
+      firstName
+      lastName
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mutations">Mutations</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Update speaker by id, return any error messages (if any)
+mutation {
+  speakerUpdate(id: 1, speaker: {
+    bio: "Updated bio!"
+  }) {
+    id
+    bio
+    errors {
+      field
+      message
+    }
+  }
+}'</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Create speaker - this mutation will return an error due to missing property
+mutation {
+  speakerCreate(speaker: {
+    firstName: "James"
+    lastName: "Kleeh"
+  }) {
+    id
+    firstName
+    lastName
+    errors {
+      field
+      message
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>//Delete speaker by id
+mutation {
+  speakerDelete(id: 2) {
+    error
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h1 id="installApollo">5 Install and Configure Apollo</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/installApollo.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that you have a GraphQL schema, it is time to replace the existing RESTful integration in the React app using GraphQL. Of course we could compose GraphQL queries manually, however in most cases you will be better served by using a library to abstract away the details of making these requests. One option is the <a href="https://facebook.github.io/relay/">Relay framework</a>, which is developed by Facebook (the creators of React). Another popular library is <a href="https://www.apollographql.com/">Apollo</a>, which offers bindings for numerous JavaScript frameworks, including Angular and React. This guide will be using Apollo in the following steps.</p>
+</div>
+<div class="paragraph">
+<p>Install the necessary packages using either <code>npm</code> or <code>yarn</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ npm install apollo-client-preset react-apollo graphql-tag graphql --save</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first requirement to use Apollo is to configure a <strong>provider</strong>, which will encapsulate the details needed to actual make requests to the GraphQL schema. Edit the file <code>src/main/webapp/index.js</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/index.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> ReactDOM from <span class="string"><span class="delimiter">'</span><span class="content">react-dom</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> App from <span class="string"><span class="delimiter">'</span><span class="content">./App</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/App.css</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/grails.css</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/main.css</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {ApolloProvider} from <span class="string"><span class="delimiter">'</span><span class="content">react-apollo</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {ApolloClient} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-client</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {HttpLink} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-link-http</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {InMemoryCache} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-cache-inmemory</span><span class="delimiter">'</span></span>;
+
+const client = <span class="keyword">new</span> ApolloClient({ <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="key">link</span>: <span class="keyword">new</span> HttpLink(), <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="key">cache</span>: <span class="keyword">new</span> InMemoryCache()
+});
+
+
+ReactDOM.render( <i class="conum" data-value="3"></i><b>(3)</b>
+  <span class="tag">&lt;ApolloProvider</span> <span class="attribute-name">client</span>=<span class="error">{</span><span class="attribute-value">client</span><span class="error">}</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;App</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;/ApolloProvider&gt;</span>,
+  document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">root</span><span class="delimiter">'</span></span>)
+);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We create an instance of <code>ApolloClient</code>, which requires two objects - an <code>HttpLink</code> (which represents the URL of the GraphQL schema) and a cache store.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>By default, this client will send queries to the <code>/graphql</code> endpoint on the same host - which conveniently happens to be where the GORM GraphQL plugin exposes the GraphQL schema</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Finally, we wrap our <code>App</code> component with an <code>ApolloProvider</code> component, passing our <code>ApolloClient</code> instance as a prop to the latter. Now all child components will be able to query/mutate the GraphQL schema pointed to by the <code>client</code>.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="queryGraphQL">6 Querying GraphQL</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/queryGraphQL.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our React app is fairly simple, consisting of 3 main components, <code>SpeakerList</code>, <code>Speaker</code>, and <code>Talk</code>. The first two of these components include REST calls to load their data. Let&#8217;s replace these calls with a GraphQL query.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>src/main/webapp/SpeakerList.js</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/SpeakerList.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Speaker from <span class="string"><span class="delimiter">&quot;</span><span class="content">./Speaker</span><span class="delimiter">&quot;</span></span>;
+<span class="reserved">import</span> {graphql} from <span class="string"><span class="delimiter">'</span><span class="content">react-apollo</span><span class="delimiter">'</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">import</span> gql from <span class="string"><span class="delimiter">'</span><span class="content">graphql-tag</span><span class="delimiter">'</span></span>;  <i class="conum" data-value="2"></i><b>(2)</b>
+
+<span class="reserved">class</span> SpeakerList <span class="reserved">extends</span> Component {
+
+<i class="conum" data-value="3"></i><b>(3)</b>
+  render() {
+    const speakers = <span class="local-variable">this</span>.props.data.speakerList; <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="keyword">return</span> speakers ? [speakers.map(s =&gt; <span class="tag">&lt;Speaker</span> <span class="attribute-name">key</span>=<span class="error">{</span><span class="attribute-value">s.id</span><span class="error">}</span> <span class="attribute-name">speaker</span>=<span class="error">{</span><span class="attribute-value">s</span><span class="error">}</span><span class="tag">/&gt;</span>)] : <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>
+  }
+}
+
+const SPEAKER_QUERY = gql<span class="error">`</span>query {        speakerList(max: <span class="integer">10</span>) { <i class="conum" data-value="5"></i><b>(5)</b>
+  id, firstName, lastName,
+    talks { id }
+  }
+}<span class="error">`</span>;
+
+<i class="conum" data-value="6"></i><b>(6)</b>
+const SpeakerListWithData = graphql(SPEAKER_QUERY,
+    {<span class="key">options</span>: {<span class="key">pollInterval</span>: <span class="integer">5000</span>}} <i class="conum" data-value="7"></i><b>(7)</b>
+)(SpeakerList);
+<span class="reserved">export</span> <span class="keyword">default</span> SpeakerListWithData; <i class="conum" data-value="8"></i><b>(8)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>graphql</code> is a <a href="https://reactjs.org/docs/higher-order-components.html"><strong>higher-order component</strong></a>, which means that it wraps an existing component and returns a new component with additional behavior.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>gql</code> is JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template literal tag</a> that will parse our GraphQL queries</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Note that we were able to completely remove our <code>componentDidMount</code> method (where the REST call had been made) and our constructor, as we no longer need to use <code>this.state</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The data returned by our GraphQL query will be available via <code>this.props.data.[name of query]</code> - in this case, <code>speakerList</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>This constant represents our query - note that the syntax is the same as what you might have used in the GraphiQL browser.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Rather than exporting <code>SpeakerList</code> directly, we first "wrap" it using the <code>graphql</code> higher-order component, which will "connect" our <code>SpeakerList</code> component with our GraphQL schema, pass in our data requirements, and provide the data via the <code>data</code> prop within <code>SpeakerList</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>We&#8217;ve specified a <code>pollInterval</code>, which is one of several options available from <code>graphql</code>. This option will cause our GraphQL query to be run once every 10 seconds, updating our component with any new data automatically.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Finally, we export the "connected" version of <code>SpeakerList</code> as the default module.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>At this point, if you restart the application (or run <code>./gradlew webpack</code> in another terminal, to reload the JavaScript), you will see the React app is now retrieving the speakers via the GraphQL schema.</p>
+</div>
+<div class="paragraph">
+<p>Moving on the the <code>Speaker</code> component, we can again remove the <code>componentDidMount</code> method, and we can remove the <code>this.state.talks</code> property. Instead, in the <code>render</code> method, we will access each speakers' talks directly from the <code>speaker</code> prop.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> {Well} from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Talk from <span class="string"><span class="delimiter">&quot;</span><span class="content">./Talks</span><span class="delimiter">&quot;</span></span>;
+
+<span class="reserved">class</span> Speaker <span class="reserved">extends</span> Component {
+
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    }
+  }
+
+<span class="comment">//... other methods ommitted for space</span>
+
+  render() {
+    const {speaker} = <span class="local-variable">this</span>.props;
+    const {title, duration} = <span class="local-variable">this</span>.state;
+
+    <span class="keyword">return</span> <span class="tag">&lt;Well&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{speaker.firstName} {speaker.lastName}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;hr</span><span class="tag">/&gt;</span>
+
+      <span class="tag">&lt;ul&gt;</span>
+        {speaker.talks.map(t =<span class="error">&gt;</span> <span class="tag">&lt;Talk</span> <span class="attribute-name">key</span>=<span class="error">{</span><span class="attribute-value">t.id</span><span class="error">}</span> <span class="attribute-name">talk</span>=<span class="error">{</span><span class="attribute-value">t</span><span class="error">}</span> <span class="attribute-name">delete</span>=<span class="error">{</span><span class="error">(</span><span class="error">)</span> <span class="error">=</span><span class="tag">&gt;</span> this.deleteTalk(t.id)}/<span class="error">&gt;</span>)}
+        <span class="tag">&lt;li&gt;</span>
+          <span class="tag">&lt;label&gt;</span>Title<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">title</span><span class="error">}</span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleNewTalkChange</span><span class="error">}</span><span class="tag">/&gt;</span>
+
+          <span class="tag">&lt;label&gt;</span>Duration<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">number</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">duration</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">duration</span><span class="error">}</span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleNewTalkChange</span><span class="error">}</span><span class="tag">/&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.addNewTalk</span><span class="error">}</span><span class="tag">&gt;</span>Add Talk<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+
+    <span class="tag">&lt;/Well&gt;</span>
+  }
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> Speaker;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;1&gt;
+&lt;2&gt;</p>
+</div>
+<div class="paragraph">
+<p>However, if we try to run the app now we will find that we only have access to the ids of each talk - we are missing <code>title</code> and <code>duration</code>. Thanks to GraphQL, we can easily add these properties to our retrieved data by simply adding them to the query.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>src/main/webapp/SpeakerList.js</code> and add <code>title</code> and <code>duration</code> to the <code>SPEAKER_QUERY</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/SpeakerList.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const SPEAKER_QUERY = gql<span class="error">`</span>query {
+speakerList(max: <span class="integer">10</span>) {
+  id, firstName, lastName,
+    talks { id, title, duration } <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}<span class="error">`</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that, our multiple REST calls have been replaced with a single GraphQL query. You can inspect this query, and the response, using your Apollo&#8217;s <a href="https://github.com/apollographql/apollo-client-devtools">developer tools browser extension</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/devtools.png" alt="Apollo Dev Tools Extension">
+</div>
+</div>
+
+
+<h1 id="mutations">7 Mutations</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/mutations.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned earlier, <strong>mutations</strong> are GraphQL&#8217;s mechanism for changing the data via the GraphQL schema. The available mutations are defined in the schema. The GORM GraphQL plugin generates several basic mutations, described in the documentation. For example, for our <code>Speaker</code> domain class, the plugin provides the following mutations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>speakerCreate(book: {})</code></p>
+</li>
+<li>
+<p><code>speaker(id: .., book: {})</code></p>
+</li>
+<li>
+<p><code>speaker(id: ..)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Of course, custom mutations can be defined as well - the <a href="https://grails.github.io/gorm-graphql/snapshot/guide/index.html#operations">plugin documentation</a> describes how.</p>
+</div>
+<div class="paragraph">
+<p>Our React app already uses REST calls to create and delete talks for a given speaker. Let&#8217;s replace these REST calls with GraphQL mutations.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>/src/main/webapp/Speaker.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const talkCreate = gql<span class="error">`</span>
+  mutation talkCreate(<span class="predefined">$talk</span>: TalkCreate!) {
+    talkCreate(talk: <span class="predefined">$talk</span>) {
+      id
+      title
+      duration
+    }
+  }
+<span class="error">`</span>;
+
+const talkDelete = gql<span class="error">`</span>
+  mutation talkDelete(<span class="predefined">$id</span>: Long!) {
+    talkDelete(id: <span class="predefined">$id</span>) {
+    error
+  }
+}
+<span class="error">`</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve defined GraphQL fragments for two mutations, <code>talkCreate</code> and <code>talkDelete</code>. These fragments specify the inputs required by each mutation, and their types. You can type these mutations into the GraphiQL browser and see their required inputs.</p>
+</div>
+<div class="paragraph">
+<p>Now we need to bind these mutations to our component props, so we can call them from our component. Again, we use the higher-order <code>graphql</code> component for this task. Because we have multiple mutations, we will import Apollo&#8217;s <code>compose</code> function to streamline the "chaining" of these mutations.</p>
+</div>
+<div class="paragraph">
+<p>First, import the <code>compose</code> function at the top of <code>Speaker.js</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>import {graphql, compose} from 'react-apollo'
+import gql from 'graphql-tag'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can use <code>compose</code> to bind these mutations to our <code>Speaker</code> component.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const SpeakerWithMutations = compose(
+  graphql(talkCreate, {
+    <span class="key">props</span>: ({mutate}) =&gt; ({
+      <span class="key">talkCreate</span>: ({talk}) =&gt;
+        mutate({
+          <span class="key">variables</span>: {talk},
+        })
+    })
+  }),
+  graphql(talkDelete, {
+    <span class="key">props</span>: ({mutate}) =&gt; ({
+      <span class="key">talkDelete</span>: ({id}) =&gt;
+        mutate({
+          <span class="key">variables</span>: {id},
+        })
+    })
+  })
+)(Speaker)
+
+<span class="reserved">export</span> <span class="keyword">default</span> SpeakerWithMutations;</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For more information regarding the use of mutations and <code>compose</code>, please refer to <a href="https://www.apollographql.com/docs/react/basics/mutations.html">the Apollo documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The last step is to call our mutations in place of REST calls. Find the <code>addNewTalk</code> and <code>deleteTalk</code> functions in <code>Speaker.js</code>, and edit them as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">addNewTalk = () =&gt; {
+  const {title, duration} = <span class="local-variable">this</span>.state;
+  const {speaker} = <span class="local-variable">this</span>.props;
+
+  <span class="local-variable">this</span>.setState({<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>});
+
+  <span class="local-variable">this</span>.props.talkCreate({<span class="key">talk</span>: {title, duration, <span class="key">speaker</span>: {<span class="key">id</span>: speaker.id}}})
+    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">create response:</span><span class="delimiter">'</span></span>, data))
+    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+};
+
+deleteTalk = (id) =&gt; {
+  <span class="local-variable">this</span>.props.talkDelete({<span class="key">id</span>: id})
+    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">delete response: </span><span class="delimiter">'</span></span>, data))
+    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each of the mutations we&#8217;ve bound to our component are available as functions off of <code>this.props</code>: <code>talkCreate()</code> and <code>talkDelete()</code>. Each function takes a single argument, which is a JavaScript object containing all the parameters required by our mutation. When the mutation resolves, the <code>then()</code> function will be called with the data that is returned by the mutation. For this sample, we are simply logging out the data, but you could also use this to update the Apollo cache as <a href="https://www.apollographql.com/docs/react/basics/mutations.html#store-updates">described in the documentation</a>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+For simplicity, this guide is relying on the <code>pollingInterval</code> we set up earlier to refresh the data and remove/add talks from the cache. In a real-world application, you will want to update the data in memory using the result of the mutation.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="conclusion">8 Conclusion</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/conclusion.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we&#8217;ve seen how easy is to create a full-featured GraphQL schema with Grails, and to interact with that schema in a Single-Page-App, using Apollo and the React Profile for Grails. Please refer to the <a href="https://grails.github.io/gorm-graphql/latest/guide/index.html">GORM for GraphQL Documentation</a>, and related <a href="http://guides.grails.org/categories/grailsreact.html">Grails &amp; React Guides</a> to learn more.</p>
+</div>
+
+
+<h1 id="helpWithGrails">9 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails.slack.com'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>

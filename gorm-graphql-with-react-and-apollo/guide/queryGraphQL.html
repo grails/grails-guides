@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Querying GraphQL</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/configuringGormGraphQL.html"><strong>3</strong><span>Configuring GORM for GraphQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/playGraphQL.html"><strong>4</strong><span>Playing with the GraphQL browser</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/installApollo.html"><strong>5</strong><span>Install and Configure Apollo</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/queryGraphQL.html"><strong>6</strong><span>Querying GraphQL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/mutations.html"><strong>7</strong><span>Mutations</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>8</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>9</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/installApollo.html">&lt;&lt; <strong>5</strong><span>Install and Configure Apollo</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/mutations.html"><strong>7</strong><span>Mutations</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="queryGraphQL">6 Querying GraphQL</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/edit/master/src/main/docs/guide/queryGraphQL.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our React app is fairly simple, consisting of 3 main components, <code>SpeakerList</code>, <code>Speaker</code>, and <code>Talk</code>. The first two of these components include REST calls to load their data. Let&#8217;s replace these calls with a GraphQL query.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>src/main/webapp/SpeakerList.js</code></p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/SpeakerList.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Speaker from <span class="string"><span class="delimiter">&quot;</span><span class="content">./Speaker</span><span class="delimiter">&quot;</span></span>;
+<span class="reserved">import</span> {graphql} from <span class="string"><span class="delimiter">'</span><span class="content">react-apollo</span><span class="delimiter">'</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">import</span> gql from <span class="string"><span class="delimiter">'</span><span class="content">graphql-tag</span><span class="delimiter">'</span></span>;  <i class="conum" data-value="2"></i><b>(2)</b>
+
+<span class="reserved">class</span> SpeakerList <span class="reserved">extends</span> Component {
+
+<i class="conum" data-value="3"></i><b>(3)</b>
+  render() {
+    const speakers = <span class="local-variable">this</span>.props.data.speakerList; <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="keyword">return</span> speakers ? [speakers.map(s =&gt; <span class="tag">&lt;Speaker</span> <span class="attribute-name">key</span>=<span class="error">{</span><span class="attribute-value">s.id</span><span class="error">}</span> <span class="attribute-name">speaker</span>=<span class="error">{</span><span class="attribute-value">s</span><span class="error">}</span><span class="tag">/&gt;</span>)] : <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>
+  }
+}
+
+const SPEAKER_QUERY = gql<span class="error">`</span>query {        speakerList(max: <span class="integer">10</span>) { <i class="conum" data-value="5"></i><b>(5)</b>
+  id, firstName, lastName,
+    talks { id }
+  }
+}<span class="error">`</span>;
+
+<i class="conum" data-value="6"></i><b>(6)</b>
+const SpeakerListWithData = graphql(SPEAKER_QUERY,
+    {<span class="key">options</span>: {<span class="key">pollInterval</span>: <span class="integer">5000</span>}} <i class="conum" data-value="7"></i><b>(7)</b>
+)(SpeakerList);
+<span class="reserved">export</span> <span class="keyword">default</span> SpeakerListWithData; <i class="conum" data-value="8"></i><b>(8)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>graphql</code> is a <a href="https://reactjs.org/docs/higher-order-components.html"><strong>higher-order component</strong></a>, which means that it wraps an existing component and returns a new component with additional behavior.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>gql</code> is JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template literal tag</a> that will parse our GraphQL queries</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Note that we were able to completely remove our <code>componentDidMount</code> method (where the REST call had been made) and our constructor, as we no longer need to use <code>this.state</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The data returned by our GraphQL query will be available via <code>this.props.data.[name of query]</code> - in this case, <code>speakerList</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>This constant represents our query - note that the syntax is the same as what you might have used in the GraphiQL browser.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Rather than exporting <code>SpeakerList</code> directly, we first "wrap" it using the <code>graphql</code> higher-order component, which will "connect" our <code>SpeakerList</code> component with our GraphQL schema, pass in our data requirements, and provide the data via the <code>data</code> prop within <code>SpeakerList</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>We&#8217;ve specified a <code>pollInterval</code>, which is one of several options available from <code>graphql</code>. This option will cause our GraphQL query to be run once every 10 seconds, updating our component with any new data automatically.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Finally, we export the "connected" version of <code>SpeakerList</code> as the default module.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>At this point, if you restart the application (or run <code>./gradlew webpack</code> in another terminal, to reload the JavaScript), you will see the React app is now retrieving the speakers via the GraphQL schema.</p>
+</div>
+<div class="paragraph">
+<p>Moving on the the <code>Speaker</code> component, we can again remove the <code>componentDidMount</code> method, and we can remove the <code>this.state.talks</code> property. Instead, in the <code>render</code> method, we will access each speakers' talks directly from the <code>speaker</code> prop.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/Speaker.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React, {Component} from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> {Well} from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Talk from <span class="string"><span class="delimiter">&quot;</span><span class="content">./Talks</span><span class="delimiter">&quot;</span></span>;
+
+<span class="reserved">class</span> Speaker <span class="reserved">extends</span> Component {
+
+  constructor() {
+    <span class="reserved">super</span>();
+
+    <span class="local-variable">this</span>.state = {
+      <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
+      <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+    }
+  }
+
+<span class="comment">//... other methods ommitted for space</span>
+
+  render() {
+    const {speaker} = <span class="local-variable">this</span>.props;
+    const {title, duration} = <span class="local-variable">this</span>.state;
+
+    <span class="keyword">return</span> <span class="tag">&lt;Well&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>{speaker.firstName} {speaker.lastName}<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;hr</span><span class="tag">/&gt;</span>
+
+      <span class="tag">&lt;ul&gt;</span>
+        {speaker.talks.map(t =<span class="error">&gt;</span> <span class="tag">&lt;Talk</span> <span class="attribute-name">key</span>=<span class="error">{</span><span class="attribute-value">t.id</span><span class="error">}</span> <span class="attribute-name">talk</span>=<span class="error">{</span><span class="attribute-value">t</span><span class="error">}</span> <span class="attribute-name">delete</span>=<span class="error">{</span><span class="error">(</span><span class="error">)</span> <span class="error">=</span><span class="tag">&gt;</span> this.deleteTalk(t.id)}/<span class="error">&gt;</span>)}
+        <span class="tag">&lt;li&gt;</span>
+          <span class="tag">&lt;label&gt;</span>Title<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">title</span><span class="error">}</span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleNewTalkChange</span><span class="error">}</span><span class="tag">/&gt;</span>
+
+          <span class="tag">&lt;label&gt;</span>Duration<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">number</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">duration</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">duration</span><span class="error">}</span>
+                 <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleNewTalkChange</span><span class="error">}</span><span class="tag">/&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attribute-name">onClick</span>=<span class="error">{</span><span class="attribute-value">this.addNewTalk</span><span class="error">}</span><span class="tag">&gt;</span>Add Talk<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+
+    <span class="tag">&lt;/Well&gt;</span>
+  }
+}
+
+<span class="reserved">export</span> <span class="keyword">default</span> Speaker;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;1&gt;
+&lt;2&gt;</p>
+</div>
+<div class="paragraph">
+<p>However, if we try to run the app now we will find that we only have access to the ids of each talk - we are missing <code>title</code> and <code>duration</code>. Thanks to GraphQL, we can easily add these properties to our retrieved data by simply adding them to the query.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>src/main/webapp/SpeakerList.js</code> and add <code>title</code> and <code>duration</code> to the <code>SPEAKER_QUERY</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/webapp/SpeakerList.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">const SPEAKER_QUERY = gql<span class="error">`</span>query {
+speakerList(max: <span class="integer">10</span>) {
+  id, firstName, lastName,
+    talks { id, title, duration } <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}<span class="error">`</span>;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that, our multiple REST calls have been replaced with a single GraphQL query. You can inspect this query, and the response, using your Apollo&#8217;s <a href="https://github.com/apollographql/apollo-client-devtools">developer tools browser extension</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/devtools.png" alt="Apollo Dev Tools Extension">
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/installApollo.html">&lt;&lt; <strong>5</strong><span>Install and Configure Apollo</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/mutations.html"><strong>7</strong><span>Mutations</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo"><img src="https://travis-ci.org/grails-guides/gorm-graphql-with-react-and-apollo.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-graphql-with-react-and-apollo.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-graphql-with-react-and-apollo'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/gorm-graphql-with-react-and-apollo.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/gorm-graphql-with-react-and-apollo/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
