@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started</title>
+    <title>5 Using only Docker</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -63,105 +63,145 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/training.html">&lt;&lt; <strong>1</strong><span>Training</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/running.html">&lt;&lt; <strong>4</strong><span>Running the app</span></a></div>
                 
 
                 
-                    <div class="toc-item next-right"><a href="../guide/writing.html"><strong>3</strong><span>Writing the Guide</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Help with Grails</span> >></a></div>
                 
 
 
-                
-                <div id="table-of-content">
-                    <h2>Table of Contents</h2>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#howto"><strong>2.1</strong><span>How to complete the guide</span></a>
-                    </div>
-                    
-                </div>
                 
 
                 
 
-<h1 id="gettingStarted">2 Getting Started</h1>
+<h1 id="usingOnlyDocker">5 Using only Docker</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-docker-external-services/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-docker-external-services/edit/master/src/main/docs/guide/usingOnlyDocker.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>If you do any real Grails Development, you will need to connect to external services; Databases, services such as ElasticSearch, Redis etc.</p>
+<p>There is another option that does not requires the usage of a Gradle plugin. With this approach we can just use <em>plain Docker</em>
+to build a Docker image and start a container.</p>
 </div>
+<div class="sect1">
+<h2 id="_defining_the_docker_file">Defining the Docker file</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Usually, you needed to install those services on your development machine to replicate production environments. You could
-be in scenarios such as developing on MacOS a Grails application which connects to MSSQL database. Installing such external services could be difficult
-or impossible in your development environment.</p>
+<p>Create the following <code>Dockerfile</code>:</p>
 </div>
-<div class="paragraph">
-<p>Among many other things, Docker can help us simplify such a scenario. In this Guide, you will write a Grails application which connects to a PostgreSQL database
-running on a docker container. You will not install Postgres on your machine. Instead, you will pull a PostgreSQL image, create a container with that image and
-start the container. You will modify your Grails application to connect to the PostgreSQL database which runs in the container.</p>
-</div>
+<div class="listingblock">
+<div class="title">src/main/docker/Dockerfile</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="Dockerfile">FROM postgres:9.6.6 <i class="conum" data-value="1"></i><b>(1)</b>
 
+VOLUME /var/lib/postgresql/data <i class="conum" data-value="2"></i><b>(2)</b>
 
-<h2 id="howto">2.1 How to complete the guide</h2>
+COPY [&quot;setup.sh&quot;, &quot;/docker-entrypoint-initdb.d/&quot;] <i class="conum" data-value="3"></i><b>(3)</b>
 
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-docker-external-services/edit/master/src/main/docs/guide/howto.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
+EXPOSE 5432 <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use the same PostgreSQL image and version as before</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define a volume to store the data</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Copy a script to the entrypoint directory. Any <code>.sh</code> or <code>.sql</code> file in this directory will be executing when starting the container</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Expose the port</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Also create the file <code>setup.sh</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/docker/setup.sh</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">#!/bin/bash
+echo &quot;######### CREATING DATABASE ##########&quot;
 
+# Perform all actions as user 'postgres'
+export PGUSER=postgres
 
+# Create specific users for the application and also the databases for dev and test
+psql &lt;&lt;EOSQL
+    <i class="conum" data-value="1"></i><b>(1)</b>
+    CREATE DATABASE dev_demo_db;
+    CREATE ROLE dev_user WITH LOGIN PASSWORD 'dev_password';
+    GRANT ALL PRIVILEGES ON DATABASE dev_demo_db TO dev_user;
+
+    <i class="conum" data-value="2"></i><b>(2)</b>
+    CREATE DATABASE test_demo_db;
+    CREATE ROLE test_user WITH LOGIN PASSWORD 'test_password';
+    GRANT ALL PRIVILEGES ON DATABASE test_demo_db TO test_user;
+EOSQL
+
+echo &quot;&quot;
+echo &quot;######### DATABASE CREATED ##########&quot;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create the database, user and password for development environment</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define another database, user and password for the test environment</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_building_the_image">Building the image</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>To get started do the following:</p>
+<p>With those files created, let&#8217;s build the docker image:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/grails-guides/grails-docker-external-services/archive/master.zip">Download</a> and unzip the source</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker build -t postgres-custom src/main/docker/</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_start_a_container">Start a container</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To create and start a container for the first time based on the image we have just created:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d -p 5432:5432 --name demo-postgres postgres-custom</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>or</p>
+<p>From now on, every time we want to start/stop the container, we only need to execute:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
-<code>git clone <a href="https://github.com/grails-guides/grails-docker-external-services.git" class="bare">https://github.com/grails-guides/grails-docker-external-services.git</a></code></p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker start demo-postgres
+
+$ docker stop demo-postgres</code></pre>
 </div>
-<div class="paragraph">
-<p>The Grails guides repositories contain two folders:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
-</li>
-<li>
-<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To complete the guide, go to the <code>initial</code> folder</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>cd</code> into <code>grails-guides/grails-docker-external-services/initial</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>and follow the instructions in the next sections.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -170,18 +210,37 @@ start the container. You will modify your Grails application to connect to the P
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-docker-external-services/complete</code>
+Keep in mind that you also need to change <code>application.yml</code> to use the new credentials defined in <code>setup.sh</code> file.
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Replace the database development environment configuration with:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.PostgreSQLDialect</span></span>
+            <span class="key">driverClassName</span>: <span class="string"><span class="content">org.postgresql.Driver</span></span>
+            <span class="key">username</span>: <span class="string"><span class="content">dev_user</span></span>
+            <span class="key">password</span>: <span class="string"><span class="content">dev_password</span></span>
+            <span class="key">dbCreate</span>: <span class="string"><span class="content">update</span></span>
+            <span class="key">url</span>: <span class="string"><span class="content">jdbc:postgresql://localhost:5432/dev_demo_db</span></span></code></pre>
+</div>
+</div>
+</div>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/training.html">&lt;&lt; <strong>1</strong><span>Training</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/running.html">&lt;&lt; <strong>4</strong><span>Running the app</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/writing.html"><strong>3</strong><span>Writing the Guide</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Help with Grails</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
