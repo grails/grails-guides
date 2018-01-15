@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails as a Docker Container | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails as a Docker Container. Learn how to distribute your Grails application as a Docker container.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-as-docker-container"><img src="https://travis-ci.org/grails-guides/grails-as-docker-container.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-as-docker-container&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-as-docker-container.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-as-docker-container.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-as-docker-container.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-as-docker-container/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.1</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writing"><strong>3</strong><span>Writing the Guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#docker"><strong>3.1</strong><span>Install and configure Docker</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#gradle"><strong>3.2</strong><span>Gradle Docker plugin</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#appEntry"><strong>3.3</strong><span>App Entry Script</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#gradleDockerTasks"><strong>3.4</strong><span>Gradle Docker Tasks</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#building"><strong>4</strong><span>Building the app</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#usingOnlyDocker"><strong>5</strong><span>Using only Docker</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails as a Docker Container</h1>
+        <p>Learn how to distribute your Grails application as a Docker container.</p>
+        <p><strong>Authors:</strong> Iv&aacute;n L&oacute;pez</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Docker has become a nice way to run an application without the hassle of installing any of the dependencies to run it.</p>
+</div>
+<div class="paragraph">
+<p>In this Guide you will write a Grails application that will be packed as a Docker image and will run inside a Docker
+container.</p>
+</div>
+
+
+<h2 id="howto">2.1 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-as-docker-container/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-as-docker-container.git" class="bare">https://github.com/grails-guides/grails-as-docker-container.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-as-docker-container/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-as-docker-container/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writing">3 Writing the Guide</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/writing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="docker">3.1 Install and configure Docker</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/docker.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you do not already have Docker installed, you’ll need to <a href="https://docs.docker.com/engine/installation/">install it</a>.</p>
+</div>
+<div class="paragraph">
+<p>Depending on your environment you may need to increase Docker’s available memory to 4GB or more.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/docker.png" alt="Docker Preferences">
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tip_get_kitematic">Tip: Get Kitematic</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kitematic is an excellent desktop application for managing Docker containers.
+The first time you click Open Kitematic, it will prompt you to download and install it.
+You can then use Kitematic to view the output of your containers, manage their settings, etc.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/kitematic.png" alt="Kitematic">
+</div>
+</div>
+</div>
+</div>
+
+
+<h2 id="gradle">3.2 Gradle Docker plugin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/gradle.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, we use the <a href="https://github.com/bmuschko/gradle-docker-plugin">Gradle Docker Plugin</a>; a
+Gradle plugin for managing Docker images and containers.</p>
+</div>
+<div class="paragraph">
+<p>To install the Gradle plugin, modify <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        mavenLocal()
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.1</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.energizedwork:idea-gradle-plugins:1.4</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.6</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bmuschko:gradle-docker-plugin:3.2.1</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eclipse</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">idea</span><span class="delimiter">&quot;</span></span>
+<span class="comment">//apply plugin:&quot;war&quot; </span><i class="conum" data-value="2"></i><b>(2)</b>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-web</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.energizedwork.webdriver-binaries</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.energizedwork.idea-project-components</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">asset-pipeline</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.bmuschko.docker-remote-api</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Gradle Docker Plugin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Remove <code>war</code> plugin because we&#8217;ll generate a runnable jar</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="appEntry">3.3 App Entry Script</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/appEntry.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a script which will serve as the entrypoint of the container.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/docker/app-entrypoint.sh</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="doctype">#!/bin/sh</span>
+java -Djava.security.egd=<span class="key">file</span>:<span class="regexp"><span class="delimiter">/</span><span class="content">dev</span><span class="delimiter">/</span></span>.<span class="regexp"><span class="delimiter">/</span><span class="content">urandom -jar </span><span class="delimiter">/</span></span>app/application.jar</code></pre>
+</div>
+</div>
+
+
+<h2 id="gradleDockerTasks">3.4 Gradle Docker Tasks</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/gradleDockerTasks.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Configure several Gradle tasks which allow us to build the runnable jar, copy it along with the necessary resources
+to a temporal directory, generate a <code>Dockerfile</code> file and finally build the docker image.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.bmuschko.gradle.docker.tasks.image.Dockerfile</span>
+<span class="keyword">import</span> <span class="include">com.bmuschko.gradle.docker.tasks.image.DockerBuildImage</span>
+...
+..
+.
+ext {
+    dockerTag = <span class="string"><span class="delimiter">&quot;</span><span class="content">grails-sample/</span><span class="inline"><span class="inline-delimiter">${</span>project.name<span class="inline-delimiter">}</span></span><span class="content">:</span><span class="inline"><span class="inline-delimiter">${</span>project.version<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toLowerCase() <i class="conum" data-value="1"></i><b>(1)</b>
+    dockerBuildDir = mkdir(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>buildDir<span class="inline-delimiter">}</span></span><span class="content">/docker</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+}
+task prepareDocker(<span class="key">type</span>: Copy, <span class="key">dependsOn</span>: assemble) { <i class="conum" data-value="3"></i><b>(3)</b>
+    description = <span class="string"><span class="delimiter">'</span><span class="content">Copy files from src/main/docker and application jar to Docker temporal build directory</span><span class="delimiter">'</span></span>
+    group = <span class="string"><span class="delimiter">'</span><span class="content">Docker</span><span class="delimiter">'</span></span>
+
+    from <span class="string"><span class="delimiter">'</span><span class="content">src/main/docker</span><span class="delimiter">'</span></span>
+    from project.jar
+
+    into dockerBuildDir
+}
+task createDockerfile(<span class="key">type</span>: Dockerfile, <span class="key">dependsOn</span>: prepareDocker) { <i class="conum" data-value="4"></i><b>(4)</b>
+    description = <span class="string"><span class="delimiter">'</span><span class="content">Create a Dockerfile file</span><span class="delimiter">'</span></span>
+    group = <span class="string"><span class="delimiter">'</span><span class="content">Docker</span><span class="delimiter">'</span></span>
+
+    destFile = project.file(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>dockerBuildDir<span class="inline-delimiter">}</span></span><span class="content">/Dockerfile</span><span class="delimiter">&quot;</span></span>)
+
+    from <span class="string"><span class="delimiter">'</span><span class="content">openjdk:8u151-jdk-alpine</span><span class="delimiter">'</span></span>
+    maintainer <span class="string"><span class="delimiter">'</span><span class="content">John Doe &quot;john.doe@example.com&quot;</span><span class="delimiter">'</span></span>
+
+    exposePort <span class="integer">8080</span>
+
+    workingDir <span class="string"><span class="delimiter">'</span><span class="content">/app</span><span class="delimiter">'</span></span>
+
+    copyFile jar.archiveName, <span class="string"><span class="delimiter">'</span><span class="content">application.jar</span><span class="delimiter">'</span></span>
+    copyFile <span class="string"><span class="delimiter">'</span><span class="content">app-entrypoint.sh</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">app-entrypoint.sh</span><span class="delimiter">'</span></span> <i class="conum" data-value="5"></i><b>(5)</b>
+    runCommand <span class="string"><span class="delimiter">'</span><span class="content">chmod +x app-entrypoint.sh</span><span class="delimiter">'</span></span>
+
+    entryPoint <span class="string"><span class="delimiter">'</span><span class="content">/app/app-entrypoint.sh</span><span class="delimiter">'</span></span> <i class="conum" data-value="5"></i><b>(5)</b>
+}
+task buildImage(<span class="key">type</span>: DockerBuildImage, <span class="key">dependsOn</span>: createDockerfile) { <i class="conum" data-value="6"></i><b>(6)</b>
+    description = <span class="string"><span class="delimiter">'</span><span class="content">Create Docker image to run the Grails application</span><span class="delimiter">'</span></span>
+    group = <span class="string"><span class="delimiter">'</span><span class="content">Docker</span><span class="delimiter">'</span></span>
+
+    inputDir = file(dockerBuildDir)
+    tag = dockerTag
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define the docker image name. It will be something like <code>grails-sample/myProject:0.1</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Temporal directory used to build the Docker image</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Copy the runnable jar file and the additional files from <code>src/main/docker</code> to the temporary directory</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Create the <code>Dockerfile</code> file</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Copy the <code>app-entrypoint.sh</code> script and define it as entrypoint of the container</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Build the Docker image</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The content of <code>app-entrypoint.sh</code> is:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/docker/app-entrypoint.sh</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">#!/bin/sh
+java -Djava.security.egd=file:/dev/./urandom -jar /app/application.jar</code></pre>
+</div>
+</div>
+
+
+<h1 id="building">4 Building the app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/building.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>After creating the new Gradle tasks, now we can execute:</p>
+</div>
+<div class="paragraph">
+<p><code>./gradlew buildImage</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">...
+...
+:complete:jar
+:complete:bootRepackage
+:complete:assemble <i class="conum" data-value="1"></i><b>(1)</b>
+:complete:prepareDocker
+:complete:createDockerfile
+:complete:buildImage <i class="conum" data-value="2"></i><b>(2)</b>
+Building image using context '/home/ivan/workspaces/oci/guides/grails-as-docker-container/complete/build/docker'.
+Using tag 'grails-sample/complete:0.1' for image.
+Step 1/8 : FROM openjdk:8u151-jdk-alpine
+---&gt; 3642e636096d
+Step 2/8 : MAINTAINER John Doe &quot;john.doe@example.com&quot;
+---&gt; Using cache
+---&gt; 3e1c67b067e8
+Step 3/8 : EXPOSE 8080
+---&gt; Using cache
+---&gt; 144aadd0580e
+Step 4/8 : WORKDIR /app
+---&gt; Using cache
+---&gt; c9af01e696f8
+Step 5/8 : COPY complete-0.1.jar application.jar
+---&gt; e4f41e8f0840
+Removing intermediate container 6dccf4039811
+Step 6/8 : COPY app-entrypoint.sh app-entrypoint.sh
+---&gt; 0be562313720
+Removing intermediate container 595d0cb7b9d2
+Step 7/8 : RUN chmod +x app-entrypoint.sh
+---&gt; Running in 3b41eb944045
+---&gt; 5f6fa6b0ab9a
+Removing intermediate container 3b41eb944045
+Step 8/8 : ENTRYPOINT /app/app-entrypoint.sh
+---&gt; Running in 3221a85ae904
+---&gt; 68f5588d1134
+Removing intermediate container 3221a85ae904
+Successfully built 68f5588d1134
+Successfully tagged grails-sample/complete:0.1 <i class="conum" data-value="3"></i><b>(3)</b>
+Created image with ID '68f5588d1134'.
+
+BUILD SUCCESSFUL
+
+Total time: 11.453 secs</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>After the <code>assemble</code> task the new docker tasks are executed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Build image using the <code>Dockerfile</code> generated in the previous task. The output of the docker command is displayed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The image <code>grails-sample/complete:0.1</code> has been created</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker images
+REPOSITORY                     TAG                 IMAGE ID            CREATED             SIZE
+grails-sample/complete         0.1                 68f5588d1134        3 minutes ago       143MB</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_the_application">Running the application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Running our <em>dockerized</em> Grails application is as simple as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -p 8080:8080 grails-sample/complete:0.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And after a few seconds we will see the message
+<code>Grails application running at <a href="http://localhost:8080" class="bare">http://localhost:8080</a> in environment: production</code></p>
+</div>
+</div>
+</div>
+
+
+<h1 id="usingOnlyDocker">5 Using only Docker</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/usingOnlyDocker.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Alternatively, you can create a Docker file manually.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Remove Gradle tasks <code>createDockerfile</code> and <code>buildImage</code>.</p>
+</li>
+<li>
+<p>Remove dependency to Gradle Docker Plugin</p>
+</li>
+<li>
+<p>Remove <code>src/main/docker/app-entrypoint.sh</code>. We define the CMD directly in the Dockerfile.</p>
+</li>
+<li>
+<p>Create file <code>src/main/docker/Dockerfile</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">src/main/docker/Dockerfile</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="Dockerfile">FROM openjdk:8u151-jdk-alpine
+MAINTAINER John Doe &quot;john.doe@example.com&quot;
+
+EXPOSE 8080
+
+WORKDIR /app
+COPY *.jar application.jar
+
+CMD [&quot;java&quot;,&quot;-Djava.security.egd=file:/dev/./urandom&quot;,&quot;-jar&quot;,&quot;/app/application.jar&quot;]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because we created <code>Dockerfile</code> under <code>src/main/docker</code>, the Gradle task <code>prepareDocker</code> copies it together with our app runnable jar.</p>
+</div>
+<div class="paragraph">
+<p>Create the image:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew prepareDocker
+$ docker build --tag=&quot;grails-sample/complete:0.1&quot; build/docker/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Creating a Dockerfile manually decouples your Docker image generation from the Docker Gradle Plugin.</p>
+</div>
+
+
+<h1 id="helpWithGrails">6 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
