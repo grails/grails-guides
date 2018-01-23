@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Schedule periodic tasks inside your Grails applications | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Schedule periodic tasks inside your Grails applications. Learn how to use Schwartz to schedule periodic tasks inside your Grails applications' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-schwartz"><img src="https://travis-ci.org/grails-guides/grails-schwartz.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-schwartz&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-schwartz.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-schwartz.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-schwartz.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-schwartz/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.1</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writing"><strong>3</strong><span>Writing the Guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#install"><strong>3.1</strong><span>Installing the plugin</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#logchanges"><strong>3.2</strong><span>Set log level INFO for package demo</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#createSimpleJob"><strong>3.3</strong><span>Creating a simple Job</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#logicInService"><strong>3.4</strong><span>Business logic in Services</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#triggerManually"><strong>3.5</strong><span>Scheduling a Job with data manually</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#concurrentExecution"><strong>3.6</strong><span>Concurrent Job execution</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#summary"><strong>3.7</strong><span>Summary</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>4</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Schedule periodic tasks inside your Grails applications</h1>
+        <p>Learn how to use Schwartz to schedule periodic tasks inside your Grails applications</p>
+        <p><strong>Authors:</strong> Iv&aacute;n L&oacute;pez, Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Nowadays it is pretty usual to have some kind of <em>cron</em> or scheduled task that needs to run every midnight, every hour,
+a few times a week,&#8230;&#8203; In the Java world we have been using the <em>Quartz</em> library for ages to do this.</p>
+</div>
+<div class="paragraph">
+<p>In this guide you will learn how to use the <a href="https://github.com/agileorbit/grails-schwartz">Grails Schwartz plugin</a> to
+schedule periodic tasks inside a Grails application</p>
+</div>
+
+
+<h2 id="howto">2.1 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-schwartz/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-schwartz.git" class="bare">https://github.com/grails-guides/grails-schwartz.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-schwartz/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-schwartz/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writing">3 Writing the Guide</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/writing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="install">3.1 Installing the plugin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/install.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To install the plugin, modify <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+        mavenLocal()
+        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:1.1</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.energizedwork:idea-gradle-plugins:1.4</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.6</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">'</span><span class="content">com.agileorbit:schwartz:1.0.1</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Schwartz Plugin</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>And also add the following to the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">com.agileorbit:schwartz:1.0.1</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="logchanges">3.2 Set log level INFO for package demo</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/logchanges.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>During this guide, we are going to use several log statements to show Job execution.</p>
+</div>
+<div class="paragraph">
+<p>Add at the end of <code>logback.groovy</code> the next statement:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/logback.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">'</span><span class="content">demo</span><span class="delimiter">'</span></span>, INFO, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above line configures a logger for package <code>demo</code> with log level INFO which uses the STDOUT appender and with adaptivity set to false.</p>
+</div>
+
+
+<h2 id="createSimpleJob">3.3 Creating a simple Job</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/createSimpleJob.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The plugin provides a new Grails command to create a new job. Just execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-job HelloWorld</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will create the file <code>grails-app/services/demo/HelloWorldJobService.groovy</code> with a few examples commented out of
+how to trigger the job.</p>
+</div>
+<div class="paragraph">
+<p>Please note that Schwartz jobs are not Grails artifacts but the plugin uses the convention of naming the job with the
+sufix <em>JobService</em>. The job files are placed by default in <code>grails-app/services</code> directory although there are different
+options to create just a POGO.</p>
+</div>
+<div class="paragraph">
+<p>The very basic skeleton of a Schwartz Job is:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/HelloWorldJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">HelloWorldJobService</span> <span class="directive">implements</span> SchwartzJob { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+        <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="type">void</span> buildTriggers() {
+        <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement <code>SchwartzJob</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The job logic goes here</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The different triggers of the job</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s modify the previous code and add the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/HelloWorldJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+    log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">{}:{}</span><span class="delimiter">&quot;</span></span>, context.trigger.key, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>()) <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
+<span class="type">void</span> buildTriggers() {
+    <i class="conum" data-value="2"></i><b>(2)</b>
+    triggers &lt;&lt;
+        factory(<span class="string"><span class="delimiter">'</span><span class="content">Simple Job every 10 seconds</span><span class="delimiter">'</span></span>)
+        .intervalInSeconds(<span class="integer">10</span>)
+        .build()
+
+    <i class="conum" data-value="3"></i><b>(3)</b>
+    triggers &lt;&lt;
+        factory(<span class="string"><span class="delimiter">'</span><span class="content">Simple Job every 45 seconds</span><span class="delimiter">'</span></span>)
+        .startDelay(<span class="integer">5000</span>)
+        .intervalInSeconds(<span class="integer">45</span>)
+        .build()
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The name of the job and the date</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Create a trigger every 10 seconds</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create another trigger every 45 seconds with an initial delay of 5 seconds (5000 millis)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now start the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And after a few seconds you will see the following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:24:53 CET 2018 <i class="conum" data-value="1"></i><b>(1)</b>
+DEFAULT.Simple Job every 45 seconds -&gt; Fri Jan 19 13:24:58 CET 2018 <i class="conum" data-value="2"></i><b>(2)</b>
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:03 CET 2018 <i class="conum" data-value="3"></i><b>(3)</b>
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:13 CET 2018
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:23 CET 2018
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:33 CET 2018
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:43 CET 2018
+DEFAULT.Simple Job every 45 seconds -&gt; Fri Jan 19 13:25:43 CET 2018 <i class="conum" data-value="4"></i><b>(4)</b>
+DEFAULT.Simple Job every 10 seconds -&gt; Fri Jan 19 13:25:53 CET 2018</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>First execution of 10 seconds job just after the application starts</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The 45 seconds job just starts 5 seconds after the app starts. See <code>startDelay</code> in the trigger configuration.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Second execution of 10 seconds job just 10 seconds after the first execution</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Second execution of 45 seconds job just 45 seconds after the first execution</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="logicInService">3.4 Business logic in Services</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/logicInService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Although the previous example is valid, usually you don&#8217;t want to put your business logic in a Job. A better approach is to create an additional service which the <code>JobService</code> invokes. This approach decouples your business logic from the scheduling logic. Moreover, it facilities testing and maintenance. Let&#8217;s see an example:</p>
+</div>
+<div class="paragraph">
+<p>Create the following service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/EmailService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">EmailService</span> {
+
+    <span class="type">void</span> send(<span class="predefined-type">String</span> user) {
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to </span><span class="inline"><span class="inline-delimiter">${</span>user<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then the job:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/DailyEmailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">DailyEmailJobService</span> <span class="directive">implements</span> SchwartzJob {
+
+    EmailService emailService <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+        emailService.send(<span class="string"><span class="delimiter">'</span><span class="content">john.doe@example.com</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="type">void</span> buildTriggers() {
+        triggers &lt;&lt; factory(<span class="string"><span class="delimiter">'</span><span class="content">Daily email job</span><span class="delimiter">'</span></span>)
+            .cronSchedule(<span class="string"><span class="delimiter">&quot;</span><span class="content">0 30 4 1/1 * ? *</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            .build()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inject the service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Call it</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Trigger the job once a day at 04:30 AM</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Cron notation is often confusing. To simplify trigger definition, the plugin comes with several builders. The builders support a fluent API, and you end up with readable and intuitive code to define triggers, and IDE autocompletion.</p>
+</div>
+<div class="paragraph">
+<p>The previous cron configuration can be written as:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/todayat/DailyEmailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.agileorbit.schwartz.SchwartzJob</span>
+<span class="keyword">import</span> <span class="include">demo.EmailService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionContext</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionException</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.quartz.DateBuilder.todayAt</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.quartz.DateBuilder.tomorrowAt</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">DailyEmailJobService</span> <span class="directive">implements</span> SchwartzJob {
+    <span class="directive">final</span> <span class="type">int</span> HOUR = <span class="integer">4</span>
+    <span class="directive">final</span> <span class="type">int</span> MINUTE = <span class="integer">30</span>
+    <span class="directive">final</span> <span class="type">int</span> SECONDS = <span class="integer">0</span>
+
+    EmailService emailService <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+        emailService.send(<span class="string"><span class="delimiter">'</span><span class="content">john.doe@example.com</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="predefined-type">Date</span> dailyDate() {
+        <span class="predefined-type">Date</span> startAt = todayAt(HOUR, MINUTE, SECONDS)
+        <span class="keyword">if</span> (startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
+            <span class="keyword">return</span> tomorrowAt(HOUR, MINUTE, SECONDS)
+        }
+        startAt
+    }
+
+    <span class="type">void</span> buildTriggers() {
+        <span class="predefined-type">Date</span> startAt = dailyDate()
+        triggers &lt;&lt; factory(<span class="string"><span class="delimiter">'</span><span class="content">Daily email job</span><span class="delimiter">'</span></span>)
+                .startAt(startAt)
+                .intervalInDays(<span class="integer">1</span>)
+                .build()
+
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="triggerManually">3.5 Scheduling a Job with data manually</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/triggerManually.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Imagine the following scenario. You want to send every user an email 2 hours after they registered into your app. You want to ask him about his experiences during this first interaction with your service.</p>
+</div>
+<div class="paragraph">
+<p>For this guide, we are going to schedule a Job to trigger after one minute.</p>
+</div>
+<div class="paragraph">
+<p>Modify <code>BootStrap.groovy</code> to call twice a new service named <code>RegisterService</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+        RegisterService registerService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">harry@howards.com</span><span class="delimiter">'</span></span>)
+            sleep(<span class="integer">20</span>_000)
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">ron@howards.com</span><span class="delimiter">'</span></span>)
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create <code>RegisterService.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/RegisterService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.agileorbit.schwartz.QuartzService</span>
+<span class="keyword">import</span> <span class="include">com.agileorbit.schwartz.builder.BuilderFactory</span>
+<span class="keyword">import</span> <span class="include">groovy.time.TimeCategory</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobDataMap</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobDetail</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobKey</span>
+<span class="keyword">import</span> <span class="include">org.quartz.Trigger</span>
+<span class="keyword">import</span> <span class="include">org.quartz.TriggerBuilder</span>
+
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">RegisterService</span> {
+
+    QuartzService quartzService
+
+        <span class="type">void</span> register(<span class="predefined-type">String</span> email) {
+                log.info <span class="string"><span class="delimiter">'</span><span class="content">saving {} at {}</span><span class="delimiter">'</span></span>, email, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+                scheduleFollowupEmail(email)
+        }
+
+        <span class="annotation">@CompileDynamic</span>
+        <span class="predefined-type">Date</span> startAtDate() { <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>()
+                use(TimeCategory) {
+                        startAt = startAt + <span class="integer">1</span>.minute
+                }
+                startAt
+        }
+
+        <span class="type">void</span> scheduleFollowupEmail(<span class="predefined-type">String</span> email) {
+                JobDataMap jobDataMap = <span class="keyword">new</span> JobDataMap()
+                jobDataMap.put(<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>, email)
+                Trigger trigger = TriggerBuilder.newTrigger()
+                                .forJob(JobKey.jobKey(FollowupEmailJobService.simpleName)) <i class="conum" data-value="2"></i><b>(2)</b>
+                                .startAt(startAtDate())
+                                .usingJobData(jobDataMap) <i class="conum" data-value="3"></i><b>(3)</b>
+                                .build()
+                quartzService.scheduleTrigger(trigger) <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This method returns a date one minute into the future</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We can find the necessary <code>Jobkey</code> with the JobService&#8217;s simpleName</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We can pass data into a Job execution.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Schedule the trigger</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create <code>FollowupEmailJobService.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/FollowupEmailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.agileorbit.schwartz.SchwartzJob</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobDataMap</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionContext</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionException</span>
+
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">FollowupEmailJobService</span> <span class="directive">implements</span> SchwartzJob {
+
+    <span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+                JobDataMap jobDataMap = context.mergedJobDataMap
+                <span class="predefined-type">String</span> email = jobDataMap.getString(<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+                log.info <span class="string"><span class="delimiter">'</span><span class="content">Sending followup email to: {} at {}</span><span class="delimiter">'</span></span>, email, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="type">void</span> buildTriggers() {
+
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Extract the job data</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you execute the above code you will see the Job being executed one minute after we schedule it and with the supplied email address.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">INFO demo.RegisterService         : saving harry@howards.com at 23/1/2018 07:55:21
+INFO demo.RegisterService         : saving ron@howards.com at 23/1/2018 07:55:41
+INFO demo.FollowupEmailJobService : Sending followup email to: harry@howards.com at 23/1/2018 07:56:21
+INFO demo.FollowupEmailJobService : Sending followup email to: ron@howards.com at 23/1/2018 07:56:41</code></pre>
+</div>
+</div>
+
+
+<h2 id="concurrentExecution">3.6 Concurrent Job execution</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/concurrentExecution.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Imagine you develop a Software as a Service application with Grails. Each
+day at 7:00 AM you want to check if any user&#8217;s subscription has expired. If it is finished you want to create an invoice for the new period, save the invoice and update the user&#8217;s subscription expiration date in the database.</p>
+</div>
+<div class="paragraph">
+<p>You want to disable the concurrent execution of such a Job. Using just Quartz you need to annotate the job with
+<code>@DisallowConcurrentExecution</code>. With <em>Schwartz</em> you still can do it, or, if you prefer you can implement the trait <code>StatefulSchwartzJob</code> instead of <code>SchwartzJob</code>. <code>StatefulSchwartzJob</code> extends form <code>SchwartzJob</code> and adds two annotations <code>@DisallowConcurrentExecution</code>, <code>@PersistJobDataAfterExecution</code>.</p>
+</div>
+<div class="paragraph">
+<p>A sample code could look like:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/GenerateInvoiceJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.agileorbit.schwartz.StatefulSchwartzJob</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionContext</span>
+<span class="keyword">import</span> <span class="include">org.quartz.JobExecutionException</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.quartz.DateBuilder.todayAt</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.quartz.DateBuilder.tomorrowAt</span>
+
+<span class="type">class</span> <span class="class">GenerateInvoiceJobService</span> <span class="directive">implements</span> StatefulSchwartzJob {
+    <span class="directive">final</span> <span class="type">int</span> HOUR = <span class="integer">7</span>
+    <span class="directive">final</span> <span class="type">int</span> MINUTE = <span class="integer">0</span>
+    <span class="directive">final</span> <span class="type">int</span> SECONDS = <span class="integer">0</span>
+
+    GenerateInvoiceService generateInvoiceService
+
+    <span class="annotation">@Transactional</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> execute(JobExecutionContext context) <span class="directive">throws</span> JobExecutionException {
+        generateInvoiceService.generateInvoices()
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> buildTriggers() {
+        <span class="predefined-type">Date</span> startAt = dailyDate()
+        triggers &lt;&lt; factory(<span class="string"><span class="delimiter">'</span><span class="content">Daily email job at 7:00 AM</span><span class="delimiter">'</span></span>)
+                .startAt(startAt)
+                .intervalInDays(<span class="integer">1</span>)
+                .build()
+
+    }
+
+
+    <span class="predefined-type">Date</span> dailyDate() {
+        <span class="predefined-type">Date</span> startAt = todayAt(HOUR, MINUTE, SECONDS)
+        <span class="keyword">if</span> (startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
+            <span class="keyword">return</span> tomorrowAt(HOUR, MINUTE, SECONDS)
+        }
+        startAt
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Wrap the job&#8217;s execution in a transaction.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/GenerateInvoiceService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">GenerateInvoiceService</span> {
+
+    <span class="type">void</span> generateInvoices() {
+        <span class="comment">// Check if users subscription has finished.</span>
+        <span class="comment">// Generate an invoice for a new period and save it in the database</span>
+                <span class="comment">// update user's subscription expiration date</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="summary">3.7 Summary</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/summary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>During this guide, we learned how to configure Jobs manually, with cron statements, with the plugin fluid API. Moroever, we learned how to disable concurrent execution or pass Job Data.</p>
+</div>
+<div class="paragraph">
+<p>Please, refer to the <a href="http://blog.agileorbit.com/grails-schwartz/latest/index.html">Grails Schwartz plugin&#8217;s documentation</a> to learn more.</p>
+</div>
+
+
+<h1 id="helpWithGrails">4 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-schwartz/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
