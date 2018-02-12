@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.6 Functional Test</title>
+    <title>3.7 Functional Test</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -72,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="test">3.6 Functional Test</h2>
+<h2 id="test">3.7 Functional Test</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/master/src/main/docs/guide/test.adoc"'>
@@ -98,10 +98,11 @@ function addJsClass() {
 <span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">PlanControllerSpec</span> <span class="directive">extends</span> Specification {
-    PlanService planService
+    PlanDataService planDataService
+    UserDataService userDataService
+    UserRoleDataService userRoleDataService
     UserService userService
-    VillainService villainService
-    RoleService roleService
+    RoleDataService roleDataService
 
     RestBuilder rest = <span class="keyword">new</span> RestBuilder()
 
@@ -122,13 +123,13 @@ function addJsClass() {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Plans for current logged user are retrieved</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">given</span>:
-        User vector = villainService.saveVillain(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
-        User gru = villainService.saveVillain(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+        User vector = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
+        User gru = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            planService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+            planDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
         }
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
-            planService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal a Pyramid</span><span class="delimiter">'</span></span>)
+            planDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal a Pyramid</span><span class="delimiter">'</span></span>)
         }
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the gru</span><span class="delimiter">'</span></span>
@@ -165,14 +166,16 @@ function addJsClass() {
 
         <span class="key">cleanup</span>:
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            planService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+            planDataService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
         }
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
-            planService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Pyramid</span><span class="delimiter">'</span></span>)
+            planDataService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Pyramid</span><span class="delimiter">'</span></span>)
         }
-        userService.deleteUser(gru)
-        userService.deleteUser(vector)
-        roleService.delete(VillainService.ROLE_VILLAIN)
+        userRoleDataService.deleteByUser(gru)
+        userDataService.delete(gru.id)
+        userRoleDataService.deleteByUser(vector)
+        userDataService.delete(vector.id)
+        roleDataService.deleteByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
     }
 }</code></pre>
 </div>

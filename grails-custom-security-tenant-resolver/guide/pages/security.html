@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.4 Wire up Security</title>
+    <title>3.3 Wire up Security</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -72,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="security">3.4 Wire up Security</h2>
+<h2 id="security">3.3 Wire up Security</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/master/src/main/docs/guide/security.adoc"'>
@@ -163,10 +163,8 @@ function addJsClass() {
 
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.EventType</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
-<span class="keyword">import</span> <span class="include">org.hibernate.event.spi.PreDeleteEvent</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
@@ -179,19 +177,19 @@ function addJsClass() {
 
     <span class="annotation">@Listener</span>(User)
     <span class="type">void</span> onPreInsertEvent(PreInsertEvent event) {
-        encodeUserPasswordForEvent(event)
+        encodePasswordForEvent(event)
     }
 
     <span class="annotation">@Listener</span>(User)
     <span class="type">void</span> onPreUpdateEvent(PreUpdateEvent event) {
-        encodeUserPasswordForEvent(event)
+        encodePasswordForEvent(event)
     }
 
-    <span class="directive">private</span> <span class="type">void</span> encodeUserPasswordForEvent(AbstractPersistenceEvent event) {
+    <span class="directive">private</span> <span class="type">void</span> encodePasswordForEvent(AbstractPersistenceEvent event) {
         <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
-            User u = (event.entityObject <span class="keyword">as</span> User)
-            <span class="keyword">if</span> (u.password &amp;&amp; ((event <span class="keyword">instanceof</span>  PreInsertEvent) || (event <span class="keyword">instanceof</span> PreUpdateEvent &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
-                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">&quot;</span><span class="content">password</span><span class="delimiter">&quot;</span></span>, encodePassword(u.password))
+            User u = event.entityObject <span class="keyword">as</span> User
+            <span class="keyword">if</span> (u.password &amp;&amp; ((event <span class="keyword">instanceof</span> PreInsertEvent) || (event <span class="keyword">instanceof</span> PreUpdateEvent &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>, encodePassword(u.password))
             }
         }
     }
@@ -263,10 +261,10 @@ beans = {
 </div>
 </div>
 <div class="paragraph">
-<p>Create several <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Service</a> to work with the Domain Classes involed in the securization of our app.</p>
+<p>Create several <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a> to work with the Domain Classes involved in the securization of our app.</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/demo/RoleService.groovy</div>
+<div class="title">grails-app/services/demo/RoleDataService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -275,41 +273,33 @@ beans = {
 
 <span class="annotation">@CompileStatic</span>
 <span class="annotation">@Service</span>(<span class="predefined-type">Role</span>)
-<span class="type">interface</span> RoleService {
-    <span class="type">void</span> delete(<span class="predefined-type">String</span> authority)
+<span class="type">interface</span> RoleDataService {
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    <span class="type">void</span> deleteByAuthority(<span class="predefined-type">String</span> authority)
     <span class="predefined-type">Role</span> findByAuthority(<span class="predefined-type">String</span> authority)
     <span class="predefined-type">Role</span> saveByAuthority(<span class="predefined-type">String</span> authority)
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/demo/UserService.groovy</div>
+<div class="title">grails-app/services/demo/UserDataService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
 <span class="annotation">@CompileStatic</span>
-<span class="type">interface</span> IUserService {
-    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password)
-}
-
 <span class="annotation">@Service</span>(User)
-<span class="annotation">@CompileStatic</span>
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">UserService</span> <span class="directive">implements</span> IUserService {
-
-    <span class="annotation">@Transactional</span>
-    <span class="type">void</span> deleteUser(User userParam) {
-        UserRole.where { user == userParam }.deleteAll()
-        userParam.delete()
-    }
+<span class="type">interface</span> UserDataService {
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password)
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    User findByUsername(<span class="predefined-type">String</span> username)
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/demo/UserRoleService.groovy</div>
+<div class="title">grails-app/services/demo/UserRoleDataService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -319,7 +309,7 @@ beans = {
 
 <span class="annotation">@Service</span>(UserRole)
 <span class="annotation">@CompileStatic</span>
-<span class="type">interface</span> UserRoleService {
+<span class="type">interface</span> UserRoleDataService {
 
     <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>user</span><span class="content">.username from </span><span class="inline"><span class="inline-delimiter">${</span>UserRole userRole<span class="inline-delimiter">}</span></span><span class="content">
     inner join </span><span class="inline"><span class="inline-delimiter">${</span>User user = userRole.user<span class="inline-delimiter">}</span></span><span class="content">
@@ -328,6 +318,10 @@ beans = {
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllUsernameByAuthority(<span class="predefined-type">String</span> authority)
 
     UserRole save(User user, <span class="predefined-type">Role</span> role)
+
+    <span class="type">void</span> delete(User user, <span class="predefined-type">Role</span> role)
+
+    <span class="type">void</span> deleteByUser(User user)
 }</code></pre>
 </div>
 </div>
@@ -335,7 +329,7 @@ beans = {
 <p>Create a service to handle User creation with a specific role.</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/services/demo/AbstractUserWithRoleService.groovy</div>
+<div class="title">grails-app/services/demo/UserService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
@@ -343,46 +337,22 @@ beans = {
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
 <span class="annotation">@CompileStatic</span>
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">AbstractUserWithRoleService</span> {
-    RoleService roleService
+<span class="type">class</span> <span class="class">UserService</span> {
+    RoleDataService roleDataService
 
-    UserRoleService userRoleService
+    UserRoleDataService userRoleDataService
 
-    UserService userService
-
-    <span class="directive">abstract</span> <span class="predefined-type">String</span> getAuthority()
+    UserDataService userDataService
 
     <span class="annotation">@Transactional</span>
-    User saveVillain(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password) {
-        <span class="predefined-type">Role</span> role = roleService.findByAuthority(getAuthority())
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="predefined-type">String</span> authority) {
+        <span class="predefined-type">Role</span> role = roleDataService.findByAuthority(authority)
         <span class="keyword">if</span> ( !role ) {
-            role = roleService.saveByAuthority(getAuthority())
+            role = roleDataService.saveByAuthority(authority)
         }
-        User user = userService.save(username, password)
-        userRoleService.save(user, role)
+        User user = userDataService.save(username, password)
+        userRoleDataService.save(user, role)
         user
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Create a service which extends the previous service:</p>
-</div>
-<div class="listingblock">
-<div class="title">grails-app/services/demo/VillainService.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
-
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
-
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">VillainService</span> <span class="directive">extends</span> AbstractUserWithRoleService {
-
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> ROLE_VILLAIN = <span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>
-
-    <span class="annotation">@Override</span>
-    <span class="predefined-type">String</span> getAuthority() {
-        ROLE_VILLAIN
     }
 }</code></pre>
 </div>
