@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.3 Listening to events from GORM synchronously</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/conclusion.html"><strong>5</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="sync">3.3 Listening to events from GORM synchronously</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-event-listeners/edit/master/src/main/docs/guide/sync.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often you will want to access and even modify properties on a domain object within an event listener. For example, you may wish to encode a user&#8217;s password prior to saving to the database, or check the value of a string property against a blacklist of forbidden words/characters. GORM events provide an <code>entityAccess</code> object which allows you to make get and set properties on the entity that triggered the event.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll see how we can use <code>entityAccess</code> in our next GORM event listener.</p>
+</div>
+<div class="paragraph">
+<p>We need to generate and assign a serial number to instances of our <code>Book</code> domain class. For this sample, the serial number will simply be a random, all-caps string, prefixed by the first few characters of the book&#8217;s title. For example, a book with a title of <code>Groovy in Action</code> might have a serial number of <code>GROO-WKVLEQEDK</code>.</p>
+</div>
+<div class="paragraph">
+<p>Create a new Grails service, called <code>SerialNumberGeneratorService</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ grails create-service demo.SerialNumberGeneratorService</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/SerialNumberGeneratorService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.apache.commons.lang.RandomStringUtils</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">SerialNumberGeneratorService</span> {
+
+    <span class="predefined-type">String</span> generate(<span class="predefined-type">String</span> bookTitle) {
+        <span class="predefined-type">String</span> randomString = RandomStringUtils.random(<span class="integer">8</span>, <span class="predefined-constant">true</span>, <span class="predefined-constant">false</span>)
+        <span class="predefined-type">String</span> titleChars = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>bookTitle<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.take(<span class="integer">4</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>titleChars<span class="inline-delimiter">}</span></span><span class="content">-</span><span class="inline"><span class="inline-delimiter">${</span>randomString<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toUpperCase()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We use the <code>take</code> method to safely grab the first 4 characters from the title (<code>take</code> will not throw an <code>IndexOutOfBoundsException</code> if the string length is shorter than the desired range)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Moreover, we want to generate friendly, human-readable urls for a our book titles. Instead of using urls such as <code><a href="http://localhost:8080/book/show/1" class="bare">http://localhost:8080/book/show/1</a></code>, we want to use <code><a href="http://localhost:8080/book/practical-grails-3" class="bare">http://localhost:8080/book/practical-grails-3</a></code></p>
+</div>
+<div class="paragraph">
+<p>Create a new Grails service, called <code>FriendlyUrlService</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ grails create-service demo.FriendlyUrlService</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/FriendlyUrlService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="keyword">import</span> <span class="include">java.text.Normalizer</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">FriendlyUrlService</span> {
+
+    <span class="comment">/**
+     * This method transforms the text passed as an argument to a text without spaces,
+     * html entities, accents, dots and extranges characters (only %,a-z,A-Z,0-9, ,_ and - are allowed).
+     *
+     * Borrowed from Wordpress: file wp-includes/formatting.php, function sanitize_title_with_dashes
+     * http://core.svn.wordpress.org/trunk/wp-includes/formatting.php
+     */</span>
+    <span class="predefined-type">String</span> sanitizeWithDashes(<span class="predefined-type">String</span> text) {
+
+        <span class="keyword">if</span> ( !text ) {
+            <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        }
+
+        <span class="comment">// Preserve escaped octets</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">%([a-fA-F0-9][a-fA-F0-9])</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">---$1---</span><span class="delimiter">'</span></span>)
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">%</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">---([a-fA-F0-9][a-fA-F0-9])---</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">%$1</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// Remove accents</span>
+        text = removeAccents(text)
+
+        <span class="comment">// To lower case</span>
+        text = text.toLowerCase()
+
+        <span class="comment">// Kill entities</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">&amp;.+?;</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// Dots -&gt; ''</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="char">\\</span><span class="content">.</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// Remove any character except %a-zA-Z0-9 _-</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">[^%a-zA-Z0-9 _-]</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// Trim</span>
+        text = text.trim()
+
+        <span class="comment">// Spaces -&gt; dashes</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="char">\\</span><span class="content">s+</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">-</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// Dashes -&gt; dash</span>
+        text = text.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">-+</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">-</span><span class="delimiter">'</span></span>)
+
+        <span class="comment">// It must end in a letter or digit, otherwise we strip the last char</span>
+        <span class="keyword">if</span> (!text[-<span class="integer">1</span>].charAt(<span class="integer">0</span>).isLetterOrDigit()) text = text[<span class="integer">0</span>..-<span class="integer">2</span>]
+
+        <span class="keyword">return</span> text
+    }
+
+    <span class="comment">/**
+     * Converts all accent characters to ASCII characters.
+     *
+     * If there are no accent characters, then the string given is just returned.
+     *
+     */</span>
+    <span class="directive">private</span> <span class="predefined-type">String</span> removeAccents(<span class="predefined-type">String</span>  text) {
+        Normalizer.normalize(text, Normalizer.Form.NFD)
+                .replaceAll(<span class="string"><span class="delimiter">&quot;</span><span class="char">\\</span><span class="content">p{InCombiningDiacriticalMarks}+</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the generated unit test spec for our <code>FriendlyUrlService</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/FriendlyUrlServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Unroll</span>
+
+<span class="type">class</span> <span class="class">FriendlyUrlServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;FriendlyUrlService&gt; {
+
+    <span class="annotation">@Unroll</span>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Friendly Url for #title : #expected</span><span class="delimiter">&quot;</span></span>(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> expected) {
+        <span class="key">expect</span>:
+        expected == service.sanitizeWithDashes(title)
+
+        <span class="key">where</span>:
+        title                | expected
+        <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span> | <span class="string"><span class="delimiter">'</span><span class="content">practical-grails-3</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we will create a listener to handle new and updated book titles. Create a Grails service named <code>TitleListenerService</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ grails create-service demo.TitleListenerService</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We want to populate the serialNumber synchronously: whenever we insert a new <code>Book</code> instance. To capture GORM events synchronously, we can use the  <code>@Listener</code> annotation instead of <code>@Subscriber</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/TitleListenerService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TitleListenerService</span> {
+
+    FriendlyUrlService friendlyUrlService
+    SerialNumberGeneratorService serialNumberGeneratorService
+
+    <span class="annotation">@Listener</span>(<span class="predefined-type">Book</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> onBookPreInsert(PreInsertEvent event) {
+        populateSerialNumber(event)
+        populateFriendlyUrl(event)
+    }
+
+    <span class="annotation">@Listener</span>(<span class="predefined-type">Book</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> onBookPreUpdate(PreUpdateEvent event) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">Book</span> book = ((<span class="predefined-type">Book</span>) event.entityObject)
+        <span class="keyword">if</span> ( book.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>) ) { <i class="conum" data-value="3"></i><b>(3)</b>
+            populateFriendlyUrl(event)
+        }
+    }
+
+    <span class="type">void</span> populateSerialNumber(AbstractPersistenceEvent event) {
+        <span class="predefined-type">String</span> title = event.entityAccess.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="predefined-type">String</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        <span class="predefined-type">String</span> serialNumber = serialNumberGeneratorService.generate(title)
+        event.entityAccess.setProperty(<span class="string"><span class="delimiter">'</span><span class="content">serialNumber</span><span class="delimiter">'</span></span>, serialNumber) <i class="conum" data-value="5"></i><b>(5)</b>
+    }
+
+    <span class="type">void</span> populateFriendlyUrl(AbstractPersistenceEvent event) {
+        <span class="predefined-type">String</span> title = event.entityAccess.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="predefined-type">String</span>
+        <span class="predefined-type">String</span> friendlyUrl = friendlyUrlService.sanitizeWithDashes(title)
+        event.entityAccess.setProperty(<span class="string"><span class="delimiter">'</span><span class="content">friendlyUrl</span><span class="delimiter">'</span></span>, friendlyUrl)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>@Listener</code> annotation will transform this method into a GORM event listener. When GORM fires a persistence event, any methods marked <code>@Listener</code> (and with the appropriate method signature) will be called. The annotation takes a value argument, which can be either a single domain class or a list of domain classes for which to "listen" - in this case, only events fired for <code>Book</code> instances will trigger this method.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>onBookPreUpdate</code> listener checks whether the title the book is "dirty" (meaning the property has been changed). If so, update the <code>friendlyUrl</code> property.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>isDirty</code> method allows us to check for properties that have been changed on the persisted object.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We retrieve the <code>title</code> property from the domain object using the <code>event.entityAccess.getProperty()</code> method.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>To set the <code>serialNumber</code> property on the domain object, we use the <code>event.entityAccess.setProperty()</code> method.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+You may wonder why couldn&#8217;t simply cast the <code>event.entityObject</code> as a <code>Book</code> and then set the <code>serialNumber</code> property directly. The reason for avoiding that approach here is that the direct assignment would itself trigger another event, potentially causing the same event listener to fire multiple times.  By using the <code>entityAccess</code> object, any changes we make will be synchronized with the current persistence session, and will be saved at the same time as the original object.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Again, the use of GORM data services eases unit testing. In the next test we Stub the GORM Data Service and we verify the serial number is populated.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/TitleListenerServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.annotation.Rollback</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">TitleListenerServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;TitleListenerService&gt;, DataTest {
+
+    <span class="keyword">def</span> <span class="function">setupSpec</span>() {
+        mockDomain <span class="predefined-type">Book</span>
+    }
+
+    Closure doWithSpring() {{ -&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+        friendlyUrlService(FriendlyUrlService)
+    }}
+
+    <span class="annotation">@Rollback</span>
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test serial number generated</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>, <span class="key">pages</span>: <span class="integer">100</span>)
+
+        <span class="key">when</span>:
+        service.serialNumberGeneratorService = <span class="predefined-type">Stub</span>(SerialNumberGeneratorService) {
+            generate(_ <span class="keyword">as</span> <span class="predefined-type">String</span>) &gt;&gt; <span class="string"><span class="delimiter">'</span><span class="content">XXXX-5125</span><span class="delimiter">'</span></span>
+        }
+
+        service.onBookPreInsert(<span class="keyword">new</span> PreInsertEvent(dataStore, book))
+
+        <span class="key">then</span>:
+        book.serialNumber == <span class="string"><span class="delimiter">'</span><span class="content">XXXX-5125</span><span class="delimiter">'</span></span>
+        book.friendlyUrl == <span class="string"><span class="delimiter">'</span><span class="content">practical-grails-3</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To provide or replace beans in the context, you can override the doWithSpring method in your test.</td>
+</tr>
+</table>
+</div>
+<div class="sect1">
+<h2 id="_integration_testing">Integration Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Next, let&#8217;s create an integration test to verify that the <code>friendlyUrl</code> property gets refreshed when <code>title</code> property is updated.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/TitleListenerServiceIntegrationSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">TitleListenerServiceIntegrationSpec</span> <span class="directive">extends</span> Specification {
+
+    BookDataService bookDataService
+    AuditDataService auditDataService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">saving a book, generates automatically a serial number</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="predefined-type">Book</span> book = bookDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>, <span class="integer">100</span>)
+        <span class="predefined-type">String</span> serialNumber = book.serialNumber
+        <span class="predefined-type">String</span> friendlyUrl = book.friendlyUrl
+
+        <span class="key">then</span>:
+        book
+        !book.hasErrors()
+        serialNumber
+        friendlyUrl == <span class="string"><span class="delimiter">'</span><span class="content">practical-grails-3</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">updating book title</span><span class="delimiter">'</span></span>
+        book = bookDataService.update(book.id, <span class="string"><span class="delimiter">'</span><span class="content">Grails 3</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">serial number stays the same</span><span class="delimiter">'</span></span>
+        serialNumber == book.serialNumber
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">friendly url changes</span><span class="delimiter">'</span></span>
+        friendlyUrl != book.friendlyUrl
+        book.friendlyUrl == <span class="string"><span class="delimiter">'</span><span class="content">grails-3</span><span class="delimiter">'</span></span>
+
+        <span class="key">cleanup</span>:
+        auditDataService.deleteByBookId(book.id)
+        bookDataService.delete(book.id)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_advanced_unit_testing">Advanced Unit Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Arguably, a test for correct handling of events should be an <strong>integration test</strong> as shown previously. However you can create an equivalent Unit Test. We can can wire together just the parts of the application that we need to verify that our listeners are being called when we expect, without the expense of a full-fledged integration test (which would require the entire application to start up in order to execute the test).</p>
+</div>
+<div class="paragraph">
+<p>Create the file <code>TitleListenerServiceGrailsUnitSpec</code> under <code>src/test/groovy/demo</code>, and edit the contents as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/TitleListenerServiceGrailsUnitSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Rollback</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">org.grails.testing.GrailsUnitTest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
+<span class="keyword">import</span> <span class="include">spock.lang.AutoCleanup</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">TitleListenerServiceGrailsUnitSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> GrailsUnitTest { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Shared</span>
+    <span class="annotation">@AutoCleanup</span>
+    HibernateDatastore hibernateDatastore <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="annotation">@Shared</span>
+    PlatformTransactionManager transactionManager
+
+    <span class="type">void</span> setupSpec() {
+        hibernateDatastore = applicationContext.getBean(HibernateDatastore) <i class="conum" data-value="2"></i><b>(2)</b>
+        transactionManager = hibernateDatastore.getTransactionManager()
+    }
+
+    <span class="annotation">@Override</span>
+    Closure doWithSpring() { <i class="conum" data-value="3"></i><b>(3)</b>
+        { -&gt;
+            friendlyUrlService(FriendlyUrlService)
+            serialNumberGeneratorService(SerialNumberGeneratorService)
+            titleListenerService(TitleListenerService) {
+                friendlyUrlService = ref(<span class="string"><span class="delimiter">'</span><span class="content">friendlyUrlService</span><span class="delimiter">'</span></span>)
+                serialNumberGeneratorService = ref(<span class="string"><span class="delimiter">'</span><span class="content">serialNumberGeneratorService</span><span class="delimiter">'</span></span>)
+            }
+            datastore(HibernateDatastore, [<span class="predefined-type">Book</span>])
+        }
+    }
+
+    <span class="annotation">@Rollback</span>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">serialNumber and friendyUrl are populated after book is saved</span><span class="delimiter">&quot;</span></span>() { <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">when</span>:
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>, <span class="key">pages</span>: <span class="integer">100</span>)
+        book.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+        <span class="key">then</span>:
+        !book.hasErrors()
+
+        <span class="key">when</span>:
+        book = <span class="predefined-type">Book</span>.findByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>)
+
+        <span class="predefined-type">String</span> serialNumber = book.serialNumber
+        <span class="predefined-type">String</span> friendlyUrl = book.friendlyUrl
+
+        <span class="key">then</span>:
+        serialNumber
+        friendlyUrl == <span class="string"><span class="delimiter">'</span><span class="content">practical-grails-3</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">updating book title</span><span class="delimiter">'</span></span>
+        book.title = <span class="string"><span class="delimiter">'</span><span class="content">Grails 3</span><span class="delimiter">'</span></span>
+        book.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+        <span class="key">then</span>:
+        !book.hasErrors()
+
+        <span class="key">when</span>:
+        book = <span class="predefined-type">Book</span>.findByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Grails 3</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">serial number stays the same</span><span class="delimiter">'</span></span>
+        serialNumber == book.serialNumber
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">friendly url changes</span><span class="delimiter">'</span></span>
+        friendlyUrl != book.friendlyUrl
+        book.friendlyUrl == <span class="string"><span class="delimiter">'</span><span class="content">grails-3</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Because we will be wiring up GORM, the Spring context and the event system ourselves, we will simply implement the basic <code>GrailsUnitTest</code> trait rather than the more specific <code>ServiceUnitTest</code> trait.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We declare a <code>Shared</code> and <code>AutoCleanup</code> property for our datastore. In the <code>setupSpec</code> method, we obtain the <code>HibernateDatastore</code> instance contained within the <code>applicationContext</code> (provided by the <code>GrailsUnitTest</code> trait). We also set the <code>transactionManager</code> shared property we defined in our spec.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>In our overridden <code>doWithSpring</code> method, we create the Spring beans for our <code>friendlyUrlService</code>, <code>serialNumberGeneratorService</code>, <code>titleListenerService</code> as well as our <code>dataStore</code>, instantiating the latter with a list of domain classes we need for our test. This will configure our service and GORM datastore in the Spring context of our test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Our test is now trivial and almost identical as the previous integration test.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/gorm-event-listeners"><img src="https://travis-ci.org/grails-guides/gorm-event-listeners.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/gorm-event-listeners">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-event-listeners.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-event-listeners.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-event-listeners'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/gorm-event-listeners.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/gorm-event-listeners/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
