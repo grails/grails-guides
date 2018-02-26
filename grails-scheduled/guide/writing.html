@@ -1,0 +1,850 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing Schedules</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writing.html"><strong>3</strong><span>Writing Schedules</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#logchanges"><strong>3.1</strong><span>Set log level INFO for package demo</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#createSimpleJob"><strong>3.2</strong><span>Creating a simple Job</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#logicInService"><strong>3.3</strong><span>Business logic in Services</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#taskScheduler"><strong>3.4</strong><span>Task Scheduler Bean</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#runnableTasks"><strong>3.5</strong><span>Runnable Tasks</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#triggerManually"><strong>3.6</strong><span>Scheduling a Job manually</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#logicInServiceTwo"><strong>3.7</strong><span>Simplified Cron with TaskSchedule</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#summary"><strong>3.8</strong><span>Summary</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writing">3 Writing Schedules</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/writing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Lucky for us using Spring Task Execution and Scheduling is an out of the box feature for Grails so
+there is no need to add any additional dependencies. Lets go ahead and get started.</p>
+</div>
+
+
+<h2 id="logchanges">3.1 Set log level INFO for package demo</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/logchanges.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>During this guide, we are going to use several log statements to show Job execution.</p>
+</div>
+<div class="paragraph">
+<p>Add at the end of <code>logback.groovy</code> the next statement:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/logback.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">'</span><span class="content">demo</span><span class="delimiter">'</span></span>, INFO, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above line configures a logger for package <code>demo</code> with log level INFO which uses the STDOUT appender and with adaptivity set to false.</p>
+</div>
+
+
+<h2 id="createSimpleJob">3.2 Creating a simple Job</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/createSimpleJob.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Since scheduling is native functionality. Just execute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-service HelloWorldJob</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will create the file <code>grails-app/services/demo/HelloWorldJobService.groovy</code> with a empty template method.</p>
+</div>
+<div class="paragraph">
+<p>The very basic skeleton is:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/HelloWorldJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">HelloWorldJobService</span> {
+
+    <span class="keyword">def</span> <span class="function">serviceMethod</span>() {
+        <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>By default services are <code>Transactional</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The job logic goes here</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s modify the previous code and add the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/HelloWorldJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.annotation.Scheduled</span>
+
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>  <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">HelloWorldJobService</span> {
+
+    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="annotation">@Scheduled</span>(fixedDelay = <span class="integer">10000L</span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="type">void</span> executeEveryTen() {
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Simple Job every 10 seconds :{}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+    }
+
+    <span class="annotation">@Scheduled</span>(fixedDelay = <span class="integer">45000L</span>, initialDelay = <span class="integer">5000L</span>) <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="type">void</span> executeEveryFourtyFive() {
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Simple Job every 45 seconds :{}</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Remove <code>@Transactional</code> as this service does not require transactions. Add <code>@CompileStatic</code> for performance and <code>@Slf4j</code> for logging</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>By default Grails' services are lazily initialized. You can disable this and make initialization eager with the lazyInit property. Without forcing the service to be eagerly initialized the jobs will not execute.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create trigger every 10 seconds</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Create another trigger every 45 seconds with an initial delay of 5 seconds (5000 millis)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now start the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And after a few seconds you will see the following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">Simple Job every 45 seconds :14/2/2018 02:06:50 <i class="conum" data-value="1"></i><b>(1)</b>
+Simple Job every 10 seconds :14/2/2018 02:06:55 <i class="conum" data-value="2"></i><b>(2)</b>
+Simple Job every 10 seconds :14/2/2018 02:07:05 <i class="conum" data-value="3"></i><b>(3)</b>
+Simple Job every 10 seconds :14/2/2018 02:07:15
+Simple Job every 10 seconds :14/2/2018 02:07:25
+Simple Job every 45 seconds :14/2/2018 02:07:35 <i class="conum" data-value="4"></i><b>(4)</b>
+Simple Job every 10 seconds :14/2/2018 02:07:35</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>First execution of 10 seconds job just after the application starts</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The 45 seconds job just starts 5 seconds after the app starts. See <code>startDelay</code> in the trigger configuration.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Second execution of 10 seconds job just 10 seconds after the first execution</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Second execution of 45 seconds job just 45 seconds after the first execution</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is required or your schedule will not run.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>@Scheduled</code> requires the use of CONSTANT values. Meaning that attempting to generate / build values for <code>fixedDelay</code>, <code>initialDelay</code>, <code>cron</code>, ect. will not work and cause compile errors.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="logicInService">3.3 Business logic in Services</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/logicInService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Although the previous example is valid, usually you don&#8217;t want to put your business logic in a Job. A better approach is to create an additional service which the <code>JobService</code> invokes. This approach decouples your business logic from the scheduling logic. Moreover, it facilities testing and maintenance. Let&#8217;s see an example:</p>
+</div>
+<div class="paragraph">
+<p>Create the following service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/EmailService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">EmailService</span> {
+
+    <span class="type">void</span> send(<span class="predefined-type">String</span> user, <span class="predefined-type">String</span> message) {
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to </span><span class="inline"><span class="inline-delimiter">${</span>user<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>+ <span class="string"><span class="delimiter">'</span><span class="content"> at </span><span class="delimiter">'</span></span> + <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then the job:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/DailyEmailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">DailyEmailJobService</span>  {
+
+    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="annotation">@Scheduled</span>(cron = <span class="string"><span class="delimiter">&quot;</span><span class="content">0 30 4 1/1 * ?</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="type">void</span> execute() {
+        emailService.send(<span class="string"><span class="delimiter">'</span><span class="content">john.doe@example.com</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Test Message</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Force service to initialize, without forcing the service to be initialized the jobs will not execute</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Inject the service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Call it</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Trigger the job once a day at 04:30 AM</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Cron notation is often confusing so to assist in having clear logic and to make more advanced scheduling easier next we will
+take a look at job execution using a TaskScheduler.</p>
+</div>
+
+
+<h2 id="taskScheduler">3.4 Task Scheduler Bean</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/taskScheduler.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started using more advance scheduling techniques first we need to create and register a TaskScheduler bean.</p>
+</div>
+<div class="paragraph">
+<p>Create the following configuration file containing a new task scheduler bean</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/SchedulingConfiguration.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Bean</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
+
+<span class="annotation">@Configuration</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">SchedulingConfiguration</span> {
+
+    <span class="annotation">@Bean</span>
+    ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = <span class="keyword">new</span> ThreadPoolTaskScheduler()
+        threadPoolTaskScheduler.setThreadNamePrefix(<span class="string"><span class="delimiter">&quot;</span><span class="content">ThreadPoolTaskScheduler</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        threadPoolTaskScheduler.initialize()
+        threadPoolTaskScheduler
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Make your config discoverable</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>All related threads will be prefixed with ThreadPoolTaskScheduler</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you wish to allow for concurrent execution set the thread pools size ex. <code>threadPoolTaskScheduler.setPoolSize(5)</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By default ThreadPoolTaskScheduler only has a single thread available for execution, which means tasks will not execute concurrently
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now configure your app to automatically discover the new configuration so your new bean will work with standard
+Grails dependency injection</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/Application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.boot.GrailsApp</span>
+<span class="keyword">import</span> <span class="include">grails.boot.config.GrailsAutoConfiguration</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.ComponentScan</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@ComponentScan</span>(<span class="string"><span class="delimiter">'</span><span class="content">demo</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">Application</span> <span class="directive">extends</span> GrailsAutoConfiguration {
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        GrailsApp.run(Application, args)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Enable discovery of additional configuration files</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="runnableTasks">3.5 Runnable Tasks</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/runnableTasks.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Once you have created and wired the TaskScheduler you will need to create runnable tasks for it to execute.</p>
+</div>
+<div class="paragraph">
+<p>Create the following task</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/tasks/demo/EmailTask.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">EmailTask</span> <span class="directive">implements</span> <span class="predefined-type">Runnable</span> { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="predefined-type">String</span> email <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">String</span> message <i class="conum" data-value="3"></i><b>(3)</b>
+    EmailService emailService <i class="conum" data-value="4"></i><b>(4)</b>
+
+    EmailTask(EmailService emailService, <span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) { <i class="conum" data-value="5"></i><b>(5)</b>
+        <span class="local-variable">this</span>.emailService = emailService
+        <span class="local-variable">this</span>.email = email
+        <span class="local-variable">this</span>.message = message
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> run() { <i class="conum" data-value="6"></i><b>(6)</b>
+        emailService.send(email, message)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement <code>Runnable</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Store incoming email address for later use</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Store incoming message</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Store incoming service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Task constructor: set <code>email</code>, `message and service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Run the task</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="triggerManually">3.6 Scheduling a Job manually</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/triggerManually.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Imagine the following scenario. You want to send every user an email 2 hours after they registered into your app. You want to ask him about his experiences during this first interaction with your service.</p>
+</div>
+<div class="paragraph">
+<p>For this guide, we are going to schedule a Job to trigger after one minute.</p>
+</div>
+<div class="paragraph">
+<p>Modify <code>BootStrap.groovy</code> to call twice a new service named <code>RegisterService</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+        RegisterService registerService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">harry@howards.com</span><span class="delimiter">'</span></span>)
+            sleep(<span class="integer">20</span>_000)
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">ron@howards.com</span><span class="delimiter">'</span></span>)
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create <code>RegisterService.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/RegisterService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.time.TimeCategory</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">RegisterService</span> {
+
+        ThreadPoolTaskScheduler threadPoolTaskScheduler <i class="conum" data-value="1"></i><b>(1)</b>
+        EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="type">void</span> register(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) {
+                log.info <span class="string"><span class="delimiter">'</span><span class="content">saving {} at {}</span><span class="delimiter">'</span></span>, email, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+                scheduleFollowupEmail(email, message)
+        }
+
+        <span class="annotation">@CompileDynamic</span>
+        <span class="predefined-type">Date</span> startAtDate() { <i class="conum" data-value="3"></i><b>(3)</b>
+                <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>()
+                use(TimeCategory) {
+                        startAt = startAt + <span class="integer">1</span>.minute
+                }
+                startAt
+        }
+
+        <span class="type">void</span> scheduleFollowupEmail(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) {
+                threadPoolTaskScheduler.schedule(<span class="keyword">new</span> EmailTask(emailService, email, message), startAtDate()) <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dependency injection of our TaskScheduler bean</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Dependency injection of emailService</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This method returns a date one minute into the future</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Schedule the trigger</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you execute the above code you will see the Job being executed one minute after we schedule it and with the supplied email address.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">INFO demo.RegisterService         : saving harry@howards.com at 23/1/2018 07:55:21
+INFO demo.RegisterService         : saving ron@howards.com at 23/1/2018 07:55:41
+INFO demo.EmailService            : Sending email to harry@howards.com : Follow up - How was your experience at 23/1/2018 07:56:21
+INFO demo.EmailService            : Sending email to ron@howards.com : Follow up - How was your experience at 23/1/2018 07:56:41</code></pre>
+</div>
+</div>
+
+
+<h2 id="logicInServiceTwo">3.7 Simplified Cron with TaskSchedule</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/logicInServiceTwo.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In our previous cron example we did mention that many times cron can be confusing and is not intuitive. To alleviate some
+of that confusion here is the previous cron configuration written using the TaskScheduler</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/todayat/DailyMailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.EmailService</span>
+<span class="keyword">import</span> <span class="include">demo.EmailTask</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
+<span class="keyword">import</span> <span class="include">java.time.Duration</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">DailyMailJobService</span> {
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> HOUR = <span class="integer">4</span>
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> MINUTE = <span class="integer">30</span>
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> SECONDS = <span class="integer">0</span>
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> MILLISECONDS_IN_DAY = <span class="predefined-type">Duration</span>.ofDays(<span class="integer">1</span>).getSeconds() * <span class="integer">1000</span> <i class="conum" data-value="4"></i><b>(4)</b>
+
+    ThreadPoolTaskScheduler threadPoolTaskScheduler <i class="conum" data-value="1"></i><b>(1)</b>
+    EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> register(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) {
+        scheduleDailyEmail(email, message)
+    }
+
+    <span class="type">void</span> scheduleDailyEmail(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) { <i class="conum" data-value="5"></i><b>(5)</b>
+        threadPoolTaskScheduler.scheduleAtFixedRate(<span class="keyword">new</span> EmailTask(emailService, email, message), dailyDate(), MILLISECONDS_IN_DAY)
+    }
+
+    <span class="predefined-type">Date</span> dailyDate() { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>(<span class="key">hours</span>: HOUR, <span class="key">minutes</span>: MINUTE, <span class="key">seconds</span>: SECONDS)
+        <span class="keyword">if</span>(startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
+            <span class="keyword">return</span> (startAt + <span class="integer">1</span>)
+        }
+        startAt
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dependency injection of our TaskScheduler bean</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Dependency injection of emailService</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Calculate start time</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Calculate repeat interval</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Schedule task with start time and repeat interval</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once you have written your schedule using TaskScheduler, register the job in bootstrap.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">demo.todayat.DailyMailJobService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+        RegisterService registerService
+    DailyMailJobService dailyMailJobService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="directive">final</span> <span class="predefined-type">String</span> followUp = <span class="string"><span class="delimiter">'</span><span class="content">Follow up - How was your experience</span><span class="delimiter">'</span></span>
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">harry@howards.com</span><span class="delimiter">'</span></span>, followUp)
+            sleep(<span class="integer">20</span>_000)
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">ron@howards.com</span><span class="delimiter">'</span></span>, followUp)
+        dailyMailJobService.register(<span class="string"><span class="delimiter">'</span><span class="content">john.daily@example.com</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Daily Reminder</span><span class="delimiter">'</span></span>)
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="summary">3.8 Summary</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/master/src/main/docs/guide/summary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>During this guide, we learned how to configure Jobs using the <code>@Scheduled</code> annotation using fixedDelay, initialDelay,
+and cron as well as manually configuring jobs with a TaskScheduler and tasks. Moreover, we learned that
+default configuration for <code>@Scheduled</code> or the TaskScheduler prevents concurrent execution.</p>
+</div>
+<div class="paragraph">
+<p>For more information review the
+<a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#scheduling">Spring Task Execution and Scheduling documentation</a> to learn more.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-scheduled"><img src="https://travis-ci.org/grails-guides/grails-scheduled.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-scheduled">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-scheduled.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-scheduled.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-scheduled'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-scheduled.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-scheduled/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
