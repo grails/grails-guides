@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Message Queues with Grails 3 and RabbitMQ | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Message Queues with Grails 3 and RabbitMQ. Learn how to use message queues with Grails 3 and RabbitMQ-Native plugin' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-rabbitmq"><img src="https://travis-ci.org/grails-guides/grails-rabbitmq.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-rabbitmq&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-rabbitmq.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-rabbitmq.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-rabbitmq.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-rabbitmq/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3</strong><span>Application Overview</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#rabbitMQ"><strong>4</strong><span>Message Queues - RabbitMQ</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#setupRabbit"><strong>4.1</strong><span>Setup RabbitMQ service</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#originalAppGrails"><strong>5</strong><span>Books Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#bookApplicationRabbit"><strong>5.1</strong><span>RabbitMQ publisher</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#buildingAnalytics"><strong>6</strong><span>Building Analytics app</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#bookAnalyticsRabbit"><strong>6.1</strong><span>RabbitMQ consumer</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#running"><strong>7</strong><span>Running the apps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#rabbitManagement"><strong>8</strong><span>Rabbit Management</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#nextSteps"><strong>9</strong><span>Next Steps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>10</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Message Queues with Grails 3 and RabbitMQ</h1>
+        <p>Learn how to use message queues with Grails 3 and RabbitMQ-Native plugin</p>
+        <p><strong>Authors:</strong> Ben Rhine,Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we will show you how to setup and use <a href="https://www.rabbitmq.com/">RabbitMQ</a> with a Grails 3 application.
+We will be using the <a href="http://plugins.grails.org/plugin/budjb/rabbitmq-native">rabbitmq-native</a> plugin</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-rabbitmq/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-rabbitmq.git" class="bare">https://github.com/grails-guides/grails-rabbitmq.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain three folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code></p>
+</li>
+<li>
+<p><code>complete-analytics</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this guide you are going to create two Grails Applications. Both <code>complete</code> and <code>complete-analytics</code> apps are a completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-rabbitmq/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-rabbitmq/complete</code> and <code>grails-guides/grails-rabbitmq/complete-analytics</code>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">3 Application Overview</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, we setup a message queue to work across two different applications.
+In this guide, we have an app which lists books and book&#8217;s detail.
+We want to keep track of the number of times each book is viewed.
+We add a separate analytics app that keeps track of the number of times each one is viewed.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/appsummary.png" alt="appsummary">
+</div>
+</div>
+
+
+<h1 id="rabbitMQ">4 Message Queues - RabbitMQ</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/rabbitMQ.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The construct of message queues provides for asynchronous communications, meaning that the sender and receiver
+do not need to interact with the message queue concurrently. When a message is sent it will be added to the queue and stored
+until the recipient retrieves them. Message queues can be used internally in an app or externally with multiple applications.
+A number of different implementations of message queues exist but one of the more popular and the one we will use for
+this guide is RabbitMQ.</p>
+</div>
+
+
+<h2 id="setupRabbit">4.1 Setup RabbitMQ service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/setupRabbit.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get RabbitMQ up and running on your system there are multiple different ways to get setup and going. You may choose
+to follow the directions from RabbitMQ themselves located <a href="https://www.rabbitmq.com/download.html">here</a>, but we would
+recommend following the way we set it up for parity.</p>
+</div>
+<div class="paragraph">
+<p>To have a similar to real world setup we have chosen to setup our RabbitMQ using <a href="https://www.docker.com/">Docker</a> as its
+quick, simple, and easy to tear down and setup again if you run into any issues. Docker is a container engine which allows
+for quick and simple installs of many different frameworks and products and helps avoid differences in local systems to
+provide a guaranteed clean instance of the product you are tying to run. We will assume you already have Docker
+installed on your system moving forward but if you do not you can install it from <a href="https://www.docker.com/community-edition">here</a>.</p>
+</div>
+<div class="paragraph">
+<p>Make sure Docker is running on your local system (You should see a little whale)</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dockerIcon.png" alt="dockerIcon">
+</div>
+</div>
+<div class="paragraph">
+<p>Once you know Docker is up and running from your terminal run the following command.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 4369:4369 -p 5671:5671 -p 5672:5672 -p 15671:15671 -p 25672:25672 rabbitmq:3-management</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above command does a lot for you, it downloads and runs a dockerized instance of RabbitMQ, sets the hostname, gives
+the instance a name, configures the ports you will need to successfully access RabbitMQ, and includes the management
+interface so we can have more insight to how the message queue works. Once the command completes you will see output
+similar to the following.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dockerCmdSuccess.png" alt="dockerCmdSuccess">
+</div>
+</div>
+<div class="paragraph">
+<p>In addition to Docker you may like a more visual interface to see your RabbitMQ container in action. If thats the case go
+ahead and download "Kitematic" which is a GUI interface for your underlying Docker service. Docker will even help you get
+Kitematic from its menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dockerMenu.png" alt="dockerMenu">
+</div>
+</div>
+<div class="paragraph">
+<p>If you installed Kitematic you should now see your RabbitMQ instance running on the lefthand side.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/kitematicRabbit.png" alt="kitematicRabbit">
+</div>
+</div>
+<div class="paragraph">
+<p>As mentioned above we included the RabbitMQ admin interface so we can see some details about our message queues. You can
+access the admin interface located at <code>localhost:15672</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/rabbitMQAdminLogin.png" alt="rabbitMQAdminLogin">
+</div>
+</div>
+<div class="paragraph">
+<p>To login use the username / pass of guest / guest. After a successful login you will see the following page</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/rabbitAdminHome.png" alt="rabbitAdminHome">
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on this specific docker container please view the documentation
+<a href="https://docs.docker.com/samples/library/rabbitmq/">here</a>.</p>
+</div>
+
+
+<h1 id="originalAppGrails">5 Books Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/originalAppGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We have already added the necessary assets (book cover images) to the <code>initial/grails-app/assets/images</code> folder for you.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Moving forward we need to add additional functionality to our app since we will no longer be using just a single application.
+To start we first need to add a <code>Book</code> domain.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Book.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> image
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> about
+    <span class="predefined-type">String</span> href
+    <span class="directive">static</span> mapping = {
+        image <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        title <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        author <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        about <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        href <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        about <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will be using a custom <code>findAll</code> to return our list of books and for that we will need to use an additional <code>BookImage</code>
+object. First create your <code>BookImage</code> in the <code>src/main/groovy</code> directory</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/BookImage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookImage</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> image
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create default CRUD actions for <code>Book</code> leveraging <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM data services</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.api.BuildableCriteria</span>
+<span class="keyword">import</span> <span class="include">org.hibernate.transform.Transformers</span>
+
+<span class="type">interface</span> IBookDataService {
+    <span class="predefined-type">Book</span> save(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> author, <span class="predefined-type">String</span> about, <span class="predefined-type">String</span> href, <span class="predefined-type">String</span> image)
+    <span class="predefined-type">Number</span> count()
+    <span class="predefined-type">Book</span> findById(<span class="predefined-type">Long</span> id)
+}
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookDataService</span> <span class="directive">implements</span> IBookDataService {
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;BookImage&gt; findAll() {
+        BuildableCriteria c = <span class="predefined-type">Book</span>.createCriteria()
+        c.list {
+            resultTransformer(Transformers.aliasToBean(BookImage))
+            projections {
+                property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+                property(<span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next connect our new controller up to the services that we just created. Our index will leverage our custom <code>findAll</code> to
+return a complete list of books while our show will make use of the data services <code>findById</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BookController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">show</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>]
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">bookList</span>: bookDataService.findAll()]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Long</span> id) {
+        [<span class="key">bookInstance</span>: bookDataService.findById(id)]
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we need to actually create the book data with our <code>Bootstrap.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/Bootstrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GRAILS_BOOKS = [
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 3 - Step by Step</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cristian Olaru</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">https://grailsthreebook.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn how a complete greenfield application can be implemented quickly and efficiently with Grails 3 using profiles and plugins. Use the sample application that accompanies the book as an example.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_3_step_by_step.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content"> Eric Helgeson</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://www.grails3book.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn the fundamental concepts behind building Grails applications with the first book dedicated to Grails 3. Real, up-to-date code examples are provided, so you can easily follow along.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">pratical-grails-3-book-cover.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Falando de Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Henrique Lobo Weissmann</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.casadocodigo.com.br/products/livro-grails</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This is the best reference on Grails 2.5 and 3.0 written in Portuguese. It&amp;#39;s a great guide to the framework, dealing with details that many users tend to ignore.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_weissmann.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails Goodness Notebook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hubert A. Klein Ikkink</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://leanpub.com/grails-goodness-notebook</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Experience the Grails framework through code snippets. Discover (hidden) Grails features through code examples and short articles. The articles and code will get you started quickly and provide deeper insight into Grails.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grailsgood.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">The Definitive Guide to Grails 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown and Graeme Rocher</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.apress.com/9781430243779</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">As the title states, this is the definitive reference on the Grails framework, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grocher_jbrown_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails in Action</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Glen Smith and Peter Ledbrook</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/gsmith2/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">The second edition of Grails in Action is a comprehensive introduction to Grails 2 focused on helping you become super-productive fast.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gsmith2_cover150.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 2: A Quick-Start Guide</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dave Klein and Ben Klein</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.amazon.com/gp/product/1937785777?tag=misa09-20</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This revised and updated edition shows you how to use Grails by iteratively building a unique, working application.</span><span class="delimiter">'</span></span>,
+                    image : <span class="string"><span class="delimiter">'</span><span class="content">bklein_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Programming Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Burt Beckwith</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://shop.oreilly.com/product/0636920024750.do</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Dig deeper into Grails architecture and discover how this application framework works its magic.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">bbeckwith_cover.gif</span><span class="delimiter">'</span></span>
+            ]
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GROOVY_BOOKS = [
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Making Java Groovy</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ken Kousen</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/kousen/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Make Java development easier by adding Groovy. Each chapter focuses on a task Java developers do, like building, testing, or working with databases or restful web services, and shows ways Groovy can make those tasks easier.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">Kousen-MJG.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy in Action, 2nd Edition</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dierk König, Guillaume Laforge, Paul King, Cédric Champeau, Hamlet D</span><span class="char">\'</span><span class="content">Arcy, Erik Pragt, and Jon Skeet</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/koenig2/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This is the undisputed, definitive reference on the Groovy language, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">regina.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy for Domain-Specific Languages</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Fergal Dearle</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-for-domain-specific-languages-dsl/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Learn how Groovy can help Java developers easily build domain-specific languages into their applications.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gdsl.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy 2 Cookbook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Andrey Adamovitch, Luciano Fiandeso</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-2-cookbook/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book contains more than 90 recipes that use the powerful features of Groovy 2 to develop solutions to everyday programming challenges.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">g2cook.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Programming Groovy 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Venkat Subramaniam</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://pragprog.com/book/vslg2/programming-groovy-2</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book helps experienced Java developers learn to use Groovy 2, from the basics of the language to its latest advances.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">vslg2.jpg</span><span class="delimiter">'</span></span>
+            ],
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="keyword">for</span> (<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; bookInfo : (GRAILS_BOOKS + GROOVY_BOOKS)) {
+            bookDataService.save(bookInfo.title, bookInfo.author, bookInfo.about, bookInfo.href, bookInfo.image)
+        }
+    }
+
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lastly we update our url mapping so that our default url will display our list of books</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UrlMappings</span> {
+
+    <span class="directive">static</span> mappings = {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>{
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">500</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">404</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/notFound</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Updated default URL</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Run the app</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/booksHome.png" alt="booksHome">
+</div>
+</div>
+
+
+<h2 id="bookApplicationRabbit">5.1 RabbitMQ publisher</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/bookApplicationRabbit.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add RabbitMQ Native plugin to the <code>initial</code> app.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:rabbitmq-native:3.4.4</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once we have added the dependency we can go ahead and add the necessary config to connect to RabbitMQ.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">rabbitmq</span>:
+    <span class="key">connections</span>:
+      - <span class="string"><span class="content">name: main </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="key">host</span>: <span class="string"><span class="content">localhost </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="key">port</span>: <span class="string"><span class="content">5672</span></span>
+        <span class="key">username</span>: <span class="string"><span class="content">guest  </span></span><i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="key">password</span>: <span class="string"><span class="content">guest  </span></span><i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="key">queues</span>:
+      - <span class="string"><span class="content">name: bookQueue </span></span> <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>All connections require a name but you can name it whatever you want</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Where RabbitMQ is located. In this case on our local system but this can also be a web url or ip address</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Default username <code>guest</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Default password <code>guest</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Creation of a <code>bookqueue</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When a book&#8217;s details is viewed we publish a message to RabbitMQ. In order to do that we create
+an <a href="http://docs.grails.org/latest/guide/single.html#interceptors">interceptor</a>.</p>
+</div>
+<div class="paragraph">
+<p>Create a new interceptor in the <code>grails-app/controllers/demo</code> called <code>BookShowInterceptor.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BookShowInterceptor.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.budjb.rabbitmq.publisher.RabbitMessagePublisher</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookShowInterceptor</span> {
+    RabbitMessagePublisher rabbitMessagePublisher  <i class="conum" data-value="1"></i><b>(1)</b>
+
+    BookShowInterceptor() { <i class="conum" data-value="2"></i><b>(2)</b>
+        match(<span class="key">controller</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>, <span class="key">action</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">show</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    <span class="type">boolean</span> after() { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="directive">final</span> <span class="predefined-type">Book</span> book = (<span class="predefined-type">Book</span>) model.bookInstance <i class="conum" data-value="4"></i><b>(4)</b>
+
+        rabbitMessagePublisher.send { <i class="conum" data-value="5"></i><b>(5)</b>
+            routingKey = <span class="string"><span class="delimiter">&quot;</span><span class="content">bookQueue</span><span class="delimiter">&quot;</span></span>
+            body = [<span class="key">id</span>: book.id, <span class="key">title</span>: book.title]
+        }
+        <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inject the rabbitMessagePublisher</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Intercept when the book controller show method is called</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>after</code> method executes after the action but prior to view rendering. It returns true to continue processing to the view.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Model is available in the <code>after</code> method to retrieve data about the current object</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Send specified message using a specific queue. When sending a message using send no return message is expected.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="buildingAnalytics">6 Building Analytics app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/buildingAnalytics.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a new Grails 3 application for this additional app. For example by using
+<a href="http://start.grails.org/">Grails Application Forge</a> or the command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-app initial-analytics --profile=rest-api</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the multi app part of this guide we will need to be able to run both apps simultaneously. To avoid a running port conflict update your <code>initial-analytics</code> app <code>application.yml</code> to include the following.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">server</span>:
+  <span class="key">port</span>: <span class="string"><span class="content">8090</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a Domain class <code>BookPageView</code> which will keep track of how many times a book has been viewed.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/BookPageView.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BookPageView</span> {
+    <span class="predefined-type">Long</span> bookId
+    <span class="predefined-type">String</span> bookName
+    <span class="predefined-type">Integer</span> views
+
+    <span class="directive">static</span> constraints = {
+        bookId <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        bookName <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        views <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">min</span>: <span class="integer">0</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As before create default actions for our <code>BookPageView</code> leveraging data services.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookPageViewDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">interface</span> IBookPageViewDataService {
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+
+    BookPageView save(<span class="predefined-type">Long</span> bookId, <span class="predefined-type">String</span> bookName, <span class="predefined-type">Integer</span> views)
+
+    BookPageView findByBookId(<span class="predefined-type">Long</span> bookId)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.views from </span><span class="inline"><span class="inline-delimiter">${</span>BookPageView b<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.bookId = </span><span class="inline"><span class="inline-delimiter">$</span>bookIdParam</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; findViewsByBookId(<span class="predefined-type">Long</span> bookIdParam)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span>BookPageView b<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>b.views<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">${</span>b.views<span class="inline-delimiter">}</span></span><span class="content"> + 1 where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.bookId = </span><span class="inline"><span class="inline-delimiter">$</span>bookIdParam</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Number</span> updateViews(<span class="predefined-type">Long</span> bookIdParam)
+}
+
+<span class="annotation">@Service</span>(BookPageView)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookPageViewDataService</span> <span class="directive">implements</span> IBookPageViewDataService {
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> increment(<span class="predefined-type">Long</span> bookId, <span class="predefined-type">String</span> bookName) {
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; views = findViewsByBookId(bookId)
+        <span class="keyword">if</span> (!views) {
+            save(bookId, bookName, <span class="integer">1</span>)
+        } <span class="keyword">else</span> {
+            updateViews(bookId)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use JPA-QL query to perform a projection</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Implement update operations using JPA-QL</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Add an integration test:</p>
+</div>
+<div class="listingblock">
+<div class="title">complete-analytics/src/integration-test/groovy/demo/BookPageViewDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">BookPageViewDataServiceSpec</span> <span class="directive">extends</span> Specification {
+
+    BookPageViewDataService bookPageViewDataService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test increments</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        !bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">when</span>:
+        bookPageViewDataService.increment(<span class="integer">2</span>, <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>)
+        BookPageView bookPageView = bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">then</span>:
+        bookPageView
+        bookPageViewDataService.findByBookId(<span class="integer">2</span>).views == <span class="integer">1</span>
+
+        <span class="key">when</span>:
+        bookPageViewDataService.increment(<span class="integer">2</span>, <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>)
+        bookPageView = bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">then</span>:
+        bookPageView
+        bookPageViewDataService.findByBookId(<span class="integer">2</span>).views == <span class="integer">2</span>
+
+        <span class="key">cleanup</span>:
+        bookPageViewDataService.delete(bookPageView.id)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="bookAnalyticsRabbit">6.1 RabbitMQ consumer</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/bookAnalyticsRabbit.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We need to create a new consumer, we will create the consumer in
+the <code>initial-analytics</code> application. First navigate to the analytics application</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd ~/yourProjectLocation/initial-analytics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then as before create a new consumer</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-consumer demo.BookPageViewConsumer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the generated consumer to look as follows</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/rabbit-consumers/demo/BookPageViewConsumer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.budjb.rabbitmq.consumer.MessageContext</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookPageViewConsumer</span> {
+
+    BookPageViewDataService bookPageViewDataService <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">static</span> rabbitConfig = [ <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="key">queue</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">bookQueue</span><span class="delimiter">&quot;</span></span>
+    ]
+
+    <span class="comment">/**
+     * Handle an incoming RabbitMQ message.
+     *
+     * @param body    The converted body of the incoming message.
+     * @param context Properties of the incoming message.
+     * @return
+     */</span>
+    <span class="keyword">def</span> <span class="function">handleMessage</span>(<span class="predefined-type">Map</span> body, MessageContext messageContext) {
+        log.debug <span class="string"><span class="delimiter">'</span><span class="content">{}</span><span class="delimiter">'</span></span>, body.toString()
+        bookPageViewDataService.increment((<span class="predefined-type">Long</span>) body.id, (<span class="predefined-type">String</span>) body.title) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add our page view service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tell our consumer which queue to connect to</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Tell our consumer what to do when it receives a message. Call our custom increment action.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="running">7 Running the apps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/running.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To see our two apps communicate asynchronously using RabbitMQ we have to run both apps simultaneously. To do that open
+two separate terminals. In terminal one &#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd ~/yourProjectLocation/initial</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next in terminal two &#8230;&#8203;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd ~/yourProjectLocation/initial-analytics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now with both apps running open two browser tabs. In tab one navigate to <code><a href="http://localhost:8080" class="bare">http://localhost:8080</a></code> and you should see a
+list of books available.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/booksHome.png" alt="booksHome">
+</div>
+</div>
+<div class="paragraph">
+<p>then in your second tab navigate to <code><a href="http://localhost:8090/BookPageView" class="bare">http://localhost:8090/BookPageView</a></code> and you should see an empty array.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/analyticsHome.png" alt="analyticsHome">
+</div>
+</div>
+<div class="paragraph">
+<p>Select a book to click and after clicking you should see the book description</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/bookDescription.png" alt="bookDescription">
+</div>
+</div>
+<div class="paragraph">
+<p>And if you go refresh the analytics page you will now see that book 1 has been viewed 1 time.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/viewCountUpdate.png" alt="viewCountUpdate">
+</div>
+</div>
+<div class="paragraph">
+<p>Try this on several books, and go back and revisit a previous book and then refresh your analytics page to see how many
+views each book has.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/multiView.png" alt="multiView">
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally if you view the terminal where you are running the analytics app you can see the messages it received.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/consumerMessageReceived.png" alt="consumerMessageReceived">
+</div>
+</div>
+
+
+<h1 id="rabbitManagement">8 Rabbit Management</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/rabbitManagement.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As mentioned earlier in section 3.1 <a href="#setupRabbit">[setupRabbit]</a> we have access to the rabbit management console located at <code><a href="http://localhost:15672" class="bare">http://localhost:15672</a></code>.
+Go ahead and navigate to the console and login. Once logged in select <code>Queues</code> from the menu.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/messageQueues.png" alt="messageQueues">
+</div>
+</div>
+<div class="paragraph">
+<p>from here you can see the two queues which we have created with our applications. Now select the `Overview tab and
+return to the management home page. When looking at the home page note that there are 0 messages in the queue.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/emptyQueue.png" alt="emptyQueue">
+</div>
+</div>
+<div class="paragraph">
+<p>At this point stop your analytics app from the terminal with <code>Ctrl-C</code> and then go back to your still running app and go click
+on and view a few more books. Once you have viewed a few more books, return to your admin home and you will see that new
+messages have been generated and are waiting in the queue.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/updatedAdminHome.png" alt="updatedAdminHome">
+</div>
+</div>
+<div class="paragraph">
+<p>Go ahead and restart your analytics app now from your terminal</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once your analytics app has restarted you will see it process the waiting messages and when you return to the rabbit admin
+you will see the message queue has returned to 0.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/processingPrePostedMessages.png" alt="processingPrePostedMessages">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/rabbitAdminHome.png" alt="rabbitAdminHome">
+</div>
+</div>
+
+
+<h1 id="nextSteps">9 Next Steps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/nextSteps.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To further your understanding read through the plugin documentation found <a href="https://budjb.github.io/grails-rabbitmq-native/3.x/latest/">here</a>.
+Additionally feel free to read the RabbitMQ documentation <a href="https://www.rabbitmq.com/documentation.html">here</a>, and take a
+look at there many examples available in different languages <a href="https://www.rabbitmq.com/getstarted.html">here</a>.</p>
+</div>
+
+
+<h1 id="helpWithGrails">10 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>

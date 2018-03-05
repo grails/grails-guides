@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Building Analytics app</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Application Overview</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/rabbitMQ.html"><strong>4</strong><span>Message Queues - RabbitMQ</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/originalAppGrails.html"><strong>5</strong><span>Books Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/buildingAnalytics.html"><strong>6</strong><span>Building Analytics app</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/running.html"><strong>7</strong><span>Running the apps</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/rabbitManagement.html"><strong>8</strong><span>Rabbit Management</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/nextSteps.html"><strong>9</strong><span>Next Steps</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>10</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/originalAppGrails.html">&lt;&lt; <strong>5</strong><span>Books Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/running.html"><strong>7</strong><span>Running the apps</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bookAnalyticsRabbit"><strong>6.1</strong><span>RabbitMQ consumer</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="buildingAnalytics">6 Building Analytics app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/buildingAnalytics.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a new Grails 3 application for this additional app. For example by using
+<a href="http://start.grails.org/">Grails Application Forge</a> or the command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-app initial-analytics --profile=rest-api</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the multi app part of this guide we will need to be able to run both apps simultaneously. To avoid a running port conflict update your <code>initial-analytics</code> app <code>application.yml</code> to include the following.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">server</span>:
+  <span class="key">port</span>: <span class="string"><span class="content">8090</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a Domain class <code>BookPageView</code> which will keep track of how many times a book has been viewed.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/BookPageView.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BookPageView</span> {
+    <span class="predefined-type">Long</span> bookId
+    <span class="predefined-type">String</span> bookName
+    <span class="predefined-type">Integer</span> views
+
+    <span class="directive">static</span> constraints = {
+        bookId <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        bookName <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        views <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">min</span>: <span class="integer">0</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As before create default actions for our <code>BookPageView</code> leveraging data services.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookPageViewDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">interface</span> IBookPageViewDataService {
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+
+    BookPageView save(<span class="predefined-type">Long</span> bookId, <span class="predefined-type">String</span> bookName, <span class="predefined-type">Integer</span> views)
+
+    BookPageView findByBookId(<span class="predefined-type">Long</span> bookId)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.views from </span><span class="inline"><span class="inline-delimiter">${</span>BookPageView b<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.bookId = </span><span class="inline"><span class="inline-delimiter">$</span>bookIdParam</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; findViewsByBookId(<span class="predefined-type">Long</span> bookIdParam)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span>BookPageView b<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>b.views<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">${</span>b.views<span class="inline-delimiter">}</span></span><span class="content"> + 1 where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.bookId = </span><span class="inline"><span class="inline-delimiter">$</span>bookIdParam</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">Number</span> updateViews(<span class="predefined-type">Long</span> bookIdParam)
+}
+
+<span class="annotation">@Service</span>(BookPageView)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookPageViewDataService</span> <span class="directive">implements</span> IBookPageViewDataService {
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> increment(<span class="predefined-type">Long</span> bookId, <span class="predefined-type">String</span> bookName) {
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Integer</span>&gt; views = findViewsByBookId(bookId)
+        <span class="keyword">if</span> (!views) {
+            save(bookId, bookName, <span class="integer">1</span>)
+        } <span class="keyword">else</span> {
+            updateViews(bookId)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use JPA-QL query to perform a projection</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Implement update operations using JPA-QL</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Add an integration test:</p>
+</div>
+<div class="listingblock">
+<div class="title">complete-analytics/src/integration-test/groovy/demo/BookPageViewDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">BookPageViewDataServiceSpec</span> <span class="directive">extends</span> Specification {
+
+    BookPageViewDataService bookPageViewDataService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test increments</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        !bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">when</span>:
+        bookPageViewDataService.increment(<span class="integer">2</span>, <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>)
+        BookPageView bookPageView = bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">then</span>:
+        bookPageView
+        bookPageViewDataService.findByBookId(<span class="integer">2</span>).views == <span class="integer">1</span>
+
+        <span class="key">when</span>:
+        bookPageViewDataService.increment(<span class="integer">2</span>, <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>)
+        bookPageView = bookPageViewDataService.findByBookId(<span class="integer">2</span>)
+
+        <span class="key">then</span>:
+        bookPageView
+        bookPageViewDataService.findByBookId(<span class="integer">2</span>).views == <span class="integer">2</span>
+
+        <span class="key">cleanup</span>:
+        bookPageViewDataService.delete(bookPageView.id)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="bookAnalyticsRabbit">6.1 RabbitMQ consumer</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-rabbitmq/edit/master/src/main/docs/guide/bookAnalyticsRabbit.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We need to create a new consumer, we will create the consumer in
+the <code>initial-analytics</code> application. First navigate to the analytics application</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd ~/yourProjectLocation/initial-analytics</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then as before create a new consumer</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw create-consumer demo.BookPageViewConsumer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the generated consumer to look as follows</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/rabbit-consumers/demo/BookPageViewConsumer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.budjb.rabbitmq.consumer.MessageContext</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookPageViewConsumer</span> {
+
+    BookPageViewDataService bookPageViewDataService <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">static</span> rabbitConfig = [ <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="key">queue</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">bookQueue</span><span class="delimiter">&quot;</span></span>
+    ]
+
+    <span class="comment">/**
+     * Handle an incoming RabbitMQ message.
+     *
+     * @param body    The converted body of the incoming message.
+     * @param context Properties of the incoming message.
+     * @return
+     */</span>
+    <span class="keyword">def</span> <span class="function">handleMessage</span>(<span class="predefined-type">Map</span> body, MessageContext messageContext) {
+        log.debug <span class="string"><span class="delimiter">'</span><span class="content">{}</span><span class="delimiter">'</span></span>, body.toString()
+        bookPageViewDataService.increment((<span class="predefined-type">Long</span>) body.id, (<span class="predefined-type">String</span>) body.title) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add our page view service</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Tell our consumer which queue to connect to</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Tell our consumer what to do when it receives a message. Call our custom increment action.</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/originalAppGrails.html">&lt;&lt; <strong>5</strong><span>Books Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/running.html"><strong>7</strong><span>Running the apps</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-rabbitmq"><img src="https://travis-ci.org/grails-guides/grails-rabbitmq.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-rabbitmq">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-rabbitmq.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-rabbitmq.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-rabbitmq'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-rabbitmq.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-rabbitmq/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
