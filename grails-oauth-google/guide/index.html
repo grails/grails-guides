@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Google OAuth2 with Grails 3 and Spring Security REST | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Google OAuth2 with Grails 3 and Spring Security REST. Learn how to use Google OAuth2 with Grails 3 and Spring Security REST plugin' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-oauth-google"><img src="https://travis-ci.org/grails-guides/grails-oauth-google.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-oauth-google&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-oauth-google.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-oauth-google.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-oauth-google.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-oauth-google/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#oauth2"><strong>2</strong><span>OAuth2 Authentication</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#configureGoogleOAuth"><strong>2.1</strong><span>Setup and Configure Google OAuth2</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#appConfig"><strong>3</strong><span>Setting up your app</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#dependencies"><strong>3.1</strong><span>Add Security Dependencies</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#tokenReader"><strong>3.2</strong><span>Custom Token Reader</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#oauthConfig"><strong>3.3</strong><span>Configure Security</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#logout"><strong>3.4</strong><span>Logout Handlers</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#authController"><strong>3.5</strong><span>JWT Cookie</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#logging"><strong>3.6</strong><span>Enhanced Logging</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#buildingTheApp"><strong>4</strong><span>Building your app</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domain"><strong>4.1</strong><span>Your Domain</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#data"><strong>4.2</strong><span>Your Data</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#services"><strong>4.3</strong><span>Your Services</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#controllers"><strong>4.4</strong><span>Your Controllers</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#views"><strong>4.5</strong><span>Your Views</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheCompleteApp"><strong>5</strong><span>Running your Completed App</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#nextSteps"><strong>6</strong><span>Next Steps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>7</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Google OAuth2 with Grails 3 and Spring Security REST</h1>
+        <p>Learn how to use Google OAuth2 with Grails 3 and Spring Security REST plugin</p>
+        <p><strong>Authors:</strong> Ben Rhine</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we will show you how to add Google OAuth2 authentication to your app using the
+<a href="https://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/index.html">Spring Security Rest</a> plugin.</p>
+</div>
+<div class="paragraph">
+<p>We will be using the <a href="http://plugins.grails.org/plugin/grails/spring-security-rest">Spring Security Rest</a> plugin</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-oauth-google/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-oauth-google.git" class="bare">https://github.com/grails-guides/grails-oauth-google.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-oauth-google/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-oauth-google/complete</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you want to start from scratch, create a new Grails 3 application using
+<a href="http://start.grails.org/">Grails Application Forge</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/forgeDefault.png" alt="forgeDefault">
+</div>
+</div>
+
+
+<h1 id="oauth2">2 OAuth2 Authentication</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/oauth2.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>OAuth2 is an industry-standard authentication protocol used by many Fortune 500 companies to secure websites and applications.
+The mechanism by which it works allows for a third-party authorization server to issue access tokens by the account owner
+approving access. In our case we will be using Google so in more laymen&#8217;s term a Google user approves their account to
+issue access tokens back to the requesting application.</p>
+</div>
+
+
+<h2 id="configureGoogleOAuth">2.1 Setup and Configure Google OAuth2</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/configureGoogleOAuth.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get Google OAuth2 up and running on your application will take a bit of work and configuration on the
+<a href="https://developers.google.com/">Google Developer Console</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/googleDevelopersHome.png" alt="googleDevelopersHome">
+</div>
+</div>
+<div class="paragraph">
+<p>Go ahead and sign in and then scroll to the bottom of the page to select
+<a href="https://console.developers.google.com">Google API Console</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/apiConsoleSelect.png" alt="apiConsoleSelect">
+</div>
+</div>
+<div class="paragraph">
+<p>Select <code>Create Project</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/googleCreateProject.png" alt="googleCreateProject">
+</div>
+</div>
+<div class="paragraph">
+<p>Give your Google project a name. In this case we name it <code>Oauth-Test</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/projectName.png" alt="projectName">
+</div>
+</div>
+<div class="paragraph">
+<p>Wait a moment while Google creates your new project</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/waitWhileProjectIsCreated.png" alt="waitWhileProjectIsCreated">
+</div>
+</div>
+<div class="paragraph">
+<p>Select <code>ENABLE APIS AND SERVICES</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dashboardPostProjectCreate.png" alt="dashboardPostProjectCreate">
+</div>
+</div>
+<div class="paragraph">
+<p>At the search screen search for google+</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/apiSearch.png" alt="apiSearch">
+</div>
+</div>
+<div class="paragraph">
+<p>Select <code>Google+ API</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/searchGooglePlus.png" alt="searchGooglePlus">
+</div>
+</div>
+<div class="paragraph">
+<p>Click <code>ENABLE</code> and wait a moment while it turns on.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/enableApi.png" alt="enableApi">
+</div>
+</div>
+<div class="paragraph">
+<p>Now back on the Dashboard click <code>Create credentials</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/dashboardPostApi.png" alt="dashboardPostApi">
+</div>
+</div>
+<div class="paragraph">
+<p>Step 1: Make sure <code>Google+ API</code> is selected with the <code>Web server</code> options and <code>User data</code> then click
+`What credentials do I need?</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/addCredentials1.png" alt="addCredentials1">
+</div>
+</div>
+<div class="paragraph">
+<p>Step 2: Enter your chosen name or leave default, set your front end url and the plugin <code>oauth/callback/google</code> url then
+click <code>Create client ID</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/addCredentials2.png" alt="addCredentials2">
+</div>
+</div>
+<div class="paragraph">
+<p>Step 3: Select your gmail and give the product a name so users will know what they are authenticating into. Click <code>Continue</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/addCredentials4.png" alt="addCredentials4">
+</div>
+</div>
+<div class="paragraph">
+<p>Step 4: Download your credentials JSON and click <code>Done</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/addCredentials5.png" alt="addCredentials5">
+</div>
+</div>
+<div class="paragraph">
+<p>That will bring you back to the credentials home page.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/credentialsHome.png" alt="credentialsHome">
+</div>
+</div>
+<div class="paragraph">
+<p>This is all the setup that needs to be done in Google. Now we will take a look at setting up our applicatin and the
+credentials we downloaded to connect our app.</p>
+</div>
+
+
+<h1 id="appConfig">3 Setting up your app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/appConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>With all our Google configuration in place its time get our app configured to use security and connect using
+OAuth2 over REST through Google.</p>
+</div>
+<div class="paragraph">
+<p>The next diagramm describes the security solution we are going to implement.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/diagramm.png" alt="diagramm">
+</div>
+</div>
+
+
+<h2 id="dependencies">3.1 Add Security Dependencies</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/dependencies.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>First thing we need to do is add the <code>spring-security-core</code> and <code>spring-security-rest</code> plugins to our <code>build.gradle</code> file.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.1</span><span class="delimiter">'</span></span>
+compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.RC1</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="tokenReader">3.2 Custom Token Reader</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/tokenReader.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We override the default token reader to read the JWT token from the cookies.</p>
+</div>
+<div class="paragraph">
+<p>Implement a <code>TokenReader</code></p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/JwtCookieTokenReader.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.AccessToken</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.reader.TokenReader</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="keyword">import</span> <span class="include">javax.servlet.http.Cookie</span>
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">JwtCookieTokenReader</span> <span class="directive">implements</span> TokenReader {
+
+    <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">String</span> DEFAULT_COOKIE_NAME = <span class="string"><span class="delimiter">'</span><span class="content">JWT</span><span class="delimiter">'</span></span>
+
+    <span class="predefined-type">String</span> cookieName = DEFAULT_COOKIE_NAME
+
+    <span class="annotation">@Override</span>
+    AccessToken findToken(HttpServletRequest request) {
+
+        log.debug <span class="string"><span class="delimiter">&quot;</span><span class="content">Looking for jwt token in a cookie named {}</span><span class="delimiter">&quot;</span></span>, cookieName
+        <span class="predefined-type">String</span> tokenValue = <span class="predefined-constant">null</span>
+        Cookie cookie = request.getCookies()?.find { Cookie cookie -&gt; cookie.name.equalsIgnoreCase(cookieName) }
+
+        <span class="keyword">if</span> ( cookie ) {
+            tokenValue = cookie.value
+        }
+
+        log.debug <span class="string"><span class="delimiter">&quot;</span><span class="content">Token: </span><span class="inline"><span class="inline-delimiter">${</span>tokenValue<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">return</span> tokenValue ? <span class="keyword">new</span> AccessToken(tokenValue) : <span class="predefined-constant">null</span>
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Register it in <code>grails-app/conf/spring/resources.groovy</code> as <code>tokenReader</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.JwtCookieTokenReader</span>
+beans {
+    tokenReader(JwtCookieTokenReader) {
+        cookieName = <span class="string"><span class="delimiter">'</span><span class="content">jwt</span><span class="delimiter">'</span></span>
+    }
+...
+..
+.
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="oauthConfig">3.3 Configure Security</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/oauthConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>With our dependencies added, we need to configure security.</p>
+</div>
+<div class="paragraph">
+<p>Create a file <code>application.groovy</code> with the following content <code>staticRules</code> configuration.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,               <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>,          <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index</span><span class="delimiter">'</span></span>,          <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index.gsp</span><span class="delimiter">'</span></span>,      <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/shutdown</span><span class="delimiter">'</span></span>,       <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/assets/**</span><span class="delimiter">'</span></span>,      <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/js/**</span><span class="delimiter">'</span></span>,       <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/css/**</span><span class="delimiter">'</span></span>,      <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/images/**</span><span class="delimiter">'</span></span>,   <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
+        [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/favicon.ico</span><span class="delimiter">'</span></span>, <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]]
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the next block to configure Grails Spring Security Rest Plugin:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+        plugin {
+                springsecurity {
+                        rest {
+                                token {
+                                        validation {
+                                                useBearerToken = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
+                                                enableAnonymousAccess = <span class="predefined-constant">true</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                                        }
+                                        storage {
+                                                jwt {
+                                                        secret = <span class="string"><span class="delimiter">'</span><span class="content">foobar123</span><span class="delimiter">'</span></span>*<span class="integer">4</span> <i class="conum" data-value="3"></i><b>(3)</b>
+                                                }
+                                        }
+                                }
+                                oauth {
+                                        frontendCallbackUrl = { <span class="predefined-type">String</span> tokenValue -&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:8080/auth/success?token=</span><span class="inline"><span class="inline-delimiter">${</span>tokenValue<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> } <i class="conum" data-value="4"></i><b>(4)</b>
+                                        google {
+                                                client = org.pac4j.oauth.client.Google2Client <i class="conum" data-value="5"></i><b>(5)</b>
+                                                key = <span class="string"><span class="delimiter">'</span><span class="content">${GOOGLE_KEY}</span><span class="delimiter">'</span></span> <i class="conum" data-value="6"></i><b>(6)</b>
+                                                secret = <span class="string"><span class="delimiter">'</span><span class="content">${GOOGLE_SECRET}</span><span class="delimiter">'</span></span> <i class="conum" data-value="7"></i><b>(7)</b>
+                                                scope = org.pac4j.oauth.client.Google2Client.Google2Scope.EMAIL_AND_PROFILE <i class="conum" data-value="8"></i><b>(8)</b>
+                                                defaultRoles = <span class="type">[]</span> <i class="conum" data-value="9"></i><b>(9)</b>
+                                        }
+                                }
+                        }
+                        providerNames = [<span class="string"><span class="delimiter">'</span><span class="content">anonymousAuthenticationProvider</span><span class="delimiter">'</span></span>] <i class="conum" data-value="10"></i><b>(10)</b>
+                }
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You must disable bearer token support to register your own tokenReader implementation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Enable anonymous access to URL&#8217;s where the Grails Spring Security Rest plugin&#8217;s filters are applied</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Required secret which is used to sign the JWT tokens.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Callback url, after selecting your google user this is callback url will be invoked with a JWT token which authenticates the user</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Which pac4j client to use; in our case the Google client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Open your <code>client_id.json</code> you downloaded while setting up Google. You will supply <code>client_id</code> as the System Property <code>GOOGLE_KEY</code> when you start the app.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Open your <code>client_id.json</code> you downloaded while setting up Google. You will supply <code>client_secret</code> as the System Property <code>GOOGLE_KEY</code> when you start the app.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>The scope can be from any value of the enum org.pac4j.oauth.client.Google2Client.Google2Scope</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Specific roles that Google authentication is allowed to access</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>We are going to authenticate our users only against Google. Thus, we use only the anonymous authentication provider. Read more about <a href="https://grails-plugins.github.io/grails-spring-security-core/latest/#authenticationProviders">Authentication Providers</a> in Spring Security Core Plugin documentation.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To start the app you will need to supply <code>client_id</code> and <code>client_secret</code> as system properties. e.g.:</p>
+</div>
+<div class="paragraph">
+<p>`./gradlew -DGOOGLE_KEY=XXXXXX -DGOOGLE_SECRET=XXXX bootRun</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+While the scope can be from any value of the enum org.pac4j.oauth.client.Google2Client.Google2Scope, if you use
+the default OauthUserDetailsService, you need to use EMAIL_AND_PROFILE. That is because the default implementation uses
+the profile ID as the username, and that is only returned by Google if EMAIL_AND_PROFILE scope is used.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We want our app stateless by default with some endpoints which allow anonymous access.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> ANONYMOUS_FILTERS = <span class="string"><span class="delimiter">'</span><span class="content">anonymousAuthenticationFilter,restTokenValidationFilter,restExceptionTranslationFilter,filterInvocationInterceptor</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+grails.plugin.springsecurity.filterChain.chainMap = [
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/dbconsole/**</span><span class="delimiter">'</span></span>,      <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/assets/**</span><span class="delimiter">'</span></span>,      <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/js/**</span><span class="delimiter">'</span></span>,       <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/css/**</span><span class="delimiter">'</span></span>,      <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/images/**</span><span class="delimiter">'</span></span>,   <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**/favicon.ico</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>],
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS], <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/book/show/*</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS],  <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/bookFavourite/index</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS], <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/auth/success</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS], <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/oauth/authenticate/google</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS], <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/oauth/callback/google</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: ANONYMOUS_FILTERS], <i class="conum" data-value="1"></i><b>(1)</b>
+                [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/**</span><span class="delimiter">'</span></span>, <span class="key">filters</span>: <span class="string"><span class="delimiter">'</span><span class="content">JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter</span><span class="delimiter">'</span></span>],  <i class="conum" data-value="1"></i><b>(1)</b>
+]</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>stateless chain that allows anonymous access when no token is sent. If however a token is on the request, it will be validated.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>/** is a stateless chain that doesn&#8217;t allow anonymous access. Thus, the token will always be required, and if missing, a Bad Request reponse will be sent back to the client.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We are not persisting User information in the database. You may have noticed we don&#8217;t have <code>User</code>, <code>Role</code>, <code>UserRole</code> domain classes in the project. Neither we setup configuration values such as <code>userLookUp.userDomainClass</code> etc.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now we override the <code>login/auth</code> view. So that we no longer show a username/password form in that page.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/login/auth.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+&lt;head&gt;
+    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>gspLayout ?: <span class="string"><span class="delimiter">'</span><span class="content">main</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+    &lt;title&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.title</span><span class="delimiter">'</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>
+&lt;body&gt;
+&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">login</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">inner centered</span><span class="delimiter">&quot;</span></span> &gt;
+        &lt;<span class="class">div</span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">fheader</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="class">g</span>:message code=<span class="string"><span class="delimiter">'</span><span class="content">springSecurity.login.header</span><span class="delimiter">'</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">'</span><span class="content">${flash.message}</span><span class="delimiter">'</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">login_message</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We don&#8217;t include a button to SignIn with Google in that page because we have included that button in root layout <em>main.gsp</em> file.</p>
+</div>
+
+
+<h2 id="logout">3.4 Logout Handlers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/logout.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Spring Security allows to register custom <a href="https://grails-plugins.github.io/grails-spring-security-core/3.2.x/index.html#logoutHandlers">Logout Handlers</a>.
+Register a new logout handler to clear the JWT cookie. We reuse <code>CookieClearingLogoutHandler</code> which ships with Spring Security.</p>
+</div>
+<div class="paragraph">
+<p>Modify <code>grails-app/conf/spring/resources.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler</span>
+beans {
+...
+..
+.
+    cookieClearingLogoutHandler(CookieClearingLogoutHandler, [<span class="string"><span class="delimiter">'</span><span class="content">jwt</span><span class="delimiter">'</span></span>])
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the custom logout handler to Spring Security Core plugin <code>logout.handlerNames</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.plugin.springsecurity.logout.handlerNames = [<span class="string"><span class="delimiter">'</span><span class="content">rememberMeServices</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">securityContextLogoutHandler</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">cookieClearingLogoutHandler</span><span class="delimiter">'</span></span>]</code></pre>
+</div>
+</div>
+
+
+<h2 id="authController">3.5 JWT Cookie</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/authController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create <code>AuthController.groovy</code>. When the user logs in successfully with Google, <code>AuthController.success</code> is invoked.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The path to <code>AuthController.success</code> is used in <code>frontendCallbackUrl</code> in <code>application.groovy</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/AuthController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.reader.TokenReader</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="keyword">import</span> <span class="include">javax.servlet.http.Cookie</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">AuthController</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    TokenReader tokenReader
+
+    <span class="type">int</span> jwtExpiration
+
+    <span class="predefined-type">String</span> grailsServerUrl
+
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">success</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+            <span class="key">logout</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
+    ]
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>)
+    <span class="keyword">def</span> <span class="function">success</span>(<span class="predefined-type">String</span> token) {
+        log.debug(<span class="string"><span class="delimiter">'</span><span class="content">token value {}</span><span class="delimiter">'</span></span>, token)
+        <span class="keyword">if</span> (token) {
+            Cookie cookie = jwtCookie(token)
+            response.addCookie(cookie) <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+        [<span class="key">grailsServerUrl</span>: grailsServerUrl]
+    }
+
+    <span class="directive">protected</span> Cookie jwtCookie(<span class="predefined-type">String</span> tokenValue) {
+        Cookie jwtCookie = <span class="keyword">new</span> Cookie( cookieName(), tokenValue )
+        jwtCookie.maxAge = jwtExpiration <i class="conum" data-value="5"></i><b>(5)</b>
+        jwtCookie.path = <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>
+        jwtCookie.setHttpOnly(<span class="predefined-constant">true</span>) <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="keyword">if</span> ( httpOnly() ) {
+            jwtCookie.setSecure(<span class="predefined-constant">true</span>) <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+        jwtCookie
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        jwtExpiration = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">grails.plugin.springsecurity.rest.token.storage.memcached.expiration</span><span class="delimiter">'</span></span>, <span class="predefined-type">Integer</span>, <span class="integer">3600</span>) <i class="conum" data-value="5"></i><b>(5)</b>
+        grailsServerUrl = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">grails.serverURL</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+    }
+
+    <span class="directive">protected</span> <span class="type">boolean</span> httpOnly() {
+        grailsServerUrl?.startsWith(<span class="string"><span class="delimiter">'</span><span class="content">https</span><span class="delimiter">'</span></span>)
+    }
+
+    <span class="directive">protected</span> <span class="predefined-type">String</span> cookieName() {
+        <span class="keyword">if</span> ( tokenReader <span class="keyword">instanceof</span> JwtCookieTokenReader ) {
+            <span class="keyword">return</span> ((JwtCookieTokenReader) tokenReader).cookieName  <i class="conum" data-value="6"></i><b>(6)</b>
+        }
+        <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">jwt</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Responds a Cookie with the JWT token as value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Responding a cookie with the same name and <code>maxAge</code> equals 0 deletes the cookie. Thus, it logs out the user.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Prevents any Javascript executed in your site ( even your own javascript ) to do <code>document.cookies</code> and access the cookies</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Cookie won&#8217;t leave if you do http:// instead of https://. You should use https in production.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Set the cookie expiration to match JWT expiration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Use the same cookie name, the custom <code>tokenReader</code> we previoulsy defined expects.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Due to the stateless nature of the security solution of this application. To log out a user involves the deletion the cookie containing his JWT token.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The GSP of <code>success</code> action performs simple redirect to the home page. We do the redirect in the
+client side to ensure the cookie is correctly set.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/auth/success.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta http-equiv=<span class="string"><span class="delimiter">&quot;</span><span class="content">refresh</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">0; url=</span><span class="inline"><span class="inline-delimiter">${</span>grailsServerUrl ?: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8080</span><span class="delimiter">'</span></span><span class="inline-delimiter">}</span></span><span class="content">/</span><span class="delimiter">&quot;</span></span> /&gt;
+        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>        &lt;body&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">redirecting</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Redirecting...</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="logging">3.6 Enhanced Logging</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/logging.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you would like to enable enhanced logging so you can see what is returned when calling Googles OAuth api, add the
+following to the end of your <code>logback.groovy</code> file</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/logback.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.security</span><span class="delimiter">&quot;</span></span>, DEBUG, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span>)
+logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">grails.plugin.springsecurity</span><span class="delimiter">&quot;</span></span>, DEBUG, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span>)
+logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.pac4j</span><span class="delimiter">&quot;</span></span>, DEBUG, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span>)</code></pre>
+</div>
+</div>
+
+
+<h1 id="buildingTheApp">4 Building your app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/buildingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will quickly put together an app that lists books and allows us to favorite them. The favorite button will only be
+available once we have logged in using google.</p>
+</div>
+
+
+<h2 id="domain">4.1 Your Domain</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/domain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>For your domain we will need to domain objects <code>Book</code> and <code>BookFavourite</code>. Create as follows</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Book.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> image
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> about
+    <span class="predefined-type">String</span> href
+    <span class="directive">static</span> mapping = {
+        image <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        title <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        author <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        about <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        href <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        about <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/BookFavourite.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BookFavourite</span> {
+    <span class="predefined-type">Long</span> bookId
+    <span class="predefined-type">String</span> username
+
+    <span class="directive">static</span> constraints = {
+        bookId <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        username <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="data">4.2 Your Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/data.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>At this point we will create our book data so we have something to work with moving forward. Go ahead and make your
+<code>BootStrap.groovy</code> match the following.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The required image resources are already added to the initial project for you.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GRAILS_BOOKS = [
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 3 - Step by Step</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cristian Olaru</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">https://grailsthreebook.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn how a complete greenfield application can be implemented quickly and efficiently with Grails 3 using profiles and plugins. Use the sample application that accompanies the book as an example.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_3_step_by_step.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content"> Eric Helgeson</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://www.grails3book.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn the fundamental concepts behind building Grails applications with the first book dedicated to Grails 3. Real, up-to-date code examples are provided, so you can easily follow along.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">pratical-grails-3-book-cover.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Falando de Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Henrique Lobo Weissmann</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.casadocodigo.com.br/products/livro-grails</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This is the best reference on Grails 2.5 and 3.0 written in Portuguese. It&amp;#39;s a great guide to the framework, dealing with details that many users tend to ignore.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_weissmann.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails Goodness Notebook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hubert A. Klein Ikkink</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://leanpub.com/grails-goodness-notebook</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Experience the Grails framework through code snippets. Discover (hidden) Grails features through code examples and short articles. The articles and code will get you started quickly and provide deeper insight into Grails.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grailsgood.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">The Definitive Guide to Grails 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown and Graeme Rocher</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.apress.com/9781430243779</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">As the title states, this is the definitive reference on the Grails framework, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grocher_jbrown_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails in Action</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Glen Smith and Peter Ledbrook</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/gsmith2/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">The second edition of Grails in Action is a comprehensive introduction to Grails 2 focused on helping you become super-productive fast.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gsmith2_cover150.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 2: A Quick-Start Guide</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dave Klein and Ben Klein</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.amazon.com/gp/product/1937785777?tag=misa09-20</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This revised and updated edition shows you how to use Grails by iteratively building a unique, working application.</span><span class="delimiter">'</span></span>,
+                    image : <span class="string"><span class="delimiter">'</span><span class="content">bklein_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Programming Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Burt Beckwith</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://shop.oreilly.com/product/0636920024750.do</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Dig deeper into Grails architecture and discover how this application framework works its magic.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">bbeckwith_cover.gif</span><span class="delimiter">'</span></span>
+            ]
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GROOVY_BOOKS = [
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Making Java Groovy</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ken Kousen</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/kousen/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Make Java development easier by adding Groovy. Each chapter focuses on a task Java developers do, like building, testing, or working with databases or restful web services, and shows ways Groovy can make those tasks easier.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">Kousen-MJG.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy in Action, 2nd Edition</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dierk König, Guillaume Laforge, Paul King, Cédric Champeau, Hamlet D</span><span class="char">\'</span><span class="content">Arcy, Erik Pragt, and Jon Skeet</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/koenig2/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This is the undisputed, definitive reference on the Groovy language, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">regina.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy for Domain-Specific Languages</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Fergal Dearle</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-for-domain-specific-languages-dsl/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Learn how Groovy can help Java developers easily build domain-specific languages into their applications.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gdsl.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy 2 Cookbook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Andrey Adamovitch, Luciano Fiandeso</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-2-cookbook/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book contains more than 90 recipes that use the powerful features of Groovy 2 to develop solutions to everyday programming challenges.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">g2cook.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Programming Groovy 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Venkat Subramaniam</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://pragprog.com/book/vslg2/programming-groovy-2</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book helps experienced Java developers learn to use Groovy 2, from the basics of the language to its latest advances.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">vslg2.jpg</span><span class="delimiter">'</span></span>
+            ],
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="keyword">for</span> (<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; bookInfo : (GRAILS_BOOKS + GROOVY_BOOKS)) {
+            bookDataService.save(bookInfo.title, bookInfo.author, bookInfo.about, bookInfo.href, bookInfo.image)
+        }
+    }
+
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="services">4.3 Your Services</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/services.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next we need to create our services to return all our books and our favourite ones. First we leverage data services
+for our basic functionality.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.api.BuildableCriteria</span>
+<span class="keyword">import</span> <span class="include">org.hibernate.transform.Transformers</span>
+
+<span class="type">interface</span> IBookDataService {
+    <span class="predefined-type">Book</span> save(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> author, <span class="predefined-type">String</span> about, <span class="predefined-type">String</span> href, <span class="predefined-type">String</span> image)
+    <span class="predefined-type">Number</span> count()
+    <span class="predefined-type">Book</span> findById(<span class="predefined-type">Long</span> id)
+}
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookDataService</span> <span class="directive">implements</span> IBookDataService {
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;BookImage&gt; findAll() {
+        BuildableCriteria c = <span class="predefined-type">Book</span>.createCriteria()
+        c.list {
+            resultTransformer(Transformers.aliasToBean(BookImage))
+            projections {
+                property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+                property(<span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>)
+            }
+        }
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;BookImage&gt; findAllByIds(<span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; ids) {
+        BuildableCriteria c = <span class="predefined-type">Book</span>.createCriteria()
+        c.list {
+            inList(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, ids)
+            resultTransformer(Transformers.aliasToBean(BookImage))
+            projections {
+                property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+                property(<span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a GORM Data Service for <code>BookFavourite</code> domain class CRUD operations.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookFavouriteDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(BookFavourite)
+<span class="type">interface</span> BookFavouriteDataService {
+
+    BookFavourite save(<span class="predefined-type">Long</span> bookId, <span class="predefined-type">String</span> username)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.bookId from </span><span class="inline"><span class="inline-delimiter">${</span>BookFavourite b<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.username = </span><span class="inline"><span class="inline-delimiter">$</span>username</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; findBookIdByUsername(<span class="predefined-type">String</span> username)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="controllers">4.4 Your Controllers</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/controllers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>After we are done creating our service layer we need to get our controllers in place. First we have our basic book
+controller that can either return a list of all books or show a selected book.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BookController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>)
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">show</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>]
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">bookList</span>: bookDataService.findAll()]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Long</span> id) {
+        [<span class="key">bookInstance</span>: bookDataService.findById(id)]
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next is our Favourites controller that can return a list of books we have favourited, and our action to favourite a
+desired book.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BookFavouriteController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+
+<span class="type">class</span> <span class="class">BookFavouriteController</span> {
+
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+            <span class="key">favourite</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+    ]
+
+    SpringSecurityService springSecurityService
+    BookFavouriteDataService bookFavouriteDataService
+    BookDataService bookDataService
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>)
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; bookIds = bookFavouriteDataService.findBookIdByUsername(username) <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">List</span>&lt;BookImage&gt; bookList = bookDataService.findAllByIds(bookIds) <i class="conum" data-value="2"></i><b>(2)</b>
+        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">/book/index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">bookList</span>: bookList]
+    }
+
+    <span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">'</span><span class="content">isAuthenticated()</span><span class="delimiter">'</span></span>)
+    <span class="keyword">def</span> <span class="function">favourite</span>(<span class="predefined-type">Long</span> bookId) {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        bookFavouriteDataService.save(bookId, username) <i class="conum" data-value="3"></i><b>(3)</b>
+        redirect(<span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>)
+    }
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="directive">protected</span> <span class="predefined-type">String</span> loggedUsername() {
+        springSecurityService.principal.username
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Call our custom favourite book finder</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Call our custom <code>findAll</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Call to save our favourite</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="views">4.5 Your Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/views.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are finally ready to connect everything up with a functional interface. First lets create an index page for our books
+so we can see a list of them located at <code>views/book</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/book/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Groovy <span class="error">&amp;</span> Grails Books<span class="tag">&lt;/title&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">content</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+<span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;section</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;g:each</span> <span class="attribute-name">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${bookList}</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">var</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${book}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;g:link</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${book.id}</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">show</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+                <span class="tag">&lt;asset:image</span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${book.image}</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">width</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">200</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/g:link&gt;</span>
+        <span class="tag">&lt;/g:each&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next we will create a <code>show.gsp</code> also in <code>views/books</code> so that when we select a book we can view its details.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/book/show.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>${bookInstance?.title}<span class="tag">&lt;/title&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">content</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+<span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;section</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;g:if</span> <span class="attribute-name">test</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${bookInstance}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;h1&gt;</span><span class="tag">&lt;a</span> <span class="attribute-name">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${bookInstance.href}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>${bookInstance.title}<span class="tag">&lt;/a&gt;</span><span class="tag">&lt;/h1&gt;</span>
+            <span class="tag">&lt;sec:ifLoggedIn&gt;</span>
+                <span class="tag">&lt;g:form</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">bookFavourite</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">favourite</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+                    <span class="tag">&lt;g:hiddenField</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">bookId</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${bookInstance.id}</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+                    <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn btn-default</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${g.message(code: 'book.favourite', default: 'Favourite')}</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+                <span class="tag">&lt;/g:form&gt;</span>
+            <span class="tag">&lt;/sec:ifLoggedIn&gt;</span>
+            <span class="tag">&lt;p&gt;</span>${bookInstance.about}<span class="tag">&lt;/p&gt;</span>
+            <span class="tag">&lt;h2&gt;</span><span class="tag">&lt;g:message</span> <span class="attribute-name">code</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book.author</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">args</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">[bookInstance.author]</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">By {0}</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span><span class="tag">&lt;/h2&gt;</span>
+            <span class="tag">&lt;asset:image</span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${bookInstance.image}</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">width</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">200</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/g:if&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above code we wrap our favourite button in a logged in check as we should only be able to favourite a book when we are logged in</p>
+</div>
+<div class="paragraph">
+<p>Lastly we tie it all together in our layout file by adding a simple menu that allows us to select either all our books,
+our favourite books, or login / logout. We add this between the navigation div and the <code>&lt;g:layoutBody/&gt;</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/layouts/main.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">centered</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">style</span>=<span class="string"><span class="delimiter">&quot;</span><span class="key">margin</span>: <span class="float">10px</span> <span class="value">auto</span>;<span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;g:link</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;g:message</span> <span class="attribute-name">code</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book.all</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">All</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/g:link&gt;</span>
+    <span class="tag">&lt;span&gt;</span>|<span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;g:link</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">bookFavourite</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;g:message</span> <span class="attribute-name">code</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book.favourite</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Favourites</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/g:link&gt;</span>
+    <span class="tag">&lt;span&gt;</span>|<span class="tag">&lt;/span&gt;</span>
+    <span class="tag">&lt;sec:ifNotLoggedIn&gt;</span>
+        <span class="tag">&lt;g:render</span> <span class="attribute-name">template</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">/auth/loginWithGoogle</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/sec:ifNotLoggedIn&gt;</span>
+    <span class="tag">&lt;sec:ifLoggedIn&gt;</span>
+        <span class="tag">&lt;g:form</span> <span class="attribute-name">controller</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">logout</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">style</span>=<span class="string"><span class="delimiter">&quot;</span><span class="key">display</span>: <span class="value">inline</span>;<span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${g.message(code: </span><span class="delimiter">&quot;</span></span><span class="attribute-name">logout</span><span class="error">&quot;</span><span class="error">,</span> <span class="attribute-name">default:</span><span class="error">&quot;</span><span class="attribute-name">Logout</span><span class="error">&quot;</span><span class="error">)</span><span class="error">}</span><span class="error">&quot;</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;/g:form&gt;</span>
+    <span class="tag">&lt;/sec:ifLoggedIn&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;g:if</span> <span class="attribute-name">test</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${flash.message}</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">style</span>=<span class="string"><span class="delimiter">&quot;</span><span class="key">display</span>: <span class="value">block</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>${flash.message}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/g:if&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above code we:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Center our menu; link to list all books; link to list favourite books, login with google / logout</p>
+</li>
+<li>
+<p>Include template with login link</p>
+</li>
+<li>
+<p>Include template with logout link</p>
+</li>
+<li>
+<p>Add a message block so we can view our login / logout messages</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We create a template to contain our link to trigger our OAuth login through Google; the link <code>/oauth/authenticate</code>
+is provided from the <code>spring-security-rest</code> plugin and ends with the provider we are using <code>/google</code> for the
+link <code>/oauth/authenticate/google</code>. This will redirect you to the normal Google login / account selection you are already familiar with.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/auth/_loginWithGoogle.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;a</span> <span class="attribute-name">href</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">/oauth/authenticate/google</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;asset:image</span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn_google_signin_dark_normal_web@2x.png</span><span class="delimiter">&quot;</span></span>
+                 <span class="attribute-name">alt</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">${g.message(code: </span><span class="delimiter">&quot;</span></span><span class="attribute-name">login.google</span><span class="error">&quot;</span><span class="error">,</span> <span class="attribute-name">default:</span><span class="error">&quot;</span><span class="attribute-name">Login</span> <span class="attribute-name">with</span> <span class="attribute-name">Google</span><span class="error">&quot;</span><span class="error">)</span><span class="error">}</span><span class="error">&quot;</span> <span class="attribute-name">height</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">40</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/a&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>btn_google_signin_dark_normal_web@2x.png</code> is already provided for you in assets
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheCompleteApp">5 Running your Completed App</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/runningTheCompleteApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Run the app with Gradle <code>bootRun</code> task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>as previously. Now that our app is running navigate to <a href="http://localhost:8080" class="bare">http://localhost:8080</a> to see the following.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/homeScreen.png" alt="homeScreen">
+</div>
+</div>
+<div class="paragraph">
+<p>Select a book and see that no <code>Favourite</code> button is available when not signed in.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/unauthorizedShow.png" alt="unauthorizedShow">
+</div>
+</div>
+<div class="paragraph">
+<p>Click <code>Login with Google</code> from our menu and select your account / signin</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/googleSignin.png" alt="googleSignin">
+</div>
+</div>
+<div class="paragraph">
+<p>See our successful login message</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/loginMessage.png" alt="loginMessage">
+</div>
+</div>
+<div class="paragraph">
+<p>Select a book and see that the <code>Favourite</code> button is now available.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/authorizedShow.png" alt="authorizedShow">
+</div>
+</div>
+<div class="paragraph">
+<p>Click on logout and you will see our logout message displayed.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/logoutMessage.png" alt="logoutMessage">
+</div>
+</div>
+
+
+<h1 id="nextSteps">6 Next Steps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/nextSteps.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To further your understanding read through <a href="https://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/index.html">Grails Spring Security Rest</a> and <a href="https://grails-plugins.github.io/grails-spring-security-core/">Spring Security Core</a> documentation.</p>
+</div>
+
+
+<h1 id="helpWithGrails">7 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-oauth-google/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
