@@ -1,0 +1,514 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Building the Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>2</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheServer.html"><strong>3</strong><span>Building the Server</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheClient.html"><strong>4</strong><span>Building the Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/nextSteps.html"><strong>5</strong><span>Next Steps</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>2</strong><span>Running the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/writingTheClient.html"><strong>4</strong><span>Building the Client</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#testingApi"><strong>3.1</strong><span>Testing the API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#customizingApi"><strong>3.2</strong><span>Customizing the API</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheServer">3 Building the Server</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/writingTheServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the following four domain classes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-domain-class demo.Vehicle
+$ grails create-domain-class demo.Driver
+$ grails create-domain-class demo.Make
+$ grails create-domain-class demo.Model</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the domain classes as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/vehicle</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="predefined-type">String</span> name
+
+    Make make
+    Model model
+
+    <span class="directive">static</span> belongsTo = [<span class="key">driver</span>: <span class="predefined-type">Driver</span>]
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Driver.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/driver</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Driver</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> hasMany = [ <span class="key">vehicles</span>: Vehicle ]
+
+    <span class="directive">static</span> constraints = {
+        vehicles <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Make.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/make</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Make</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Model.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/model</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Model</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since we&#8217;ve added the <code>@Resource</code> annotation to our domain classes, Grails will generate RESTful URL mappings for each of them.
+Let&#8217;s preload some data with the help of
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/MakeDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Make)
+<span class="type">interface</span> MakeDataService {
+    Make save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/ModelDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Model)
+<span class="type">interface</span> ModelDataService {
+    Model save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/DriverDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Driver</span>)
+<span class="type">interface</span> DriverDataService {
+    <span class="predefined-type">Driver</span> save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/VehicleDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Vehicle)
+<span class="type">interface</span> VehicleDataService {
+    Vehicle save(<span class="predefined-type">String</span> name, <span class="predefined-type">Driver</span> driver, Make make, Model model)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    DriverDataService driverDataService
+    MakeDataService makeDataService
+    ModelDataService modelDataService
+    VehicleDataService vehicleDataService
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">Driver</span> driver1 = driverDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">Driver</span> driver2 = driverDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pedro</span><span class="delimiter">&quot;</span></span>)
+
+        Make nissan = makeDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>)
+        Make ford = makeDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span>)
+
+        Model titan = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Titan</span><span class="delimiter">&quot;</span></span>)
+        Model leaf = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Leaf</span><span class="delimiter">&quot;</span></span>)
+        Model windstar = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Windstar</span><span class="delimiter">&quot;</span></span>)
+
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>, driver1, nissan, titan)
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Economy</span><span class="delimiter">&quot;</span></span>, driver1, nissan, leaf)
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Minivan</span><span class="delimiter">&quot;</span></span>, driver2, ford, windstar)
+
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the <code>server</code> project to load the test data in the default datasource.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you wish to run the <code>server</code> app using the Grails wrapper <code>./grailsw run-app</code> instead of the Gradle wrapper, make sure that
+you are in your <code>server</code> directory when starting up the app.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="testingApi">3.1 Testing the API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/testingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>While the Grails app is running, we can try out the RESTful API that Grails has generated for us, using cURL or another API tool.</p>
+</div>
+<div class="paragraph">
+<p>Make a <code>GET</code> request to <code>/vehicle</code> to get a list of Vehicles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/vehicle&quot;
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 19:28:49 GMT
+Connection: close
+
+[{&quot;id&quot;:1,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:1},&quot;name&quot;:&quot;Pickup&quot;},
+{&quot;id&quot;:2,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:2},&quot;name&quot;:&quot;Economy&quot;},
+{&quot;id&quot;:3,&quot;driver&quot;:{&quot;id&quot;:2},&quot;make&quot;:{&quot;id&quot;:2},&quot;model&quot;:{&quot;id&quot;:3},&quot;name&quot;:&quot;Minivan&quot;}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>GET</code> request to <code>/driver/1</code> to get a particular Driver instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/driver/1&quot;
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 22:10:33 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Susan&quot;,&quot;vehicle&quot;:[{&quot;id&quot;:2},{&quot;id&quot;:1}]}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>POST</code> request to <code>/driver</code> to create a new Driver instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;POST&quot; &quot;http://localhost:8080/driver&quot; \
+      -H &quot;Content-Type: application/json; charset=utf-8&quot; \
+      -d '{&quot;name&quot;:&quot;Edward&quot;}'
+
+HTTP/1.1 201
+X-Application-Context: application:development
+Location: http://localhost:8080/driver/3
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 21:55:59 GMT
+Connection: close
+
+{&quot;id&quot;:3,&quot;name&quot;:&quot;Edward&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>PUT</code> request to <code>/vehicle</code> to update a Vehicle instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;PUT&quot; &quot;http://localhost:8080/vehicle/1&quot; \
+       -H &quot;Content-Type: application/json; charset=utf-8&quot; \
+       -d '{&quot;name&quot;:&quot;Truck&quot;,&quot;id&quot;:1}'
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Location: http://localhost:8080/vehicle/1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 22:12:31 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:1},&quot;name&quot;:&quot;Truck&quot;}</code></pre>
+</div>
+</div>
+
+
+<h2 id="customizingApi">3.2 Customizing the API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/customizingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default, the RESTful URLs generated by Grails provide only the IDs of associated objects.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/vehicle&quot;
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 23:55:33 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Pickup&quot;,&quot;make&quot;:{&quot;id&quot;:1},&quot;driver&quot;:{&quot;id&quot;:1}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is standard for many REST APIs, but we&#8217;ll need to get a bit more data from this endpoint for our Vue app in a moment. This is an excellent scenario for <a href="http://views.grails.org/latest/">JSON Views</a>. Let&#8217;s create a new JSON view to render our Vehicle list:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/vehicle/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By convention, any JSON views in the corresponding view directory for a restful controller (like those generated by <code>@Resource</code>) will be used in lieu of the default JSON representation. Now we can customize our JSON output for each Vehicle by creating a new JSON template for Vehicle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ vim grails-app/views/vehicle/_vehicle.gson</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the file to include the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/views/vehicle/_vehicle.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.Vehicle</span>
+
+model {
+    Vehicle vehicle
+}
+json {
+    id vehicle.id
+
+    name vehicle.name
+
+    make <span class="key">name</span>: vehicle.make.name,
+        <span class="key">id</span>: vehicle.make.id
+
+    model <span class="key">name</span>: vehicle.model.name,
+            <span class="key">id</span>: vehicle.model.id
+
+    driver <span class="key">name</span>: vehicle.driver.name,
+        <span class="key">id</span>: vehicle.driver.id
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now when we access our API, we&#8217;ll see the <code>name</code> and <code>id</code> of each <code>make</code>, <code>model</code>, and <code>driver</code> are included.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Sat, 07 Jan 2017 00:24:18 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Pickup&quot;,&quot;make&quot;:{&quot;name&quot;:&quot;Nissan&quot;,&quot;id&quot;:1},&quot;model&quot;:{&quot;name&quot;:&quot;Titan&quot;,&quot;id&quot;:1},&quot;driver&quot;:{&quot;name&quot;:&quot;Susan&quot;,&quot;id&quot;:1}}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>2</strong><span>Running the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/writingTheClient.html"><strong>4</strong><span>Building the Client</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/building-a-vue-app"><img src="https://travis-ci.org/grails-guides/building-a-vue-app.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/building-a-vue-app">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-a-vue-app.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-a-vue-app.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-a-vue-app'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/building-a-vue-app.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/building-a-vue-app/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

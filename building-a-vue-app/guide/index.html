@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Building a Vue.js app with Grails | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Building a Vue.js app with Grails. Learn how to add a Vue.js frontend to your application' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/building-a-vue-app"><img src="https://travis-ci.org/grails-guides/building-a-vue-app.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/building-a-vue-app&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/building-a-vue-app.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/building-a-vue-app.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/building-a-vue-app.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/building-a-vue-app/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>1</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>1.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>1.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>2</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheServer"><strong>3</strong><span>Building the Server</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#testingApi"><strong>3.1</strong><span>Testing the API</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#customizingApi"><strong>3.2</strong><span>Customizing the API</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheClient"><strong>4</strong><span>Building the Client</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#clientAppLayout"><strong>4.1</strong><span>Default Vue.js App layout</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#writingVueComponents"><strong>4.2</strong><span>Vue Components</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#headers"><strong>4.3</strong><span>UI Header Component</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#displayComponents"><strong>4.4</strong><span>Select &amp; Table Components</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#postComponents"><strong>4.5</strong><span>Form Component</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#oneMoreComponent"><strong>4.6</strong><span>Vehicle Display</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#puttingItAllTogether"><strong>4.7</strong><span>Routing</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#nextSteps"><strong>5</strong><span>Next Steps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Building a Vue.js app with Grails</h1>
+        <p>Learn how to add a Vue.js frontend to your application</p>
+        <p><strong>Authors:</strong> Ben Rhine, Zachary Klein</p>
+        <p><strong>Grails Version:</strong> 3.3.3</p>
+    </header>
+    
+
+<h1 id="gettingStarted">1 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we will build a Grails application with a Vue.js app as the frontend, using the <a href="https://grails-profiles.github.io/vue/latest/guide/index.html">Vue profile</a>. The example project will be the <code>Garage</code> application as seen in the <a href="http://guides.grails.org/building-a-react-app/guide/index.html">React</a> and <a href="http://guides.grails.org/vaadin-grails/guide/index.html">Vaadin</a> guides. You can refer to those guides for comparison with the Vue.js version.</p>
+</div>
+<div class="paragraph">
+<p>Please note that this guide is not an introduction to Vue.js. You can refer to the <a href="https://vuejs.org/v2/guide/">official documentation</a>, or see this <a href="https://objectcomputing.com/resources/publications/sett/january-2018-room-with-a-vue-part-1">introductory article</a>.</p>
+</div>
+
+
+<h2 id="requirements">1.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">1.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/building-a-vue-app/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/building-a-vue-app.git" class="bare">https://github.com/grails-guides/building-a-vue-app.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/building-a-vue-app/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/building-a-vue-app/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">2 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Vue profile generates a multi-project build, with <code>server</code> and <code>client</code> subprojects. The <code>server</code> project is a Grails application using the <code>rest-api</code> profile, while <code>client</code> is a Vue application generated with Vue-CLI&#8217;s <a href="http://vuejs-templates.github.io/webpack/">webpack template</a>. In order to run the entire project, you will need to start the <code>server</code> and <code>client</code> applications separately.</p>
+</div>
+<div class="paragraph">
+<p>Change into the <code>initial</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd initial/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To launch the Grails application, run the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew server:bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Grails application will be available at <code><a href="http://localhost:8080" class="bare">http://localhost:8080</a></code></p>
+</div>
+<div class="paragraph">
+<p>To start the Vue.js app, open a second terminal session in the same directory, and run the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew client:start</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Vue.js app will be available at <code><a href="http://localhost:3000" class="bare">http://localhost:3000</a></code>. Browse to that URL and you should see the default "Welcome" page.</p>
+</div>
+
+
+<h1 id="writingTheServer">3 Building the Server</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/writingTheServer.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the following four domain classes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-domain-class demo.Vehicle
+$ grails create-domain-class demo.Driver
+$ grails create-domain-class demo.Make
+$ grails create-domain-class demo.Model</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the domain classes as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/vehicle</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Vehicle</span> {
+
+    <span class="predefined-type">String</span> name
+
+    Make make
+    Model model
+
+    <span class="directive">static</span> belongsTo = [<span class="key">driver</span>: <span class="predefined-type">Driver</span>]
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Driver.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/driver</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Driver</span> {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> hasMany = [ <span class="key">vehicles</span>: Vehicle ]
+
+    <span class="directive">static</span> constraints = {
+        vehicles <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Make.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/make</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Make</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/domain/demo/Model.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri = <span class="string"><span class="delimiter">'</span><span class="content">/model</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Model</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since we&#8217;ve added the <code>@Resource</code> annotation to our domain classes, Grails will generate RESTful URL mappings for each of them.
+Let&#8217;s preload some data with the help of
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/MakeDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Make)
+<span class="type">interface</span> MakeDataService {
+    Make save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/ModelDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Model)
+<span class="type">interface</span> ModelDataService {
+    Model save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/DriverDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Driver</span>)
+<span class="type">interface</span> DriverDataService {
+    <span class="predefined-type">Driver</span> save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/services/demo/VehicleDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Vehicle)
+<span class="type">interface</span> VehicleDataService {
+    Vehicle save(<span class="predefined-type">String</span> name, <span class="predefined-type">Driver</span> driver, Make make, Model model)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    DriverDataService driverDataService
+    MakeDataService makeDataService
+    ModelDataService modelDataService
+    VehicleDataService vehicleDataService
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Loading database...</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">Driver</span> driver1 = driverDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Susan</span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">Driver</span> driver2 = driverDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pedro</span><span class="delimiter">&quot;</span></span>)
+
+        Make nissan = makeDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nissan</span><span class="delimiter">&quot;</span></span>)
+        Make ford = makeDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Ford</span><span class="delimiter">&quot;</span></span>)
+
+        Model titan = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Titan</span><span class="delimiter">&quot;</span></span>)
+        Model leaf = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Leaf</span><span class="delimiter">&quot;</span></span>)
+        Model windstar = modelDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Windstar</span><span class="delimiter">&quot;</span></span>)
+
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pickup</span><span class="delimiter">&quot;</span></span>, driver1, nissan, titan)
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Economy</span><span class="delimiter">&quot;</span></span>, driver1, nissan, leaf)
+        vehicleDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Minivan</span><span class="delimiter">&quot;</span></span>, driver2, ford, windstar)
+
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the <code>server</code> project to load the test data in the default datasource.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you wish to run the <code>server</code> app using the Grails wrapper <code>./grailsw run-app</code> instead of the Gradle wrapper, make sure that
+you are in your <code>server</code> directory when starting up the app.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="testingApi">3.1 Testing the API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/testingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>While the Grails app is running, we can try out the RESTful API that Grails has generated for us, using cURL or another API tool.</p>
+</div>
+<div class="paragraph">
+<p>Make a <code>GET</code> request to <code>/vehicle</code> to get a list of Vehicles:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/vehicle&quot;
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 19:28:49 GMT
+Connection: close
+
+[{&quot;id&quot;:1,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:1},&quot;name&quot;:&quot;Pickup&quot;},
+{&quot;id&quot;:2,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:2},&quot;name&quot;:&quot;Economy&quot;},
+{&quot;id&quot;:3,&quot;driver&quot;:{&quot;id&quot;:2},&quot;make&quot;:{&quot;id&quot;:2},&quot;model&quot;:{&quot;id&quot;:3},&quot;name&quot;:&quot;Minivan&quot;}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>GET</code> request to <code>/driver/1</code> to get a particular Driver instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/driver/1&quot;
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 22:10:33 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Susan&quot;,&quot;vehicle&quot;:[{&quot;id&quot;:2},{&quot;id&quot;:1}]}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>POST</code> request to <code>/driver</code> to create a new Driver instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;POST&quot; &quot;http://localhost:8080/driver&quot; \
+      -H &quot;Content-Type: application/json; charset=utf-8&quot; \
+      -d '{&quot;name&quot;:&quot;Edward&quot;}'
+
+HTTP/1.1 201
+X-Application-Context: application:development
+Location: http://localhost:8080/driver/3
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 21:55:59 GMT
+Connection: close
+
+{&quot;id&quot;:3,&quot;name&quot;:&quot;Edward&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make a <code>PUT</code> request to <code>/vehicle</code> to update a Vehicle instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;PUT&quot; &quot;http://localhost:8080/vehicle/1&quot; \
+       -H &quot;Content-Type: application/json; charset=utf-8&quot; \
+       -d '{&quot;name&quot;:&quot;Truck&quot;,&quot;id&quot;:1}'
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Location: http://localhost:8080/vehicle/1
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 22:12:31 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;driver&quot;:{&quot;id&quot;:1},&quot;make&quot;:{&quot;id&quot;:1},&quot;model&quot;:{&quot;id&quot;:1},&quot;name&quot;:&quot;Truck&quot;}</code></pre>
+</div>
+</div>
+
+
+<h2 id="customizingApi">3.2 Customizing the API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/customizingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>By default, the RESTful URLs generated by Grails provide only the IDs of associated objects.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -X &quot;GET&quot; &quot;http://localhost:8080/vehicle&quot;
+HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 06 Jan 2017 23:55:33 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Pickup&quot;,&quot;make&quot;:{&quot;id&quot;:1},&quot;driver&quot;:{&quot;id&quot;:1}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is standard for many REST APIs, but we&#8217;ll need to get a bit more data from this endpoint for our Vue app in a moment. This is an excellent scenario for <a href="http://views.grails.org/latest/">JSON Views</a>. Let&#8217;s create a new JSON view to render our Vehicle list:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/vehicle/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By convention, any JSON views in the corresponding view directory for a restful controller (like those generated by <code>@Resource</code>) will be used in lieu of the default JSON representation. Now we can customize our JSON output for each Vehicle by creating a new JSON template for Vehicle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ vim grails-app/views/vehicle/_vehicle.gson</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the file to include the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">server/grails-app/views/vehicle/_vehicle.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.Vehicle</span>
+
+model {
+    Vehicle vehicle
+}
+json {
+    id vehicle.id
+
+    name vehicle.name
+
+    make <span class="key">name</span>: vehicle.make.name,
+        <span class="key">id</span>: vehicle.make.id
+
+    model <span class="key">name</span>: vehicle.model.name,
+            <span class="key">id</span>: vehicle.model.id
+
+    driver <span class="key">name</span>: vehicle.driver.name,
+        <span class="key">id</span>: vehicle.driver.id
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now when we access our API, we&#8217;ll see the <code>name</code> and <code>id</code> of each <code>make</code>, <code>model</code>, and <code>driver</code> are included.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">HTTP/1.1 200
+X-Application-Context: application:development
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Sat, 07 Jan 2017 00:24:18 GMT
+Connection: close
+
+{&quot;id&quot;:1,&quot;name&quot;:&quot;Pickup&quot;,&quot;make&quot;:{&quot;name&quot;:&quot;Nissan&quot;,&quot;id&quot;:1},&quot;model&quot;:{&quot;name&quot;:&quot;Titan&quot;,&quot;id&quot;:1},&quot;driver&quot;:{&quot;name&quot;:&quot;Susan&quot;,&quot;id&quot;:1}}</code></pre>
+</div>
+</div>
+
+
+<h1 id="writingTheClient">4 Building the Client</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/writingTheClient.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>At this point our <code>server</code> project is done and we are ready to begin building our Vue.js <code>client</code> app.  Let&#8217;s get an overview of the project structure provided by the Vue profile and the Vue-CLI.</p>
+</div>
+
+
+<h2 id="clientAppLayout">4.1 Default Vue.js App layout</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/clientAppLayout.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Vue-CLI project includes all the configuration necessary to run, test and build the Vue.js project. It follows conventions that are recommended by the Vue.js community.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/vueDirListing.png" alt="vueDirListing">
+</div>
+<div class="title">Figure 1. /client</div>
+</div>
+<div class="paragraph">
+<p>The <code>build</code> directory contains the webpack configuration files, including environment-specific config for dev, prod, and test environments.</p>
+</div>
+<div class="paragraph">
+<p>The <code>config</code> directory contains non-build related configuration, including environment-specific config as described above. One config property of interest is <code>SERVER_URL</code>, which points to the URL of the Grails <code>server</code> application, and is set by default to <code><a href="http://localhost:8080" class="bare">http://localhost:8080</a></code>. You can edit this to point to another server if needed.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/vueConfig.png" alt="vueConfig">
+</div>
+<div class="title">Figure 2. /client/config</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+While they serve a similar function, please remember that the Vue/webpack environment settings aren&#8217;t related directly to Grails environments - e.g., if you run/build your Grails project with a specific environment, it won&#8217;t automatically affect the environment in the <code>client</code> project.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>static</code> directory contains static assets that should not be processed by webpack - you won&#8217;t be using it in this guide.</p>
+</div>
+<div class="paragraph">
+<p>The <code>test</code>  directory contains unit and integration (end-to-end) tests for the Vue.js app.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/vueTest.png" alt="vueTest">
+</div>
+<div class="title">Figure 3. /client/test</div>
+</div>
+<div class="paragraph">
+<p>The <code>src</code> directory contains the actual source code for our Vue.js project. It includes subdirectories for components, assets (e.g., CSS files), and the default Vue-Router configuration. This is a typical project structure for a Vue.js app, however you can apply whatever directory structure suits your needs within the <code>src</code> directory. This is where we will be spending most of our time in the remainder of this guide.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/vueApp.png" alt="vueApp">
+</div>
+<div class="title">Figure 4. /client/src</div>
+</div>
+
+
+<h2 id="writingVueComponents">4.2 Vue Components</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/writingVueComponents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_single_file_components">Single File Components</h3>
+<div class="paragraph">
+<p>We wil create several Vue components to consume/interact with our API. We will be using <strong>single-file components</strong> in this guide. Single-file components allow us to encapsulate the template (HTML), styling, and the component&#8217;s Vue <strong>instance</strong> (which handles the data and behavior of the component) in a single file. These files have an extension of <code>.vue</code>.</p>
+</div>
+<div class="paragraph">
+<p>Single-file components require some additional processing in order to be rendered in a browser.  The <code>client</code> project provided by the Vue profile is already configured to correctly compile single-file components.</p>
+</div>
+<div class="paragraph">
+<p>The components are exported and can be imported into other components. They can also accept <strong>props</strong>, trigger and respond to events, and contain internal data (just like all Vue components). Refer to the <a href="https://vuejs.org/v2/guide/single-file-components.html">Vue.js documentation</a> to learn more about single-file components.</p>
+</div>
+</div>
+
+
+<h2 id="headers">4.3 UI Header Component</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/headers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our first component will be a header bar. Create new file named <code>AppHeader.vue</code> under <code>client/src/components</code>, and edit as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/AppHeader.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">app-header-template</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">container</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">jumbotron</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">../assets/logo.png</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>Welcome to the Garage<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">app-header</span><span class="delimiter">'</span></span>
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;template&gt;</code> contains the HTML template that will be rendered by the component. In the sample above, we are rendering a <code>&lt;div&gt;</code> tag to represent our UI&#8217;s main header, including a banner image and <code>&lt;h1&gt;</code> tag.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Every <code>&lt;template&gt;</code> must contain only one root-level element.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Within the <code>&lt;script&gt;</code> tag, we export a JavaScript object as a <strong>module</strong>. This object will be used as the <strong>instance definition</strong> for the Vue component, and is used to supply data &amp; behavior for the component. In this case, our component is entirely presentational, so we don&#8217;t have much in this object. We will see more examples of the features available in this object, later in the guide.</p>
+</div>
+<div class="paragraph">
+<p>The final section of the single-file-component is the <code>&lt;style&gt;</code> tags. Here you can specify component-specific CSS rules. These rules will be "scoped" to the component’s template and will not affect any other HTML elements.</p>
+</div>
+<div class="paragraph">
+<p>Create a new file named <code>VehicleFormHeader.vue</code> under <code>client/src/components/form</code> (create the <code>form</code> directory if necessary), and edit it as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/VehicleAddHeader.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">add-vehicle-header-template</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">headerRow</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>Add a Vehicle:<span class="tag">&lt;/h3&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle-form-header</span><span class="delimiter">'</span></span>
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+By default, when you use a component in a template, the element name will be the component&#8217;s name, hyphenated. E.g, <code>AppHeader</code> will become <code>&lt;app-header&gt;</code>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="displayComponents">4.4 Select & Table Components</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/displayComponents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_select_component">Select Component</h3>
+<div class="paragraph">
+<p>We&#8217;ll need a generic <code>&lt;select&gt;</code> component that will allow the user to pick from available <code>Make</code>, <code>Model</code>, and <code>Driver</code> records, when creating a new vehicle.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/vueSelect.png" alt="vueSelect">
+</div>
+</div>
+<div class="paragraph">
+<p>Create the file <code>FieldSelect.vue</code> under <code>client/src/components/form</code>, and edit the contents as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/form/FieldSelect.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">driverSelect-template</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/xhtml</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-group</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span> <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="tag">&lt;select</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">selected</span><span class="delimiter">&quot;</span></span> <span class="error">@</span><span class="attribute-name">change</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">updateValue()</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span> <i class="conum" data-value="7"></i><b>(7)</b>
+      <span class="tag">&lt;option</span> <span class="attribute-name">disabled</span> <span class="attribute-name">:value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">null</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>Select a {{field}}<span class="tag">&lt;/option&gt;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+      <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="tag">&lt;option</span> <span class="attribute-name">v-for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">value in values</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">value.id</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:key</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">value.id</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        {{ value.name }}
+      <span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;/select&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="key">props</span>: [<span class="string"><span class="delimiter">'</span><span class="content">values</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">field</span><span class="delimiter">'</span></span>], <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="function">data</span>: <span class="keyword">function</span> () { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> {
+      <span class="key">selected</span>: <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+  },
+  <span class="key">methods</span>: { <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="function">updateValue</span>: <span class="keyword">function</span> () { <i class="conum" data-value="6"></i><b>(6)</b>
+      <span class="local-variable">this</span>.<span class="predefined">$emit</span>(<span class="string"><span class="delimiter">'</span><span class="content">input</span><span class="delimiter">'</span></span>, <span class="local-variable">this</span>.selected)
+    }
+  }
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="comment">/* Add custom rules here */</span></span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare a <strong>prop</strong> with the name <code>values</code> - this prop will represent our list of objects to pick from, and will be passed into the components as an HTML attribute. E.g., <code>&lt;field-select values="[obj1,obj2,obj3]"/&gt;</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The second prop is named <code>field</code>, and will represent the human-readable name of the field being selected (this is used as the default "no-selection" option).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>data()</code> function returns an object which will become the initial data (or state) of the component. In this case, we only have one variable in our <code>data</code> - <code>selected</code>, which will store the current value of the select list.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>v-model</code> directive sets up two-way binding between the "value" of the element and a variable in <code>data</code>. When the value changes, the model variable (<code>selected</code>) will be updated, and vice versa.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><code>methods</code> is an object containing arbitrary JavaScript functions, which can be called either within the template or from other methods in the component.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The <code>updateValue</code> method <strong>emits</strong> an event, which allows a parent component to respond to changes in this component. In this case, we are emitting the value of <code>selected</code>, which will be the user-selected option in the list.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>We use the <code>updateValue</code> method as an event handler for the <code>onChange</code> event of our <code>&lt;select&gt;</code> element, using the <code>@change</code> attribute (other events are also supported - <code>@click</code>, <code>@focus</code>, etc).</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">One-Way vs Two-Way Data-binding</div>
+<div class="paragraph">
+<p>Vue.js supports both <strong>one-way</strong> and <strong>two-way data-binding</strong>, and this component demonstrates both of those approaches. When an data variable is used in a template expression (<code>{{field}}</code>), or bound as an attribute to a component (via the <code>:value="field"</code> syntax), the element will be updated when/if the <code>field</code> variable changes. This binding is one-way - the element cannot change the value of <code>field</code> directly.</p>
+</div>
+<div class="paragraph">
+<p>However, if an element uses the <code>v-model</code> directive, a two-way data-binding will be created. For example, <code>&lt;select v-model="selected"&gt;</code> means that the value of the <code>select</code> element will be bound to the value of <code>data.selected</code>, but if that value is changed in the element (e.g., the user selects a different option in the <code>select</code> list), then the value of <code>data.selected</code> will be updated with the new value.</p>
+</div>
+<div class="paragraph">
+<p>This flexibility means that you can develop in Vue.js using either approach, and mix and match when appropriate. In general, one-way data-binding leads to simpler, more predictable code. However, two-way binding is convenient and can simplify the creation of forms with many fields that correspond to the component&#8217;s data. Vue.js leaves the choice to you as the developer.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_table_components">Table Components</h3>
+<div class="paragraph">
+<p>The next couple components will be used to display a table of vehicles in our UI. They are presentation components, so they won&#8217;t need any methods or event handling.</p>
+</div>
+<div class="paragraph">
+<p>Create a new file named <code>TableRow.vue</code> under <code>client/src/components/table/</code>, and add the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/TableRow.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">tablerow-template</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/xhtml</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;tr&gt;</span> <span class="comment">&lt;!-- 1 --&gt;</span>
+      <span class="tag">&lt;td&gt;</span>{{ item.id }}<span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>{{ item.name }}<span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>{{ item.make.name }}<span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>{{ item.model.name }}<span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>{{ item.driver.name }}<span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;/tr&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: [<span class="string"><span class="delimiter">'</span><span class="content">item</span><span class="delimiter">'</span></span>] <i class="conum" data-value="1"></i><b>(1)</b>
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+&lt;!-- Per Component Custom CSS Rules --&gt;
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="comment">/* Add custom rules here */</span></span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This component accepts a single prop of <code>item</code>, which holds the record to be rendered in the template.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a new file named <code>VehicleTable.vue</code> under <code>client/src/components/table/</code>, and add the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/table/VehicleTable.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">fulltable-template</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/xhtml</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;table</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">table</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;thead</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">thead-inverse</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;tr&gt;</span>
+        <span class="tag">&lt;th&gt;</span>ID<span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;th&gt;</span>Name<span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;th&gt;</span>Make<span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;th&gt;</span>Model<span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;th&gt;</span>Driver<span class="tag">&lt;/th&gt;</span>
+      <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/thead&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="tag">&lt;table-row</span> <span class="attribute-name">v-for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle in vehicles</span><span class="delimiter">&quot;</span></span>
+                 <span class="attribute-name">:item</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:key</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle.id</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/table-row&gt;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tag">&lt;/table&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">import</span> TableRow from <span class="string"><span class="delimiter">'</span><span class="content">./TableRow.vue</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+
+<span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: [<span class="string"><span class="delimiter">'</span><span class="content">vehicles</span><span class="delimiter">'</span></span>],
+  <span class="key">components</span>: { <i class="conum" data-value="3"></i><b>(3)</b>
+    TableRow
+  }
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="comment">/* Add custom rules here */</span></span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>v-for</code> directive allows us to iterate over arrays, similar to a GSP <code>&lt;g:each&gt;</code> tag or <code>ng-for</code> directive in Angular.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Again, we are using the <code>:item</code> syntax to bind a <code>vehicle</code> object to the <code>item</code> prop of of <code>&lt;table-row&gt;</code> component. Note that we are also binding to a <code>:key</code> prop - similar to React, iteration of elements with <code>v-for</code> requires that each element have a unique <code>key</code>, which in our case is the <code>vehicle.id</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>In order to use our <code>&lt;table-row&gt;</code> component, we import it at the top of our <code>&lt;script&gt;</code> tags, and then specify it in a <code>components</code> object on our instance definition.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Notice that the <code>components</code> object is <strong>not</strong> an array, it is an object. We are using some ES6 shorthand to combine the key and value when both have the same name. In other words, the <code>components</code> object above is exactly the same as this code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">components: {
+      <span class="key"><span class="delimiter">'</span><span class="content">TableRow</span><span class="delimiter">'</span></span>: TableRow <span class="comment">// == TableRow</span>
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This of course assumes that you want to use the same name for the component as the component&#8217;s <code>.vue</code> file (<code>TableRow.vue</code>, in our case). If not, you could use this object to effectively "rename" the component within your template:</p>
+</div>
+<div class="paragraph">
+<p>Notice that the <code>components</code> object is <strong>not</strong> an array, it is an object. We are using some ES6 shorthand to combine the key and value when both have the same name. In other words, the <code>components</code> object above is exactly the same as this code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">components: {
+      <span class="key"><span class="delimiter">'</span><span class="content">MyCustomRow</span><span class="delimiter">'</span></span>: TableRow
+    }</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="postComponents">4.5 Form Component</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/postComponents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our final component before we wire everything together will be a form to create new vehicles, using the drivers, makes and models we&#8217;ve pre-populated in our API. This is a slightly more complicated component than we&#8217;ve created up till now, but it builds off of the same features we&#8217;ve been seeing already.</p>
+</div>
+<div class="paragraph">
+<p>Create a new file named <code>VehicleForm.vue</code> under <code>client/src/components/form</code>, and edit it as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/form/VehicleForm.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">add-vehicle-template</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">xmlns</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">http://www.w3.org/1999/xhtml</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div&gt;</span>
+    <span class="tag">&lt;vehicle-form-header</span><span class="tag">/&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">inputRow</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-3</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">input-group</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">placeholder</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Enter a name...</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle.name</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-7</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-4</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;field-select</span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle.make</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:field</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">'Make'</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:values</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">makes</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/field-select&gt;</span> <i class="conum" data-value="3"></i><b>(3)</b>
+          <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-4</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;field-select</span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle.model</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:field</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">'Model'</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:values</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">models</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/field-select&gt;</span>  <i class="conum" data-value="4"></i><b>(4)</b>
+          <span class="tag">&lt;/div&gt;</span>
+          <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-4</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;field-select</span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle.driver</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:field</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">'Driver'</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">:values</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">drivers</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/field-select&gt;</span>
+          <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">col-sm-2</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn-group</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">group</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">aria-label</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Add new vehicle</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">button</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn btn-success</span><span class="delimiter">&quot;</span></span> <span class="error">@</span><span class="attribute-name">click</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit()</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>Add to Garage<span class="tag">&lt;/button&gt;</span> <i class="conum" data-value="5"></i><b>(5)</b>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">import</span> VehicleFormHeader from <span class="string"><span class="delimiter">'</span><span class="content">./VehicleFormHeader</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> FieldSelect from <span class="string"><span class="delimiter">'</span><span class="content">./FieldSelect</span><span class="delimiter">'</span></span>
+
+<span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">props</span>: [<span class="string"><span class="delimiter">'</span><span class="content">vehicle</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">makes</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">models</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">drivers</span><span class="delimiter">'</span></span>], <i class="conum" data-value="6"></i><b>(6)</b>
+  <span class="key">model</span>: {
+    <span class="key">prop</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle</span><span class="delimiter">'</span></span>, <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="key">event</span>: <span class="string"><span class="delimiter">'</span><span class="content">change</span><span class="delimiter">'</span></span>
+  },
+  <span class="key">components</span>: {
+    VehicleFormHeader,
+    FieldSelect
+  },
+  <span class="key">methods</span>: {
+    submit () { <i class="conum" data-value="5"></i><b>(5)</b>
+      <span class="local-variable">this</span>.<span class="predefined">$emit</span>(<span class="string"><span class="delimiter">'</span><span class="content">submit</span><span class="delimiter">'</span></span>)
+    }
+  }
+}</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="comment">/* Add custom rules here */</span></span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This is the <code>VehicleFormHeader</code> component we created earlier.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Again, we are using the <code>v-model</code> directive to bind the value of an input to a variable in our <code>data</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This is the <code>FieldSelect</code> component we created earlier - note that we are using the <code>v-model</code> directive for two-way binding (allowing the component to update our data), as well as using one-way data-binding to pass in a list of <code>:values</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Since we wrote the <code>FieldSelect</code> component generically, we can reuse it for each of the select lists in our form.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Note that we&#8217;re not actually making the POST call to create a vehicle in this component - that task will be delegatd to the parent component, by <strong>emitting</strong> a <code>submit</code> event (as done here in the <code>submit()</code> method).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The <code>vehicle</code> prop represents the "new" vehicle object being created from the fields in this form. The <code>makes</code>, <code>models</code>, and <code>drivers</code> props will be the lists of records used to populate the select components.</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_next_step">Next Step</h3>
+<div class="paragraph">
+<p>At this point, we have all the components we need to build a form and display our vehicles in a table. We still need to implement our API integration, and then put all these pieces together into a working application.</p>
+</div>
+</div>
+
+
+<h2 id="oneMoreComponent">4.6 Vehicle Display</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/oneMoreComponent.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a new file named <code>Garage.vue</code> under <code>client/src/components/</code>, and edit it as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">garage</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;app-header&gt;</span><span class="tag">&lt;/app-header&gt;</span>
+    <span class="tag">&lt;vehicle-form</span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:makes</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">makes</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:models</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">models</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:drivers</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">drivers</span><span class="delimiter">&quot;</span></span>
+                  <span class="error">@</span><span class="attribute-name">submit</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submitNewVehicle()</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+
+    <span class="tag">&lt;/vehicle-form&gt;</span>
+    <span class="tag">&lt;vehicle-table</span> <span class="attribute-name">:vehicles</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicles</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/vehicle-table&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="inline">  <span class="reserved">import</span> AppHeader from <span class="string"><span class="delimiter">'</span><span class="content">./AppHeader</span><span class="delimiter">'</span></span>
+  <span class="reserved">import</span> VehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./form/VehicleForm</span><span class="delimiter">'</span></span>
+  <span class="reserved">import</span> VehicleTable from <span class="string"><span class="delimiter">'</span><span class="content">./table/VehicleTable</span><span class="delimiter">'</span></span>
+
+  <span class="reserved">export</span> <span class="keyword">default</span> {
+    <span class="key">components</span>: {
+      AppHeader,
+      VehicleForm,
+      VehicleTable
+    },
+    <span class="function">data</span>: <span class="keyword">function</span> () {
+      <span class="keyword">return</span> {
+        <span class="key">vehicles</span>: [],
+        <span class="key">vehicle</span>: {<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">make</span>: <span class="predefined-constant">null</span>, <span class="key">model</span>: <span class="predefined-constant">null</span>, <span class="key">driver</span>: <span class="predefined-constant">null</span>},
+        <span class="key">models</span>: [],
+        <span class="key">makes</span>: [],
+        <span class="key">drivers</span>: [],
+        <span class="key">serverURL</span>: process.env.SERVER_URL
+      }
+    },
+    created () {
+      <span class="local-variable">this</span>.fetchData()
+    },
+    <span class="key">methods</span>: {
+      <span class="key">fetchData</span>: async <span class="keyword">function</span> () {
+        <span class="keyword">try</span> {
+          await Promise.all([
+            <span class="local-variable">this</span>.fetchVehicles(),
+            <span class="local-variable">this</span>.fetchModels(),
+            <span class="local-variable">this</span>.fetchModels(),
+            <span class="local-variable">this</span>.fetchMakes(),
+            <span class="local-variable">this</span>.fetchDrivers()
+          ])
+        } <span class="keyword">catch</span> (error) {
+          console.log(error)
+        }
+      },
+      <span class="function">fetchVehicles</span>: <span class="keyword">function</span> () {
+        fetch(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.serverURL}/vehicle<span class="error">`</span>)
+          .then(r =&gt; r.json())
+          .then(json =&gt; { <span class="local-variable">this</span>.vehicles = json })
+          .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error))
+      },
+      <span class="function">fetchModels</span>: <span class="keyword">function</span> () {
+        fetch(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.serverURL}/model<span class="error">`</span>)
+          .then(r =&gt; r.json())
+          .then(json =&gt; { <span class="local-variable">this</span>.models = json })
+          .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving models: </span><span class="delimiter">'</span></span> + error))
+      },
+      <span class="function">fetchMakes</span>: <span class="keyword">function</span> () {
+        fetch(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.serverURL}/make<span class="error">`</span>)
+          .then(r =&gt; r.json())
+          .then(json =&gt; { <span class="local-variable">this</span>.makes = json })
+          .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving makes: </span><span class="delimiter">'</span></span> + error))
+      },
+      <span class="function">fetchDrivers</span>: <span class="keyword">function</span> () {
+        fetch(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.serverURL}/driver<span class="error">`</span>)
+          .then(r =&gt; r.json())
+          .then(json =&gt; { <span class="local-variable">this</span>.drivers = json })
+          .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving drivers: </span><span class="delimiter">'</span></span> + error))
+      },
+      <span class="function">submitNewVehicle</span>: <span class="keyword">function</span> () {
+        const vehicle = <span class="local-variable">this</span>.vehicle
+        fetch(<span class="error">`</span><span class="predefined">$</span>{<span class="local-variable">this</span>.serverURL}/vehicle<span class="error">`</span>, {
+          <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+          <span class="key">headers</span>: {<span class="key"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>},
+          <span class="key">body</span>: JSON.stringify(vehicle)
+        }).then(r =&gt; r.json())
+          .then(json =&gt; {
+            <span class="local-variable">this</span>.vehicles.push(json)
+            <span class="local-variable">this</span>.vehicle = {<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">make</span>: <span class="predefined-constant">null</span>, <span class="key">model</span>: <span class="predefined-constant">null</span>, <span class="key">driver</span>: <span class="predefined-constant">null</span>}
+          })
+          .<span class="keyword">catch</span>(ex =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Unable to save vehicle</span><span class="delimiter">'</span></span>, ex))
+    }
+  }</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Per Component Custom CSS Rules --&gt;</span>
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="id">#garage</span> {
+    <span class="key">font-family</span>: <span class="string"><span class="delimiter">'</span><span class="content">Avenir</span><span class="delimiter">'</span></span>, <span class="value">Helvetica</span>, <span class="value">Arial</span>, <span class="value">sans-serif</span>;
+    <span class="key">text-align</span>: <span class="value">center</span>;
+    <span class="key">color</span>: <span class="color">#2c3e50</span>;
+  }</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_breaking_it_down">Breaking it down</h3>
+<div class="paragraph">
+<p>Because this is a large component, we&#8217;ll go through it in sections.</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">garage</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;app-header&gt;</span><span class="tag">&lt;/app-header&gt;</span>
+    <span class="tag">&lt;vehicle-form</span> <span class="attribute-name">v-model</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicle</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:makes</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">makes</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:models</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">models</span><span class="delimiter">&quot;</span></span>
+                  <span class="attribute-name">:drivers</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">drivers</span><span class="delimiter">&quot;</span></span>
+                  <span class="error">@</span><span class="attribute-name">submit</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submitNewVehicle()</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="tag">&lt;/vehicle-form&gt;</span>
+    <span class="tag">&lt;vehicle-table</span> <span class="attribute-name">:vehicles</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">vehicles</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/vehicle-table&gt;</span> <i class="conum" data-value="2"></i><b>(2)</b>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;ve set the <code>submitNewVehicle()</code> method (which we&#8217;ll see shortly) as an event handler for the <code>submit</code> event (which we emitted in the <code>VehicleForm.submit()</code> function).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We bind our <code>vehicles</code> data variable to the <code>vehicles</code> prop of the <code>VehicleTable</code> component.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;script&gt;</span>
+<span class="inline"><span class="reserved">import</span> AppHeader from <span class="string"><span class="delimiter">'</span><span class="content">./AppHeader</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">import</span> VehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./form/VehicleForm</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> VehicleTable from <span class="string"><span class="delimiter">'</span><span class="content">./table/VehicleTable</span><span class="delimiter">'</span></span>
+
+<span class="reserved">export</span> <span class="keyword">default</span> {
+  <span class="key">components</span>: { <i class="conum" data-value="1"></i><b>(1)</b>
+    AppHeader,
+    VehicleForm,
+    VehicleTable
+  },
+  <span class="function">data</span>: <span class="keyword">function</span> () { <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="keyword">return</span> {
+      <span class="key">vehicles</span>: [],
+      <span class="key">vehicle</span>: {<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">make</span>: <span class="predefined-constant">null</span>, <span class="key">model</span>: <span class="predefined-constant">null</span>, <span class="key">driver</span>: <span class="predefined-constant">null</span>},
+      <span class="key">models</span>: [],
+      <span class="key">makes</span>: [],
+      <span class="key">drivers</span>: [],
+      <span class="key">serverURL</span>: process.env.SERVER_URL <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+  },</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Importing our components for use in the template</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Our <code>data()</code> function returns the initial state for the component. It is important that we initialize all the variables we intend to use in this <code>data</code> object, because if we add a variable afterwards it will not be treated as a reactive property (i.e, changes to the variable will not trigger an update to the component).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>SERVER_URL</code> is a config variable set in <code>client/config/dev.env.js</code> (there are equivalent config files for <code>test</code> and <code>prod</code> environments). You can change the base URL for the API calls below by changing the <code>SERVER_URL</code> variable.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html">  created () { <i class="conum" data-value="1"></i><b>(1)</b>
+    this.fetchData()
+  },
+  methods: {
+    fetchData: async function () { <i class="conum" data-value="2"></i><b>(2)</b>
+      try {
+        Promise.all([<i class="conum" data-value="3"></i><b>(3)</b>
+          this.fetchVehicles(),
+          this.fetchModels(),
+          this.fetchModels(),
+          this.fetchMakes(),
+          this.fetchDrivers()
+        ])
+      } catch (error) {
+        console.log(error)
+      }
+    },</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>created</code> is one of several <strong>lifecycle hooks</strong>, which are methods that are called at specific points in a component lifecycle (other methods available include <strong>beforeUpdate</strong>, <strong>updated</strong>, <strong>mounted</strong>, etc. You can learn about the available lifecycle hooks from the <a href="https://vuejs.org/v2/guide/instance.html#Instance-Lifecycle-Hooks:">Vue.js documentation</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>fetchData</code> method is where we call several other methods to retrieve data from the API. Since these API calls are independent and don&#8217;t need to be run synchronously, we have added the <strong>async</strong> keyword to this function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Within a <code>try</code>/<code>catch</code> block, we "chain" our multiple API calls using the <code>Promise</code> API. Since we are not returning anything from these methods, we don&#8217;t need to use the <code>await</code> keyword that is often used in an <code>async</code> function.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html">    fetchVehicles: function () { <i class="conum" data-value="1"></i><b>(1)</b>
+      fetch(`${this.serverURL}/vehicle`)
+        .then(r =<span class="error">&gt;</span> r.json())
+        .then(json =<span class="error">&gt;</span> { this.vehicles = json })
+        .catch(error =<span class="error">&gt;</span> console.error('Error retrieving vehicles: ' + error))
+    },
+    fetchModels: function () {
+      fetch(`${this.serverURL}/model`)
+        .then(r =<span class="error">&gt;</span> r.json())
+        .then(json =<span class="error">&gt;</span> { this.models = json })
+        .catch(error =<span class="error">&gt;</span> console.error('Error retrieving models: ' + error))
+    },
+    fetchMakes: function () {
+      fetch(`${this.serverURL}/make`)
+        .then(r =<span class="error">&gt;</span> r.json())
+        .then(json =<span class="error">&gt;</span> { this.makes = json })
+        .catch(error =<span class="error">&gt;</span> console.error('Error retrieving makes: ' + error))
+    },
+    fetchDrivers: function () {
+      fetch(`${this.serverURL}/driver`)
+        .then(r =<span class="error">&gt;</span> r.json())
+        .then(json =<span class="error">&gt;</span> { this.drivers = json })
+        .catch(error =<span class="error">&gt;</span> console.error('Error retrieving drivers: ' + error))
+    },</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The next few methods will make the respective API calls referenced in the previous code snippet. We are using the <code>fetch</code> API to make GET calls to our resource endpoints, parse the JSON, and store the data in the appropriate <code>data</code> variable.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html">    submitNewVehicle: function () {
+      const vehicle = this.vehicle <i class="conum" data-value="1"></i><b>(1)</b>
+      fetch(`${this.serverURL}/vehicle`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(vehicle)
+      }).then(r =<span class="error">&gt;</span> r.json())
+        .then(json =<span class="error">&gt;</span> {
+          this.vehicles.push(json) <i class="conum" data-value="2"></i><b>(2)</b>
+          this.vehicle = {name: '', make: null, model: null, driver: null} <i class="conum" data-value="3"></i><b>(3)</b>
+        })
+        .catch(ex =<span class="error">&gt;</span> console.error('Unable to save vehicle', ex))
+    }
+  }
+}
+<span class="tag">&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Because we stored the <code>vehicle</code> object (used by the <code>VehicleForm</code> component) in our top-level component&#8217;s <code>data</code>, making a <code>POST</code> request to save the vehicle instance is trivial - we simply grab the variable from our <code>data</code> (e.g., <code>this.vehicle</code>), convert it to a JSON string, and make a POST request using <code>fetch</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>POST</code> request will return the newly created vehicle instance, which we simply <code>push</code> onto our <code>data.vehicles</code> array.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>After adding the new vehicle to the list, we "reset" the form by setting <code>data.vehicle</code> to an empty object (remembering to initialize the needed fields with empty/<code>null</code> values)</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/components/Garage.vue</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="comment">&lt;!-- Per Component Custom CSS Rules --&gt;</span>
+<i class="conum" data-value="1"></i><b>(1)</b>
+<span class="tag">&lt;style&gt;</span>
+<span class="inline">  <span class="id">#garage</span> {
+    <span class="key">font-family</span>: <span class="string"><span class="delimiter">'</span><span class="content">Avenir</span><span class="delimiter">'</span></span>, <span class="value">Helvetica</span>, <span class="value">Arial</span>, <span class="value">sans-serif</span>;
+    <span class="key">text-align</span>: <span class="value">center</span>;
+    <span class="key">color</span>: <span class="color">#2c3e50</span>;
+  }</span>
+<span class="tag">&lt;/style&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A few styles are included here to pretty up the layout of the app - feel free to use whatever styles you&#8217;d like. Note that these styles are constrained (or <strong>scoped</strong>) to the component&#8217;s own template.</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="puttingItAllTogether">4.7 Routing</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/puttingItAllTogether.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you were to run the <code>client</code> app now (or reload if you&#8217;ve kept the <code>client:start</code> task running while you followed through the guide), you would notice that the default home page hasn&#8217;t changed. This is because Vue Router - the official routing library for Vue.js apps - is configured to display the <code>Welcome</code> component at the index route. Fortunately, this is a simple change.</p>
+</div>
+<div class="paragraph">
+<p>Edit the file <code>client/src/router/index.js</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">/client/src/router/index.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> Vue from <span class="string"><span class="delimiter">'</span><span class="content">vue</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Router from <span class="string"><span class="delimiter">'</span><span class="content">vue-router</span><span class="delimiter">'</span></span>
+<span class="reserved">import</span> Garage from <span class="string"><span class="delimiter">'</span><span class="content">@/components/Garage</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+Vue.use(Router)
+
+<span class="reserved">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Router({
+  <span class="key">routes</span>: [
+    {
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Garage</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">component</span>: Garage <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+  ]
+})</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace the import and usages of the <code>Welcome</code> component with our <code>Garage</code> component, for the index <code>/</code> route.</td>
+</tr>
+</table>
+</div>
+<div class="sect1">
+<h2 id="_run_the_application">Run the Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Run the <code>client</code> project with <code>./gradlew client:start</code>, and browse to <code><a href="http://localhost:3000" class="bare">http://localhost:3000</a></code>. You should see our new Vue app, and be able to interact with the Grails REST API. Congratulations, you&#8217;ve built a Vue.js app with Grails!</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/complete.png" alt="complete">
+</div>
+</div>
+</div>
+</div>
+
+
+<h1 id="nextSteps">5 Next Steps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/nextSteps.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There&#8217;s plenty of opportunities to expand the scope of this application. Here are a few ideas for improvements you can make on your own:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Improve the form (or create new form components) for adding Makes, Models, and Drivers.</p>
+</li>
+<li>
+<p>Add support for editing existing Vehicles, perhaps using a modal dialog for an edit form.</p>
+</li>
+<li>
+<p>Currently the Makes &amp; Model domain classes are independent. Add an appropriate GORM association between Make &amp; Model, and change the select lists to only display Models for the currently select Make. You will want to make use of the JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter"><code>Array.filter</code></a> method.</p>
+</li>
+</ul>
+</div>
+
+
+<h1 id="helpWithGrails">6 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/building-a-vue-app/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
