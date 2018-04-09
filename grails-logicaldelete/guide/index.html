@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>GORM Logical delete | Grails Guides | Grails Framework</title>
+    <meta name='description' content='GORM Logical delete. Learn how to use GORM Logical delete plugin' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-logicaldelete"><img src="https://travis-ci.org/grails-guides/grails-logicaldelete.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-logicaldelete&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-logicaldelete.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-logicaldelete.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-logicaldelete.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-logicaldelete/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3</strong><span>Application Overview</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#install"><strong>3.1</strong><span>Install Plugin</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domain"><strong>3.2</strong><span>Domain</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#controllers"><strong>3.3</strong><span>Controller</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#services"><strong>3.4</strong><span>Services</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#views"><strong>3.5</strong><span>Views</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#bootstrap"><strong>3.6</strong><span>BootStrap</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#urlMappings"><strong>3.7</strong><span>URLMappings</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#test"><strong>3.8</strong><span>Integration Test</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#conclusion"><strong>4</strong><span>Conclusion</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>GORM Logical delete</h1>
+        <p>Learn how to use GORM Logical delete plugin</p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.2</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, we will introduce you <a href="http://plugins.grails.org/plugin/grails/gorm-logical-delete">GORM Logical Delete</a> plugin.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-logicaldelete/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-logicaldelete.git" class="bare">https://github.com/grails-guides/grails-logicaldelete.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-logicaldelete/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-logicaldelete/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">3 Application Overview</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Logical Deletion:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Reference to a record that remains in the database, but is not included in comparisons or retrieved in searches.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>In this guide, we use the <a href="http://plugins.grails.org/plugin/grails/gorm-logical-delete">GORM Logical Delete</a> plugin to create
+Logical deletion into a Grails application.</p>
+</div>
+<div class="paragraph">
+<p>We will create a delete button and undo functionality in a book collection.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/undo.png" alt="undo">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We have already added the necessary assets (book cover images) to the <code>initial/grails-app/assets/images</code> folder for you.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="install">3.1 Install Plugin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/install.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add plugin dependency to <code>build.gradle</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:gorm-logical-delete:2.0.0.M2</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="domain">3.2 Domain</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/domain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add a <code>Book</code> domain class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Book.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">gorm.logical.delete.LogicalDelete</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> LogicalDelete&lt;<span class="predefined-type">Book</span>&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> image
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> about
+    <span class="predefined-type">String</span> href
+    <span class="directive">static</span> mapping = {
+        about <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement <code>gorm.logical.delete.LogicalDelete</code> trait, which can applied to any domain class to indicate that the domain class should participate in logical deletes. The trait adds a boolean persistent property named <code>deleted</code> to the domain class. When this property has a value of true, it indicates that the record has been logically deleted and as such will be excluded from query results by default.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="controllers">3.3 Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/controllers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a controller which in collaboration with a service retrieves a list of books, a book&#8217;s detail and provide actions to delete and undo a book deletion.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/BookController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookController</span> {
+
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+            <span class="key">show</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+            <span class="key">undoDelete</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+    ]
+
+    BookDataService bookDataService
+    MessageSource messageSource
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [
+                <span class="key">total</span>: bookDataService.count(),
+                <span class="key">bookList</span>: bookDataService.findAll(),
+                <span class="key">undoId</span>: params.long(<span class="string"><span class="delimiter">'</span><span class="content">undoId</span><span class="delimiter">'</span></span>)
+        ]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Long</span> id) {
+        [<span class="key">bookInstance</span>: bookDataService.findById(id)]
+    }
+
+    <span class="keyword">def</span> <span class="function">delete</span>(<span class="predefined-type">Long</span> id) {
+        bookDataService.delete(id)
+        flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">book.delete.undo</span><span class="delimiter">'</span></span>,
+                [id] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                <span class="string"><span class="delimiter">'</span><span class="content">Book deleted</span><span class="delimiter">'</span></span>,
+                request.locale
+        )
+        redirect(<span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">params</span>: [<span class="key">undoId</span>: id])
+    }
+
+    <span class="keyword">def</span> <span class="function">undoDelete</span>(<span class="predefined-type">Long</span> id) {
+        bookDataService.unDelete(id)
+        flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">book.unDelete</span><span class="delimiter">'</span></span>,
+                <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                <span class="string"><span class="delimiter">'</span><span class="content">Book restored</span><span class="delimiter">'</span></span>,
+                request.locale
+        )
+        redirect(<span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>)
+    }
+
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="services">3.4 Services</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/services.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a POGO <code>BookImage</code> in the <code>src/main/groovy</code> directory</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/BookImage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BookImage</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> image
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create default CRUD actions for <code>Book</code> leveraging <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM data services</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/BookDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+
+<span class="type">interface</span> IBookDataService {
+
+    <span class="predefined-type">Book</span> save(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> author, <span class="predefined-type">String</span> about, <span class="predefined-type">String</span> href, <span class="predefined-type">String</span> image)
+
+    <span class="predefined-type">Number</span> count()
+
+    <span class="predefined-type">Book</span> findById(<span class="predefined-type">Long</span> id)
+
+    <span class="type">void</span> delete(<span class="predefined-type">Long</span> id) <i class="conum" data-value="1"></i><b>(1)</b>
+}
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookDataService</span> <span class="directive">implements</span> IBookDataService {
+
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;BookImage&gt; findAll() {  <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">Book</span>.where {}.projections {
+            property(<span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>)
+            property(<span class="string"><span class="delimiter">'</span><span class="content">image</span><span class="delimiter">'</span></span>)
+        }.list().collect { <span class="keyword">new</span> BookImage(<span class="key">id</span>: <span class="local-variable">it</span>[<span class="integer">0</span>] <span class="keyword">as</span> <span class="predefined-type">Long</span>, <span class="key">image</span>: <span class="local-variable">it</span>[<span class="integer">1</span>] <span class="keyword">as</span> <span class="predefined-type">String</span>) }
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> unDelete(<span class="predefined-type">Long</span> id) {
+        <span class="predefined-type">Book</span>.withDeleted { <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.get(id)
+            book?.unDelete() <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Delete a domain class as you normally would. The book&#8217;s <code>deleted</code> property is set to true, but book stays in the persistence storage.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This <code>Where Query</code> does not retrieve books which have been logically deleted.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>For cases where you would like logically deleted records to be included in query results, queries may be wrapped in a call to <code>withDeleted</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>In order to reverse the deleted field use <code>unDelete()</code>.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="views">3.5 Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/views.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a GSP view to list books. For each book, we add a delete button. If  <code>undoId</code> is present,
+we present an <code>Undo</code> button.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/book/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Groovy &amp; Grails Books&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;style type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text/css</span><span class="delimiter">&quot;</span></span>&gt;
+        .book {
+            <span class="key">width</span>: <span class="integer">150</span>px;
+            <span class="key">height</span>: <span class="integer">300</span>px;
+            <span class="type">float</span>: left;
+            <span class="key">margin</span>: <span class="integer">10</span>px;
+        }
+        .book form {
+            text-<span class="key">align</span>: center;
+            margin-<span class="key">bottom</span>: <span class="integer">10</span>px;
+        }
+        .message {
+            <span class="key">overflow</span>: auto;
+        }
+        <span class="error">#</span>undo {
+            <span class="key">margin</span>: <span class="integer">10</span>px;
+            <span class="type">float</span>: right;
+        }
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">style&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>&lt;body&gt;
+&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>undoId<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="key">g</span>:form method=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span> controller=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> action=<span class="string"><span class="delimiter">&quot;</span><span class="content">undoDelete</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>undoId<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="class">g</span>:submitButton name=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.undoDelete</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Undo</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+                <span class="error">$</span>{flash.message}
+            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>        &lt;<span class="key">g</span>:<span class="keyword">else</span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:else&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>
+    &lt;b&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">books.total</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Total number of Books</span><span class="delimiter">&quot;</span></span>/&gt;&lt;span id=<span class="string"><span class="delimiter">&quot;</span><span class="content">totalNumberOfBooks</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{total}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">span&gt;&lt;</span><span class="delimiter">/</span></span>b&gt;
+    &lt;section <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">g</span>:each <span class="keyword">in</span>=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>bookList<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> var=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;<span class="class">g</span>:form method=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span> controller=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> action=<span class="string"><span class="delimiter">&quot;</span><span class="content">delete</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="key">g</span>:submitButton name=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>g.message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">book.delete</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Delete</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>
+                &lt;<span class="key">g</span>:link controller=<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> action=<span class="string"><span class="delimiter">&quot;</span><span class="content">show</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="key">asset</span>:image src=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>book.image<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">150</span><span class="delimiter">&quot;</span></span> /&gt;
+
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:link&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>
+        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:each&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">section&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="bootstrap">3.6 BootStrap</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/bootstrap.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create sample data in <code>Bootstrap.groovy</code> when we run the app in the development environment.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.util.Environment</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GRAILS_BOOKS = [
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 3 - Step by Step</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cristian Olaru</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">https://grailsthreebook.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn how a complete greenfield application can be implemented quickly and efficiently with Grails 3 using profiles and plugins. Use the sample application that accompanies the book as an example.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_3_step_by_step.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content"> Eric Helgeson</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://www.grails3book.com/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Learn the fundamental concepts behind building Grails applications with the first book dedicated to Grails 3. Real, up-to-date code examples are provided, so you can easily follow along.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">pratical-grails-3-book-cover.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Falando de Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Henrique Lobo Weissmann</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.casadocodigo.com.br/products/livro-grails</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This is the best reference on Grails 2.5 and 3.0 written in Portuguese. It&amp;#39;s a great guide to the framework, dealing with details that many users tend to ignore.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grails_weissmann.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails Goodness Notebook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hubert A. Klein Ikkink</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">https://leanpub.com/grails-goodness-notebook</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Experience the Grails framework through code snippets. Discover (hidden) Grails features through code examples and short articles. The articles and code will get you started quickly and provide deeper insight into Grails.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grailsgood.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">The Definitive Guide to Grails 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown and Graeme Rocher</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.apress.com/9781430243779</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">As the title states, this is the definitive reference on the Grails framework, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">grocher_jbrown_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails in Action</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Glen Smith and Peter Ledbrook</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/gsmith2/</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">The second edition of Grails in Action is a comprehensive introduction to Grails 2 focused on helping you become super-productive fast.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gsmith2_cover150.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Grails 2: A Quick-Start Guide</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dave Klein and Ben Klein</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://www.amazon.com/gp/product/1937785777?tag=misa09-20</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">This revised and updated edition shows you how to use Grails by iteratively building a unique, working application.</span><span class="delimiter">'</span></span>,
+                    image : <span class="string"><span class="delimiter">'</span><span class="content">bklein_cover.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    title : <span class="string"><span class="delimiter">'</span><span class="content">Programming Grails</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Burt Beckwith</span><span class="delimiter">'</span></span>,
+                    href  : <span class="string"><span class="delimiter">'</span><span class="content">http://shop.oreilly.com/product/0636920024750.do</span><span class="delimiter">'</span></span>,
+                    about : <span class="string"><span class="delimiter">'</span><span class="content">Dig deeper into Grails architecture and discover how this application framework works its magic.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">bbeckwith_cover.gif</span><span class="delimiter">'</span></span>
+            ]
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    <span class="directive">public</span> <span class="directive">final</span> <span class="directive">static</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt; GROOVY_BOOKS = [
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Making Java Groovy</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ken Kousen</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/kousen/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Make Java development easier by adding Groovy. Each chapter focuses on a task Java developers do, like building, testing, or working with databases or restful web services, and shows ways Groovy can make those tasks easier.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">Kousen-MJG.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy in Action, 2nd Edition</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Dierk König, Guillaume Laforge, Paul King, Cédric Champeau, Hamlet D</span><span class="char">\'</span><span class="content">Arcy, Erik Pragt, and Jon Skeet</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.manning.com/koenig2/</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This is the undisputed, definitive reference on the Groovy language, authored by core members of the development team.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">regina.png</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy for Domain-Specific Languages</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Fergal Dearle</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-for-domain-specific-languages-dsl/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">Learn how Groovy can help Java developers easily build domain-specific languages into their applications.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">gdsl.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy 2 Cookbook</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Andrey Adamovitch, Luciano Fiandeso</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://www.packtpub.com/groovy-2-cookbook/book</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book contains more than 90 recipes that use the powerful features of Groovy 2 to develop solutions to everyday programming challenges.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">g2cook.jpg</span><span class="delimiter">'</span></span>,
+            ],
+            [
+                    <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Programming Groovy 2</span><span class="delimiter">'</span></span>,
+                    <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Venkat Subramaniam</span><span class="delimiter">'</span></span>,
+                    <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://pragprog.com/book/vslg2/programming-groovy-2</span><span class="delimiter">'</span></span>,
+                    <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book helps experienced Java developers learn to use Groovy 2, from the basics of the language to its latest advances.</span><span class="delimiter">'</span></span>,
+                    <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">vslg2.jpg</span><span class="delimiter">'</span></span>
+            ],
+    ] <span class="keyword">as</span> <span class="predefined-type">List</span>&lt; <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; &gt;
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+
+        <span class="keyword">if</span> ( Environment.current == Environment.DEVELOPMENT ) {
+            <span class="keyword">for</span> (<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; bookInfo : (GRAILS_BOOKS + GROOVY_BOOKS)) {
+                bookDataService.save(bookInfo.title, bookInfo.author, bookInfo.about, bookInfo.href, bookInfo.image)
+            }
+        }
+    }
+
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="urlMappings">3.7 URLMappings</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/urlMappings.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Update our <code>UrlMappings.groovy</code> so that the default url displays the books grid.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UrlMappings</span> {
+
+    <span class="directive">static</span> mappings = {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>{
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">500</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">404</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/notFound</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Updated default URL</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="test">3.8 Integration Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <a href="http://gebish.org">Geb</a> functional test which verifies the undo button works:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/BooksUndoSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">BooksUndoSpec</span> <span class="directive">extends</span> GebSpec {
+
+    BookDataService bookDataService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">verify a book can be deleted and deletion can be undone</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">Map</span> bookInfo = [
+                <span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Programming Groovy 2</span><span class="delimiter">'</span></span>,
+                <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Venkat Subramaniam</span><span class="delimiter">'</span></span>,
+                <span class="key">href</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://pragprog.com/book/vslg2/programming-groovy-2</span><span class="delimiter">'</span></span>,
+                <span class="key">about</span>: <span class="string"><span class="delimiter">'</span><span class="content">This book helps experienced Java developers learn to use Groovy 2, from the basics of the language to its latest advances.</span><span class="delimiter">'</span></span>,
+                <span class="key">image</span>: <span class="string"><span class="delimiter">'</span><span class="content">vslg2.jpg</span><span class="delimiter">'</span></span>
+        ]
+        <span class="predefined-type">Book</span> book = bookDataService.save(bookInfo.title, bookInfo.author, bookInfo.about, bookInfo.href, bookInfo.image)
+
+        <span class="key">when</span>:
+        BooksPage booksPage = to BooksPage
+
+        <span class="key">then</span>:
+        booksPage.count()
+
+        <span class="key">when</span>:
+        booksPage.delete(<span class="integer">0</span>)
+
+        <span class="key">then</span>:
+        bookDataService.count() == old(bookDataService.count()) - <span class="integer">1</span>
+        booksPage.count() == (old(booksPage.count()) - <span class="integer">1</span>)
+
+        <span class="key">when</span>:
+        booksPage.undo()
+
+        <span class="key">then</span>:
+        bookDataService.count() == old(bookDataService.count()) + <span class="integer">1</span>
+        booksPage.count() == (old(booksPage.count()) + <span class="integer">1</span>)
+
+        <span class="key">cleanup</span>:
+        bookDataService.delete(book.id)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous test uses a Geb Page and Module to encapsulate implementation details and focus in behaviour being verified.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/BookModule.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.Module</span>
+
+<span class="type">class</span> <span class="class">BookModule</span> <span class="directive">extends</span> Module {
+
+    <span class="directive">static</span> content = {
+        deleteButton { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">input</span><span class="delimiter">'</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">submit</span><span class="delimiter">'</span></span>) }
+    }
+
+    <span class="type">void</span> delete() {
+        deleteButton.click()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/BooksPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">BooksPage</span> <span class="directive">extends</span> Page {
+
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> at = { title == <span class="string"><span class="delimiter">'</span><span class="content">Groovy &amp; Grails Books</span><span class="delimiter">'</span></span>}
+
+    <span class="directive">static</span> content = {
+        totalNumberOfBooks { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#totalNumberOfBooks</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        bookDivs { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">div.book</span><span class="delimiter">'</span></span>) }
+        bookDiv { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">div.book</span><span class="delimiter">'</span></span>, <span class="local-variable">it</span>).module(BookModule) }
+        undoButton(<span class="key">required</span>: <span class="predefined-constant">false</span>) { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">input</span><span class="delimiter">'</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">'</span><span class="content">submit</span><span class="delimiter">'</span></span>, <span class="key">value</span>: <span class="string"><span class="delimiter">'</span><span class="content">Undo</span><span class="delimiter">'</span></span>) }
+
+    }
+
+    <span class="type">void</span> delete(<span class="type">int</span> i) {
+        bookDiv(i).delete()
+    }
+
+    <span class="type">void</span> undo() {
+        undoButton.click()
+    }
+
+    <span class="predefined-type">Integer</span> count() {
+        <span class="predefined-type">Integer</span>.valueOf(totalNumberOfBooks.text())
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="conclusion">4 Conclusion</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/conclusion.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The goal of this guide is to show you the potential of the logical delete plugin, not a perfect implementation of undo functionality. For example, in this app we should protect the <code>undoDelete</code> action to be randomly invoked.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To learn more, read more <a href="http://grailsblog.objectcomputing.com/posts/2018/04/05/introducing-the-grails-3-gorm-logical-delete-plugin.html">Introducing the Grails 3 GORM Logical Delete plugin</a>'s blog post and
+read the <a href="http://plugins.grails.org/plugin/grails/gorm-logical-delete">plugin docs</a>.</p>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-logicaldelete/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
