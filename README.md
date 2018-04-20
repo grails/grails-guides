@@ -1,6 +1,6 @@
-# Grails Guides
+# Micronaut Guides
 
-This is the base repository for the Grails guides infrastructure. The guides themselves are published in the `gh-pages` branch.
+This is the base repository for the Micronaut guides infrastructure. The guides themselves are published in the `gh-pages` branch.
 
 The following describes the purpose of the various directories:
 
@@ -12,7 +12,7 @@ The following describes the purpose of the various directories:
 
 ## Creating a Guide
 
-To create a new guide first make sure you have `grails` and `gradle` installed and set to the appropriate versions you want to use for the guide. Then run the `create-guide.sh` script:
+To create a new guide first make sure you have `mn` and `gradle` installed and set to the appropriate versions you want to use for the guide. Then run the `create-guide.sh` script:
 
 ```bash
 ./create-guide.sh my-new-guide
@@ -22,7 +22,7 @@ The name of the guide should be in all lower case and hyphen separated as in the
 
 ## Working on a Guide
 
-Your next step will probably be to move your guide out of the grails-guide root repository and init a git repository
+Your next step will probably be to move your guide out of the micronaut-guide root repository and init a git repository
 
 ```bash
 $ mv my-new-guide my-git-folder/my-new-guide
@@ -37,7 +37,7 @@ $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 1. Use package `demo`
 2. Don't include unimplemented tests.
 3. Use `@CompileStatic` as much as possible
-4. Always write the guide against the latest stable version of Grails.
+4. Always write the guide against the latest stable version of Micronaut.
 5. Root `gradlew` should have execution permission
 
 ### Start your guide's documentation
@@ -76,7 +76,7 @@ image::screenshot.png[]
 
 To publish the guide 
 
-**1.** Create a new repository in the Grails guides organization: https://github.com/grails-guides
+**1.** Create a new repository in the Micronaut guides organization: https://github.com/micronaut-guides
 
 The repository name should match the name you used when running the `create-guide.sh` script in the previous step.
 
@@ -100,7 +100,7 @@ travis encrypt GIT_EMAIL=myemail --add
 
 The encrypted tokens will be saved to `.travis.yml`. Commit the updated file to your guide repo.
 
-**5.** Activate the Travis Service from your Github repo setting: https://github.com/grails-guides/[your-guide]/settings/installations. Select Travis CI from the "Add Service" list, and supply the following parameters:
+**5.** Activate the Travis Service from your Github repo setting: https://github.com/micronaut-guides/[your-guide]/settings/installations. Select Travis CI from the "Add Service" list, and supply the following parameters:
 
 1. Username: Your Github username
 2. Token: The Personal Access Token you generated above
@@ -108,6 +108,6 @@ The encrypted tokens will be saved to `.travis.yml`. Commit the updated file to 
 
 See https://docs.travis-ci.com/user/environment-variables/ for more details on encrypting environment variables for Travis.
 
-The Travis CI will begin building your guide upon the next push to the repo. You can view the status of your guide at: https://travis-ci.org/grails-guides/[your-guide].
+The Travis CI will begin building your guide upon the next push to the repo. You can view the status of your guide at: https://travis-ci.org/micronaut-guides/[your-guide].
 
-If the build is sucessful the Guide will be published to http://guides.grails.org/my-new-guide 
+If the build is sucessful the Guide will be published to http://guides.micronaut.io/my-new-guide 

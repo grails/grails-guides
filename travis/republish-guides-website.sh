@@ -8,9 +8,9 @@ git config --global user.email "$GIT_EMAIL"
 git config --global credential.helper "store --file=~/.git-credentials"
 echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
-git clone https://${GH_TOKEN}@github.com/grails/grails-static-website.git -b master grails-static-website --single-branch > /dev/null
+git clone https://${GH_TOKEN}@github.com/micronaut-projects/static-website.git -b master static-website --single-branch > /dev/null
 
-cd grails-static-website
+cd static-website
 
 chmod 777 gradlew
 
@@ -23,11 +23,11 @@ fi
 
 cd ..
 
-git clone https://${GH_TOKEN}@github.com/grails/grails-guides.git -b gh-pages gh-pages --single-branch > /dev/null
+git clone https://${GH_TOKEN}@github.com/micronaut-projects/micronaut-guides.git -b gh-pages gh-pages --single-branch > /dev/null
 
 cd gh-pages
 
-cp -r ../grails-static-website/guides/build/site/* .
+cp -r ../static-website/guides/build/site/* .
 
 if git diff --quiet; then
     echo "No changes in GUIDES Website"
@@ -39,7 +39,7 @@ fi
 
 cd ..
 
-rm -rf grails-static-website
+rm -rf static-website
 
 rm -rf gh-pages
 

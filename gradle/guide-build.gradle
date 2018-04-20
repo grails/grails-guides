@@ -12,15 +12,15 @@ buildscript {
 import groovy.json.*
 
 apply plugin:'base'
-def GRAILS_GUIDES_GROUP = 'X - Grails Guides'
+def MICRONAUT_GUIDES_GROUP = 'X - Micronaut Guides'
 
-def commonGithubOrg = 'grails'
-def commonGithubSlug = 'grails-guides'
+def commonGithubOrg = 'micronaut-projects'
+def commonGithubSlug = 'micronaut-guides'
 def commonBranch = 'master'
 
 task prepareResources {
-    group = GRAILS_GUIDES_GROUP
-    description = 'Downloads grails-guides repository master branch and unzip it to build folder'   
+    group = MICRONAUT_GUIDES_GROUP
+    description = 'Downloads micronaut-guides repository master branch and unzip it to build folder'
     doLast {
         ant.mkdir(dir:buildDir)
         ant.get(src:"https://github.com/${commonGithubOrg}/${commonGithubSlug}/archive/${commonBranch}.zip", dest:"${buildDir}/resources.zip")    
@@ -29,7 +29,7 @@ task prepareResources {
 }
 
 task copyLocalGuideImgResources(type: Copy) {
-    group = GRAILS_GUIDES_GROUP
+    group = MICRONAUT_GUIDES_GROUP
     description = 'Copy local image resources to build folder'  
     mustRunAfter prepareResources
     from ('src/main/resources/img') {
@@ -39,16 +39,16 @@ task copyLocalGuideImgResources(type: Copy) {
         include '*.svg'
         include '*.jpeg'
     }
-    into "${buildDir}/resources/grails-guides-master/src/main/resources/img"
+    into "${buildDir}/resources/micronaut-guides-master/src/main/resources/img"
 }
        
 task publishGuide(type: grails.doc.gradle.PublishGuide) {
-    group = GRAILS_GUIDES_GROUP
+    group = MICRONAUT_GUIDES_GROUP
     description = 'Generate Guide'  
     dependsOn prepareResources, copyLocalGuideImgResources
 
     def localResourcesDir = "${buildDir}/resources/${commonGithubSlug}-${commonBranch}"
-    // def localResourcesDir = "../grails-guides/"
+    //def localResourcesDir = "/Users/sdelamo/Developer/micronaut-projects/micronaut-guides/"
     // No language setting because we want the English guide to be
     // generated with a 'en' in the path, but the source is in 'en'
     // so that it's easy to track with git.
@@ -65,8 +65,7 @@ task publishGuide(type: grails.doc.gradle.PublishGuide) {
         'javaee': 'https://docs.oracle.com/javaee/7/api/',
         'javase': 'https://docs.oracle.com/javase/7/docs/api/',
         'groovyapi': 'http://docs.groovy-lang.org/latest/html/gapi/',
-        'grailsapi': 'http://docs.grails.org/latest/api/',
-        'gormapi': 'http://gorm.grails.org/latest/api/',         
+        'micronautapi': 'http://docs.micronaut.io/latest/api/',
         'springapi': 'https://docs.spring.io/spring/docs/current/javadoc-api/'
     ]
     doLast {
@@ -86,7 +85,7 @@ task publishGuide(type: grails.doc.gradle.PublishGuide) {
 }
 
 task updateGuidesJson {
-    group = GRAILS_GUIDES_GROUP
+    group = MICRONAUT_GUIDES_GROUP
     description = 'Updates the gh-pages/guides.json with the Guide information as JSON' 
     doLast {
         def jsonSlurper = new JsonSlurper()
@@ -141,8 +140,8 @@ gradle.taskGraph.whenReady { graph ->
         if ( isPropertyUndefined('authors') ) {                
             throw new GradleException("Set project property `authors` in gradle.properties")
         }
-        if ( isPropertyUndefined('githubSlug') || !project.getProperty("githubSlug").startsWith('grails-guides/') ) {
-            throw new GradleException("Set project property `githubSlug` in gradle.properties. It must start with grails-guides/")
+        if ( isPropertyUndefined('githubSlug') || !project.getProperty("githubSlug").startsWith('micronaut-guides/') ) {
+            throw new GradleException("Set project property `githubSlug` in gradle.properties. It must start with micronaut-guides/")
         }
         if ( isPropertyUndefined('tags') ) {        
             throw new GradleException("Set project property `tags` in gradle.properties")
