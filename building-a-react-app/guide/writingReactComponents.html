@@ -125,7 +125,7 @@ function addJsClass() {
 <p>Let&#8217;s start with a <code>Vehicles</code> component, which will render a table of our Vehicle instances.</p>
 </div>
 <div class="paragraph">
-<p>Create a new JavaScript file under <code>src/main/webapp/app/</code> called <code>vehicles.js</code>.</p>
+<p>Create a new JavaScript file under <code>src/main/webapp/app/</code> called <code>Vehicles.js</code>.</p>
 </div>
 <div class="paragraph">
 <p>Here&#8217;s our <code>Vehicles</code> component:</p>
@@ -134,6 +134,7 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> {Table} from <span class="string"><span class="delimiter">'</span><span class="content">react-bootstrap</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {array} from <span class="string"><span class="delimiter">'</span><span class="content">prop-types</span><span class="delimiter">'</span></span>;
 
 <span class="reserved">class</span> Vehicles <span class="reserved">extends</span> React.Component {
 
@@ -172,7 +173,7 @@ function addJsClass() {
 }
 
 Vehicles.propTypes = {
-  <span class="key">vehicles</span>: React.PropTypes.array
+  <span class="key">vehicles</span>: array
 };
 
 <span class="reserved">export</span> <span class="keyword">default</span> Vehicles;</code></pre>
@@ -202,7 +203,7 @@ Vehicles.propTypes = {
 <p>With this separated approach, we can expand our app in the future to make additional API calls (and even render different components, perhaps a <code>Drivers</code> table for example), without having to clutter up our <code>Vehicles</code> component. Let&#8217;s call our "container" component <code>Garage</code>.</p>
 </div>
 <div class="paragraph">
-<p>Create a new JavaScript file under <code>src/main/webapp/app/</code> called <code>garage.js</code>.</p>
+<p>Create a new JavaScript file under <code>src/main/webapp/app/</code> called <code>Garage.js</code>.</p>
 </div>
 <div class="paragraph">
 <p>Here&#8217;s our <code>Garage</code> component:</p>
@@ -211,9 +212,7 @@ Vehicles.propTypes = {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> ReactDOM from <span class="string"><span class="delimiter">'</span><span class="content">react-dom</span><span class="delimiter">'</span></span>;
-<span class="reserved">import</span> Vehicles from <span class="string"><span class="delimiter">'</span><span class="content">./vehicles</span><span class="delimiter">'</span></span>;
-
-require(<span class="string"><span class="delimiter">'</span><span class="content">./../styles/style.css</span><span class="delimiter">'</span></span>);
+<span class="reserved">import</span> Vehicles from <span class="string"><span class="delimiter">'</span><span class="content">./Vehicles</span><span class="delimiter">'</span></span>;
 
 <span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
 
@@ -261,7 +260,7 @@ ReactDOM.render(&lt;Garage /&gt;, document.getElementById(<span class="string"><
 <p>The React 1.0.2 profile relies on Webpack to bundle React components into browser-ready JavaScript bundles, which can then be loaded via the Grails Asset Pipeline. The default application includes a single "index" bundle which is rendered on the index page. Let&#8217;s set up a new bundle for our <code>Garage</code> app.</p>
 </div>
 <div class="paragraph">
-<p>In <code>webpack.config.js</code>, edit the <code>entry</code> section and add a line to load our <code>garage.js</code> file, as seen below:</p>
+<p>In <code>webpack.config.js</code>, edit the <code>entry</code> section and add a line to load our <code>Garage.js</code> file, as seen below:</p>
 </div>
 <div class="listingblock">
 <div class="title">webpack.config.js</div>
@@ -269,10 +268,10 @@ ReactDOM.render(&lt;Garage /&gt;, document.getElementById(<span class="string"><
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">var</span> path = require(<span class="string"><span class="delimiter">'</span><span class="content">path</span><span class="delimiter">'</span></span>);
 
 module.exports = {
-    <span class="key">entry</span>: {
-        <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">./src/main/webapp/app/app.js</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
-        <span class="key">garage</span>: <span class="string"><span class="delimiter">'</span><span class="content">./src/main/webapp/app/garage.js</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
-    },
+  <span class="key">entry</span>: {
+    <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">./src/main/webapp/index.js</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">garage</span>: <span class="string"><span class="delimiter">'</span><span class="content">./src/main/webapp/app/Garage.js</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+  },
 <span class="comment">//...</span></code></pre>
 </div>
 </div>
@@ -280,7 +279,7 @@ module.exports = {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Add the path to <code>garage.js</code> as the <code>garage</code> entry point</td>
+<td>Add the path to <code>Garage.js</code> as the <code>garage</code> entry point</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -299,9 +298,9 @@ module.exports = {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//...</span>
 output: {
-    <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">./grails-app/assets/javascripts</span><span class="delimiter">'</span></span>,
-    <span class="key">publicPath</span>: <span class="string"><span class="delimiter">'</span><span class="content">/assets/</span><span class="delimiter">'</span></span>,
-    <span class="key">filename</span>: <span class="string"><span class="delimiter">'</span><span class="content">bundle-[name].js</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="key">path</span>: path.join(__dirname, <span class="string"><span class="delimiter">'</span><span class="content">grails-app/assets/javascripts</span><span class="delimiter">'</span></span>),
+  <span class="key">publicPath</span>: <span class="string"><span class="delimiter">'</span><span class="content">/assets/</span><span class="delimiter">'</span></span>,
+  <span class="key">filename</span>: <span class="string"><span class="delimiter">'</span><span class="content">bundle-[name].js</span><span class="delimiter">'</span></span>
 },
 <span class="comment">//...</span></code></pre>
 </div>
@@ -315,7 +314,7 @@ output: {
 </table>
 </div>
 <div class="paragraph">
-<p>Now when we start up our Grails app (or run <code>./gradlew webpack</code>), Webpack will generate two bundles, one called <code>bundle-index.js</code> and one called <code>bundle-garage.js</code>. We can load these bundles on our page using the Grails Asset Pipeline tags.</p>
+<p>Now when we start up our Grails app (or run <code>./gradlew webpack</code>), Webpack will generate two bundles, one called <code>bundle-index.js</code> and one called <code>bundle-Garage.js</code>. We can load these bundles on our page using the Grails Asset Pipeline tags.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -413,23 +412,13 @@ output: {
 <p>Now that our <code>Garage</code> component is set up and rendering the <code>Vehicles</code> table on our page, we can finally hook up our API to load data into our React views. We&#8217;ll use the <code>fetch</code> API for this purpose.</p>
 </div>
 <div class="paragraph">
-<p>Install <code>fetch</code> via <code>npm</code>:</p>
+<p>Edit <code>src/main/webapp/app/Garage.js</code>:</p>
 </div>
 <div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ npm install --save whatwg-fetch</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Edit <code>src/main/webapp/app/garage.js</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/main/webapp/app/garage.js</div>
+<div class="title">src/main/webapp/app/Garage.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//...</span>
 <span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">whatwg-fetch</span><span class="delimiter">'</span></span>;    <i class="conum" data-value="1"></i><b>(1)</b>
-
-require(<span class="string"><span class="delimiter">'</span><span class="content">./../styles/style.css</span><span class="delimiter">'</span></span>);
 
 <span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
 
@@ -446,7 +435,7 @@ require(<span class="string"><span class="delimiter">'</span><span class="conten
       .then(r =&gt; r.json())
       .then(json =&gt; <span class="local-variable">this</span>.setState({<span class="key">vehicles</span>: json}))
       .<span class="keyword">catch</span>(error =&gt; console.error(<span class="string"><span class="delimiter">'</span><span class="content">Error retrieving vehicles: </span><span class="delimiter">'</span></span> + error));
-
+  }
 <span class="comment">//...</span></code></pre>
 </div>
 </div>
@@ -487,12 +476,13 @@ require(<span class="string"><span class="delimiter">'</span><span class="conten
 <p>Our last step in this guide is to create a simple form for posting new <code>Vehicle</code> instances to our API.</p>
 </div>
 <div class="paragraph">
-<p>Create a new JavaScript file under <code>src/main/webapp/app</code> called <code>add-vehicle-form.js</code>, with the following content:</p>
+<p>Create a new JavaScript file under <code>src/main/webapp/app</code> called <code>AddVehicleForm.js</code>, with the following content:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/app/add-vehicle-form.js</div>
+<div class="title">src/main/webapp/app/AddVehicleForm.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {array, func} from <span class="string"><span class="delimiter">'</span><span class="content">prop-types</span><span class="delimiter">'</span></span>;
 
 <span class="reserved">class</span> AddVehicleForm <span class="reserved">extends</span> React.Component {
 
@@ -550,23 +540,23 @@ require(<span class="string"><span class="delimiter">'</span><span class="conten
 
           <span class="tag">&lt;label&gt;</span>Make<span class="tag">&lt;/label&gt;</span>
           <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">make</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.make.id</span><span class="error">}</span>
-            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleMakeChange</span><span class="error">}</span><span class="tag">&gt;</span>  <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleMakeChange</span><span class="error">}</span><span class="tag">&gt;</span>  {/*<span class="tag">&lt;6&gt;</span>*/}
             <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Make...<span class="tag">&lt;/option&gt;</span>
-            {this.props.makes.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+            {this.props.makes.map(renderSelectList)}  {/*<span class="tag">&lt;5&gt;</span>*/}
           <span class="tag">&lt;/select&gt;</span>
 
           <span class="tag">&lt;label&gt;</span>Model<span class="tag">&lt;/label&gt;</span>
           <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">model</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.model.id</span><span class="error">}</span>
-            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleModelChange</span><span class="error">}</span><span class="tag">&gt;</span>  <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleModelChange</span><span class="error">}</span><span class="tag">&gt;</span>  {/*<span class="tag">&lt;6&gt;</span>*/}
             <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Model...<span class="tag">&lt;/option&gt;</span>
-            {this.props.models.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+            {this.props.models.map(renderSelectList)}  {/*<span class="tag">&lt;5&gt;</span>*/}
           <span class="tag">&lt;/select&gt;</span>
 
           <span class="tag">&lt;label&gt;</span>Driver<span class="tag">&lt;/label&gt;</span>
           <span class="tag">&lt;select</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form-control</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">driver</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">this.state.driver.id</span><span class="error">}</span>
-            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleDriverChange</span><span class="error">}</span><span class="tag">&gt;</span>  <i class="conum" data-value="6"></i><b>(6)</b>
+            <span class="attribute-name">onChange</span>=<span class="error">{</span><span class="attribute-value">this.handleDriverChange</span><span class="error">}</span><span class="tag">&gt;</span>  {/*<span class="tag">&lt;6&gt;</span>*/}
             <span class="tag">&lt;option</span> <span class="attribute-name">value</span>=<span class="error">{</span><span class="attribute-value">null</span><span class="error">}</span><span class="tag">&gt;</span>Select a Driver...<span class="tag">&lt;/option&gt;</span>
-            {this.props.drivers.map(renderSelectList)} <i class="conum" data-value="5"></i><b>(5)</b>
+            {this.props.drivers.map(renderSelectList)}  {/*<span class="tag">&lt;5&gt;</span>*/}
           <span class="tag">&lt;/select&gt;</span>
 
           <span class="tag">&lt;input</span> <span class="attribute-name">className</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">btn btn-success</span><span class="delimiter">&quot;</span></span>  <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Add to library</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
@@ -578,10 +568,10 @@ require(<span class="string"><span class="delimiter">'</span><span class="conten
 }
 
 AddVehicleForm.propTypes = {
-  <span class="key">makes</span>: React.PropTypes.array,
-  <span class="key">models</span>: React.PropTypes.array,
-  <span class="key">drivers</span>: React.PropTypes.array,
-  <span class="key">onSubmit</span>: React.PropTypes.func
+  <span class="key">makes</span>: array,
+  <span class="key">models</span>: array,
+  <span class="key">drivers</span>: array,
+  <span class="key">onSubmit</span>: func
 };
 
 <span class="reserved">export</span> <span class="keyword">default</span> AddVehicleForm;</code></pre>
@@ -634,13 +624,13 @@ This pattern of passing functions (handlers) as props is good practice in React.
 <p>Because <code>make</code>, <code>model</code>, and <code>driver</code> are associations, we need to allow the user to select an ID so that Grails can perform the assignment during databinding. <code>AddVehicleForm</code> takes 3 props which it expects to contain arrays of these associations. We&#8217;ll need to provide them in order to use <code>AddUserForm</code>, so let&#8217;s edit the <code>Garage</code> component to retrieve those lists.</p>
 </div>
 <div class="paragraph">
-<p>Edit <code>src/main/webapp/app/garage.js</code>:</p>
+<p>Edit <code>src/main/webapp/app/Garage.js</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/app/garage.js</div>
+<div class="title">src/main/webapp/app/Garage.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//..</span>
-<span class="reserved">import</span> AddVehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./add-vehicle-form</span><span class="delimiter">'</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="reserved">import</span> AddVehicleForm from <span class="string"><span class="delimiter">'</span><span class="content">./AddVehicleForm</span><span class="delimiter">'</span></span>; <i class="conum" data-value="1"></i><b>(1)</b>
 
 <span class="reserved">class</span> Garage <span class="reserved">extends</span> React.Component {
 
@@ -728,10 +718,10 @@ This pattern of passing functions (handlers) as props is good practice in React.
 </ol>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s implement this function. Edit <code>src/main/webapp/app/garage.js</code> one more time:</p>
+<p>Let&#8217;s implement this function. Edit <code>src/main/webapp/app/Garage.js</code> one more time:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/app/garage.js</div>
+<div class="title">src/main/webapp/app/Garage.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="comment">//..</span>
 
