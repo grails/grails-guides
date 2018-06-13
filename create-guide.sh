@@ -12,7 +12,7 @@ if [[ -n $GUIDE_NAME ]]; then
     mv $GUIDE_NAME initial
     mkdir complete
     cp -rf initial/* complete/
-    echo "include 'complete'" > settings.gradle
+    echo "include 'complete', 'initial'" > settings.gradle
     cp -rf ../src/main/project/* .
     cp ../src/main/project/.travis.yml .travis.yml
     gradle wrapper
