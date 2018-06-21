@@ -34,7 +34,7 @@ $ git commit -m "Initial version of the guide. Output of create-guide.sh script"
 
 ## Guide Style Guide
 
-1. Use package `demo`
+1. Use package `example.grails`
 2. Don't include unimplemented tests.
 3. Use `@CompileStatic` as much as possible
 4. Always write the guide against the latest stable version of Grails.
