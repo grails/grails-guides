@@ -828,7 +828,6 @@ create a custom resolver by the current logged in user.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">grails.core.GrailsApplication</span>
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.userdetails.GrailsUser</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
@@ -836,12 +835,14 @@ create a custom resolver by the current logged in user.</p>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Lazy</span>
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">CurrentUserTenantResolver</span> <span class="directive">implements</span> TenantResolver {
 
     <span class="annotation">@Autowired</span>
-    GrailsApplication grailsApplication
+    <span class="annotation">@Lazy</span>
+    SpringSecurityService springSecurityService
 
     <span class="annotation">@Override</span>
     <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
@@ -855,12 +856,6 @@ create a custom resolver by the current logged in user.</p>
 
     <span class="annotation">@CompileDynamic</span>
     <span class="predefined-type">String</span> loggedUsername() {
-        <span class="predefined-type">Object</span> bean = grailsApplication.mainContext.getBean(<span class="string"><span class="delimiter">&quot;</span><span class="content">springSecurityService</span><span class="delimiter">&quot;</span></span>)
-        <span class="keyword">if</span> ( !(bean <span class="keyword">instanceof</span> SpringSecurityService) ) {
-            <span class="keyword">return</span> <span class="predefined-constant">null</span>
-        }
-        SpringSecurityService springSecurityService = (SpringSecurityService) bean
-
         <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> <span class="predefined-type">String</span> ) {
             <span class="keyword">return</span> springSecurityService.principal
         }
