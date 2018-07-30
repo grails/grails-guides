@@ -836,6 +836,7 @@ create a custom resolver by the current logged in user.</p>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Lazy</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">CurrentUserTenantResolver</span> <span class="directive">implements</span> TenantResolver {
@@ -859,8 +860,8 @@ create a custom resolver by the current logged in user.</p>
         <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> <span class="predefined-type">String</span> ) {
             <span class="keyword">return</span> springSecurityService.principal
         }
-        <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> GrailsUser ) {
-            <span class="keyword">return</span> ((GrailsUser) springSecurityService.principal).username
+        <span class="keyword">if</span> (springSecurityService.principal <span class="keyword">instanceof</span> UserDetails) {
+            <span class="keyword">return</span> ((UserDetails) springSecurityService.principal).username
         }
         <span class="predefined-constant">null</span>
     }
