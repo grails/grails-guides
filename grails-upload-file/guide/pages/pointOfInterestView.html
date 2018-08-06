@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>5.3 Point of Interest  Views</title>
+    <title>5.2 Point of Interest  Views</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -81,7 +78,7 @@ function addJsClass() {
 
                 
 
-<h2 id="pointOfInterestView">5.3 Point of Interest  Views</h2>
+<h2 id="pointOfInterestView">5.2 Point of Interest  Views</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestView.adoc"'>
@@ -91,7 +88,7 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>We are going to modify the generated views slightly to include functionality which enables to upload a featured image.</p>
+<p>We are going to modify the GSP views slightly to include functionality which enables to upload a featured image.</p>
 </div>
 <div class="paragraph">
 <p>In Point of Interest&#8217;s listing, display only the hotel&#8217;s name in the table. Checkout the <a href="http://grails3-plugins.github.io/fields/snapshot/ref/Tags/table.html">Fields Plugin f:table</a> documentation.</p>
@@ -127,14 +124,18 @@ function addJsClass() {
 </div>
 </div>
 <div class="paragraph">
-<p><code>editFeaturedImage</code> Controller&#8217;s action is identical to edit action:</p>
+<p>Modify <code>PointOfInterestController</code>. Add a controller&#8217;s action named <code>editFeaturedImage</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/PointOfInterestController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/PointOfInterestController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(PointOfInterest pointOfInterest) {
-    respond pointOfInterest
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Long</span> id) {
+    PointOfInterest pointOfInterest = pointOfInterestDataService.get(id)
+    <span class="keyword">if</span> (!pointOfInterest) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+    [<span class="key">pointOfInterest</span>: pointOfInterest]
 }</code></pre>
 </div>
 </div>

@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -73,7 +70,7 @@ function addJsClass() {
                 
 
                 
-                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
 
 
@@ -84,16 +81,13 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#hotelDomainClass"><strong>6.1</strong><span>Hotel Domain Class</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#hotelScaffolding"><strong>6.2</strong><span>Hotel Static Scaffolding</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#hotelView"><strong>6.2</strong><span>Hotel Views</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#hotelView"><strong>6.3</strong><span>Hotel Views</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#hotelUploadFeaturedImageService"><strong>6.3</strong><span>Upload image to S3</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#hotelUploadFeaturedImageService"><strong>6.4</strong><span>Upload image to S3</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#awsAccessAndSecret"><strong>6.5</strong><span>Run the App with AWS Access and Secret</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#awsAccessAndSecret"><strong>6.4</strong><span>Run the App with AWS Access and Secret</span></a>
                     </div>
                     
                 </div>
@@ -182,25 +176,23 @@ awsSdkS3Version=<span class="float">2.2</span><span class="float">.4</span></cod
 </div>
 
 
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-domain-class Hotel
-| Created grails-app/domain/demo/Hotel.groovy
-| Created src/test/groovy/demo/HotelSpec.groovy</code></pre>
-</div>
+<div class="paragraph">
+<p>Modify <code>Hotel</code> domain class. Add two properties <code>featuredImageKey</code> and <code>featuredImageUrl`</code></p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/domain/demo/Hotel.groovy</div>
+<div class="title">/grails-app/domain/example/grails/Hotel.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="type">class</span> <span class="class">Hotel</span> {
 
     <span class="predefined-type">String</span> name
     <span class="predefined-type">String</span> featuredImageUrl <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> featuredImageKey <i class="conum" data-value="2"></i><b>(2)</b>
 
     <span class="directive">static</span> constraints = {
         featuredImageUrl <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        featuredImageKey <span class="key">nullable</span>: <span class="predefined-constant">true</span>
     }
 }</code></pre>
 </div>
@@ -211,39 +203,15 @@ awsSdkS3Version=<span class="float">2.2</span><span class="float">.4</span></cod
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>We store the AWS S3 url of the featured image</td>
 </tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We store the file path. Useful to delete the file if necessary.</td>
+</tr>
 </table>
 </div>
 
 
-<h2 id="hotelScaffolding">6.2 Hotel Static Scaffolding</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/hotelScaffolding.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>We have used static scaffolding to generate the CRUD ( Create, Read, Update, Delete) functionality.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">./grailsw generate-all Hotel</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Moreover, we have done a code refactoring of the generated controller <code>HotelController</code> and we have extracted
-the transactional GORM behavior to a service <code>HotelGormService</code>.</p>
-</div>
-<div class="paragraph">
-<p>In order to keep this guide code listings short, we don&#8217;t include those code snippets. However,
-you can <a href="https://github.com/grails-guides/grails-upload-file/archive/master.zip">download</a> and unzip the source or clone this guide repository <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-upload-file.git" class="bare">https://github.com/grails-guides/grails-upload-file.git</a></code>
-You can find the finished guide with all the project code at <code>grails-guides/grails-upload-file/complete</code></p>
-</div>
-
-
-<h2 id="hotelView">6.3 Hotel Views</h2>
+<h2 id="hotelView">6.2 Hotel Views</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/hotelView.adoc"'>
@@ -253,7 +221,7 @@ You can find the finished guide with all the project code at <code>grails-guides
 
 
 <div class="paragraph">
-<p>We are going to modify the generated views slightly to include functionality which enables to upload a featured image.</p>
+<p>We are going to modify the views slightly to include functionality which enables to upload a featured image.</p>
 </div>
 <div class="paragraph">
 <p>In Hotel&#8217;s listing, display only the hotel&#8217;s name in the table. Checkout the <a href="http://grails3-plugins.github.io/fields/snapshot/ref/Tags/table.html">Fields Plugin f:table</a> documentation.</p>
@@ -270,13 +238,13 @@ You can find the finished guide with all the project code at <code>grails-guides
 <div class="listingblock">
 <div class="title">/grails-app/views/hotel/create.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl,featuredImageKey</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">/grails-app/views/hotel/edit.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl,featuredImageKey</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -289,14 +257,18 @@ You can find the finished guide with all the project code at <code>grails-guides
 </div>
 </div>
 <div class="paragraph">
-<p><code>editFeaturedImage</code> Controller&#8217;s action is identical to edit action:</p>
+<p>Modify <code>HotelController</code>. Add a controller&#8217;s action named <code>editFeaturedImage</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/HotelController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/HotelController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(Hotel hotel) {
-    respond hotel
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Long</span> id) {
+    Hotel hotel = hotelDataService.get(id)
+    <span class="keyword">if</span> (!hotel) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+    [<span class="key">hotel</span>: hotel]
 }</code></pre>
 </div>
 </div>
@@ -318,7 +290,7 @@ You can find the finished guide with all the project code at <code>grails-guides
 </div>
 
 
-<h2 id="hotelUploadFeaturedImageService">6.4 Upload image to S3</h2>
+<h2 id="hotelUploadFeaturedImageService">6.3 Upload image to S3</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/hotelUploadFeaturedImageService.adoc"'>
@@ -332,51 +304,30 @@ You can find the finished guide with all the project code at <code>grails-guides
 object to validate the upload form submission. If it does not find validation errors, it invokes a service.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/HotelController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/HotelController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
 
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
-
-<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">HotelController</span> {
-
-    <span class="directive">static</span> allowedMethods = [
-            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
-            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
-    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
-
-        <span class="keyword">if</span> (cmd.hasErrors()) {
-            respond(cmd.errors, <span class="key">model</span>: [<span class="key">hotel</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">def</span> hotel = uploadHotelFeaturedImageService.uploadFeatureImage(cmd)
-        <span class="keyword">if</span> (hotel == <span class="predefined-constant">null</span>) {
-            notFound()
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">if</span> (hotel.hasErrors()) {
-            respond(hotel.errors, <span class="key">model</span>: [<span class="key">hotel</span>: hotel], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel</span><span class="delimiter">'</span></span>), hotel.id])
-                redirect hotel
-            }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond hotel, [<span class="key">status</span>: OK] }
-        }
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond(cmd.errors, <span class="key">model</span>: [<span class="key">hotel</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
     }
-                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span></code></pre>
+
+    <span class="keyword">def</span> hotel = uploadHotelFeaturedImageService.uploadFeatureImage(cmd)
+    <span class="keyword">if</span> (hotel == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (hotel.hasErrors()) {
+        respond(hotel.errors, <span class="key">model</span>: [<span class="key">hotel</span>: hotel], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
+    }
+
+    <span class="predefined-type">Locale</span> locale = request.locale
+    flash.message = crudMessageService.message(CRUD.UPDATE, domainName(locale), hotel.id, locale)
+    redirect hotel
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -384,51 +335,70 @@ object to validate the upload form submission. If it does not find validation er
 file to AWS S3. In case of error, the service deletes the file it has previously uploaded.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/UploadHotelFeaturedImageService.groovy</div>
+<div class="title">/grails-app/services/example/grails/UploadHotelFeaturedImageService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.awssdk.s3.AmazonS3Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
 
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
 <span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">UploadHotelFeaturedImageService</span> {
 
-    <span class="keyword">def</span> amazonS3Service
+    AmazonS3Service amazonS3Service
 
-    <span class="keyword">def</span> hotelGormService
+    HotelDataService hotelDataService
 
     Hotel uploadFeatureImage(FeaturedImageCommand cmd) {
-
-        <span class="keyword">def</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="delimiter">&quot;</span></span> + cmd.featuredImageFile.originalFilename
+        <span class="predefined-type">String</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.featuredImageFile.originalFilename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
         <span class="predefined-type">String</span> s3FileUrl = amazonS3Service.storeMultipartFile(path, cmd.featuredImageFile)
 
-        <span class="keyword">def</span> hotel = hotelGormService.updateFeaturedImageUrl(cmd.id, cmd.version, s3FileUrl)
+        Hotel hotel = hotelDataService.update(cmd.id, cmd.version, path, s3FileUrl)
         <span class="keyword">if</span> ( !hotel || hotel.hasErrors() ) {
-            amazonS3Service.deleteFile(path)
+            deleteFileByPath(path)
         }
         hotel
+    }
+
+    <span class="type">boolean</span> deleteFileByPath(<span class="predefined-type">String</span> path) {
+        <span class="type">boolean</span> result = amazonS3Service.deleteFile(path)
+        <span class="keyword">if</span> (!result) {
+            log.warn <span class="string"><span class="delimiter">'</span><span class="content">could not remove file {}</span><span class="delimiter">'</span></span>, path
+        }
+        result
     }
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The domain class instance is updated with the help of GORM Data Service:</p>
+</div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/HotelGormService.groovy</div>
+<div class="title">/grails-app/services/example/grails/HotelDataService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
-    Hotel updateFeaturedImageUrl(<span class="predefined-type">Long</span> id, <span class="predefined-type">Integer</span> version, <span class="predefined-type">String</span> featuredImageUrl) {
-        Hotel hotel = Hotel.get(id)
-        <span class="keyword">if</span> ( !hotel ) {
-            <span class="keyword">return</span> <span class="predefined-constant">null</span>
-        }
-        hotel.version = version
-        hotel.featuredImageUrl = featuredImageUrl
-        hotel.save()
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Hotel)
+<span class="type">interface</span> HotelDataService {
+    Hotel get(<span class="predefined-type">Long</span> id)
+    <span class="predefined-type">List</span>&lt;Hotel&gt; list(<span class="predefined-type">Map</span> args)
+    <span class="predefined-type">Number</span> count()
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    Hotel save(<span class="predefined-type">String</span> name)
+    Hotel update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> name)
+    Hotel update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> featuredImageKey, <span class="predefined-type">String</span> featuredImageUrl)
+}</code></pre>
 </div>
 </div>
 
 
-<h2 id="awsAccessAndSecret">6.5 Run the App with AWS Access and Secret</h2>
+<h2 id="awsAccessAndSecret">6.4 Run the App with AWS Access and Secret</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/awsAccessAndSecret.adoc"'>
@@ -438,17 +408,6 @@ file to AWS S3. In case of error, the service deletes the file it has previously
 
 
 <div class="paragraph">
-<p>Modify <code>build.gradle</code>, we want System properties to be passed to <code>bootRun</code> Gradle task.</p>
-</div>
-<div class="listingblock">
-<div class="title">/build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">bootRun {
-    systemProperties <span class="predefined-type">System</span>.properties
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
 <p><a href="https://github.com/agorapulse/grails-aws-sdk/tree/master/grails-aws-sdk-s3">AWS S3 Grails Plugin Documentation</a></p>
 </div>
 <div class="quoteblock">
@@ -456,10 +415,18 @@ file to AWS S3. In case of error, the service deletes the file it has previously
 <div class="paragraph">
 <p>If you do not provide credentials, a credentials provider chain will be used that searches for credentials in this order:</p>
 </div>
-<div class="paragraph">
-<p>Environment Variables - AWS_ACCESS_KEY_ID and AWS_SECRET_KEY
-Java System Properties - aws.accessKeyId andaws.secretKey`
-Instance profile credentials delivered through the Amazon EC2 metadata service (IAM role)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Environment Variables - AWS_ACCESS_KEY_ID and AWS_SECRET_KEY</p>
+</li>
+<li>
+<p>Java System Properties - aws.accessKeyId andaws.secretKey`</p>
+</li>
+<li>
+<p>Instance profile credentials delivered through the Amazon EC2 metadata service (IAM role)</p>
+</li>
+</ul>
 </div>
 </blockquote>
 </div>
@@ -477,7 +444,7 @@ Instance profile credentials delivered through the Amazon EC2 metadata service (
                 
                     <div class="toc-item prev-left"><a href="../guide/pointOfInterest.html">&lt;&lt; <strong>5</strong><span>Point of Interest - Upload and transfer</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

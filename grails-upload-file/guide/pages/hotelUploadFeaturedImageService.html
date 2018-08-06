@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.4 Upload image to S3</title>
+    <title>6.3 Upload image to S3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -73,7 +70,7 @@ function addJsClass() {
                 
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
 
 
@@ -81,7 +78,7 @@ function addJsClass() {
 
                 
 
-<h2 id="hotelUploadFeaturedImageService">6.4 Upload image to S3</h2>
+<h2 id="hotelUploadFeaturedImageService">6.3 Upload image to S3</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/hotelUploadFeaturedImageService.adoc"'>
@@ -95,51 +92,30 @@ function addJsClass() {
 object to validate the upload form submission. If it does not find validation errors, it invokes a service.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/HotelController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/HotelController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
 
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
-
-<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">HotelController</span> {
-
-    <span class="directive">static</span> allowedMethods = [
-            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
-            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
-    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
-
-        <span class="keyword">if</span> (cmd.hasErrors()) {
-            respond(cmd.errors, <span class="key">model</span>: [<span class="key">hotel</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">def</span> hotel = uploadHotelFeaturedImageService.uploadFeatureImage(cmd)
-        <span class="keyword">if</span> (hotel == <span class="predefined-constant">null</span>) {
-            notFound()
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">if</span> (hotel.hasErrors()) {
-            respond(hotel.errors, <span class="key">model</span>: [<span class="key">hotel</span>: hotel], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel</span><span class="delimiter">'</span></span>), hotel.id])
-                redirect hotel
-            }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond hotel, [<span class="key">status</span>: OK] }
-        }
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond(cmd.errors, <span class="key">model</span>: [<span class="key">hotel</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
     }
-                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span></code></pre>
+
+    <span class="keyword">def</span> hotel = uploadHotelFeaturedImageService.uploadFeatureImage(cmd)
+    <span class="keyword">if</span> (hotel == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (hotel.hasErrors()) {
+        respond(hotel.errors, <span class="key">model</span>: [<span class="key">hotel</span>: hotel], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
+    }
+
+    <span class="predefined-type">Locale</span> locale = request.locale
+    flash.message = crudMessageService.message(CRUD.UPDATE, domainName(locale), hotel.id, locale)
+    redirect hotel
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -147,46 +123,65 @@ object to validate the upload form submission. If it does not find validation er
 file to AWS S3. In case of error, the service deletes the file it has previously uploaded.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/UploadHotelFeaturedImageService.groovy</div>
+<div class="title">/grails-app/services/example/grails/UploadHotelFeaturedImageService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.awssdk.s3.AmazonS3Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
 
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
 <span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">UploadHotelFeaturedImageService</span> {
 
-    <span class="keyword">def</span> amazonS3Service
+    AmazonS3Service amazonS3Service
 
-    <span class="keyword">def</span> hotelGormService
+    HotelDataService hotelDataService
 
     Hotel uploadFeatureImage(FeaturedImageCommand cmd) {
-
-        <span class="keyword">def</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="delimiter">&quot;</span></span> + cmd.featuredImageFile.originalFilename
+        <span class="predefined-type">String</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.featuredImageFile.originalFilename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
         <span class="predefined-type">String</span> s3FileUrl = amazonS3Service.storeMultipartFile(path, cmd.featuredImageFile)
 
-        <span class="keyword">def</span> hotel = hotelGormService.updateFeaturedImageUrl(cmd.id, cmd.version, s3FileUrl)
+        Hotel hotel = hotelDataService.update(cmd.id, cmd.version, path, s3FileUrl)
         <span class="keyword">if</span> ( !hotel || hotel.hasErrors() ) {
-            amazonS3Service.deleteFile(path)
+            deleteFileByPath(path)
         }
         hotel
+    }
+
+    <span class="type">boolean</span> deleteFileByPath(<span class="predefined-type">String</span> path) {
+        <span class="type">boolean</span> result = amazonS3Service.deleteFile(path)
+        <span class="keyword">if</span> (!result) {
+            log.warn <span class="string"><span class="delimiter">'</span><span class="content">could not remove file {}</span><span class="delimiter">'</span></span>, path
+        }
+        result
     }
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The domain class instance is updated with the help of GORM Data Service:</p>
+</div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/HotelGormService.groovy</div>
+<div class="title">/grails-app/services/example/grails/HotelDataService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
-    Hotel updateFeaturedImageUrl(<span class="predefined-type">Long</span> id, <span class="predefined-type">Integer</span> version, <span class="predefined-type">String</span> featuredImageUrl) {
-        Hotel hotel = Hotel.get(id)
-        <span class="keyword">if</span> ( !hotel ) {
-            <span class="keyword">return</span> <span class="predefined-constant">null</span>
-        }
-        hotel.version = version
-        hotel.featuredImageUrl = featuredImageUrl
-        hotel.save()
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Hotel)
+<span class="type">interface</span> HotelDataService {
+    Hotel get(<span class="predefined-type">Long</span> id)
+    <span class="predefined-type">List</span>&lt;Hotel&gt; list(<span class="predefined-type">Map</span> args)
+    <span class="predefined-type">Number</span> count()
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    Hotel save(<span class="predefined-type">String</span> name)
+    Hotel update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> name)
+    Hotel update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> featuredImageKey, <span class="predefined-type">String</span> featuredImageUrl)
+}</code></pre>
 </div>
 </div>
 
@@ -195,7 +190,7 @@ file to AWS S3. In case of error, the service deletes the file it has previously
                 
                     <div class="toc-item prev-left"><a href="../../guide/pointOfInterest.html">&lt;&lt; <strong>5</strong><span>Point of Interest - Upload and transfer</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

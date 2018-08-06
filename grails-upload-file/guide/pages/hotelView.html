@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>6.3 Hotel Views</title>
+    <title>6.2 Hotel Views</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -73,7 +70,7 @@ function addJsClass() {
                 
 
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
 
 
@@ -81,7 +78,7 @@ function addJsClass() {
 
                 
 
-<h2 id="hotelView">6.3 Hotel Views</h2>
+<h2 id="hotelView">6.2 Hotel Views</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/hotelView.adoc"'>
@@ -91,7 +88,7 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>We are going to modify the generated views slightly to include functionality which enables to upload a featured image.</p>
+<p>We are going to modify the views slightly to include functionality which enables to upload a featured image.</p>
 </div>
 <div class="paragraph">
 <p>In Hotel&#8217;s listing, display only the hotel&#8217;s name in the table. Checkout the <a href="http://grails3-plugins.github.io/fields/snapshot/ref/Tags/table.html">Fields Plugin f:table</a> documentation.</p>
@@ -108,13 +105,13 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">/grails-app/views/hotel/create.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl,featuredImageKey</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">/grails-app/views/hotel/edit.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;<span class="key">f</span>:all bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">hotel</span><span class="delimiter">&quot;</span></span> except=<span class="string"><span class="delimiter">&quot;</span><span class="content">featuredImageUrl,featuredImageKey</span><span class="delimiter">&quot;</span></span>/&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -127,14 +124,18 @@ function addJsClass() {
 </div>
 </div>
 <div class="paragraph">
-<p><code>editFeaturedImage</code> Controller&#8217;s action is identical to edit action:</p>
+<p>Modify <code>HotelController</code>. Add a controller&#8217;s action named <code>editFeaturedImage</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/HotelController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/HotelController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(Hotel hotel) {
-    respond hotel
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Long</span> id) {
+    Hotel hotel = hotelDataService.get(id)
+    <span class="keyword">if</span> (!hotel) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+    [<span class="key">hotel</span>: hotel]
 }</code></pre>
 </div>
 </div>
@@ -160,7 +161,7 @@ function addJsClass() {
                 
                     <div class="toc-item prev-left"><a href="../../guide/pointOfInterest.html">&lt;&lt; <strong>5</strong><span>Point of Interest - Upload and transfer</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4.5 Load byte array Image</title>
+    <title>4.4 Load byte array Image</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -81,7 +78,7 @@ function addJsClass() {
 
                 
 
-<h2 id="loadByteArrayImage">4.5 Load byte array Image</h2>
+<h2 id="loadByteArrayImage">4.4 Load byte array Image</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/loadByteArrayImage.adoc"'>
@@ -91,20 +88,20 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Create an action which renders the restaurant&#8217;s featured image:</p>
+<p>Create an action in <code>RestaurantController</code> which renders the restaurant&#8217;s featured image:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/RestaurantController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/RestaurantController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-    <span class="keyword">def</span> <span class="function">featuredImage</span>(Restaurant restaurant) {
-        <span class="keyword">if</span> (restaurant == <span class="predefined-constant">null</span> || restaurant.featuredImageBytes == <span class="predefined-constant">null</span>) {
-            transactionStatus.setRollbackOnly()
-            notFound()
-            <span class="keyword">return</span>
-        }
-        render <span class="key">file</span>: restaurant.featuredImageBytes, <span class="key">contentType</span>: restaurant.featuredImageContentType
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">featuredImage</span>(<span class="predefined-type">Long</span> id) {
+    Restaurant restaurant = restaurantDataService.get(id)
+    <span class="keyword">if</span> (!restaurant || restaurant.featuredImageBytes == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+    render <span class="key">file</span>: restaurant.featuredImageBytes,
+        <span class="key">contentType</span>: restaurant.featuredImageContentType
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -113,10 +110,10 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">/grails-app/views/restaurant/show.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            &lt;h1&gt;&lt;<span class="key">f</span>:display bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">restaurant</span><span class="delimiter">&quot;</span></span> property=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
-</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.restaurant.featuredImageBytes<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
-                &lt;img src=<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;g:createLink controller=</span><span class="delimiter">&quot;</span></span>restaurant<span class="string"><span class="delimiter">&quot;</span><span class="content"> action=</span><span class="delimiter">&quot;</span></span>featuredImage<span class="string"><span class="delimiter">&quot;</span><span class="content"> id=</span><span class="delimiter">&quot;</span></span><span class="error">$</span>{<span class="local-variable">this</span>.restaurant.id}<span class="string"><span class="delimiter">&quot;</span><span class="content">/&gt;</span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">400</span><span class="delimiter">&quot;</span></span>/&gt;
-            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;h1&gt;&lt;<span class="key">f</span>:display bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">restaurant</span><span class="delimiter">&quot;</span></span> property=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>&lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.restaurant.featuredImageBytes<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;img src=<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;g:createLink controller=</span><span class="delimiter">&quot;</span></span>restaurant<span class="string"><span class="delimiter">&quot;</span><span class="content"> action=</span><span class="delimiter">&quot;</span></span>featuredImage<span class="string"><span class="delimiter">&quot;</span><span class="content"> id=</span><span class="delimiter">&quot;</span></span><span class="error">$</span>{<span class="local-variable">this</span>.restaurant.id}<span class="string"><span class="delimiter">&quot;</span><span class="content">/&gt;</span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">400</span><span class="delimiter">&quot;</span></span>/&gt;
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span></code></pre>
 </div>
 </div>
 

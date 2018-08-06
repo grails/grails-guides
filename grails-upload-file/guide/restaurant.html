@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -84,16 +81,13 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#restaurantDomainClass"><strong>4.1</strong><span>Restaurant Domain Class</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#restaurantScaffolding"><strong>4.2</strong><span>Restaurant Static Scaffolding</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#restaurantView"><strong>4.2</strong><span>Restaurant Views</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#restaurantView"><strong>4.3</strong><span>Restaurant Views</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#restaurantUploadFeaturedImageService"><strong>4.3</strong><span>Upload Featured Image Service</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#restaurantUploadFeaturedImageService"><strong>4.4</strong><span>Upload Featured Image Service</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#loadByteArrayImage"><strong>4.5</strong><span>Load byte array Image</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#loadByteArrayImage"><strong>4.4</strong><span>Load byte array Image</span></a>
                     </div>
                     
                 </div>
@@ -131,19 +125,13 @@ app and store the file&#8217;s bytes in the database.</p>
 
 
 <div class="paragraph">
-<p>Create a domain class for <code>Restaurant</code></p>
+<p>Modify <code>Restaurant</code> domain class. Add two properties <code>featuredImageBytes</code> and
+<code>featuredImageContentType</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/domain/example/grails/Restaurant.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-domain-class Restaurant
-| Created grails-app/domain/demo/Restaurant.groovy
-| Created src/test/groovy/demo/RestaurantSpec.groovy</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/domain/demo/Restaurant.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="type">class</span> <span class="class">Restaurant</span> {
     <span class="predefined-type">String</span> name
@@ -179,35 +167,7 @@ app and store the file&#8217;s bytes in the database.</p>
 </div>
 
 
-<h2 id="restaurantScaffolding">4.2 Restaurant Static Scaffolding</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/restaurantScaffolding.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>We have used static scaffolding to generate the CRUD ( Create, Read, Update, Delete) functionality.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">./grailsw generate-all Restaurant</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Moreover, we have done a code refactoring of the generated controller <code>RestaurantController</code> and we have extracted
-the transactional GORM behavior to a service <code>RestaurantGormService</code>.</p>
-</div>
-<div class="paragraph">
-<p>In order to keep this guide code listings short, we don&#8217;t include those code snippets. However,
-you can <a href="https://github.com/grails-guides/grails-upload-file/archive/master.zip">download</a> and unzip the source or clone this guide repository <a href="https://git-scm.com/">Git</a>: <code>git clone <a href="https://github.com/grails-guides/grails-upload-file.git" class="bare">https://github.com/grails-guides/grails-upload-file.git</a></code>
-You can find the finished guide with all the project code at <code>grails-guides/grails-upload-file/complete</code></p>
-</div>
-
-
-<h2 id="restaurantView">4.3 Restaurant Views</h2>
+<h2 id="restaurantView">4.2 Restaurant Views</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/restaurantView.adoc"'>
@@ -217,7 +177,7 @@ You can find the finished guide with all the project code at <code>grails-guides
 
 
 <div class="paragraph">
-<p>We are going to modify the generated views slightly to include functionality which enables to upload a featured image.</p>
+<p>We are going to modify the views slightly to include functionality which enables to upload a featured image.</p>
 </div>
 <div class="paragraph">
 <p>In the restaurant&#8217;s listing, display only the restaurant&#8217;s name in the table. Checkout the <a href="http://grails3-plugins.github.io/fields/snapshot/ref/Tags/table.html">Fields Plugin f:table</a> documentation.</p>
@@ -253,14 +213,17 @@ You can find the finished guide with all the project code at <code>grails-guides
 </div>
 </div>
 <div class="paragraph">
-<p><code>editFeaturedImage</code> Controller&#8217;s action is identical to edit action:</p>
+<p>Modify <code>RestaurantController</code>. Add <code>editFeaturedImage</code> controller&#8217;s action:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/RestaurantController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/RestaurantController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-<span class="keyword">def</span> <span class="function">editFeaturedImage</span>(Restaurant restaurant) {
-    respond restaurant
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">editFeaturedImage</span>(<span class="predefined-type">Long</span> id) {
+    Restaurant restaurant = restaurantDataService.get(id)
+    <span class="keyword">if</span> (!restaurant) {
+        notFound()
+    }
+    [<span class="key">restaurant</span>: restaurant]
 }</code></pre>
 </div>
 </div>
@@ -282,7 +245,7 @@ You can find the finished guide with all the project code at <code>grails-guides
 </div>
 
 
-<h2 id="restaurantUploadFeaturedImageService">4.4 Upload Featured Image Service</h2>
+<h2 id="restaurantUploadFeaturedImageService">4.3 Upload Featured Image Service</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/restaurantUploadFeaturedImageService.adoc"'>
@@ -293,28 +256,12 @@ You can find the finished guide with all the project code at <code>grails-guides
 
 <div class="paragraph">
 <p>The <code>uploadFeatureImage</code> controller&#8217;s action uses the previously described command
-object to validate the upload form submission. If it does not find validation errors, it invokes a service.</p>
+object to validate the upload form submission. If it does not find validation errors, it invokes a <a href="http://gorm.grails.org/6.1.x/hibernate/manual/#dataServices">Gorm Data Service</a>.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/RestaurantController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/RestaurantController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
-
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
-
-<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">RestaurantController</span> {
-
-    <span class="directive">static</span> allowedMethods = [
-            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
-            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
-    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
         <span class="keyword">if</span> (cmd == <span class="predefined-constant">null</span>) {
             notFound()
             <span class="keyword">return</span>
@@ -325,7 +272,10 @@ object to validate the upload form submission. If it does not find validation er
             <span class="keyword">return</span>
         }
 
-        <span class="keyword">def</span> restaurant = uploadRestaurantFeaturedImageService.uploadFeatureImage(cmd)
+        Restaurant restaurant = restaurantDataService.update(cmd.id,
+                cmd.version,
+                cmd.featuredImageFile.bytes,
+                cmd.featuredImageFile.contentType)
 
         <span class="keyword">if</span> (restaurant == <span class="predefined-constant">null</span>) {
             notFound()
@@ -337,58 +287,45 @@ object to validate the upload form submission. If it does not find validation er
             <span class="keyword">return</span>
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">restaurant.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Restaurant</span><span class="delimiter">'</span></span>), restaurant.id])
-                redirect restaurant
-            }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond restaurant, [<span class="key">status</span>: OK] }
-        }
-    }
-
-                redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">method</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Service extracts the content type and byte[] and saves them in the database.</p>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/services/demo/UploadRestaurantFeaturedImageService.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
-
-<span class="type">class</span> <span class="class">UploadRestaurantFeaturedImageService</span> {
-
-    <span class="keyword">def</span> restaurantGormService
-
-    Restaurant uploadFeatureImage(FeaturedImageCommand cmd) {
-        <span class="type">byte</span><span class="type">[]</span> bytes = cmd.featuredImageFile.bytes
-        <span class="predefined-type">String</span> contentType = cmd.featuredImageFile.contentType
-        restaurantGormService.updateRestaurantFeaturedImage(cmd.id, cmd.version, bytes, contentType)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">/grails-app/services/demo/RestaurantGormService.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
-    Restaurant updateRestaurantFeaturedImage(<span class="predefined-type">Long</span> restaurantId, <span class="predefined-type">Integer</span> version, <span class="type">byte</span><span class="type">[]</span> bytes, <span class="predefined-type">String</span> contentType) {
-        Restaurant restaurant = Restaurant.get(restaurantId)
-        <span class="keyword">if</span> ( !restaurant ) {
-          <span class="keyword">return</span> <span class="predefined-constant">null</span>
-        }
-        restaurant.version = version
-        restaurant.featuredImageBytes = bytes
-        restaurant.featuredImageContentType = contentType
-        restaurant.save()
-        restaurant
+        <span class="predefined-type">Locale</span> locale = request.locale
+        flash.message = crudMessageService.message(CRUD.UPDATE, domainName(locale), cmd.id, locale)
+        redirect restaurant
     }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The complete GORM Data Service is shown in the following code snippet:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/example/grails/RestaurantDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Restaurant)
+<span class="type">interface</span> RestaurantDataService {
+    Restaurant get(<span class="predefined-type">Long</span> id)
+    <span class="predefined-type">List</span>&lt;Restaurant&gt; list(<span class="predefined-type">Map</span> args)
+    <span class="predefined-type">Number</span> count()
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    Restaurant update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> name)
+    Restaurant update(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="type">byte</span><span class="type">[]</span> featuredImageBytes, <span class="predefined-type">String</span> featuredImageContentType) <i class="conum" data-value="1"></i><b>(1)</b>
+    Restaurant save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The first argument should be the id of the object to update. If any of the parameters don’t match up to a property on the domain class then a compilation error will occur.</td>
+</tr>
+</table>
+</div>
 
 
-<h2 id="loadByteArrayImage">4.5 Load byte array Image</h2>
+<h2 id="loadByteArrayImage">4.4 Load byte array Image</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/loadByteArrayImage.adoc"'>
@@ -398,20 +335,20 @@ object to validate the upload form submission. If it does not find validation er
 
 
 <div class="paragraph">
-<p>Create an action which renders the restaurant&#8217;s featured image:</p>
+<p>Create an action in <code>RestaurantController</code> which renders the restaurant&#8217;s featured image:</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/RestaurantController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/RestaurantController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-    <span class="keyword">def</span> <span class="function">featuredImage</span>(Restaurant restaurant) {
-        <span class="keyword">if</span> (restaurant == <span class="predefined-constant">null</span> || restaurant.featuredImageBytes == <span class="predefined-constant">null</span>) {
-            transactionStatus.setRollbackOnly()
-            notFound()
-            <span class="keyword">return</span>
-        }
-        render <span class="key">file</span>: restaurant.featuredImageBytes, <span class="key">contentType</span>: restaurant.featuredImageContentType
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">featuredImage</span>(<span class="predefined-type">Long</span> id) {
+    Restaurant restaurant = restaurantDataService.get(id)
+    <span class="keyword">if</span> (!restaurant || restaurant.featuredImageBytes == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+    render <span class="key">file</span>: restaurant.featuredImageBytes,
+        <span class="key">contentType</span>: restaurant.featuredImageContentType
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -420,10 +357,10 @@ object to validate the upload form submission. If it does not find validation er
 <div class="listingblock">
 <div class="title">/grails-app/views/restaurant/show.gsp</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">            &lt;h1&gt;&lt;<span class="key">f</span>:display bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">restaurant</span><span class="delimiter">&quot;</span></span> property=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
-</span>            &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.restaurant.featuredImageBytes<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
-                &lt;img src=<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;g:createLink controller=</span><span class="delimiter">&quot;</span></span>restaurant<span class="string"><span class="delimiter">&quot;</span><span class="content"> action=</span><span class="delimiter">&quot;</span></span>featuredImage<span class="string"><span class="delimiter">&quot;</span><span class="content"> id=</span><span class="delimiter">&quot;</span></span><span class="error">$</span>{<span class="local-variable">this</span>.restaurant.id}<span class="string"><span class="delimiter">&quot;</span><span class="content">/&gt;</span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">400</span><span class="delimiter">&quot;</span></span>/&gt;
-            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;h1&gt;&lt;<span class="key">f</span>:display bean=<span class="string"><span class="delimiter">&quot;</span><span class="content">restaurant</span><span class="delimiter">&quot;</span></span> property=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>&lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">this</span>.restaurant.featuredImageBytes<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;img src=<span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;g:createLink controller=</span><span class="delimiter">&quot;</span></span>restaurant<span class="string"><span class="delimiter">&quot;</span><span class="content"> action=</span><span class="delimiter">&quot;</span></span>featuredImage<span class="string"><span class="delimiter">&quot;</span><span class="content"> id=</span><span class="delimiter">&quot;</span></span><span class="error">$</span>{<span class="local-variable">this</span>.restaurant.id}<span class="string"><span class="delimiter">&quot;</span><span class="content">/&gt;</span><span class="delimiter">&quot;</span></span> width=<span class="string"><span class="delimiter">&quot;</span><span class="content">400</span><span class="delimiter">&quot;</span></span>/&gt;
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span></code></pre>
 </div>
 </div>
 

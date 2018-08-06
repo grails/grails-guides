@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>5.4 Upload Featured Image Service</title>
+    <title>5.3 Upload Featured Image Service</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -48,10 +48,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>7</strong><span>Running the Application</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>8</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -81,7 +78,7 @@ function addJsClass() {
 
                 
 
-<h2 id="pointOfInterestUploadFeaturedImageService">5.4 Upload Featured Image Service</h2>
+<h2 id="pointOfInterestUploadFeaturedImageService">5.3 Upload Featured Image Service</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/master/src/main/docs/guide/pointOfInterestUploadFeaturedImageService.adoc"'>
@@ -95,50 +92,30 @@ function addJsClass() {
 object to validate the upload form submission. If it does not find validation errors, it invokes a service.</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/controllers/demo/PointOfInterestController.groovy</div>
+<div class="title">/grails-app/controllers/example/grails/PointOfInterestController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
 
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
-
-<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">PointOfInterestController</span> {
-
-    <span class="directive">static</span> allowedMethods = [
-            <span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
-            <span class="key">uploadFeaturedImage</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
-            <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,
-    <span class="keyword">def</span> <span class="function">uploadFeaturedImage</span>(FeaturedImageCommand cmd) {
-
-        <span class="keyword">if</span> (cmd.hasErrors()) {
-            respond(cmd, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">def</span> pointOfInterest = uploadPointOfInterestFeaturedImageService.uploadFeatureImage(cmd)
-        <span class="keyword">if</span> (pointOfInterest == <span class="predefined-constant">null</span>) {
-            notFound()
-            <span class="keyword">return</span>
-        }
-
-        <span class="keyword">if</span> (pointOfInterest.hasErrors()) {
-            respond(pointOfInterest, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: pointOfInterest], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">default.updated.message</span><span class="delimiter">'</span></span>, <span class="key">args</span>: [message(<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">pointOfInterest.label</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Point of Interest</span><span class="delimiter">'</span></span>), pointOfInterest.id])
-                redirect pointOfInterest
-            }
-            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond pointOfInterest, [<span class="key">status</span>: OK] }
-        }
+    <span class="keyword">if</span> (cmd.hasErrors()) {
+        respond(cmd, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
     }
+
+    PointOfInterest pointOfInterest = uploadPointOfInterestFeaturedImageService.uploadFeatureImage(cmd)
+
+    <span class="keyword">if</span> (pointOfInterest == <span class="predefined-constant">null</span>) {
+        notFound()
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (pointOfInterest.hasErrors()) {
+        respond(pointOfInterest, <span class="key">model</span>: [<span class="key">pointOfInterest</span>: pointOfInterest], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">editFeaturedImage</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span>
+    }
+
+    <span class="predefined-type">Locale</span> locale = request.locale
+    flash.message = crudMessageService.message(CRUD.UPDATE, domainName(locale), pointOfInterest.id, locale)
+    redirect pointOfInterest
 }</code></pre>
 </div>
 </div>
@@ -160,9 +137,9 @@ folder path where we are going to save the images to.</p>
 In case of error, the service deletes the file it has previously transfered</p>
 </div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/UploadPointOfInterestFeaturedImageService.groovy</div>
+<div class="title">/grails-app/services/example/grails/UploadPointOfInterestFeaturedImageService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
@@ -172,7 +149,7 @@ In case of error, the service deletes the file it has previously transfered</p>
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">UploadPointOfInterestFeaturedImageService</span> <span class="directive">implements</span> GrailsConfigurationAware {
 
-    PointOfInterestGormService pointOfInterestGormService
+    PointOfInterestDataService pointOfInterestDataService
 
     <span class="predefined-type">String</span> cdnFolder
     <span class="predefined-type">String</span> cdnRootUrl
@@ -187,20 +164,19 @@ In case of error, the service deletes the file it has previously transfered</p>
     PointOfInterest uploadFeatureImage(FeaturedImageCommand cmd) {
 
         <span class="predefined-type">String</span> filename = cmd.featuredImageFile.originalFilename
-        <span class="keyword">def</span> folderPath = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cdnFolder<span class="inline-delimiter">}</span></span><span class="content">/pointOfInterest/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <span class="keyword">as</span> <span class="predefined-type">String</span>
-        <span class="keyword">def</span> folder = <span class="keyword">new</span> <span class="predefined-type">File</span>(folderPath)
+        <span class="predefined-type">String</span> folderPath = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cdnFolder<span class="inline-delimiter">}</span></span><span class="content">/pointOfInterest/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">File</span> folder = <span class="keyword">new</span> <span class="predefined-type">File</span>(folderPath)
         <span class="keyword">if</span> ( !folder.exists() ) {
             folder.mkdirs()
         }
-        <span class="keyword">def</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>folderPath<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>filename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <span class="keyword">as</span> <span class="predefined-type">String</span>
+        <span class="predefined-type">String</span> path = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>folderPath<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>filename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
         cmd.featuredImageFile.transferTo(<span class="keyword">new</span> <span class="predefined-type">File</span>(path))
 
         <span class="predefined-type">String</span> featuredImageUrl = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cdnRootUrl<span class="inline-delimiter">}</span></span><span class="content">//pointOfInterest/</span><span class="inline"><span class="inline-delimiter">${</span>cmd.id<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>filename<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
-
-        <span class="keyword">def</span> poi = pointOfInterestGormService.updateFeaturedImageUrl(cmd.id, cmd.version, featuredImageUrl)
+        PointOfInterest poi = pointOfInterestDataService.updateFeaturedImageUrl(cmd.id, cmd.version, featuredImageUrl)
 
         <span class="keyword">if</span> ( !poi || poi.hasErrors() ) {
-            <span class="keyword">def</span> f = <span class="keyword">new</span> <span class="predefined-type">File</span>(path)
+            <span class="predefined-type">File</span> f = <span class="keyword">new</span> <span class="predefined-type">File</span>(path)
             f.delete()
         }
         poi
@@ -208,19 +184,34 @@ In case of error, the service deletes the file it has previously transfered</p>
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The service updates <code>featuredImageUrl</code> with the help of a GORM Data Service:</p>
+</div>
 <div class="listingblock">
-<div class="title">/grails-app/services/demo/PointOfInterestGormService.groovy</div>
+<div class="title">/grails-app/services/example/grails/PointOfInterestDataService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Transactional</span>
-    PointOfInterest updateFeaturedImageUrl(<span class="predefined-type">Long</span> pointOfInterestId, <span class="predefined-type">Integer</span> version, <span class="predefined-type">String</span> featuredImageUrl) {
-        PointOfInterest poi = PointOfInterest.get(pointOfInterestId)
-        <span class="keyword">if</span> ( !poi ) {
-            <span class="keyword">return</span> <span class="predefined-constant">null</span>
-        }
-        poi.version = version
-        poi.featuredImageUrl = featuredImageUrl
-        poi.save()
-    }</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">UnusedVariable</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">SpaceAfterOpeningBrace</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">SpaceBeforeClosingBrace</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Service</span>(PointOfInterest)
+<span class="type">interface</span> PointOfInterestDataService {
+
+    PointOfInterest get(<span class="predefined-type">Long</span> id)
+
+    <span class="predefined-type">List</span>&lt;PointOfInterest&gt; list(<span class="predefined-type">Map</span> args)
+
+    <span class="predefined-type">Number</span> count()
+
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+
+    PointOfInterest save(<span class="predefined-type">String</span> name)
+
+    PointOfInterest updateName(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> name)
+
+    PointOfInterest updateFeaturedImageUrl(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Long</span> version, <span class="predefined-type">String</span> featuredImageUrl)
+}</code></pre>
 </div>
 </div>
 
