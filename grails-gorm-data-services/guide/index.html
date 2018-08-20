@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails GORM Data Services | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails GORM Data Services. In this guide, we will learn how to create GORM Data Services in a Grails Application.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='http://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='http://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='http://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='http://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='http://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='http://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='http://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='http://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='http://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-gorm-data-services"><img src="https://travis-ci.org/grails-guides/grails-gorm-data-services.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-gorm-data-services&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-gorm-data-services.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-gorm-data-services.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-gorm-data-services.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-gorm-data-services/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domainObjects"><strong>3.1</strong><span>Domain Objects</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#whyGormDataServices"><strong>4</strong><span>Why GORM Data Services</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#usingGormDataServices"><strong>5</strong><span>Using GORM Data Services</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#dynamicFinders"><strong>5.1</strong><span>Dynamic Finders Like</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#unitTest"><strong>5.2</strong><span>Unit Test</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#propertyProjection"><strong>5.3</strong><span>Property Projection</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#saveOperation"><strong>5.4</strong><span>Save Operation</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#joinQuery"><strong>5.5</strong><span>Join Query</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#japqlQuery"><strong>6</strong><span>JPA-QL Query</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#japqlProjection"><strong>7</strong><span>JPA-QL Projection</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#conclusion"><strong>8</strong><span>Conclusion</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>9</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails GORM Data Services</h1>
+        <p>In this guide, we will learn how to create GORM Data Services in a Grails Application.</p>
+        <p><strong>Authors:</strong> Nirav Assar, Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.8</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+        for ( var i = 0; i < data.length; i++ ) {
+            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, we are going to do a deep dive into <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a>. Introduced in GORM 6.1,
+GORM Data Services take the work out of implemented service layer logic by adding the ability to
+automatically implement abstract classes or interfaces using GORM logic. It results in less code to write, compile time optimization, and ease of testing.</p>
+</div>
+<div class="paragraph">
+<p>This guide will go into detail on how to create and use GORM Data Services with a sample Grails application.  The guide will stay focused on the
+service layer of the app consistent with persistence.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-gorm-data-services/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-gorm-data-services.git" class="bare">https://github.com/grails-guides/grails-gorm-data-services.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-gorm-data-services/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-gorm-data-services/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to write a simple application with the domains <code>Person</code> and <code>Address</code>. These domains have a one-to-many relationship.
+We will develop GORM Data Services which perform query and write operations.</p>
+</div>
+
+
+<h2 id="domainObjects">3.1 Domain Objects</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/domainObjects.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create the <code>Person</code> and <code>Address</code> domain classes. They have a one-to-many relationship.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+    <span class="predefined-type">Set</span>&lt;Address&gt; addresses <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">static</span> hasMany = [<span class="key">addresses</span>: Address]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You normally don&#8217;t need to specify default type <code>java.util.Set</code> in a <code>hasMany</code> association. However,
+we query the association in a JPA-QL query later in this tutorial and thus we need to be explicit here.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/Address.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Address</span> {
+    <span class="predefined-type">String</span> streetName
+    <span class="predefined-type">String</span> city
+    <span class="predefined-type">String</span> state
+    <span class="predefined-type">String</span> country
+
+    <span class="directive">static</span> belongsTo = [<span class="key">person</span>: Person]
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="whyGormDataServices">4 Why GORM Data Services</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/whyGormDataServices.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Automatic implementation of an interface or an abstract class reduces the amount of code written.  In
+addition, GORM Data Services define transaction boundary semantics automatically.  For example, all public methods are
+marked with <code>@Transaction</code> (and read-only for query methods).</p>
+</div>
+<div class="sect2">
+<h3 id="_advantages_of_data_services">Advantages of Data Services</h3>
+<div class="paragraph">
+<p>To summarize the advantages:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Type Safety</strong> - Data service method signatures are compile time checked and compilation will fail if the types of any
+parameters don&#8217;t match up with properties in your domain class.</p>
+</li>
+<li>
+<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to mock.</p>
+</li>
+<li>
+<p><strong>Performance</strong> - The generated services are statically compiled and unlike competing technologies in the Java space no
+proxies are created so runtime performance doesn&#8217;t suffer. Moreover, update operations are performed with efficiency.</p>
+</li>
+<li>
+<p><strong>Correctly define transaction semantics</strong>. Users often don&#8217;t correctly define transactions semantics. Each method in a Data Service is wrapped
+in an appropriate transaction (a read-only transaction in the case of read operations).</p>
+</li>
+<li>
+<p><strong>Support Multi-tenancy</strong>. In combination with <code>@CurrentTenant</code> annotation, GORM data services ease multi-tenancy development.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+<h1 id="usingGormDataServices">5 Using GORM Data Services</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/usingGormDataServices.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To write a Data Service, create an interface and annotate it with <code>grails.gorm.services.Service</code> with the applied domain class.
+ The <code>@Service</code> transformation looks at the method signatures of the interface to surmise what implementation should be generated.
+ It looks at the return type along with the method stem to implement functionality. Check
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#_data_service_queries">Data Service Conventions</a> for details.</p>
+</div>
+
+
+<h2 id="dynamicFinders">5.1 Dynamic Finders Like</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/dynamicFinders.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>If you have worked with GORM in the past, it is probable that you have you used <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#finders">Dynamic Finders</a> to query.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A dynamic finder looks like a static method invocation, but the methods themselves don’t actually exist in any form at the code level.
+Instead, a method is auto-magically generated using code synthesis at runtime, based on the properties of a given class</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>With GORM Data Services, you can create an interface with methods with the same expressiveness as Dynamic Finders but
+without the disadvantages. E.g. you get type safety since GORM Data services are statically compiled.</p>
+</div>
+<div class="paragraph">
+<p>To find a <code>Person</code> by name with a Dynamic finder you will use
+<code>Person.findByName</code>. Let&#8217;s implement a Data Service to achieve the same query.</p>
+</div>
+<div class="paragraph">
+<p>Create an interface annotated with <code>import grails.gorm.services.Service</code> and declare a method with the same signature.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Person) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">interface</span> PersonDataService {
+
+    Person findByName(<span class="predefined-type">String</span> name) <i class="conum" data-value="1"></i><b>(1)</b>
+
+
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="3"></i><b>(3)</b>
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Qualify the <code>@Service</code> with the domain class you want to use.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the method <code>findByName</code>, the stem is <code>find</code> which tells GORM it&#8217;s a query (thus a read-only transaction will be used), and <code>Name</code> matches the domain property.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The method <code>delete</code> takes the <code>id</code> of the person which should be removed. It will automatically be wrapped in a writable transaction.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="unitTest">5.2 Unit Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/unitTest.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You could write a unit test for the previous Data Service as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/PersonDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.annotation.Rollback</span>
+<span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
+<span class="keyword">import</span> <span class="include">spock.lang.AutoCleanup</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">PersonDataServiceSpec</span> <span class="directive">extends</span> Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Shared</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    PersonDataService personDataService
+
+    <span class="annotation">@Shared</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="annotation">@AutoCleanup</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    HibernateDatastore hibernateDatastore
+
+    <span class="annotation">@Shared</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    PlatformTransactionManager transactionManager
+
+    <span class="type">void</span> setupSpec() {
+        hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person) <i class="conum" data-value="4"></i><b>(4)</b>
+        transactionManager = hibernateDatastore.getTransactionManager() <i class="conum" data-value="5"></i><b>(5)</b>
+        personDataService = <span class="local-variable">this</span>.hibernateDatastore.getService(PersonDataService)
+    }
+
+    <span class="annotation">@Rollback</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find person by name</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        Person p = personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+
+        <span class="key">when</span>:
+        Person person = personDataService.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        person.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>
+        person.age == <span class="integer">39</span>
+
+        <span class="key">cleanup</span>:
+        personDataService.delete(p.id) <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The test should extend <code>spock.lang.Specification</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>Shared</code> annotation is used to indicate to Spock that the <code>HibernateDatastore</code>, <code>personDataService</code> and <code>transactionManager</code> properties are shared across all tests.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>AutoCleanup</code> annotation makes sure that HibernateDatastore is shutdown when all tests finish executing.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Within the <code>setupSpec</code> method a new HibernateDatastore is constructed with the domain classes to use as the argument to the constructor.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>In general you have to wrap your test execution logic in a session or transaction. You can obtain the PlatformTransactionManager from the HibernateDatastore.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Typically you want to annotate your feature methods with the Rollback annotation which is used to rollback any changes made within each test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Cleanup the person created during the test.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Luckily, <a href="http://plugins.grails.org/plugin/grails/hibernate5">Grails Hibernate Plugin</a> includes a utility class <code>grails.test.hibernate.HibernateSpec</code> which you could extend from and simplify
+the previous unit test:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/PersonDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+
+<span class="type">class</span> <span class="class">PersonDataServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="annotation">@Shared</span>
+    PersonDataService personDataService
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        personDataService = hibernateDatastore.getService(PersonDataService)
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find person by name</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+
+        <span class="key">when</span>:
+        Person person = personDataService.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        person.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>
+        person.age == <span class="integer">39</span>
+
+        <span class="key">cleanup</span>:
+        personDataService.delete(person.id)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="propertyProjection">5.3 Property Projection</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/propertyProjection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add a method to the GORM Data Service which returns a projection. This has the advantage of bringing back only one column instead of the
+whole object. There are a few ways to implement projections. One way is to is to use the convention <code>T find[Domain Class][Property]</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, for the property <code>age</code> of domain class <code>Person</code> the method will be:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Integer</span> findPersonAge(<span class="predefined-type">String</span> name)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add to the unit test to verify correctness.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/PersonDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find persons age projection</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">given</span>:
+    Person person = personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+
+    <span class="key">when</span>:
+    <span class="predefined-type">Integer</span> age = personDataService.findPersonAge(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
+
+    <span class="key">then</span>:
+    age == <span class="integer">39</span>
+
+    <span class="key">cleanup</span>:
+    personDataService.delete(person.id)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="saveOperation">5.4 Save Operation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/saveOperation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Data Services can perform write operations as well.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Person save(Person person)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add to the unit test to verify correctness.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/PersonDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test save person</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    Person person = personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>, <span class="integer">22</span>)
+
+    <span class="key">then</span>:
+    person.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>
+    person.age == <span class="integer">22</span>
+    personDataService.count() == old(personDataService.count()) + <span class="integer">1</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="key">cleanup</span>:
+    personDataService.delete(person.id)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>With Spock&#8217;s old method we get the value a statement had before the <code>when:</code> block is executed.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Run all the tests to make sure they pass &#8594; <code>gradlew check</code>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="joinQuery">5.5 Join Query</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/joinQuery.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Data Services can also implement a join query using the <code>grails.gorm.services.Join</code> annotation.
+Grails associations are lazily loaded by default. For a one to many relationship, loading
+of the many side can cause <a href="https://dzone.com/articles/hibernate-gorm-solving-the-n1-problem">n + 1</a> problems resulting in
+many select statements. This can severely hinder performance.</p>
+</div>
+<div class="paragraph">
+<p>Essentially we can perform an eager load with <code>@Join</code>. Apply this to concept to a query on <code>Person</code> and <code>Address</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">addresses</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+Person findEagerly(<span class="predefined-type">String</span> name)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Until this point we have defined the Person GORM Data Service with an interface. You can use an abstract class instead.
+A combination of interface and an abstract class implementing the interface with some custom methods is a common pattern. Rewrite
+<code>PersonDataService</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Join</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="type">interface</span> IPersonDataService {
+
+    Person findByName(<span class="predefined-type">String</span> name)
+
+    <span class="predefined-type">Integer</span> findPersonAge(<span class="predefined-type">String</span> name)
+
+    <span class="predefined-type">Number</span> count()
+
+    <span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">addresses</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    Person findEagerly(<span class="predefined-type">String</span> name)
+
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+
+    Person save(Person person)
+
+    Person save(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age)
+
+}
+
+<span class="annotation">@Service</span>(Person)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">PersonDataService</span> <span class="directive">implements</span> IPersonDataService {
+
+    <span class="annotation">@Transactional</span>
+    Person saveWithListOfAddressesMap(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age, <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;&gt; addresses) {
+        saveWithAddresses(name, age, addresses.collect { <span class="predefined-type">Map</span> m -&gt;
+            <span class="keyword">new</span> Address(<span class="key">streetName</span>:  m.streetName <span class="keyword">as</span> <span class="predefined-type">String</span>,
+                <span class="key">city</span>:  m.city <span class="keyword">as</span> <span class="predefined-type">String</span>,
+                <span class="key">state</span>: m.state <span class="keyword">as</span> <span class="predefined-type">String</span>,
+                <span class="key">country</span>: m.country <span class="keyword">as</span> <span class="predefined-type">String</span>)
+        } <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;Address&gt;)
+    }
+
+    <span class="annotation">@Transactional</span>
+    Person saveWithAddresses(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age, <span class="predefined-type">List</span>&lt;Address&gt; addresses) {
+        Person person = <span class="keyword">new</span> Person(<span class="key">name</span>: name, <span class="key">age</span>: age)
+        addresses.each { Address address -&gt;
+            person.addToAddresses(address)
+        }
+        save(person)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create an integration test:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/PersonDataServiceIntSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">PersonDataServiceIntSpec</span> <span class="directive">extends</span> Specification {
+
+    PersonDataService personDataService <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test join eager load</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        Person p = personDataService.saveWithListOfAddressesMap(<span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>,<span class="integer">39</span>, [
+                [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">101 Main St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Grapevine</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2929 Pearl St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">21 Sewickly Hills Dr</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sewickley</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PA</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>]
+        ])
+
+        <span class="key">when</span>:
+        Person person = personDataService.findEagerly(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        person.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>
+        person.age == <span class="integer">39</span>
+
+        <span class="key">when</span>:
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; cities = person.addresses*.city
+
+        <span class="key">then</span>:
+        cities.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">Grapevine</span><span class="delimiter">&quot;</span></span>)
+        cities.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>)
+        cities.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">Sewickley</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">cleanup</span>:
+        personDataService.delete(p.id)
+
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Place your integration tests in <code>src/integration-test</code> and annotate them with <code>grails.testing.mixin.integration.Integration</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Inject the Data Service.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In order to observe how Data Service operations translate into SQL statements, we will adjust the logger configuration.</p>
+</div>
+<div class="paragraph">
+<p>In the <code>logback.groovy</code>, append the next line line to get a more verbose output of the SQL queries being executed:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/logback.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger <span class="string"><span class="delimiter">'</span><span class="content">org.hibernate.SQL</span><span class="delimiter">'</span></span>, TRACE, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>], <span class="predefined-constant">false</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute the integration test <code>./gradlew integrationTest --tests example.grails.PersonDataServiceIntSpec</code></p>
+</div>
+<div class="paragraph">
+<p>The previous tests outputted SQL log statement which demonstrates a join has been issued. Below is a sample.</p>
+</div>
+<div class="listingblock">
+<div class="title">log output</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">2018-08-20 16:28:40.460 DEBUG --- [    Test worker] org.hibernate.SQL                        : insert into person (id, version, age, name) values (null, ?, ?, ?)
+2018-08-20 16:28:40.472 DEBUG --- [    Test worker] org.hibernate.SQL                        : insert into address (id, version, person_id, street_name, city, country, state) values (null, ?, ?, ?, ?, ?, ?)
+2018-08-20 16:28:40.474 DEBUG --- [    Test worker] org.hibernate.SQL                        : insert into address (id, version, person_id, street_name, city, country, state) values (null, ?, ?, ?, ?, ?, ?)
+2018-08-20 16:28:40.474 DEBUG --- [    Test worker] org.hibernate.SQL                        : insert into address (id, version, person_id, street_name, city, country, state) values (null, ?, ?, ?, ?, ?, ?)
+2018-08-20 16:28:40.533 DEBUG --- [    Test worker] org.hibernate.SQL                        : select this_.id as id1_1_1_, this_.version as version2_1_1_, this_.age as age3_1_1_, this_.name as name4_1_1_, addresses2_.person_id as person_i3_0_3_, addresses2_.id as id1_0_3_, addresses2_.id as id1_0_0_, addresses2_.version as version2_0_0_, addresses2_.person_id as person_i3_0_0_, addresses2_.street_name as street_n4_0_0_, addresses2_.city as city5_0_0_, addresses2_.country as country6_0_0_, addresses2_.state as state7_0_0_ from person this_ left outer join address addresses2_ on this_.id=addresses2_.person_id where this_.name=?</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see only one select query is performed. A query which joins the addresses.</p>
+</div>
+<div class="paragraph">
+<p>You can see those statements in the tests reports <code>build/reports/tests/classes/example.grails.PersonDataServiceIntSpec.html</code> standard output.</p>
+</div>
+
+
+<h1 id="japqlQuery">6 JPA-QL Query</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/japqlQuery.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>JPA-QL (JPA Query Language) queries query the <strong>entity</strong> model using a SQL-like text query language. Queries are expressed using entities, properties, and relationship.</p>
+</div>
+<div class="paragraph">
+<p>GORM Data Service support JPA-QL Queries via the <code>grails.gorm.services.Query</code> annotation.</p>
+</div>
+<div class="paragraph">
+<p>JPA-QL queries allows for more complicated queries. Nonetheless, they are still statically compiled and safeguard against SQL injection attacks.</p>
+</div>
+<div class="paragraph">
+<p>Create a query that searches people by country.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="char">\
+</span><span class="content">select distinct </span><span class="inline"><span class="inline-delimiter">${</span>p<span class="inline-delimiter">}</span></span><span class="content">
+from </span><span class="inline"><span class="inline-delimiter">${</span>Person p<span class="inline-delimiter">}</span></span><span class="content"> join </span><span class="inline"><span class="inline-delimiter">${</span>p.addresses<span class="inline-delimiter">}</span></span><span class="content"> a
+where a.country = </span><span class="inline"><span class="inline-delimiter">$</span>country</span><span class="content">
+</span><span class="delimiter">&quot;&quot;&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">List</span>&lt;Person&gt; findAllByCountry(<span class="predefined-type">String</span> country) <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@Query</code> used to define a JPA-QL query.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can use multiline strings to define your JPA-QL queries which adds readability.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><code>country</code> param can be used within the HQL query.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create an integration test:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/PersonDataServiceIntSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">PersonDataServiceIntSpec</span> <span class="directive">extends</span> Specification {
+
+    PersonDataService personDataService <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test search persons by country</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        [
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">39</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">101 Main St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Grapevine</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2929 Pearl St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">21 Sewickly Hills Dr</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sewickley</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PA</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>]]],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">50</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">888 Olive St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">St Louis</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">MO</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1515 MLK Blvd</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>]]],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">35</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">19001 Calle Mayor</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Guadalajara</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">'</span><span class="content">Castilla-La Mancha</span><span class="delimiter">'</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Spain</span><span class="delimiter">&quot;</span></span>]]]
+        ].each { <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; m -&gt;
+            personDataService.saveWithListOfAddressesMap(m.name <span class="keyword">as</span> <span class="predefined-type">String</span>,
+                    m.age <span class="keyword">as</span> <span class="predefined-type">Integer</span>,
+                    m.addresses <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;&gt;)
+        }
+
+        <span class="key">when</span>:
+        <span class="predefined-type">List</span>&lt;Person&gt; usaPersons = personDataService.findAllByCountry(<span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        usaPersons
+        usaPersons.size() == <span class="integer">2</span>
+        usaPersons.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>}
+        usaPersons.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Jeff</span><span class="delimiter">&quot;</span></span>}
+
+        <span class="key">when</span>:
+        <span class="predefined-type">List</span>&lt;Person&gt; spainPersons = personDataService.findAllByCountry(<span class="string"><span class="delimiter">&quot;</span><span class="content">Spain</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        spainPersons.size() == <span class="integer">1</span>
+        spainPersons.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Sergio</span><span class="delimiter">&quot;</span></span>}
+    }</code></pre>
+</div>
+</div>
+
+
+<h1 id="japqlProjection">7 JPA-QL Projection</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/japqlProjection.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can also create a projection to a POGO (Plan Groovy Object) with JPA-QL.</p>
+</div>
+<div class="paragraph">
+<p>If you have a POGO such as:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/Country.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.TupleConstructor</span>
+
+<span class="annotation">@TupleConstructor</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Country</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use Groovy&#8217;s <code>TupleConstructor</code> AST Transform to generate a constructor with one parameter.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a GORM Data Service for <code>Address</code> domain class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/AddressDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Address)
+<span class="type">interface</span> AddressDataService {
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select new example.grails.Country(</span><span class="inline"><span class="inline-delimiter">${</span>a.country<span class="inline-delimiter">}</span></span><span class="content">) from </span><span class="inline"><span class="inline-delimiter">${</span>Address a<span class="inline-delimiter">}</span></span><span class="content"> group by </span><span class="inline"><span class="inline-delimiter">${</span>a.country<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">List</span>&lt;Country&gt; findCountries()
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The constructor generated by <code>TupleConstructor</code> is used in the JPA-QL query.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can create a unit test to verify the behaviour:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/AddressDataServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+
+<span class="type">class</span> <span class="class">AddressDataServiceSpec</span> <span class="directive">extends</span> HibernateSpec {
+    <span class="annotation">@Shared</span>
+    AddressDataService addressDataService
+
+    <span class="annotation">@Shared</span>
+    PersonDataService personDataService
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        addressDataService = hibernateDatastore.getService(AddressDataService)
+        personDataService = hibernateDatastore.getService(PersonDataService)
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">projections to POGO work</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Long</span>&gt; personIds = <span class="type">[]</span>
+        [
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">39</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">101 Main St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Grapevine</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2929 Pearl St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">21 Sewickly Hills Dr</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sewickley</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">PA</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>]]],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">50</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">888 Olive St</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">St Louis</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">MO</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>],
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1515 MLK Blvd</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Austin</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">TX</span><span class="delimiter">&quot;</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">USA</span><span class="delimiter">&quot;</span></span>]]],
+                [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">age</span>: <span class="integer">35</span>, <span class="key">addresses</span>: [
+                        [<span class="key">streetName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">19001 Calle Mayor</span><span class="delimiter">&quot;</span></span>, <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Guadalajara</span><span class="delimiter">&quot;</span></span>, <span class="key">state</span>: <span class="string"><span class="delimiter">'</span><span class="content">Castilla-La Mancha</span><span class="delimiter">'</span></span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Spain</span><span class="delimiter">&quot;</span></span>]]]
+        ].each { <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; m -&gt;
+            personIds &lt;&lt; personDataService.saveWithListOfAddressesMap(m.name <span class="keyword">as</span> <span class="predefined-type">String</span>,
+                    m.age <span class="keyword">as</span> <span class="predefined-type">Integer</span>,
+                    m.addresses <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;&gt;).id
+        }
+
+        <span class="key">when</span>:
+        <span class="predefined-type">List</span>&lt;Country&gt; countries = addressDataService.findCountries()
+
+        <span class="key">then</span>:
+        countries
+        countries.size() == <span class="integer">2</span>
+        countries.any { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">USA</span><span class="delimiter">'</span></span> }
+        countries.any { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Spain</span><span class="delimiter">'</span></span> }
+
+        <span class="key">cleanup</span>:
+        personIds.each {
+            personDataService.delete(<span class="local-variable">it</span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="conclusion">8 Conclusion</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/conclusion.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Allow GORM to implement the methods for you and manage transactions, while you simply
+define the interface. Data Services can reduce errors, performance issues and are testable.  Plus it has a high COOL factor!</p>
+</div>
+<div class="paragraph">
+<p>Read <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a> documentation to learn more.</p>
+</div>
+<div class="paragraph">
+<p>Watch Graeme Rocher presentation at Greach Conf 2018:</p>
+</div>
+<div class="videoblock">
+<div class="content">
+<iframe width="540" height="320" src="https://www.youtube.com/embed/6pIOgv7cZzo?rel=0" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">9 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-gorm-data-services/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
