@@ -256,10 +256,12 @@ we are using <code>geb2</code> feature which includes <a href="http://www.gebish
     <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> SHEET_NAME = <span class="string"><span class="delimiter">&quot;</span><span class="content">Books</span><span class="delimiter">&quot;</span></span>
     <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_ISBN = <span class="string"><span class="delimiter">&quot;</span><span class="content">Isbn</span><span class="delimiter">&quot;</span></span>
     <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_NAME = <span class="string"><span class="delimiter">&quot;</span><span class="content">Name</span><span class="delimiter">&quot;</span></span>
-    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> FILENAME = <span class="string"><span class="delimiter">&quot;</span><span class="content">books.xlsx</span><span class="delimiter">&quot;</span></span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> EXCEL_FILE_SUFIX = <span class="string"><span class="delimiter">&quot;</span><span class="content">.xlsx</span><span class="delimiter">&quot;</span></span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> EXCEL_FILE_PREFIX = <span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> EXCEL_FILENAME = EXCEL_FILE_PREFIX + EXCEL_FILE_SUFIX
 
     <span class="type">void</span> exportExcelFromBooks(<span class="predefined-type">OutputStream</span> outs, <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; bookList) {
-        <span class="predefined-type">File</span> file = <span class="keyword">new</span> <span class="predefined-type">File</span>(FILENAME)
+        <span class="predefined-type">File</span> file = <span class="predefined-type">File</span>.createTempFile(EXCEL_FILE_PREFIX, EXCEL_FILE_SUFIX)
         PoiSpreadsheetBuilder.create(outs).build {
             apply BookExcelStylesheet
             sheet(SHEET_NAME) { s -&gt;
@@ -328,7 +330,7 @@ we are using <code>geb2</code> feature which includes <a href="http://www.gebish
 
     <span class="keyword">def</span> <span class="function">index</span>() {
         response.status = OK.value() <i class="conum" data-value="2"></i><b>(2)</b>
-        response.setHeader <span class="string"><span class="delimiter">&quot;</span><span class="content">Content-disposition</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">attachment; filename=</span><span class="inline"><span class="inline-delimiter">${</span>BookExcelService.FILENAME<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+        response.setHeader <span class="string"><span class="delimiter">&quot;</span><span class="content">Content-disposition</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">attachment; filename=</span><span class="inline"><span class="inline-delimiter">${</span>BookExcelService.EXCEL_FILENAME<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
         response.contentType = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>xlsxMimeType<span class="inline-delimiter">}</span></span><span class="content">;charset=</span><span class="inline"><span class="inline-delimiter">${</span>encoding<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
         <span class="predefined-type">OutputStream</span> outs = response.outputStream
         bookExcelService.exportExcelFromBooks(outs, bookService.findAll()) <i class="conum" data-value="5"></i><b>(5)</b>
@@ -563,7 +565,7 @@ tasks.withType(Test) {
         browser.at HomePage
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">clicking excel button</span><span class="delimiter">'</span></span>
-        <span class="predefined-type">String</span> expectedPath = <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span> + BookExcelService.FILENAME
+        <span class="predefined-type">String</span> expectedPath = <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span> + BookExcelService.EXCEL_FILENAME
         <span class="predefined-type">File</span> outputFile = <span class="keyword">new</span> <span class="predefined-type">File</span>(expectedPath)
         browser.page(HomePage).downloadExcel()
 
