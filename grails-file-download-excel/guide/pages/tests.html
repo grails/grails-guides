@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.5 Tests</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="tests">3.5 Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-file-download-excel/edit/master/src/main/docs/guide/writingTheApp/tests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often, file transfers remain untested in many applications. In this section, you will see how
+easy is to test that the file downloads but also that the downloaded file contents match our expectations.</p>
+</div>
+<div class="paragraph">
+<p>We use also, Geb; a browser automation solution.</p>
+</div>
+<div class="paragraph">
+<p>We told Grails CLI to use <code>geb2</code> feature when we created the app in <a href="#writingTheApp">Writing the App</a> section.</p>
+</div>
+<div class="paragraph">
+<p>Grails <code>geb2</code> feature includes the necessary Geb dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-remote-driver:3.6.0</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-api:3.6.0</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:3.6.0</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:3.6.0</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:3.6.0</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Grails <code>geb2</code> feature generates a <code>src/integration-test/resources/GebConfig.groovy</code> file to configure different environments for Geb. Modify it to configure some chrome options to control the download path.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/resources/GebConfig.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.openqa.selenium.chrome.ChromeDriver</span>
+<span class="keyword">import</span> <span class="include">org.openqa.selenium.chrome.ChromeOptions</span>
+<span class="keyword">import</span> <span class="include">org.openqa.selenium.firefox.FirefoxDriver</span>
+
+ChromeOptions options = <span class="keyword">new</span> ChromeOptions()
+<span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) ) {
+    options.setExperimentalOption(<span class="string"><span class="delimiter">&quot;</span><span class="content">prefs</span><span class="delimiter">&quot;</span></span>, [
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">profile.default_content_settings.popups</span><span class="delimiter">&quot;</span></span>:  <span class="integer">0</span>, <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">download.default_directory</span><span class="delimiter">&quot;</span></span>: <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    ])
+}
+
+environments {
+
+    <span class="comment">// run via “./gradlew -Dgeb.env=chrome iT”</span>
+    chrome {
+        driver = { <span class="keyword">new</span> ChromeDriver(options) }
+    }
+
+    <span class="comment">// run via “./gradlew -Dgeb.env=chromeHeadless iT”</span>
+    chromeHeadless {
+        driver = {
+            options.addArguments(<span class="string"><span class="delimiter">'</span><span class="content">headless</span><span class="delimiter">'</span></span>)
+            <span class="keyword">new</span> ChromeDriver(options)
+        }
+    }
+
+    <span class="comment">// run via “./gradlew -Dgeb.env=firefox iT”</span>
+    firefox {
+        driver = { <span class="keyword">new</span> FirefoxDriver() }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Disable confirmation popups</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Configure the download folder</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Geb uses the Page concept pattern - The Page Object Pattern gives us a common sense way to model content in a reusable and maintainable way. Create a Geb Page to encapsulate the Excel link:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/HomePage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">HomePage</span> <span class="directive">extends</span> Page {
+
+    <span class="directive">static</span> at = { title == <span class="string"><span class="delimiter">'</span><span class="content">Welcome to Grails</span><span class="delimiter">'</span></span> }
+
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> content = {
+        excelLink { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>, <span class="key">text</span>: contains(<span class="string"><span class="delimiter">'</span><span class="content">Excel</span><span class="delimiter">'</span></span>), <span class="integer">0</span>) }
+    }
+
+    <span class="type">void</span> downloadExcel() {
+        excelLink.click()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>geb2</code> feature installs also <a href="https://plugins.gradle.org/plugin/com.energizedwork.webdriver-binaries">webdriver-binaries Gradle plugin</a>; a plugin that downloads and caches WebDriver binaries specific to the OS the build runs on.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+    repositories {
+...
+..
+    }
+    dependencies {
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.8</span><span class="delimiter">&quot;</span></span>
+    }
+}
+
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.energizedwork.webdriver-binaries</span><span class="delimiter">&quot;</span></span>
+
+dependencies {
+...
+..
+.
+}
+
+webdriverBinaries {
+    chromedriver <span class="string"><span class="delimiter">'</span><span class="content">2.41</span><span class="delimiter">'</span></span>
+    geckodriver <span class="string"><span class="delimiter">'</span><span class="content">0.21.0</span><span class="delimiter">'</span></span>
+}
+
+tasks.withType(Test) {
+    systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">geb.env</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">download.folder</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">geb.build.reportsDir</span><span class="delimiter">&quot;</span></span>, reporting.file(<span class="string"><span class="delimiter">&quot;</span><span class="content">geb/integrationTest</span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Pass system property <code>geb.env</code> to the tests.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Pass system property <code>download.folder</code> to the tests.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a test which verifies the Excel file is downloaded and the content matches our expectations.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/DownloadExcelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">builders.dsl.spreadsheet.query.api.SpreadsheetCriteria</span>
+<span class="keyword">import</span> <span class="include">builders.dsl.spreadsheet.query.api.SpreadsheetCriteriaResult</span>
+<span class="keyword">import</span> <span class="include">builders.dsl.spreadsheet.query.poi.PoiSpreadsheetCriteria</span>
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+<span class="keyword">import</span> <span class="include">spock.util.concurrent.PollingConditions</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">DownloadExcelSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="annotation">@IgnoreIf</span>({ !sys[<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>] || sys[<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>] != <span class="string"><span class="delimiter">'</span><span class="content">chrome</span><span class="delimiter">'</span></span> })
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">books can be downloaded as an excel file</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        PollingConditions conditions = <span class="keyword">new</span> PollingConditions(<span class="key">timeout</span>: <span class="integer">5</span>)
+
+        <span class="key">when</span>:
+        browser.to HomePage
+
+        <span class="key">then</span>:
+        browser.at HomePage
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">clicking excel button</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> expectedPath = <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) + <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span> + BookExcelService.FILENAME
+        <span class="predefined-type">File</span> outputFile = <span class="keyword">new</span> <span class="predefined-type">File</span>(expectedPath)
+        browser.page(HomePage).downloadExcel()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">an excel file is downloaded</span><span class="delimiter">'</span></span>
+        conditions.eventually { outputFile.exists() }
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">if we search for a row with a particular value (Building Microservices)</span><span class="delimiter">'</span></span>
+        SpreadsheetCriteria query = PoiSpreadsheetCriteria.FACTORY.forFile(outputFile)
+        SpreadsheetCriteriaResult result = query.query {
+            sheet(BookExcelService.SHEET_NAME) {
+                row {
+                    cell {
+                        value <span class="string"><span class="delimiter">'</span><span class="content">Building Microservices</span><span class="delimiter">'</span></span>
+                    }
+                }
+            }
+        }
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a row is found</span><span class="delimiter">'</span></span>
+        result.cells.size() == <span class="integer">1</span>
+
+        <span class="key">cleanup</span>:
+        outputFile?.delete()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To run the tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew -Dgeb.env=chrome -Ddownload.folder=/Users/sdelamo/Downloads integrationTest
+$ open build/reports/tests/test/index.html</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-file-download-excel"><img src="https://travis-ci.org/grails-guides/grails-file-download-excel.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-file-download-excel">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-file-download-excel.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-file-download-excel.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-file-download-excel'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-file-download-excel.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-file-download-excel/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
