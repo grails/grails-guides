@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testTheApp.html"><strong>4</strong><span>Test the app</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/testTheApp.html"><strong>4</strong><span>Test the app</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#configurationProperties"><strong>3.1</strong><span>Configuration Properties</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#taglib"><strong>3.2</strong><span>Tag Lib</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tests"><strong>3.3</strong><span>Unit Tests</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#acceptanceTests"><strong>3.4</strong><span>Acceptance Tests</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the App</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-configuration-properties/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><code>grails create-app example.grails.complete --features=events,geb2,hibernate5</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+we are using <code>geb2</code> feature which includes <a href="http://www.gebish.org">Geb 2</a> and <a href="https://plugins.gradle.org/plugin/com.energizedwork.webdriver-binaries">Gradle WebDriver Binaries plugin</a>. Geb 2 requires JDK 1.8 or greater.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="configurationProperties">3.1 Configuration Properties</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-configuration-properties/edit/master/src/main/docs/guide/writingTheApp/configurationProperties.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this section we are going to explore how property values can be bound to structured objects through <code>@ConfigurationProperties</code>.</p>
+</div>
+<div class="paragraph">
+<p>First, we need to annotate <code>Application.groovy</code> with <code>@ComponentScan</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/example/grails/Application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.boot.GrailsApp</span>
+<span class="keyword">import</span> <span class="include">grails.boot.config.GrailsAutoConfiguration</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.ComponentScan</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@ComponentScan</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">class</span> <span class="class">Application</span> <span class="directive">extends</span> GrailsAutoConfiguration {
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        GrailsApp.run(Application, args)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@ComponentScan</code> tells Spring to look for other components, configurations, and services in the specified package. Spring is able to auto scan, detect and register your beans or components from pre-defined project package. If no package is specified current class package is taken as the root package.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a file named <code>AddressConfiguration.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/AddressConfiguration.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">org.springframework.boot.context.properties.ConfigurationProperties</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.stereotype.Component</span>
+
+<span class="annotation">@Configuration</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@ConfigurationProperties</span>(prefix = <span class="string"><span class="delimiter">&quot;</span><span class="content">address</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="type">class</span> <span class="class">AddressConfiguration</span> {
+    <span class="predefined-type">String</span> street
+    <span class="predefined-type">String</span> city
+    <span class="predefined-type">String</span> country
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We have added the <code>@Configuration</code> annotation for Spring to be able to find this bean and make it a candidate for injection.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>@ConfigurationProperties</code> annotation takes the configuration prefix.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Any properties defined in the property file that has the prefix <code>address</code> and the same name as one of the properties are automatically assigned to this object.</p>
+</div>
+<div class="paragraph">
+<p>Add some properties to <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">address</span>:
+    <span class="key">street</span>: <span class="integer">221</span>B Baker Street
+    <span class="key">city</span>: London
+    <span class="key">country</span>: United Kingdom</code></pre>
+</div>
+</div>
+
+
+<h2 id="taglib">3.2 Tag Lib</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-configuration-properties/edit/master/src/main/docs/guide/writingTheApp/taglib.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <a href="https://gsp.grails.org/latest/guide/index.html#taglibs">Tag Library</a> to render the address:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/taglib/example/grails/AddressTagLib.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="type">class</span> <span class="class">AddressTagLib</span> {
+
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">&quot;</span><span class="content">app</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    AddressConfiguration addressConfiguration <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="keyword">def</span> address = { attrs, body -&gt;
+        out &lt;&lt; <span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="char">\
+</span><span class="content">&lt;div class='adr'&gt;
+    &lt;div class='street-address'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>addressConfiguration.street<span class="inline-delimiter">}</span></span><span class="content">&lt;/div&gt;
+    &lt;span class='locality'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>addressConfiguration.city<span class="inline-delimiter">}</span></span><span class="content">&lt;/span&gt;,
+    &lt;div class='country-name'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>addressConfiguration.country<span class="inline-delimiter">}</span></span><span class="content">&lt;/div&gt;
+&lt;/div&gt;</span><span class="delimiter">&quot;&quot;&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>By default, tags are added to the default Grails namespace and are used with the <code>g:</code> prefix in GSP pages. However, you can specify a different namespace by adding a static property to your TagLib class.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can inject <code>AddressConfiguration</code> as any other bean into your TagLib.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create a valid <a href="http://microformats.org/wiki/adr">adr microformat</a> HTML snippet.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="tests">3.3 Unit Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-configuration-properties/edit/master/src/main/docs/guide/writingTheApp/tests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a unit test for the TagLib:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/AddressTagLibSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.taglib.TagLibUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">AddressTagLibSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> TagLibUnitTest&lt;AddressTagLib&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    Closure doWithSpring() {{ -&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+        addressConfiguration(AddressConfiguration)
+    }}
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test address tag</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="predefined-type">String</span> returnString = tagLib.address().toString() <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">then</span>:
+         returnString == <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;div class='adr'&gt;</span><span class="char">\n</span><span class="content">    &lt;div class='street-address'&gt;221B Baker Street&lt;/div&gt;</span><span class="char">\n</span><span class="content">    &lt;span class='locality'&gt;London&lt;/span&gt;,</span><span class="char">\n</span><span class="content">    &lt;div class='country-name'&gt;United Kingdom&lt;/div&gt;</span><span class="char">\n</span><span class="content">&lt;/div&gt;</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Tag libraries and GSP pages can be tested with the <code>grails.testing.web.taglib.TagLibUnitTest</code> trait.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To provide or replace beans in the context, you can override the <code>doWithSpring</code> method in your test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Adding the <code>TagLibUnitTest</code> trait to a test causes a new <code>tagLib</code> field to be automatically created for the TagLib class under test. The <code>tagLib</code> property can be used to test calling tags as function calls.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="acceptanceTests">3.4 Acceptance Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-configuration-properties/edit/master/src/main/docs/guide/writingTheApp/acceptanceTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Edit <code>grails-app/views/index.gsp</code>, the GSP that is currently rendered when you visit the home page <code>/</code> and add the next snippet:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+ &lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+ ....
+ ...
+         &lt;<span class="key">app</span>:address/&gt;
+ &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span> ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can create an acceptance test with Geb to verify the address is rendered in the home page:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/AddressSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AddressSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="annotation">@IgnoreIf</span>({ !sys[<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>] })
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">verify address is displayed in homepage</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        browser.go(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">then</span>:
+        browser.driver.pageSource.contains(<span class="string"><span class="delimiter">'</span><span class="content">221B Baker Street</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/testTheApp.html"><strong>4</strong><span>Test the app</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-configuration-properties"><img src="https://travis-ci.org/grails-guides/grails-configuration-properties.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-configuration-properties">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-configuration-properties.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-configuration-properties.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-configuration-properties'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-configuration-properties.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-configuration-properties/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
