@@ -628,8 +628,10 @@ curl &quot;http://localhost:8080/plan&quot; \
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.storage.TokenStorageService</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.AllTenantsResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
@@ -641,7 +643,8 @@ curl &quot;http://localhost:8080/plan&quot; \
 <span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
 
 <span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">CurrentUserByJwtTenantResolver</span> <span class="directive">implements</span> TenantResolver {
+<span class="type">class</span> <span class="class">CurrentUserByJwtTenantResolver</span> <span class="directive">implements</span> TenantResolver, <i class="conum" data-value="1"></i><b>(1)</b>
+        AllTenantsResolver { <i class="conum" data-value="2"></i><b>(2)</b>
 
     <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_NAME = <span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>
     <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_VALUE_PREFFIX = <span class="string"><span class="delimiter">'</span><span class="content">Bearer </span><span class="delimiter">'</span></span>
@@ -676,8 +679,27 @@ curl &quot;http://localhost:8080/plan&quot; \
         }
         <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved outside a web request</span><span class="delimiter">&quot;</span></span>)
     }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
+        <span class="keyword">new</span> DetachedCriteria(User)
+                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                .list()
+    }
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To create your own tenant resolver implement <code>org.grails.datastore.mapping.multitenancy.TenantResolver</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When using discriminator-based multi-tenancy then you may need to implement the <a href="http://gorm.grails.org/latest/hibernate/api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your TenantResolver implentation if you want to at any point iterate over all available tenants.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Define the Custom Tenant Resolver as a bean:</p>
@@ -828,10 +850,11 @@ create a custom resolver by the current logged in user.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
-<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.userdetails.GrailsUser</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.AllTenantsResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
@@ -839,7 +862,8 @@ create a custom resolver by the current logged in user.</p>
 <span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
 
 <span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">CurrentUserTenantResolver</span> <span class="directive">implements</span> TenantResolver {
+<span class="type">class</span> <span class="class">CurrentUserTenantResolver</span> <span class="directive">implements</span> TenantResolver, <i class="conum" data-value="1"></i><b>(1)</b>
+        AllTenantsResolver { <i class="conum" data-value="2"></i><b>(2)</b>
 
     <span class="annotation">@Autowired</span>
     <span class="annotation">@Lazy</span>
@@ -847,7 +871,6 @@ create a custom resolver by the current logged in user.</p>
 
     <span class="annotation">@Override</span>
     <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
-
         <span class="predefined-type">String</span> username = loggedUsername()
         <span class="keyword">if</span> ( username ) {
             <span class="keyword">return</span> username
@@ -865,8 +888,27 @@ create a custom resolver by the current logged in user.</p>
         }
         <span class="predefined-constant">null</span>
     }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
+        <span class="keyword">new</span> DetachedCriteria(User)
+                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                .list()
+    }
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To create your own tenant resolver implement <code>org.grails.datastore.mapping.multitenancy.TenantResolver</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When using discriminator-based multi-tenancy then you may need to implement the <a href="http://gorm.grails.org/latest/hibernate/api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your TenantResolver implentation if you want to at any point iterate over all available tenants.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Define the Custom Tenant Resolver as a bean:</p>
@@ -895,6 +937,7 @@ beans = {
 <span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
 <span class="keyword">import</span> <span class="include">org.springframework.security.core.authority.AuthorityUtils</span>
 <span class="keyword">import</span> <span class="include">org.springframework.security.core.context.SecurityContextHolder</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.annotation.Rollback</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
 <span class="annotation">@Integration</span>
@@ -929,12 +972,21 @@ beans = {
         <span class="key">then</span>:
         username == user.username
 
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">verify AllTenantsResolver::resolveTenantIds</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; tenantIds
+        demo.User.withNewSession {
+            tenantIds = currentUserTenantResolver.resolveTenantIds()
+        }
+
+        <span class="key">then</span>:
+        tenantIds.toList().size() == <span class="integer">1</span>
+        tenantIds.toList().get(<span class="integer">0</span>) == <span class="string"><span class="delimiter">'</span><span class="content">admin</span><span class="delimiter">'</span></span>
+
         <span class="key">cleanup</span>:
         userRoleDataService.delete(user, role)
         roleDataService.delete(role)
         userDataService.delete(user.id)
     }
-
 
     <span class="type">void</span> loginAs(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> authority) {
         User user = userDataService.findByUsername(username)
@@ -946,7 +998,6 @@ beans = {
                     authorityList)
         }
     }
-
 
 
 }</code></pre>
