@@ -860,7 +860,60 @@ seleniumVersion=<span class="float">3.12</span><span class="float">.0</span></co
 </div>
 </div>
 <div class="paragraph">
-<p>Our first test will verify that the <em>/api/announcements</em> endpoint is only accessible to users with role <em>ROLE_BOSS</em></p>
+<p>Micronaut HTTP client makes easy to bind JSON Payloads to POGOs. Create several POGOs which we will use in the test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/BearerToken.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>
+
+<span class="type">class</span> <span class="class">BearerToken</span> {
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">'</span><span class="content">access_token</span><span class="delimiter">'</span></span>)
+    <span class="predefined-type">String</span> accessToken
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">'</span><span class="content">refresh_token</span><span class="delimiter">'</span></span>)
+    <span class="predefined-type">String</span> refreshToken
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles
+
+    <span class="predefined-type">String</span> username
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/CustomError.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CustomError</span> {
+    <span class="predefined-type">Integer</span> status
+    <span class="predefined-type">String</span> error
+    <span class="predefined-type">String</span> message
+    <span class="predefined-type">String</span> path
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/UserCredentials.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserCredentials</span> {
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Our first test will verify that the <em>/api/announcements</em> endpoint is only accessible to users with role <em>ROLE_BOSS</em>.</p>
 </div>
 <div class="listingblock">
 <div class="title">/src/integration-test/groovy/example/grails/ApiAnnouncementControllerSpec.groovy</div>
