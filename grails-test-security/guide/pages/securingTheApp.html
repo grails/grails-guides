@@ -92,8 +92,8 @@ to our <code>build.gradle</code> file.</p>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile (<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.M2</span><span class="delimiter">&quot;</span></span>)
-    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.0.M1</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.RC1</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.3</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -102,16 +102,16 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">./grailsw s2-quickstart grails.test.security User SecurityRole</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw s2-quickstart example.grails User SecurityRole</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p><code>s2-quickstart</code> script generates three domain classes; <code>User</code>, <code>SecurityRole</code> and <code>UserSecurityRole</code>.</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/domain/grails/test/security/User.groovy</div>
+<div class="title">grails-app/domain/example/grails/User.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
@@ -146,9 +146,9 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/domain/grails/test/security/SecurityRole.groovy</div>
+<div class="title">grails-app/domain/example/grails/SecurityRole.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
@@ -173,9 +173,9 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/domain/grails/test/security/UserSecurityRole.groovy</div>
+<div class="title">grails-app/domain/example/grails/UserSecurityRole.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
@@ -271,9 +271,9 @@ to generate <code>User</code> and <code>Authority</code> classes.</p>
 generates and registers a bean to handle password encoding:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/grails/test/security/UserPasswordEncoderListener.groovy</div>
+<div class="title">src/main/groovy/example/grails/UserPasswordEncoderListener.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.Datastore</span>
@@ -321,7 +321,7 @@ generates and registers a bean to handle password encoding:</p>
 <div class="listingblock">
 <div class="title">grails-app/conf/spring/resources.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.test.security.UserPasswordEncoderListener</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">example.grails.UserPasswordEncoderListener</span>
 <span class="comment">// Place your Spring DSL code here</span>
 beans = {
     userPasswordEncoderListener(UserPasswordEncoderListener, ref(<span class="string"><span class="delimiter">'</span><span class="content">hibernateDatastore</span><span class="delimiter">'</span></span>))
@@ -337,6 +337,15 @@ beans = {
 <pre class="CodeRay highlight"><code data-lang="groovy">grails {
     plugin {
         springsecurity {
+            rest {
+                token {
+                    storage {
+                        jwt {
+                            secret = <span class="string"><span class="delimiter">'</span><span class="content">pleaseChangeThisSecretForANewOne</span><span class="delimiter">'</span></span>
+                        }
+                    }
+                }
+            }
             securityConfigType = <span class="string"><span class="delimiter">&quot;</span><span class="content">InterceptUrlMap</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
             filterChain {
                 chainMap = [
@@ -345,11 +354,11 @@ beans = {
                 ]
             }
             userLookup {
-                userDomainClassName = <span class="string"><span class="delimiter">'</span><span class="content">grails.test.security.User</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
-                authorityJoinClassName = <span class="string"><span class="delimiter">'</span><span class="content">grails.test.security.UserSecurityRole</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+                userDomainClassName = <span class="string"><span class="delimiter">'</span><span class="content">example.grails.User</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+                authorityJoinClassName = <span class="string"><span class="delimiter">'</span><span class="content">example.grails.UserSecurityRole</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
             }
             authority {
-                className = <span class="string"><span class="delimiter">'</span><span class="content">grails.test.security.SecurityRole</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+                className = <span class="string"><span class="delimiter">'</span><span class="content">example.grails.SecurityRole</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
             }
             interceptUrlMap = [
                     [<span class="key">pattern</span>: <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>,                      <span class="key">access</span>: [<span class="string"><span class="delimiter">'</span><span class="content">permitAll</span><span class="delimiter">'</span></span>]],
@@ -430,14 +439,16 @@ beans = {
 <p>We&#8217;ll populate our database in <code>BootStrap</code>, inserting two users when the application starts.</p>
 </div>
 <div class="listingblock">
-<div class="title">grails-app/init/grails/test/security/BootStrap.groovy</div>
+<div class="title">grails-app/init/example/grails/BootStrap.groovy</div>
 <div class="content">
-<pre>package grails.test.security
+<pre>package example.grails
 
 import grails.compiler.GrailsCompileStatic
 
 @GrailsCompileStatic
 class BootStrap {
+
+    AnnouncementService announcementService
 
     def init = { servletContext -&gt;
 
@@ -459,6 +470,8 @@ class BootStrap {
             u.save()
             new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_EMPLOYEE')).save()
         }
+
+        announcementService.save('The Hound of the Baskervilles')
     }
     def destroy = {
     }

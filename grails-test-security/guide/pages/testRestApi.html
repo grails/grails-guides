@@ -85,115 +85,134 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>To test REST part of the application, we use <a href="https://github.com/grails-plugins/grails-rest-client-builder">Rest Client Builder Grails Plugin</a>. We need to add the dependency:</p>
+<p>To test REST part of the application, we use <a href="https://docs.micronaut.io/snapshot/guide/index.html#httpClient">Micronaut&#8217;s HttpClient</a>. We need to add the dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">/gradle.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.8</span>
+gormVersion=<span class="float">6.1</span><span class="float">.10</span>.RELEASE
+gradleWrapperVersion=<span class="float">3.5</span>
+assetPipelineVersion=<span class="float">2.14</span><span class="float">.8</span>
+micronautVersion=<span class="float">1.0</span><span class="float">.0</span>.RC1
+gebVersion=<span class="float">2.2</span>
+seleniumVersion=<span class="float">3.12</span><span class="float">.0</span></code></pre>
+</div>
 </div>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:http-client:</span><span class="inline"><span class="inline-delimiter">$</span>micronautVersion</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Our first test will verify that the <em>/api/announcements</em> endpoint is only accessible to users with role <em>ROLE_BOSS</em></p>
 </div>
 <div class="listingblock">
-<div class="title">/src/integration-test/groovy/grails/test/security/ApiAnnouncementControllerSpec.groovy</div>
+<div class="title">/src/integration-test/groovy/example/grails/ApiAnnouncementControllerSpec.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.test.security
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.type.Argument</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.exceptions.HttpClientException</span>
+<span class="keyword">import</span> <span class="include">spock.lang.AutoCleanup</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
 
-<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>])
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Instanceof</span><span class="delimiter">'</span></span>])
 <span class="annotation">@Integration</span>
-<span class="annotation">@Rollback</span>
 <span class="type">class</span> <span class="class">ApiAnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test /api/announcements url is secured</span><span class="delimiter">'</span></span>() {
-        <span class="key">given</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+    <span class="annotation">@Shared</span>
+    <span class="annotation">@AutoCleanup</span>
+    HttpClient client
 
+    <span class="annotation">@OnceBefore</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> init() {
+        client  = HttpClient.create(<span class="keyword">new</span> <span class="predefined-type">URL</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>)) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test /api/announcements url is secured</span><span class="delimiter">'</span></span>() {
         <span class="key">when</span>:
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
-        }
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>)
+        client.toBlocking().exchange(request,  <i class="conum" data-value="3"></i><b>(3)</b>
+                Argument.of(<span class="predefined-type">List</span>, AnnouncementView),
+                Argument.of(CustomError))
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">401</span> <i class="conum" data-value="4"></i><b>(4)</b>
-        resp.json.status == <span class="integer">401</span>
-        resp.json.error == <span class="string"><span class="delimiter">'</span><span class="content">Unauthorized</span><span class="delimiter">'</span></span>
-        resp.json.message == <span class="string"><span class="delimiter">'</span><span class="content">No message available</span><span class="delimiter">'</span></span>
-        resp.json.path == <span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>
+        HttpClientException e = thrown(HttpClientException)
+        e.response.status == HttpStatus.UNAUTHORIZED <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">when</span>:
+        Optional&lt;CustomError&gt; jsonError = e.response.getBody(CustomError)
+
+        <span class="key">then</span>:
+        jsonError.isPresent()
+        jsonError.get().status == <span class="integer">401</span>
+        jsonError.get().error == <span class="string"><span class="delimiter">'</span><span class="content">Unauthorized</span><span class="delimiter">'</span></span>
+        jsonError.get().message == <span class="string"><span class="delimiter">'</span><span class="content">No message available</span><span class="delimiter">'</span></span>
+        jsonError.get().path == <span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>
     }
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test a user with the role ROLE_BOSS is able to access /api/announcements url</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the sherlock</span><span class="delimiter">'</span></span>
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="5"></i><b>(5)</b>
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                username = <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>
-                password = <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>
-            }
-        }
+        UserCredentials credentials = <span class="keyword">new</span> UserCredentials(<span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/api/login</span><span class="delimiter">'</span></span>, credentials) <i class="conum" data-value="5"></i><b>(5)</b>
+        HttpResponse&lt;BearerToken&gt; resp = client.toBlocking().exchange(request, BearerToken)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
-        resp.json.roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span> }
+        resp.status.code == <span class="integer">200</span>
+        resp.body().roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span> }
 
         <span class="key">when</span>:
-        <span class="keyword">def</span> accessToken = resp.json.access_token
+        <span class="predefined-type">String</span> accessToken = resp.body().accessToken
 
         <span class="key">then</span>:
         accessToken
 
         <span class="key">when</span>:
-        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="6"></i><b>(6)</b>
-        }
+        HttpResponse&lt;<span class="predefined-type">List</span>&gt; rsp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>)
+                .header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>), Argument.of(<span class="predefined-type">List</span>, AnnouncementView)) <i class="conum" data-value="6"></i><b>(6)</b>
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span> <i class="conum" data-value="7"></i><b>(7)</b>
+        rsp.status.code == <span class="integer">200</span> <i class="conum" data-value="7"></i><b>(7)</b>
+        rsp.body() != <span class="predefined-constant">null</span>
+        ((<span class="predefined-type">List</span>)rsp.body()).size() == <span class="integer">1</span>
+        ((<span class="predefined-type">List</span>)rsp.body()).get(<span class="integer">0</span>) <span class="keyword">instanceof</span> AnnouncementView
+        ((AnnouncementView) ((<span class="predefined-type">List</span>)rsp.body()).get(<span class="integer">0</span>)).message == <span class="string"><span class="delimiter">'</span><span class="content">The Hound of the Baskervilles</span><span class="delimiter">'</span></span>
     }
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test a user with the role ROLE_EMPLOYEE is NOT able to access /api/announcements url</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the watson</span><span class="delimiter">'</span></span>
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
 
-        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                username = <span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>
-                password = <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>
-            }
-        }
+        UserCredentials creds = <span class="keyword">new</span> UserCredentials(<span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>)
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/api/login</span><span class="delimiter">'</span></span>, creds)
+        HttpResponse&lt;BearerToken&gt; resp = client.toBlocking().exchange(request, BearerToken)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
-        !resp.json.roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span> }
-        resp.json.roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span> }
+        resp.status.code == <span class="integer">200</span>
+        !resp.body().roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span> }
+        resp.body().roles.find { <span class="local-variable">it</span> == <span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span> }
 
         <span class="key">when</span>:
-        <span class="keyword">def</span> accessToken = resp.json.access_token
+        <span class="predefined-type">String</span> accessToken = resp.body().accessToken
 
         <span class="key">then</span>:
         accessToken
 
         <span class="key">when</span>:
-        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/announcements</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-        }
+        resp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/api/announcements</span><span class="delimiter">'</span></span>)
+                .header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>accessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>))
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">403</span> <i class="conum" data-value="8"></i><b>(8)</b>
-
+        <span class="keyword">def</span> e = thrown(HttpClientException)
+        e.response.status == HttpStatus.FORBIDDEN <i class="conum" data-value="8"></i><b>(8)</b>
     }
 }</code></pre>
 </div>
@@ -202,15 +221,15 @@ function addJsClass() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><em>serverPort</em> property is automatically injected and it contains the random port where the app will be running for the functional test.</td>
+<td>The <code>grails.testing.spock.OnceBefore</code> annotation is a shorthand way of accomplishing the same behavior that would be accomplished by applying both the <code>@RunOnce</code> and <code>@Before</code> annotations to a fixture method.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>If you want JSON in the response, you should configure the <em>Accept</em> header to indicate you expect a JSON response.</td>
+<td><em>serverPort</em> property is automatically injected and it contains the random port where the app will be running for the functional test.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>When you are submitting a JSON payload in the request body, you should set the <em>Content-Type</em> header appropriately.</td>
+<td>With Micronaut HTTP client you can bind POJOs to the response body easily.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
