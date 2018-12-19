@@ -107,7 +107,7 @@
         <h1>Download an Excel file in Grails App</h1>
         <p>Learn how to download an excel file with Grails and Spreadsheet Builder library.</p>
         <p><strong>Authors:</strong> Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.8</p>
+        <p><strong>Grails Version:</strong> 3.3.9</p>
     </header>
     
 
@@ -154,8 +154,15 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -649,7 +656,7 @@ environments {
 ..
     }
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.8</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1</span><span class="delimiter">&quot;</span></span>
     }
 }
 
@@ -662,8 +669,8 @@ dependencies {
 }
 
 webdriverBinaries {
-    chromedriver <span class="string"><span class="delimiter">'</span><span class="content">2.41</span><span class="delimiter">'</span></span>
-    geckodriver <span class="string"><span class="delimiter">'</span><span class="content">0.21.0</span><span class="delimiter">'</span></span>
+    chromedriver <span class="string"><span class="delimiter">'</span><span class="content">2.45</span><span class="delimiter">'</span></span>
+    geckodriver <span class="string"><span class="delimiter">'</span><span class="content">0.23.0</span><span class="delimiter">'</span></span>
 }
 
 tasks.withType(Test) {
