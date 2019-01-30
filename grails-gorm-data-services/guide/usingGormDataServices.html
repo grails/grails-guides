@@ -208,6 +208,9 @@ without the disadvantages. E.g. you get type safety since GORM Data services are
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+
+
 <span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
 <span class="keyword">import</span> <span class="include">org.springframework.test.annotation.Rollback</span>
 <span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
@@ -215,7 +218,8 @@ without the disadvantages. E.g. you get type safety since GORM Data services are
 <span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
-<span class="type">class</span> <span class="class">PersonDataServiceSpec</span> <span class="directive">extends</span> Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@Transactional</span>
+<span class="type">class</span> <span class="class">PersonDataServiceWithoutHibernateSpec</span> <span class="directive">extends</span> Specification {
 
     <span class="annotation">@Shared</span> <i class="conum" data-value="2"></i><b>(2)</b>
     PersonDataService personDataService
@@ -236,7 +240,7 @@ without the disadvantages. E.g. you get type safety since GORM Data services are
     <span class="annotation">@Rollback</span> <i class="conum" data-value="6"></i><b>(6)</b>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find person by name</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">given</span>:
-        Person p = personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+        Person p = <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">age</span>: <span class="integer">39</span>).save()
 
         <span class="key">when</span>:
         Person person = personDataService.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
@@ -244,9 +248,6 @@ without the disadvantages. E.g. you get type safety since GORM Data services are
         <span class="key">then</span>:
         person.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>
         person.age == <span class="integer">39</span>
-
-        <span class="key">cleanup</span>:
-        personDataService.delete(p.id)
     }
 }</code></pre>
 </div>
@@ -302,7 +303,7 @@ the previous unit test:</p>
 
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find person by name</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">given</span>:
-        personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+        <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">age</span>: <span class="integer">39</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
 
         <span class="key">when</span>:
         Person person = personDataService.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
@@ -349,7 +350,7 @@ whole object. There are a few ways to implement projections. One way is to is to
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test find persons age projection</span><span class="delimiter">&quot;</span></span>() {
     <span class="key">given</span>:
-    Person person = personDataService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="integer">39</span>)
+    Person person = <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>, <span class="key">age</span>: <span class="integer">39</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
 
     <span class="key">when</span>:
     <span class="predefined-type">Integer</span> age = personDataService.findPersonAge(<span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav</span><span class="delimiter">&quot;</span></span>)
@@ -379,7 +380,7 @@ whole object. There are a few ways to implement projections. One way is to is to
 <div class="listingblock">
 <div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Person save(Person person)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Person save(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age)</code></pre>
 </div>
 </div>
 <div class="paragraph">
