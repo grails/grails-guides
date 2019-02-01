@@ -160,8 +160,15 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -557,7 +564,7 @@ grails:
     <span class="key">plugin</span>:
         <span class="key">databasemigration</span>:
             <span class="key">updateOnStart</span>: <span class="predefined-constant">true</span>
-            <span class="key">updateOnStartFileNames</span>: changelog.groovy
+            <span class="key">updateOnStartFileName</span>: changelog.groovy
 ...</code></pre>
 </div>
 </div>
@@ -1598,6 +1605,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='http://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
