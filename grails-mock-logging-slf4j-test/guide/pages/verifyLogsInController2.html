@@ -92,11 +92,11 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test create person unsuccessful logs</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">a person is created, but has a input error</span><span class="delimiter">&quot;</span></span>
-        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/person/createPerson?name=Bob&amp;age=Twenty</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>)
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/createPerson?name=Bob&amp;age=Twenty</span><span class="delimiter">&quot;</span></span>)
         ImmutableList&lt;LoggingEvent&gt; loggingEvents = personControllerLogger.getAllLoggingEvents()
 
         <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
-        resp.status == HttpStatus.OK
+        resp.status == <span class="integer">200</span>
         loggingEvents.size() == <span class="integer">1</span>
         loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Error occurred on save!</span><span class="delimiter">&quot;</span></span>
         loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.ERROR
@@ -104,15 +104,15 @@ function addJsClass() {
 
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test offerAdvice to old person</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">A person is already created</span><span class="delimiter">&quot;</span></span>
-        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/person/createPerson?name=John&amp;age=35</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>)
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/createPerson?name=John&amp;age=35</span><span class="delimiter">&quot;</span></span>)
         TestLogger ageAdvisorLogger = TestLoggerFactory.getTestLogger(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.grails.AgeAdvisor</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
 
         <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">we ask for advice</span><span class="delimiter">&quot;</span></span>
-        resp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/person/offerAdvice?name=John</span><span class="delimiter">&quot;</span></span>), <span class="predefined-type">Map</span>)
+        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/offerAdvice?name=John</span><span class="delimiter">&quot;</span></span>)
         ImmutableList&lt;LoggingEvent&gt; loggingEvents = ageAdvisorLogger.getAllLoggingEvents()
 
         <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
-        resp.status == HttpStatus.OK
+        resp.status == <span class="integer">200</span>
         loggingEvents.size() == <span class="integer">1</span>
         loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">It's all downhill from here, sorry.</span><span class="delimiter">&quot;</span></span>
         loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.WARN
