@@ -116,27 +116,27 @@ function addJsClass() {
 <p>Our React app already uses REST calls to create and delete talks for a given speaker. Let&#8217;s replace these REST calls with GraphQL mutations.</p>
 </div>
 <div class="paragraph">
-<p>Edit <code>/src/main/webapp/Speaker.js</code>:</p>
+<p>Edit <code>/client/src/Speaker.js</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/Speaker.js</div>
+<div class="title">/client/src/Speaker.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript">const talkCreate = gql<span class="error">`</span>
-  mutation talkCreate(<span class="predefined">$talk</span>: TalkCreate!) {
-    talkCreate(talk: <span class="predefined">$talk</span>) {
-      id
-      title
-      duration
+    mutation talkCreate(<span class="predefined">$talk</span>: TalkCreate!) {
+        talkCreate(talk: <span class="predefined">$talk</span>) {
+            id
+            title
+            duration
+        }
     }
-  }
 <span class="error">`</span>;
 
 const talkDelete = gql<span class="error">`</span>
-  mutation talkDelete(<span class="predefined">$id</span>: Long!) {
-    talkDelete(id: <span class="predefined">$id</span>) {
-    error
-  }
-}
+    mutation talkDelete(<span class="predefined">$id</span>: Long!) {
+        talkDelete(id: <span class="predefined">$id</span>) {
+            error
+        }
+    }
 <span class="error">`</span>;</code></pre>
 </div>
 </div>
@@ -159,24 +159,24 @@ import gql from 'graphql-tag'</code></pre>
 <p>Now we can use <code>compose</code> to bind these mutations to our <code>Speaker</code> component.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/Speaker.js</div>
+<div class="title">client/src/Speaker.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript">const SpeakerWithMutations = compose(
   graphql(talkCreate, {
-    <span class="key">props</span>: ({mutate}) =&gt; ({
-      <span class="key">talkCreate</span>: ({talk}) =&gt;
-        mutate({
-          <span class="key">variables</span>: {talk},
-        })
-    })
+      <span class="key">props</span>: ({mutate}) =&gt; ({
+          <span class="key">talkCreate</span>: ({talk}) =&gt;
+            mutate({
+                <span class="key">variables</span>: {talk},
+            })
+      })
   }),
   graphql(talkDelete, {
-    <span class="key">props</span>: ({mutate}) =&gt; ({
-      <span class="key">talkDelete</span>: ({id}) =&gt;
-        mutate({
-          <span class="key">variables</span>: {id},
-        })
-    })
+      <span class="key">props</span>: ({mutate}) =&gt; ({
+          <span class="key">talkDelete</span>: ({id}) =&gt;
+            mutate({
+                <span class="key">variables</span>: {id},
+            })
+      })
   })
 )(Speaker)
 
@@ -199,23 +199,23 @@ For more information regarding the use of mutations and <code>compose</code>, pl
 <p>The last step is to call our mutations in place of REST calls. Find the <code>addNewTalk</code> and <code>deleteTalk</code> functions in <code>Speaker.js</code>, and edit them as shown below:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/Speaker.js</div>
+<div class="title">client/src/Speaker.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript">addNewTalk = () =&gt; {
-  const {title, duration} = <span class="local-variable">this</span>.state;
-  const {speaker} = <span class="local-variable">this</span>.props;
+    const {title, duration} = <span class="local-variable">this</span>.state;
+    const {speaker} = <span class="local-variable">this</span>.props;
 
-  <span class="local-variable">this</span>.setState({<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>});
+    <span class="local-variable">this</span>.setState({<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>, <span class="key">duration</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>});
 
-  <span class="local-variable">this</span>.props.talkCreate({<span class="key">talk</span>: {title, duration, <span class="key">speaker</span>: {<span class="key">id</span>: speaker.id}}})
-    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">create response:</span><span class="delimiter">'</span></span>, data))
-    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+    <span class="local-variable">this</span>.props.talkCreate({<span class="key">talk</span>: {title, duration, <span class="key">speaker</span>: {<span class="key">id</span>: speaker.id}}})
+      .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">create response:</span><span class="delimiter">'</span></span>, data))
+      .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
 };
 
 deleteTalk = (id) =&gt; {
-  <span class="local-variable">this</span>.props.talkDelete({<span class="key">id</span>: id})
-    .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">delete response: </span><span class="delimiter">'</span></span>, data))
-    .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
+    <span class="local-variable">this</span>.props.talkDelete({<span class="key">id</span>: id})
+      .then(({data}) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">delete response: </span><span class="delimiter">'</span></span>, data))
+      .<span class="keyword">catch</span>((error) =&gt; console.log(<span class="string"><span class="delimiter">'</span><span class="content">there was an error sending the query</span><span class="delimiter">'</span></span>, error));
 };</code></pre>
 </div>
 </div>

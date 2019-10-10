@@ -108,31 +108,31 @@ function addJsClass() {
 <p>The first requirement to use Apollo is to configure a <strong>provider</strong>, which will encapsulate the details needed to actual make requests to the GraphQL schema. Edit the file <code>src/main/webapp/index.js</code> as shown below:</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/webapp/index.js</div>
+<div class="title">client/src/index.js</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">import</span> React from <span class="string"><span class="delimiter">'</span><span class="content">react</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> ReactDOM from <span class="string"><span class="delimiter">'</span><span class="content">react-dom</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> App from <span class="string"><span class="delimiter">'</span><span class="content">./App</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/bootstrap.css</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/App.css</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/grails.css</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> <span class="string"><span class="delimiter">'</span><span class="content">./css/main.css</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> {ApolloProvider} from <span class="string"><span class="delimiter">'</span><span class="content">react-apollo</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> {ApolloClient} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-client</span><span class="delimiter">'</span></span>;
-<span class="reserved">import</span> {HttpLink} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-link-http</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> {createHttpLink} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-link-http</span><span class="delimiter">'</span></span>;
 <span class="reserved">import</span> {InMemoryCache} from <span class="string"><span class="delimiter">'</span><span class="content">apollo-cache-inmemory</span><span class="delimiter">'</span></span>;
+<span class="reserved">import</span> { SERVER_URL} from <span class="string"><span class="delimiter">&quot;</span><span class="content">./config</span><span class="delimiter">&quot;</span></span>;
 
-const client = <span class="keyword">new</span> ApolloClient({ <i class="conum" data-value="1"></i><b>(1)</b>
-  <span class="key">link</span>: <span class="keyword">new</span> HttpLink(), <i class="conum" data-value="2"></i><b>(2)</b>
+<i class="conum" data-value="1"></i><b>(1)</b>
+const client = <span class="keyword">new</span> ApolloClient({
+  <span class="key">link</span>: createHttpLink({ <span class="key">uri</span>: <span class="error">`</span><span class="predefined">$</span>{SERVER_URL}/graphql<span class="error">`</span> }), <i class="conum" data-value="2"></i><b>(2)</b>
   <span class="key">cache</span>: <span class="keyword">new</span> InMemoryCache()
 });
 
-
-ReactDOM.render( <i class="conum" data-value="3"></i><b>(3)</b>
-  <span class="tag">&lt;ApolloProvider</span> <span class="attribute-name">client</span>=<span class="error">{</span><span class="attribute-value">client</span><span class="error">}</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;App</span><span class="tag">/&gt;</span>
-  <span class="tag">&lt;/ApolloProvider&gt;</span>,
-  document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">root</span><span class="delimiter">'</span></span>)
-);</code></pre>
+<i class="conum" data-value="3"></i><b>(3)</b>
+ReactDOM.render(&lt; ApolloProvider client={client}&gt;
+  <span class="tag">&lt;App</span> <span class="tag">/&gt;</span>
+&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ApolloProvider&gt;, document.getElementById('root'));</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -143,7 +143,7 @@ ReactDOM.render( <i class="conum" data-value="3"></i><b>(3)</b>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>By default, this client will send queries to the <code>/graphql</code> endpoint on the same host - which conveniently happens to be where the GORM GraphQL plugin exposes the GraphQL schema</td>
+<td>This client will send queries to the <code>${SERVER_URL}/graphql</code> endpoint - which conveniently happens to be where the GORM GraphQL plugin exposes the GraphQL schema</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
