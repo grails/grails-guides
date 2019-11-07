@@ -99,7 +99,16 @@ task updateGuidesJson {
             }
         }
 
-        def existing = json.find { it.name == project.name }
+        def existing = json.find {
+            it.name == project.name && it.githubBranch == project.githubBranch
+        }
+        if (!existing) {
+            existing = json.find {
+                it.name == project.name &&
+                        'master' == project.githubBranch &&
+                        !it.githubBranch
+            }
+        }
         def data = [:]
         if(existing) {
             data = existing
