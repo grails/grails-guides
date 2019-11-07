@@ -14,38 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grails.org/learning.html'>Learning</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
     <a href='http://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Guides</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -109,7 +109,7 @@
         <h1>Grails + @Scheduled</h1>
         <p>Learn how to use Spring Task Execution and Scheduling to schedule periodic tasks inside your Grails applications</p>
         <p><strong>Authors:</strong> Ben Rhine</p>
-        <p><strong>Grails Version:</strong> 3.3.2</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -156,8 +156,15 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -371,7 +378,7 @@ there is no need to add any additional dependencies. Lets go ahead and get start
 <span class="annotation">@CompileStatic</span> <i class="conum" data-value="2"></i><b>(2)</b>
 <span class="type">class</span> <span class="class">HelloWorldJobService</span> {
 
-    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="directive">static</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="3"></i><b>(3)</b>
 
     <span class="annotation">@Scheduled</span>(fixedDelay = <span class="integer">10000L</span>) <i class="conum" data-value="4"></i><b>(4)</b>
     <span class="type">void</span> executeEveryTen() {
@@ -458,7 +465,7 @@ Simple Job every 10 seconds :14/2/2018 02:07:35</code></pre>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is required or your schedule will not run.
+When using <code>@Scheduled</code>, <code>static lazyInit = false</code> is required or your schedule will not run.
 </td>
 </tr>
 </table>
@@ -507,7 +514,8 @@ When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is req
 <span class="type">class</span> <span class="class">EmailService</span> {
 
     <span class="type">void</span> send(<span class="predefined-type">String</span> user, <span class="predefined-type">String</span> message) {
-        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to </span><span class="inline"><span class="inline-delimiter">${</span>user<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>+ <span class="string"><span class="delimiter">'</span><span class="content"> at </span><span class="delimiter">'</span></span> + <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to {} : {} at {}</span><span class="delimiter">&quot;</span></span>,
+                user, message, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
     }
 }</code></pre>
 </div>
@@ -522,7 +530,7 @@ When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is req
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">DailyEmailJobService</span>  {
 
-    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">static</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
     EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
 
@@ -579,10 +587,12 @@ take a look at job execution using a TaskScheduler.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Bean</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
 <span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
 
+<span class="annotation">@CompileStatic</span>
 <span class="annotation">@Configuration</span> <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="type">class</span> <span class="class">SchedulingConfiguration</span> {
 
@@ -650,7 +660,7 @@ Grails dependency injection</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Enable discovery of additional configuration files</td>
+<td>Enable discovery of additional configuration files. You may also use Spring <code>@EnableScheduling</code> here to trigger scheduling.</td>
 </tr>
 </table>
 </div>
@@ -676,6 +686,9 @@ Grails dependency injection</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">EmailTask</span> <span class="directive">implements</span> <span class="predefined-type">Runnable</span> { <i class="conum" data-value="1"></i><b>(1)</b>
 
     <span class="predefined-type">String</span> email <i class="conum" data-value="2"></i><b>(2)</b>
@@ -715,7 +728,7 @@ Grails dependency injection</p>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Task constructor: set <code>email</code>, `message and service</td>
+<td>Task constructor: set <code>email</code>, <code>message</code> and <code>emailService</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -860,6 +873,7 @@ of that confusion here is the previous cron configuration written using the Task
 <span class="keyword">import</span> <span class="include">demo.EmailTask</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.apache.commons.lang.time.DateUtils</span>
 <span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
 <span class="keyword">import</span> <span class="include">java.time.Duration</span>
 
@@ -885,7 +899,7 @@ of that confusion here is the previous cron configuration written using the Task
     <span class="predefined-type">Date</span> dailyDate() { <i class="conum" data-value="3"></i><b>(3)</b>
         <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>(<span class="key">hours</span>: HOUR, <span class="key">minutes</span>: MINUTE, <span class="key">seconds</span>: SECONDS)
         <span class="keyword">if</span>(startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
-            <span class="keyword">return</span> (startAt + <span class="integer">1</span>)
+            <span class="keyword">return</span> (DateUtils.addDays(startAt, <span class="integer">1</span>))
         }
         startAt
     }
@@ -1093,23 +1107,23 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
@@ -1124,6 +1138,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>

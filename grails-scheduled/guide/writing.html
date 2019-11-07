@@ -204,7 +204,7 @@ there is no need to add any additional dependencies. Lets go ahead and get start
 <span class="annotation">@CompileStatic</span> <i class="conum" data-value="2"></i><b>(2)</b>
 <span class="type">class</span> <span class="class">HelloWorldJobService</span> {
 
-    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="directive">static</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="3"></i><b>(3)</b>
 
     <span class="annotation">@Scheduled</span>(fixedDelay = <span class="integer">10000L</span>) <i class="conum" data-value="4"></i><b>(4)</b>
     <span class="type">void</span> executeEveryTen() {
@@ -291,7 +291,7 @@ Simple Job every 10 seconds :14/2/2018 02:07:35</code></pre>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is required or your schedule will not run.
+When using <code>@Scheduled</code>, <code>static lazyInit = false</code> is required or your schedule will not run.
 </td>
 </tr>
 </table>
@@ -340,7 +340,8 @@ When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is req
 <span class="type">class</span> <span class="class">EmailService</span> {
 
     <span class="type">void</span> send(<span class="predefined-type">String</span> user, <span class="predefined-type">String</span> message) {
-        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to </span><span class="inline"><span class="inline-delimiter">${</span>user<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>+ <span class="string"><span class="delimiter">'</span><span class="content"> at </span><span class="delimiter">'</span></span> + <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
+        log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">Sending email to {} : {} at {}</span><span class="delimiter">&quot;</span></span>,
+                user, message, <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">dd/M/yyyy hh:mm:ss</span><span class="delimiter">&quot;</span></span>).format(<span class="keyword">new</span> <span class="predefined-type">Date</span>())
     }
 }</code></pre>
 </div>
@@ -355,7 +356,7 @@ When using <code>@Scheduled</code>, <code>boolean lazyInit = false</code> is req
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">DailyEmailJobService</span>  {
 
-    <span class="type">boolean</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="directive">static</span> lazyInit = <span class="predefined-constant">false</span> <i class="conum" data-value="1"></i><b>(1)</b>
 
     EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
 
@@ -412,10 +413,12 @@ take a look at job execution using a TaskScheduler.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Bean</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Configuration</span>
 <span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
 
+<span class="annotation">@CompileStatic</span>
 <span class="annotation">@Configuration</span> <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="type">class</span> <span class="class">SchedulingConfiguration</span> {
 
@@ -483,7 +486,7 @@ Grails dependency injection</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Enable discovery of additional configuration files</td>
+<td>Enable discovery of additional configuration files. You may also use Spring <code>@EnableScheduling</code> here to trigger scheduling.</td>
 </tr>
 </table>
 </div>
@@ -509,6 +512,9 @@ Grails dependency injection</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">EmailTask</span> <span class="directive">implements</span> <span class="predefined-type">Runnable</span> { <i class="conum" data-value="1"></i><b>(1)</b>
 
     <span class="predefined-type">String</span> email <i class="conum" data-value="2"></i><b>(2)</b>
@@ -548,7 +554,7 @@ Grails dependency injection</p>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Task constructor: set <code>email</code>, `message and service</td>
+<td>Task constructor: set <code>email</code>, <code>message</code> and <code>emailService</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -693,6 +699,7 @@ of that confusion here is the previous cron configuration written using the Task
 <span class="keyword">import</span> <span class="include">demo.EmailTask</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.apache.commons.lang.time.DateUtils</span>
 <span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
 <span class="keyword">import</span> <span class="include">java.time.Duration</span>
 
@@ -718,7 +725,7 @@ of that confusion here is the previous cron configuration written using the Task
     <span class="predefined-type">Date</span> dailyDate() { <i class="conum" data-value="3"></i><b>(3)</b>
         <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>(<span class="key">hours</span>: HOUR, <span class="key">minutes</span>: MINUTE, <span class="key">seconds</span>: SECONDS)
         <span class="keyword">if</span>(startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
-            <span class="keyword">return</span> (startAt + <span class="integer">1</span>)
+            <span class="keyword">return</span> (DateUtils.addDays(startAt, <span class="integer">1</span>))
         }
         startAt
     }
