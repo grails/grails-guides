@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.7 Simplified Cron with TaskSchedule</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writing.html"><strong>3</strong><span>Writing Schedules</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="logicInServiceTwo">3.7 Simplified Cron with TaskSchedule</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-scheduled/edit/grails3/src/main/docs/guide/logicInServiceTwo.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In our previous cron example we did mention that many times cron can be confusing and is not intuitive. To alleviate some
+of that confusion here is the previous cron configuration written using the TaskScheduler</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/todayat/DailyMailJobService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.EmailService</span>
+<span class="keyword">import</span> <span class="include">demo.EmailTask</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</span>
+<span class="keyword">import</span> <span class="include">java.time.Duration</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">DailyMailJobService</span> {
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> HOUR = <span class="integer">4</span>
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> MINUTE = <span class="integer">30</span>
+    <span class="directive">private</span> <span class="directive">final</span> <span class="type">int</span> SECONDS = <span class="integer">0</span>
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> MILLISECONDS_IN_DAY = <span class="predefined-type">Duration</span>.ofDays(<span class="integer">1</span>).getSeconds() * <span class="integer">1000</span> <i class="conum" data-value="4"></i><b>(4)</b>
+
+    ThreadPoolTaskScheduler threadPoolTaskScheduler <i class="conum" data-value="1"></i><b>(1)</b>
+    EmailService emailService <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> register(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) {
+        scheduleDailyEmail(email, message)
+    }
+
+    <span class="type">void</span> scheduleDailyEmail(<span class="predefined-type">String</span> email, <span class="predefined-type">String</span> message) { <i class="conum" data-value="5"></i><b>(5)</b>
+        threadPoolTaskScheduler.scheduleAtFixedRate(<span class="keyword">new</span> EmailTask(emailService, email, message), dailyDate(), MILLISECONDS_IN_DAY)
+    }
+
+    <span class="predefined-type">Date</span> dailyDate() { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="predefined-type">Date</span> startAt = <span class="keyword">new</span> <span class="predefined-type">Date</span>(<span class="key">hours</span>: HOUR, <span class="key">minutes</span>: MINUTE, <span class="key">seconds</span>: SECONDS)
+        <span class="keyword">if</span>(startAt.before(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) {
+            <span class="keyword">return</span> (startAt + <span class="integer">1</span>)
+        }
+        startAt
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Dependency injection of our TaskScheduler bean</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Dependency injection of emailService</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Calculate start time</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Calculate repeat interval</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Schedule task with start time and repeat interval</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once you have written your schedule using TaskScheduler, register the job in bootstrap.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">demo.todayat.DailyMailJobService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+        RegisterService registerService
+    DailyMailJobService dailyMailJobService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="directive">final</span> <span class="predefined-type">String</span> followUp = <span class="string"><span class="delimiter">'</span><span class="content">Follow up - How was your experience</span><span class="delimiter">'</span></span>
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">harry@howards.com</span><span class="delimiter">'</span></span>, followUp)
+            sleep(<span class="integer">20</span>_000)
+            registerService.register(<span class="string"><span class="delimiter">'</span><span class="content">ron@howards.com</span><span class="delimiter">'</span></span>, followUp)
+        dailyMailJobService.register(<span class="string"><span class="delimiter">'</span><span class="content">john.daily@example.com</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Daily Reminder</span><span class="delimiter">'</span></span>)
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-scheduled"><img src="https://travis-ci.org/grails-guides/grails-scheduled.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-scheduled">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-scheduled.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-scheduled.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-scheduled'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-scheduled.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-scheduled/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
