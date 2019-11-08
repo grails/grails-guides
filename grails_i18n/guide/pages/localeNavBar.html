@@ -114,7 +114,7 @@ to render a languages dropdown:</p>
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
-<span class="keyword">import</span> <span class="include">org.springframework.web.servlet.support.RequestContextUtils</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.i18n.LocaleContextHolder</span>
 
 <span class="type">class</span> <span class="class">LocaleNavbarTagLib</span> <span class="directive">implements</span> GrailsConfigurationAware {
 
@@ -134,15 +134,14 @@ to render a languages dropdown:</p>
     <span class="keyword">def</span> localeDropdownListItems = { args -&gt;
         <span class="predefined-type">String</span> uri = args.uri
 
-        <span class="keyword">for</span> ( <span class="predefined-type">String</span> lang : languages ) {
+        <span class="keyword">for</span> (<span class="predefined-type">String</span> lang : languages) {
             <span class="predefined-type">String</span> languageCode = <span class="string"><span class="delimiter">&quot;</span><span class="content">language.</span><span class="inline"><span class="inline-delimiter">$</span>lang</span><span class="delimiter">&quot;</span></span>
-            <span class="keyword">def</span> locale = RequestContextUtils.getLocale(request) <i class="conum" data-value="2"></i><b>(2)</b>
+
+            <span class="keyword">def</span> locale = LocaleContextHolder.locale
             <span class="keyword">def</span> msg = messageSource.getMessage(languageCode, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, locale) <i class="conum" data-value="3"></i><b>(3)</b>
             out &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;li&gt;&lt;a href='</span><span class="inline"><span class="inline-delimiter">${</span>uri<span class="inline-delimiter">}</span></span><span class="content">?lang=</span><span class="inline"><span class="inline-delimiter">${</span>lang<span class="inline-delimiter">}</span></span><span class="content">'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>msg<span class="inline-delimiter">}</span></span><span class="content">&lt;/a&gt;&lt;/li&gt;</span><span class="delimiter">&quot;</span></span>
         }
-
     }
-
 }</code></pre>
 </div>
 </div>
