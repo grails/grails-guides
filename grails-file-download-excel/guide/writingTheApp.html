@@ -39,10 +39,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the App</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span></a>
                         </div>
                         
                     </div>
@@ -64,7 +61,7 @@ function addJsClass() {
                 
 
                 
-                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
                 
 
 
@@ -102,19 +99,7 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p><code>grails create-app example.grails.complete --features=events,geb2,hibernate5</code></p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-we are using <code>geb2</code> feature which includes <a href="http://www.gebish.org">Geb 2</a> and <a href="https://plugins.gradle.org/plugin/com.energizedwork.webdriver-binaries">Gradle WebDriver Binaries plugin</a>. Geb 2 requires JDK 1.8 or greater.
-</td>
-</tr>
-</table>
+<p><code>grails create-app example.grails.complete</code></p>
 </div>
 
 
@@ -199,8 +184,8 @@ we are using <code>geb2</code> feature which includes <a href="http://www.gebish
     ...
     ..
     .
-    compile <span class="string"><span class="delimiter">'</span><span class="content">builders.dsl:spreadsheet-builder-poi:2.0.0.RC1</span><span class="delimiter">'</span></span>
-    compile <span class="string"><span class="delimiter">'</span><span class="content">builders.dsl:spreadsheet-builder-groovy:2.0.0.RC1</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">builders.dsl:spreadsheet-builder-poi:</span><span class="inline"><span class="inline-delimiter">$</span>spreadsheetBuilderVersion</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">builders.dsl:spreadsheet-builder-groovy:</span><span class="inline"><span class="inline-delimiter">$</span>spreadsheetBuilderVersion</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
 </div>
 </div>
@@ -393,20 +378,21 @@ easy is to test that the file downloads but also that the downloaded file conten
 <p>We use also, Geb; a browser automation solution.</p>
 </div>
 <div class="paragraph">
-<p>We told Grails CLI to use <code>geb2</code> feature when we created the app in <a href="#writingTheApp">Writing the App</a> section.</p>
-</div>
-<div class="paragraph">
-<p>Grails <code>geb2</code> feature includes the necessary Geb dependencies:</p>
+<p>By default, a Grails includes the necessary Geb dependencies:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-remote-driver:3.6.0</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-api:3.6.0</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:3.6.0</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:3.6.0</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:3.6.0</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile (<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>) {
+        exclude <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">org.gebish</span><span class="delimiter">'</span></span>, <span class="key">module</span>: <span class="string"><span class="delimiter">'</span><span class="content">geb-spock</span><span class="delimiter">'</span></span>
+    }
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.gebish:geb-spock:</span><span class="inline"><span class="inline-delimiter">$</span>gebVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-remote-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-api:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-safari-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumSafariDriverVersion</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -418,27 +404,36 @@ easy is to test that the file downloads but also that the downloaded file conten
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.openqa.selenium.chrome.ChromeDriver</span>
 <span class="keyword">import</span> <span class="include">org.openqa.selenium.chrome.ChromeOptions</span>
 <span class="keyword">import</span> <span class="include">org.openqa.selenium.firefox.FirefoxDriver</span>
-
-ChromeOptions options = <span class="keyword">new</span> ChromeOptions()
-<span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) ) {
-    options.setExperimentalOption(<span class="string"><span class="delimiter">&quot;</span><span class="content">prefs</span><span class="delimiter">&quot;</span></span>, [
-            <span class="string"><span class="delimiter">&quot;</span><span class="content">profile.default_content_settings.popups</span><span class="delimiter">&quot;</span></span>:  <span class="integer">0</span>, <i class="conum" data-value="1"></i><b>(1)</b>
-            <span class="string"><span class="delimiter">&quot;</span><span class="content">download.default_directory</span><span class="delimiter">&quot;</span></span>: <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">download.folder</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
-    ])
-}
+<span class="keyword">import</span> <span class="include">org.openqa.selenium.firefox.FirefoxOptions</span>
+<span class="keyword">import</span> <span class="include">org.openqa.selenium.safari.SafariDriver</span>
 
 environments {
 
+    <span class="comment">// You need to configure in Safari -&gt; Develop -&gt; Allowed Remote Automation</span>
+    safari {
+        driver = { <span class="keyword">new</span> SafariDriver() }
+    }
+
     <span class="comment">// run via “./gradlew -Dgeb.env=chrome iT”</span>
     chrome {
-        driver = { <span class="keyword">new</span> ChromeDriver(options) }
+        driver = { <span class="keyword">new</span> ChromeDriver() }
     }
 
     <span class="comment">// run via “./gradlew -Dgeb.env=chromeHeadless iT”</span>
     chromeHeadless {
         driver = {
-            options.addArguments(<span class="string"><span class="delimiter">'</span><span class="content">headless</span><span class="delimiter">'</span></span>)
-            <span class="keyword">new</span> ChromeDriver(options)
+            ChromeOptions o = <span class="keyword">new</span> ChromeOptions()
+            o.addArguments(<span class="string"><span class="delimiter">'</span><span class="content">headless</span><span class="delimiter">'</span></span>)
+            <span class="keyword">new</span> ChromeDriver(o)
+        }
+    }
+
+    <span class="comment">// run via “./gradlew -Dgeb.env=firefoxHeadless iT”</span>
+    firefoxHeadless {
+        driver = {
+            FirefoxOptions o = <span class="keyword">new</span> FirefoxOptions()
+            o.addArguments(<span class="string"><span class="delimiter">'</span><span class="content">-headless</span><span class="delimiter">'</span></span>)
+            <span class="keyword">new</span> FirefoxDriver(o)
         }
     }
 
@@ -499,11 +494,11 @@ environments {
 ..
     }
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>webdriverBinariesVersion</span><span class="delimiter">&quot;</span></span>
     }
 }
 
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.energizedwork.webdriver-binaries</span><span class="delimiter">&quot;</span></span>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.erdi.webdriver-binaries</span><span class="delimiter">&quot;</span></span>
 
 dependencies {
 ...
@@ -512,8 +507,8 @@ dependencies {
 }
 
 webdriverBinaries {
-    chromedriver <span class="string"><span class="delimiter">'</span><span class="content">2.45</span><span class="delimiter">'</span></span>
-    geckodriver <span class="string"><span class="delimiter">'</span><span class="content">0.23.0</span><span class="delimiter">'</span></span>
+    chromedriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>chromeDriverVersion<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    geckodriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>geckodriverVersion<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
 }
 
 tasks.withType(Test) {
@@ -609,7 +604,7 @@ $ open build/reports/tests/test/index.html</code></pre>
                 
                     <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the app</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
