@@ -1,0 +1,891 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/whatAreCommandObjects.html"><strong>3</strong><span>What are command objects?</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>4</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/whatAreCommandObjects.html">&lt;&lt; <strong>3</strong><span>What are command objects?</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#createTheController"><strong>4.1</strong><span>Create the controller</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#addCreateAndSaveActions"><strong>4.2</strong><span>Implement the create and save actions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#addEditAndUpdateActions"><strong>4.3</strong><span>Implement the edit and update actions</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">4 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/command-objects-and-forms/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This guide will lead you through the process of creating a controller with actions
+that use command objects. With those command objects, you will learn to handle form
+inputs safely and easily, with a minimum of boilerplate.</p>
+</div>
+
+
+<h2 id="createTheController">4.1 Create the controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/command-objects-and-forms/edit/grails3/src/main/docs/guide/createTheController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Before we can create any actions using command objects, we need a controller. Create a
+<code>PlayerController</code> class to work with the existing domain object <code>Player</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">$</span> .<span class="regexp"><span class="delimiter">/</span><span class="content">grailsw create-controller demo.Player</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The first time you run a <code>grails</code> command, application dependencies will be
+downloaded form the Internet. Subsequent calls will be much faster.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The output of the command will look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>| Created grails-app/controllers/demo/PlayerController.groovy
+| Created src/test/groovy/demo/PlayerControllerSpec.groovy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will now have a new, mostly empty controller named <code>PlayerController.groovy</code>
+in the <code>grails-app/controllers/demo</code> directory. Update the <code>index</code> action and add
+the <code>show</code> action to look like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">org.springframework.http.HttpStatus</span>
+
+<span class="type">class</span> <span class="class">PlayerController</span> {
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        respond Player.list(params), <span class="key">model</span>: [<span class="key">playerCount</span>: Player.count()]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(Player player) {
+        respond player
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The domain class, views, and some sample data are provided for you. At this point,
+you should be able to run the application and navigate to <a href="http://localhost:8080/player/" class="bare">http://localhost:8080/player/</a>
+to see a list of players, and click on a player&#8217;s name to view that individual player.
+However, none of the other actions (e.g. create, save, edit, update, delete) will work yet,
+not until you write those actions.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>At any point, you can start the application by typing <code>./gradlew bootRun</code> on the
+command line; it is running and ready when you see:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Grails application running at http://localhost:8080 in environment: development</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Stop the application by pressing <strong>Ctrl-C</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="addCreateAndSaveActions">4.2 Implement the create and save actions</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/command-objects-and-forms/edit/grails3/src/main/docs/guide/addCreateAndSaveActions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next, let&#8217;s add the ability to create new players. To <code>PlayerController</code>, add the <code>create</code>
+action.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">FactoryMethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">GrailsMassAssignment</span><span class="delimiter">'</span></span>])
+<span class="keyword">def</span> <span class="function">create</span>() {
+    respond <span class="keyword">new</span> Player(params)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While this action does make use of the <code>Player</code> class, the instance of <code>Player</code> <strong>is not</strong> a command object
+since it is not an argument to the action. This should make sense: since the intent of the
+action is to create a new player object, there is no form or input handling necessary.</p>
+</div>
+<div class="paragraph">
+<p>From the Player List (<a href="http://localhost:8080/player/index" class="bare">http://localhost:8080/player/index</a>), click the <strong>New Player</strong> button
+to see the form to create a new player (located at <a href="http://localhost:8080/player/create" class="bare">http://localhost:8080/player/create</a>).
+If you were to enter values into the form and click the <strong>Create</strong> button now, you would get
+a <code>404 Page Not Found</code> error, since the <code>save</code> action is not defined yet.
+Add that now to <code>PlayerController</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">save</span>(Player player) {
+        <span class="comment">// ...</span>
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, <code>player</code> <strong>is</strong> a command object, because it is an argument to the action. Behind
+the scenes, Grails will recognize this and rewrite your action to fetch existing records
+(if necessary), bind input data to the command object, perform dependency injection, and
+validate the object. All of these tasks could be done manually, but by making use of a
+command object, all of this behavior is automatic and leaves your code uncluttered of so
+much boilerplate.</p>
+</div>
+<div class="paragraph">
+<p>Arguably, the best feature here is <a href="http://docs.grails.org/latest/guide/theWebLayer.html#dataBinding">Data Binding</a>,
+part of the automatic behavior you get from using command objects. While on the create
+page, view the HTML source code (generated from the compiled <code>create.gsp</code>) and look for
+the <code>&lt;form&gt;</code> tag:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;form</span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">method</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span> <span class="tag">&gt;</span>
+    <span class="tag">&lt;fieldset</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">form</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">fieldcontain required</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label</span> <span class="attribute-name">for</span>=<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>Name<span class="tag">&lt;span</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">required-indicator</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>*<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">required</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">fieldcontain required</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label</span> <span class="attribute-name">for</span>=<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>Game<span class="tag">&lt;span</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">required-indicator</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>*<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">game</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">required</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">game</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">fieldcontain</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label</span> <span class="attribute-name">for</span>=<span class="string"><span class="delimiter">'</span><span class="content">region</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>Region<span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">region</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">region</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">fieldcontain required</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label</span> <span class="attribute-name">for</span>=<span class="string"><span class="delimiter">'</span><span class="content">wins</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>Wins<span class="tag">&lt;span</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">required-indicator</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>*<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">number</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">wins</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">required</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">min</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">wins</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">fieldcontain required</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>
+          <span class="tag">&lt;label</span> <span class="attribute-name">for</span>=<span class="string"><span class="delimiter">'</span><span class="content">losses</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>Losses<span class="tag">&lt;span</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">'</span><span class="content">required-indicator</span><span class="delimiter">'</span></span><span class="tag">&gt;</span>*<span class="tag">&lt;/span&gt;</span><span class="tag">&lt;/label&gt;</span>
+          <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">number</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">losses</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">required</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">min</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">losses</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/fieldset&gt;</span>
+    <span class="tag">&lt;fieldset</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">buttons</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">save</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Create</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">create</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/fieldset&gt;</span>
+<span class="tag">&lt;/form&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;input&gt;</code> tag names match exactly the properties of the domain class <code>Player</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/Player.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">Player</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> game
+    <span class="predefined-type">String</span> region
+    <span class="type">int</span> wins = <span class="integer">0</span>
+    <span class="type">int</span> losses = <span class="integer">0</span>
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        game <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        region <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        wins <span class="key">min</span>: <span class="integer">0</span>
+        losses <span class="key">min</span>: <span class="integer">0</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Data binding will take the form-submitted string values for <code>name</code>, <code>game</code>, and <code>region</code>
+(if set) and set those properties in your command object <code>player</code>. The form-submitted
+string values for <code>wins</code> and <code>losses</code> will also be set in <code>player</code> after automatic
+type-conversion to <code><strong>int</strong></code>. The convention of using the same name for domain class properties
+and input fields greatly simplifies coding and application development: view fields are
+pre-filled with values from domain class objects, and command objects are filled with
+submitted form data, requiring very little developer effort.</p>
+</div>
+<div class="paragraph">
+<p>After binding, data validation will be done; as this is a domain class, any constraints
+set in the class&#8217;s <code>constraits</code> block will be checked. This gives us the opportunity to
+add simple error-checking. Near the top of <code>PlayerController.groovy</code>, add:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.http.HttpStatus</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then update the <code>save</code> action of <code>PlayerController</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">save</span>(Player player) {
+    <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
+        render <span class="key">status</span>: HttpStatus.NOT_FOUND
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (player.hasErrors()) {
+        respond player.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The existing, generated <code>gsp</code> files include Javascript to do as much client-side form
+validation as possible. To see the Grails server-side validation and error checking, try
+using <code>curl</code>. On the command line (while the Grails application is running), type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>$ curl --request POST --form "name=Bob Smith" --form "wins=42" --form "losses=abc" "http://localhost:8080/player/save.json"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should receive the following response (displayed nicely here):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>{"errors": [
+        {"object": "demo.Player",
+         "field": "losses",
+         "rejected-value": "abc",
+         "message": "Property losses is type-mismatched"},
+
+        {"object": "demo.Player",
+         "field": "game",
+         "rejected-value": null,
+         "message": "Property [game] of class [class demo.Player] cannot be null"}
+]}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to verify this with a Functional Test.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">Functional Tests</a> involve making HTTP
+requests against the running application and verifying the resultant behaviour.</p>
+</div>
+<div class="paragraph">
+<p>We use the <a href="https://github.com/grails-plugins/grails-rest-client-builder">Rest Client Builder Grails Plugin</a>.
+This plugin is added for you if you create a Grails app with the <em>rest-api</em> profile.</p>
+</div>
+<div class="paragraph">
+<p>We created the app with the web profile but it is easy to add the testCompile dependency to our build file. Add the next
+line to the dependencies block.</p>
+</div>
+<div class="listingblock">
+<div class="title">/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/demo/PlayerControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>])
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">PlayerControllerFuncSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test save validation</span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/player/save</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            json {
+                name = <span class="string"><span class="delimiter">'</span><span class="content">Bob Smith</span><span class="delimiter">'</span></span>
+                wins = <span class="integer">42</span>
+                losses = <span class="string"><span class="delimiter">'</span><span class="content">abc</span><span class="delimiter">'</span></span>
+            }
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">422</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        resp.json.errors.size() == <span class="integer">2</span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">losses</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property losses is type-mismatched</span><span class="delimiter">'</span></span>
+        resp.json.errors.find { <span class="local-variable">it</span>.field == <span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span> }.message == <span class="string"><span class="delimiter">'</span><span class="content">Property [game] of class [class demo.Player] cannot be null</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>serverPort</code> property is automatically injected. It contains the random port where the Grails application runs during the functional test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If your client accepts JSON it is always a good idea to set the Accept Http Header</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If your are sending a JSON Payload, you should set the Content-Type Http Header to application/json</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Since command object validation failed, the server returns the Http Status - 422 Unprocessable Entity</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now that data binding, validation, and error-checking is done, update the <code>save</code> action
+to actually save the object and respond to the form submission. This completes the action.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">save</span>(Player player) {
+    <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
+        render <span class="key">status</span>: HttpStatus.NOT_FOUND
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">if</span> (player.hasErrors()) {
+        respond player.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+
+    player.save <span class="key">flush</span>: <span class="predefined-constant">true</span>
+
+    request.withFormat {
+        form multipartForm { redirect player }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond player, <span class="key">status</span>: HttpStatus.CREATED }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should now be able to successfully create and save new players to the database.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The example controller code presented here for <code>save</code> and other actions in this guide is
+kept intentionally simple in order to focus on command objects. You will most likely want
+additional functionality in your actions. When building your own controllers, a good
+starting point is to generate your initial controller with the Grails <code>generate-controller</code>
+script:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./grailsw generate-controller demo.Player</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="addEditAndUpdateActions">4.3 Implement the edit and update actions</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/command-objects-and-forms/edit/grails3/src/main/docs/guide/addEditAndUpdateActions.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next, let&#8217;s add the ability to update existing players. Add <code>edit</code> and <code>update</code> actions
+to <code>PlayerController</code>. You should notice that these are almost the same as the <code>create</code>
+and <code>save</code> actions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">edit</span>(Player player) {
+        respond player
+    }
+
+    <span class="keyword">def</span> <span class="function">update</span>(Player player) {
+        <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
+            render <span class="key">status</span>: HttpStatus.NOT_FOUND
+            <span class="keyword">return</span>
+        }
+
+        <span class="keyword">if</span> (player.hasErrors()) {
+            respond player.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span>
+        }
+
+        player.save <span class="key">flush</span>: <span class="predefined-constant">true</span>
+
+        request.withFormat {
+            form multipartForm { redirect player }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond player, <span class="key">status</span>: HttpStatus.OK }
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>edit</code> action starts with a <code>Player</code> command object; Grails fetches an existing <code>Player</code>
+object automatically, and the properties of that object are loaded as the initial values of
+the form in <code>edit.gsp</code>. The <code>update</code> action is the same as <code>save</code>, except that errors redirect
+back to <code>edit</code> rather than <code>create</code>, and the HTTP status for success is <code>OK</code> rather than <code>CREATED</code>.</p>
+</div>
+<div class="paragraph">
+<p>On the assumption that a player&#8217;s win and loss counts will be managed elsewhere, the wins
+and losses fields have already been removed from the form in <code>edit.gsp</code>.
+While running the application, go to the player list and click on one of the
+player names. While you can show the win/loss count, clicking the <strong>Edit</strong> button will
+display a form that does not let you change the win/loss counts.</p>
+</div>
+<div class="paragraph">
+<p>But this isn&#8217;t sufficient: removing input fields from the form <strong>does not prevent</strong> those fields
+from being changed. A clever user can submit the form by other means that will change those values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>$ curl --request GET "http://localhost:8080/player/show/1.json"
+
+{"id":1, "game":"Pandemic", "losses":30, "name":"Alexis Barnett", "region":"EAST", "wins":96}
+
+$ curl --request POST --form "id=1" --form "wins=2" --form "losses=194" "http://localhost:8080/player/update.json"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the second <code>curl</code> command, player Alexis Barnett will have only two wins and 194 losses,
+rather than the 96 wins and 30 losses she should have.</p>
+</div>
+<div class="paragraph">
+<p>One way to fix this would be to avoid the use of the <code>Player</code> command object (so as to avoid
+automatic filling of properties) and instead manage all of the loading, binding, and verification
+manually. You could customize the action&#8217;s behavior and ignore any attempts to modify the wins
+and losses properties.</p>
+</div>
+<div class="paragraph">
+<p>But command objects are not required to be a domain class: use any class! Define the following
+class in <code>PlayerController.groovy</code> below the <code>PlayerController</code> class. Note that the property
+names of <code>PlayerInfo</code> match those of the form&#8217;s <code>&lt;input&gt;</code> tags; when the form is submitted,
+form values will be bound to the command object&#8217;s properties where the names match.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">PlayerInfo</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> game
+    <span class="predefined-type">String</span> region
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Change the <code>update</code> action to use <code>PlayerInfo</code> as the command object. Load the appropriate
+<code>Player</code> instance, then update and save it using the command object&#8217;s properties.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">update</span>(PlayerInfo info) {
+        Player player = Player.get(params.id)
+        <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
+            render <span class="key">status</span>: HttpStatus.NOT_FOUND
+            <span class="keyword">return</span>
+        }
+
+        player.properties = info.properties
+        player.save <span class="key">flush</span>: <span class="predefined-constant">true</span>
+
+        <span class="keyword">if</span> (player.hasErrors()) {
+            respond player.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span>
+        }
+
+        request.withFormat {
+            form multipartForm { redirect player }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond player, <span class="key">status</span>: HttpStatus.OK }
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since <code>PlayerInfo</code> does <strong>not</strong> contain <code>wins</code> or <code>losses</code>, those values will not be
+accepted from the form submission, even if values are submitted for those names.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>$ curl --request GET "http://localhost:8080/player/show/4.json"
+
+{"id":4, "name":"Catherine Newton", "game":"Scythe", "region":"WEST", "wins":66, "losses":40}
+
+$ curl --request POST --form "id=4" --form "name=June Smith" --form "game=Chess" --form "region=NORTH" --form "wins=0" --form "losses=10" "http://localhost:8080/player/update.json"
+
+$ curl --request GET "http://localhost:8080/player/show/4.json"
+
+{"id":4, "name":"June Smith", "game":"Chess", "region":"NORTH", "wins":66, "losses":40}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the <code>name</code>, <code>game</code>, and <code>region</code> properties have all updated, but the <code>wins</code> and
+<code>losses</code> properties have not changed despite our efforts to do so. By using the
+<code>PlayerInfo</code> command object, we&#8217;ve restricted what fields are accepted from the form
+submission.</p>
+</div>
+<div class="paragraph">
+<p>Create a Unit Test to validate this behaviour</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/PlayerControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DomainUnitTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">PlayerControllerSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;PlayerController&gt;, DomainUnitTest&lt;Player&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test update</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span>  player = <span class="keyword">new</span> Player(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="content">XCOM: Enemy Unkown</span><span class="delimiter">'</span></span>, <span class="key">region</span>: <span class="string"><span class="delimiter">'</span><span class="content">Spain</span><span class="delimiter">'</span></span>, <span class="key">wins</span>: <span class="integer">3</span>, <span class="key">losses</span>: <span class="integer">2</span>)
+        player.save()
+        params.id = player.id
+        params.name = <span class="string"><span class="delimiter">'</span><span class="content">Sergio del Amo</span><span class="delimiter">'</span></span>
+        params.game = <span class="string"><span class="delimiter">'</span><span class="content">XCOM 2</span><span class="delimiter">'</span></span>
+        params.region = <span class="string"><span class="delimiter">'</span><span class="content">USA</span><span class="delimiter">'</span></span>
+        params.wins = <span class="integer">4</span>
+        controller.update() <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">respond model has no errors</span><span class="delimiter">'</span></span>
+        !model.player.hasErrors()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">player properties have been updated correctly</span><span class="delimiter">'</span></span>
+        model.player.name == <span class="string"><span class="delimiter">'</span><span class="content">Sergio del Amo</span><span class="delimiter">'</span></span>
+        model.player.game == <span class="string"><span class="delimiter">'</span><span class="content">XCOM 2</span><span class="delimiter">'</span></span>
+        model.player.region == <span class="string"><span class="delimiter">'</span><span class="content">USA</span><span class="delimiter">'</span></span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">non existing properties in the command object have not been modified</span><span class="delimiter">'</span></span>
+        model.player.wins == <span class="integer">3</span>
+        model.player.losses == <span class="integer">2</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Call a no argument version of the update method. Put the values in the <code>params</code> map. Databinding
+will map those values to the Command Object. This emulates what happens at runtime.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The current solution is lacking, though. Because <code>PlayerInfo</code> is now the command object and
+not <code>Player</code>, validation is not done until the call to <code>player.save</code>. It would be better if
+validation was done earlier, as it had been done when <code>Player</code> was the command object.</p>
+</div>
+<div class="paragraph">
+<p>To resolve this, add a <code>constraints</code> block to <code>PlayerInfo</code>. When you defined the command
+object class <code>PlayerInfo</code> in the <code>PlayerController.groovy</code> file, Grails recognized it as
+a related command object class and made the class able to be validated. Change <code>PlayerInfo</code>
+and add constraints.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">PlayerInfo</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> game
+    <span class="predefined-type">String</span> region
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        game <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        region <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a unit test to validate the constraints defined in the command object.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/PlayerInfoSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DuplicateListLiteral</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">PlayerInfoSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.region can be null</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:
+        <span class="keyword">new</span> PlayerInfo(<span class="key">region</span>: <span class="predefined-constant">null</span>).validate([<span class="string"><span class="delimiter">'</span><span class="content">region</span><span class="delimiter">'</span></span>])
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.name can be blank</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">blank</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">name</span>: <span class="predefined-constant">null</span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test PlayerInfo.game can be blank</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">game</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">blank</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        playerInfo = <span class="keyword">new</span> PlayerInfo(<span class="key">game</span>: <span class="predefined-constant">null</span>)
+
+        <span class="key">then</span>:
+        !playerInfo.validate([<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>])
+        playerInfo.errors[<span class="string"><span class="delimiter">'</span><span class="content">game</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Revise the <code>update</code> action once more, returning error checking prior to the attempt to save.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/demo/PlayerController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">update</span>(PlayerInfo info) {
+    <span class="keyword">if</span> (info.hasErrors()) {
+        respond info.errors, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">edit</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span>
+    }
+    Player player = Player.get(params.id)
+    <span class="keyword">if</span> (player == <span class="predefined-constant">null</span>) {
+        render <span class="key">status</span>: HttpStatus.NOT_FOUND
+        <span class="keyword">return</span>
+    }
+
+    player.properties = info.properties
+    player.save <span class="key">flush</span>: <span class="predefined-constant">true</span>
+
+    request.withFormat {
+        form multipartForm { redirect player }
+        <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond player, <span class="key">status</span>: HttpStatus.OK }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Command object classes can be defined elsewhere (for example, under the <code>src/</code> folder hierarchy).
+They need not be in the same file as the controller using them. This might be useful to maintain
+a separation of concerns, or simply to make a command object class available to multiple controllers.</p>
+</div>
+<div class="paragraph">
+<p><strong>If your command object class is defined in the same source file as the controller using it, Grails
+will automatically make it <code>Validateable</code>, permitting the use of a static <code>constraints</code> block. If
+you define the class elsewhere and need <code>constraints</code>, you need to add an <code>implements</code> clause</strong> as displayed next:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">PlayerInfo</span> <span class="directive">implements</span> grails.validation.Validateable {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">String</span> game
+    <span class="predefined-type">String</span> region
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        game <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        region <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/whatAreCommandObjects.html">&lt;&lt; <strong>3</strong><span>What are command objects?</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/command-objects-and-forms"><img src="https://travis-ci.org/grails-guides/command-objects-and-forms.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/command-objects-and-forms">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/command-objects-and-forms.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/command-objects-and-forms.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/command-objects-and-forms'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/command-objects-and-forms.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/command-objects-and-forms/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
