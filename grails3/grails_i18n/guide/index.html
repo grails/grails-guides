@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>How to change languages in a Grails app? | Grails Guides | Grails Framework</title>
+    <meta name='description' content='How to change languages in a Grails app?. Learn how to change the default language used in your application, switch between languages or access the current locale.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails_i18n"><img src="https://travis-ci.org/grails-guides/grails_i18n.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails_i18n&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails_i18n.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails_i18n.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails_i18n.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails_i18n/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#messageBundles"><strong>3.1</strong><span>Message Bundles</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#changeLocale"><strong>3.2</strong><span>Change Locale</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#changingDefaultLocale"><strong>3.3</strong><span>Changing Default Locale</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#localeNavBar"><strong>3.4</strong><span>Locale Navbar</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>How to change languages in a Grails app?</h1>
+        <p>Learn how to change the default language used in your application, switch between languages or access the current locale.</p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.11</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to learn how to create an app
+whose interface is translated in four languages.</p>
+</div>
+<div class="paragraph">
+<p>You will learn how to change the default language used in your application and how to switch between languages while using the app.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails_i18n/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails_i18n.git" class="bare">https://github.com/grails-guides/grails_i18n.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails_i18n/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails_i18n/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/guide/single.html#i18n">Grails supports Internationalization (i18n) out of the box</a> by leveraging the
+underlying Spring MVC internationalization support. With Grails you are able
+to customize the text that appears in a view based on the user’s Locale</p>
+</div>
+
+
+<h2 id="messageBundles">3.1 Message Bundles</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/messageBundles.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Message bundles in Grails are located inside the <code>grails-app/i18n</code> directory and
+are simple Java properties files.</p>
+</div>
+<div class="paragraph">
+<p>We want to support English, Spanish, Italian and German in our application.
+We are going to define the localizations in the different message bundles.</p>
+</div>
+<div class="sect2">
+<h3 id="_default_message_bundle">Default Message Bundle</h3>
+<div class="listingblock">
+<div class="title">grails-app/i18n/messages.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">navbar.applicationStatus=Application Status
+navbar.artefacts=Artefacts
+navbar.installedPlugins=Installed Plugins
+navbar.languages=Languages
+
+language.en=English
+language.es=Spanish
+language.de=German
+language.it=Italian
+
+welcome.title=Welcome to Grails
+welcome.body=Congratulations, you have successfully started your first Grails application! At the moment <span class="local-variable">this</span> is the <span class="keyword">default</span> page, feel free to modify <span class="local-variable">it</span> to either redirect to a controller or display whatever content you may choose. Below is a list of controllers that are currently deployed <span class="keyword">in</span> <span class="local-variable">this</span> application, click on each to execute its <span class="keyword">default</span> <span class="key">action</span>:</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spanish_message_bundle">Spanish Message Bundle</h3>
+<div class="listingblock">
+<div class="title">grails-app/i18n/messages_es.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">navbar.applicationStatus=Estado de la aplicaci<span class="error">ó</span>n
+navbar.artefacts=Artefactos
+navbar.installedPlugins=Plugins instalados
+navbar.languages=Idiomas
+
+language.en=Ingl<span class="error">é</span>s
+language.es=Espa<span class="error">ñ</span>ol
+language.de=Alem<span class="error">á</span>n
+language.it=Italiano
+
+welcome.title=Bienvenido a Grails
+welcome.body=<span class="error">¡</span>Enhorabuena, ha iniciado con <span class="error">é</span>xito su primera aplicaci<span class="error">ó</span>n de Grails! En este momento es la p<span class="error">á</span>gina predeterminada, no dude en modificarla para redirigir a un controlador o mostrar el contenido que elija. A continuaci<span class="error">ó</span>n se muestra una lista de controladores que se implementan actualmente en esta aplicaci<span class="error">ó</span>n, haga clic en cada uno para ejecutar su acci<span class="error">ó</span>n <span class="key">predeterminada</span>:</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_italian_message_bundle">Italian Message Bundle</h3>
+<div class="listingblock">
+<div class="title">grails-app/i18n/messages_it.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">navbar.applicationStatus=Stato dell<span class="string"><span class="delimiter">'</span><span class="content">applicazione</span></span><span class="error">
+</span>navbar.artefacts=Artefatti
+navbar.installedPlugins=Plugin installati
+navbar.languages=Le lingue
+
+language.en=Inglese
+language.es=Spagnolo
+language.de=Tedesco
+language.it=Italiano
+
+welcome.title=Benvenuti a Grails
+welcome.body=Congratulazioni, hai iniziato con successo la tua prima applicazione Grails! Al momento questa <span class="error">è</span> la pagina predefinita, sentitevi liberi di modificarla per reindirizzare a un controller o visualizzare qualsiasi contenuto che puoi scegliere. Di seguito <span class="error">è</span> riportato un elenco di controller attualmente implementati <span class="keyword">in</span> questa applicazione, fare clic su ciascuno per eseguire l<span class="string"><span class="delimiter">'</span><span class="content">azione predefinita:</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_german_message_bundle">German Message Bundle</h3>
+<div class="listingblock">
+<div class="title">grails-app/i18n/messages_de.properties</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">navbar.applicationStatus=Bewerbungsstatus
+navbar.artefacts=Artefakte
+navbar.installedPlugins=Installierte Plugins
+navbar.languages=Sprachen
+
+language.en=Englisch
+language.es=Spanisch
+language.de=Deutsche
+language.it=Italienisch
+
+welcome.title=Willkommen <span class="keyword">in</span> Grails
+welcome.body=Herzlichen Gl<span class="error">ü</span>ckwunsch, Sie haben Ihre erste Grails-Anwendung erfolgreich begonnen! Im Moment ist dies die Standard-Seite, f<span class="error">ü</span>hlen Sie sich frei, es zu <span class="error">ä</span>ndern, um entweder auf einen Controller umzuleiten oder anzuzeigen, welche Inhalte Sie w<span class="error">ä</span>hlen k<span class="error">ö</span>nnen. Unten ist eine Liste von Controllern, die derzeit <span class="keyword">in</span> dieser Anwendung bereitgestellt werden, klicken Sie auf jeden, um seine Standardaktion auszuf<span class="error">ü</span><span class="key">hren</span>:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the home page we use those message codes:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;h1&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">welcome.title</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span>&lt;p&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">welcome.body</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span></code></pre>
+</div>
+</div>
+</div>
+
+
+<h2 id="changeLocale">3.2 Change Locale</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/changeLocale.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can switch locales by simply passing a parameter called <code>lang</code> to Grails as a request parameter:</p>
+</div>
+<div class="paragraph">
+<p><code>/?lang=es</code></p>
+</div>
+<div class="paragraph">
+<p>Grails will automatically switch the user&#8217;s locale and store it in a
+cookie so subsequent requests will have the new header.</p>
+</div>
+<div class="paragraph">
+<p>We can verify this behaviour with a Functional Test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/ChangeLocaleSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">ChangeLocaleSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">change locale</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        go <span class="string"><span class="delimiter">'</span><span class="content">/?lang=en</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>:
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">h1</span><span class="delimiter">'</span></span>).text() == <span class="string"><span class="delimiter">'</span><span class="content">Welcome to Grails</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        go <span class="string"><span class="delimiter">'</span><span class="content">/?lang=es</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>:
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">h1</span><span class="delimiter">'</span></span>).text() == <span class="string"><span class="delimiter">'</span><span class="content">Bienvenido a Grails</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="changingDefaultLocale">3.3 Changing Default Locale</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/changingDefaultLocale.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We want our app to startup and by default use Spanish</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.web.servlet.i18n.SessionLocaleResolver</span>;
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+    localeResolver(SessionLocaleResolver) {
+        defaultLocale= <span class="keyword">new</span> java.util.Locale(<span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can verify the default locale is Spanish with a Functional Test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/demo/DefaultLocaleSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">DefaultLocaleSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">change locale</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        go <span class="string"><span class="delimiter">'</span><span class="content">/</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>:
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">h1</span><span class="delimiter">'</span></span>).text() == <span class="string"><span class="delimiter">'</span><span class="content">Bienvenido a Grails</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="localeNavBar">3.4 Locale Navbar</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/localeNavBar.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We define the supported languages in a configuration property:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">guide</span>:
+    <span class="key">languages</span>:
+        - en
+        - es
+        - <span class="local-variable">it</span>
+        - de
+---</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to use a <a href="http://docs.grails.org/latest/guide/single.html#taglibs">Tag Library</a>
+to render a languages dropdown:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/languages_drop_down.png" alt="languages drop down">
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/taglib/demo/LocaleNavbarTagLib.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.servlet.support.RequestContextUtils</span>
+
+<span class="type">class</span> <span class="class">LocaleNavbarTagLib</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    <span class="directive">static</span> namespace = <span class="string"><span class="delimiter">'</span><span class="content">navBar</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> defaultEncodeAs = [<span class="key">taglib</span>: <span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>]
+
+    MessageSource messageSource
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; languages
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        languages = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">guide.languages</span><span class="delimiter">'</span></span>, <span class="predefined-type">List</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    <span class="keyword">def</span> localeDropdownListItems = { args -&gt;
+        <span class="predefined-type">String</span> uri = args.uri
+
+        <span class="keyword">for</span> ( <span class="predefined-type">String</span> lang : languages ) {
+            <span class="predefined-type">String</span> languageCode = <span class="string"><span class="delimiter">&quot;</span><span class="content">language.</span><span class="inline"><span class="inline-delimiter">$</span>lang</span><span class="delimiter">&quot;</span></span>
+            <span class="keyword">def</span> locale = RequestContextUtils.getLocale(request) <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="keyword">def</span> msg = messageSource.getMessage(languageCode, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, locale) <i class="conum" data-value="3"></i><b>(3)</b>
+            out &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;li&gt;&lt;a href='</span><span class="inline"><span class="inline-delimiter">${</span>uri<span class="inline-delimiter">}</span></span><span class="content">?lang=</span><span class="inline"><span class="inline-delimiter">${</span>lang<span class="inline-delimiter">}</span></span><span class="content">'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>msg<span class="inline-delimiter">}</span></span><span class="content">&lt;/a&gt;&lt;/li&gt;</span><span class="delimiter">&quot;</span></span>
+        }
+
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Retrieve configuration property</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Access current locale</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Retrieving a localized message</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We can test the TagLib rendering with a Unit Test.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/LocaleNavbarTagLibSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.taglib.TagLibUnitTest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">LocaleNavbarTagLibSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> TagLibUnitTest&lt;LocaleNavbarTagLib&gt; {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">LocaleNavbarTagLib method localeDropdown renders</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="keyword">def</span> uri = <span class="string"><span class="delimiter">'</span><span class="content">/books</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> languages = [[<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">en</span><span class="delimiter">'</span></span>, <span class="key">msg</span>: <span class="string"><span class="delimiter">'</span><span class="content">English</span><span class="delimiter">'</span></span>],
+                         [<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>, <span class="key">msg</span>: <span class="string"><span class="delimiter">'</span><span class="content">Spanish</span><span class="delimiter">'</span></span>],
+                         [<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">it</span><span class="delimiter">'</span></span>, <span class="key">msg</span>: <span class="string"><span class="delimiter">'</span><span class="content">Italian</span><span class="delimiter">'</span></span>],
+                         [<span class="key">code</span>: <span class="string"><span class="delimiter">'</span><span class="content">de</span><span class="delimiter">'</span></span>, <span class="key">msg</span>: <span class="string"><span class="delimiter">'</span><span class="content">German</span><span class="delimiter">'</span></span>]]
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> expected = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+        languages.each { <span class="predefined-type">Map</span> m -&gt;
+            expected += <span class="string"><span class="delimiter">&quot;</span><span class="content">&lt;li&gt;&lt;a href='</span><span class="inline"><span class="inline-delimiter">${</span>uri<span class="inline-delimiter">}</span></span><span class="content">?lang=</span><span class="inline"><span class="inline-delimiter">${</span>m.code<span class="inline-delimiter">}</span></span><span class="content">'&gt;</span><span class="inline"><span class="inline-delimiter">${</span>m.msg<span class="inline-delimiter">}</span></span><span class="content">&lt;/a&gt;&lt;/li&gt;</span><span class="delimiter">&quot;</span></span>
+        }
+        tagLib.languages = languages.collect { <span class="local-variable">it</span>.code }
+        tagLib.messageSource = <span class="predefined-type">Stub</span>(MessageSource) {
+            getMessage(<span class="string"><span class="delimiter">'</span><span class="content">language.en</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, _) &gt;&gt; languages.find { <span class="local-variable">it</span>.code == <span class="string"><span class="delimiter">'</span><span class="content">en</span><span class="delimiter">'</span></span>}.msg
+            getMessage(<span class="string"><span class="delimiter">'</span><span class="content">language.es</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, _) &gt;&gt; languages.find { <span class="local-variable">it</span>.code == <span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>}.msg
+            getMessage(<span class="string"><span class="delimiter">'</span><span class="content">language.it</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, _) &gt;&gt; languages.find { <span class="local-variable">it</span>.code == <span class="string"><span class="delimiter">'</span><span class="content">it</span><span class="delimiter">'</span></span>}.msg
+            getMessage(<span class="string"><span class="delimiter">'</span><span class="content">language.de</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="predefined-constant">null</span>, _) &gt;&gt; languages.find { <span class="local-variable">it</span>.code == <span class="string"><span class="delimiter">'</span><span class="content">de</span><span class="delimiter">'</span></span>}.msg
+        }
+        <span class="keyword">def</span> result = applyTemplate(<span class="string"><span class="delimiter">'</span><span class="content">&lt;navBar:localeDropdownListItems uri=&quot;/books&quot;/&gt;</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        cleanUpString(result) == cleanUpString(expected)
+    }
+
+    <span class="predefined-type">String</span> cleanUpString(<span class="predefined-type">String</span> str) {
+        str.replaceAll(<span class="string"><span class="delimiter">'</span><span class="content">\n</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>).replaceAll(<span class="string"><span class="delimiter">'</span><span class="content"> </span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We invoke the <code>TagLib</code> inside the <code>&lt;content&gt;</code> element of the default GSP.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;li <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;<span class="class">a</span> href=<span class="string"><span class="delimiter">&quot;</span><span class="content">#</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-toggle</span><span class="delimiter">&quot;</span></span> <span class="class">data</span>-toggle=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">button</span><span class="delimiter">&quot;</span></span> aria-haspopup=<span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span> aria-expanded=<span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">languages</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Languages</span><span class="delimiter">&quot;</span></span>/&gt; &lt;span <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">caret</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">span&gt;&lt;</span><span class="delimiter">/</span></span><span class="class">a</span>&gt;
+    &lt;ul <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">dropdown-menu</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">navBar</span>:localeDropdownListItems uri=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>request.forwardURI<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ul&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We supply to the Tag Lib the <code>request.forwardURI</code></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p><a href="http://docs.grails.org/latest/ref/Servlet%20API/request.html">forwardURI</a> - Useful for obtaining the current request URI since the request object’s requestURI property returns the original URI, not the matched one.</p>
+</div>
+</blockquote>
+</div>
+
+
+<h1 id="runningTheApp">4 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw
+grails&gt; test-app
+grails&gt; open test-report</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew check
+open build/reports/tests/index.html</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_i18n/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
