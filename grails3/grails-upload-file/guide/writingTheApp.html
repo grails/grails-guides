@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/restaurant.html"><strong>4</strong><span>Restaurant - Upload and save as byte[]</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/pointOfInterest.html"><strong>5</strong><span>Point of Interest - Upload and transfer</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/awsS3.html"><strong>6</strong><span>Hotel - Upload to AWS S3</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/restaurant.html"><strong>4</strong><span>Restaurant - Upload and save as byte[]</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#featuredImageCommand"><strong>3.1</strong><span>Featured Image Command Object</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#increaseFileSize"><strong>3.2</strong><span>Increase allowed file size</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>initial</code> folder contains a Grails 3 application created with the <code>web</code> profile.
+It has several Controllers, GORM Data Services, Domain classes and a simple CRUD interface built with <a href="http://gsp.grails.org">GSP</a>s.
+It is an app to list tourism resources; hotels, restaurants, and points of interest.</p>
+</div>
+<div class="paragraph">
+<p>In the next sections, you are going to add a feature to the app. Each of those resources may include a
+ featured image.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For restaurants, we are going to store the image bytes directly in the domain class.</p>
+</li>
+<li>
+<p>For points of interest, we transfer the file to a folder.</p>
+</li>
+<li>
+<p>For hotels, we upload the file to AWS S3.</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="featuredImageCommand">3.1 Featured Image Command Object</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/grails3/src/main/docs/guide/featuredImageCommand.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Each of our application entities ( hotels, restaurants and point of interest )  will have a featured image.</p>
+</div>
+<div class="paragraph">
+<p>To encapsulate the validation of the file being uploaded; we use a <a href="http://guides.grails.org/command-objects-and-forms/guide/index.html">Grails Command Object</a></p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/controllers/example/grails/FeaturedImageCommand.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.multipart.MultipartFile</span>
+
+<span class="type">class</span> <span class="class">FeaturedImageCommand</span> <span class="directive">implements</span> Validateable {
+    MultipartFile featuredImageFile
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">Integer</span> version
+
+    <span class="directive">static</span> constraints = {
+        id <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        version <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        featuredImageFile  <span class="key">validator</span>: { val, obj -&gt;
+            <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="keyword">if</span> ( val.empty ) {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+
+            [<span class="string"><span class="delimiter">'</span><span class="content">jpeg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">jpg</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">png</span><span class="delimiter">'</span></span>].any { extension -&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+                 val.originalFilename?.toLowerCase()?.endsWith(extension)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Only files ending with JPG or PNG are allowed</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="increaseFileSize">3.2 Increase allowed file size</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-upload-file/edit/grails3/src/main/docs/guide/increaseFileSize.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Grails 3&#8217;s default file size is 128000 (~128KB).</p>
+</div>
+<div class="paragraph">
+<p>We are going to allow 25MB files uploads.</p>
+</div>
+<div class="paragraph">
+<p>25 * 1024 * 1024 = 26.214.400 bytes</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
+ <span class="key">controllers</span>:
+  <span class="key">upload</span>:
+    <span class="key">maxFileSize</span>: <span class="integer">26214400</span>
+    <span class="key">maxRequestSize</span>: <span class="integer">26214400</span></code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/restaurant.html"><strong>4</strong><span>Restaurant - Upload and save as byte[]</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-upload-file"><img src="https://travis-ci.org/grails-guides/grails-upload-file.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-upload-file">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-upload-file.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-upload-file.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-upload-file'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-upload-file.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-upload-file/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
