@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.2 Listening to events from GORM asynchronously</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/conclusion.html"><strong>5</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="async">3.2 Listening to events from GORM asynchronously</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-event-listeners/edit/grails3/src/main/docs/guide/async.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Our first listener will save <code>Audit</code> instances whenever a new <code>Book</code> is created, as well as when a <code>Book</code> is updated and deleted.</p>
+</div>
+<div class="paragraph">
+<p>Create a new Grails service, named <code>AuditListenerService</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ grails create-service demo.AuditListenerService</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+A Grails service is not required in order to write an event listener. You could place the same methods we are about to write in a Groovy class under <code>src/main/groovy</code>. However, the listener does need to be wired into the Spring context, so we would have to do that manually if we did not use a Grails service. We will use Grails services for convenience.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit <code>AuditListenerService</code> as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/AuditListenerService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.events.annotation.Subscriber</span>
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostDeleteEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostUpdateEvent</span>
+
+<span class="annotation">@Slf4j</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">AuditListenerService</span> {
+
+    AuditDataService auditDataService
+
+    <span class="predefined-type">Long</span> bookId(AbstractPersistenceEvent event) {
+        <span class="keyword">if</span> ( event.entityObject <span class="keyword">instanceof</span> <span class="predefined-type">Book</span> ) {
+            <span class="keyword">return</span> ((<span class="predefined-type">Book</span>) event.entityObject).id <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+        <span class="predefined-constant">null</span>
+    }
+
+    <span class="annotation">@Subscriber</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> afterInsert(PostInsertEvent event) {
+        <span class="predefined-type">Long</span> bookId = bookId(event)
+        <span class="keyword">if</span> ( bookId ) {
+            log.info <span class="string"><span class="delimiter">'</span><span class="content">After book save...</span><span class="delimiter">'</span></span>
+            auditDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Book saved</span><span class="delimiter">'</span></span>, bookId)
+        }
+    }
+
+    <span class="annotation">@Subscriber</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> afterUpdate(PostUpdateEvent event) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="predefined-type">Long</span> bookId = bookId(event)
+        <span class="keyword">if</span> ( bookId ) {
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">After book update...</span><span class="delimiter">&quot;</span></span>
+            auditDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Book updated</span><span class="delimiter">'</span></span>, bookId)
+        }
+    }
+
+    <span class="annotation">@Subscriber</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> afterDelete(PostDeleteEvent event) {
+        <span class="predefined-type">Long</span> bookId = bookId(event)
+        <span class="keyword">if</span> ( bookId ) {
+            log.info <span class="string"><span class="delimiter">'</span><span class="content">After book delete ...</span><span class="delimiter">'</span></span>
+            auditDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Book deleted</span><span class="delimiter">'</span></span>, bookId)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The Subscriber annotation and the method signature indicate what event this method is interested in - e.g., a method named <code>afterInsert</code> with an argument of type <code>PostInsertEvent</code> means this method will only be called after an object is saved.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We can access the domain object that fired the event, via the <code>event.entityObject</code>. In order to access the id of this object, we cast it as <code>Book</code> and obtain the id, which we use as the <code>bookId</code> property of our <code>Audit</code> instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Again, the method signature here indicates that this method will be called for events of type <code>PostUpdateEvent</code> - after an object is updated.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Keep in mind that the method <code>bookId</code> will return null for any classes but <code>Book</code> entities. Thus, the previous class creates <code>Audit</code> instances for <code>Book</code> insert, update or delete operations.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Write a unit test to verify the <code>auditDataService</code> is invoked whenever a <code>Book</code> event of type <code>PostInsertEvent</code>, <code>PostUpdateEvent</code> or <code>PostDeleteEvent</code> is received. The next illustrates another big advantage of GORM Data Services. They create easy to test scenarios. Being interfaces they are easy to Mock.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/AuditListenerServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostDeleteEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostUpdateEvent</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">AuditListenerServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;AuditListenerService&gt;, DataTest { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="type">void</span> setupSpec() {
+        mockDomains <span class="predefined-type">Book</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Book.PostInsertEvent triggers auditDataService.save</span><span class="delimiter">&quot;</span></span>(){
+        <span class="key">given</span>:
+        service.auditDataService = Mock(AuditDataService)
+
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>,
+                <span class="key">pages</span>: <span class="integer">1</span>).save() <i class="conum" data-value="3"></i><b>(3)</b>
+        PostInsertEvent event = <span class="keyword">new</span> PostInsertEvent(dataStore, book) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">when</span>:
+        service.afterInsert(event) <i class="conum" data-value="5"></i><b>(5)</b>
+
+        <span class="key">then</span>:
+        <span class="integer">1</span> * service.auditDataService.save(_, _) <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Book.PostUpdateEvent triggers auditDataService.save</span><span class="delimiter">&quot;</span></span>(){
+        <span class="key">given</span>:
+        service.auditDataService = Mock(AuditDataService)
+
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>,
+                <span class="key">pages</span>: <span class="integer">1</span>).save() <i class="conum" data-value="3"></i><b>(3)</b>
+        PostUpdateEvent event = <span class="keyword">new</span> PostUpdateEvent(dataStore, book) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">when</span>:
+        service.afterUpdate(event) <i class="conum" data-value="5"></i><b>(5)</b>
+
+        <span class="key">then</span>:
+        <span class="integer">1</span> * service.auditDataService.save(_, _) <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Book.PostDeleteEvent triggers auditDataService.save</span><span class="delimiter">&quot;</span></span>(){
+        <span class="key">given</span>:
+        service.auditDataService = Mock(AuditDataService)
+
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>,
+                <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>,
+                <span class="key">pages</span>: <span class="integer">1</span>).save() <i class="conum" data-value="3"></i><b>(3)</b>
+        PostDeleteEvent event = <span class="keyword">new</span> PostDeleteEvent(dataStore, book) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">when</span>:
+        service.afterDelete(event) <i class="conum" data-value="5"></i><b>(5)</b>
+
+        <span class="key">then</span>:
+        <span class="integer">1</span> * service.auditDataService.save(_, _) <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We implement <code>grails.testing.services.ServiceUnitTest</code> (a trait to unit test services) and <code>DataTest</code> trait as well since we will be using GORM features.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>DataTest</code> trait provides a <code>mockDomains</code> method, which we supply with the domain classes we intend to use in our test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Because <code>DataTest</code> has wired up GORM for us, we can simply create a new instance of our <code>Book</code> class.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We can now use the <code>Book</code> instance to set up a <code>PostInsertEvent</code> (note that the <code>dataStore</code> property is available in our test, again as a result of implementing the <code>DataTest</code> trait).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>We can now call the <code>afterSave</code> method, passing in the event.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>We now can assert that our <code>Audit</code> instance was saved (via the <code>auditDataService.save()</code> method call).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, create an integration tests to verify that saving, updating or deleting a book leaves an audit trail. Since our service is capturing GORM Events asynchronously,  are using <a href="http://spockframework.org/spock/javadoc/1.1/spock/util/concurrent/PollingConditions.html">Spock Polling Conditions</a>, which will repeatedly evaluate one or more conditions until they are satisfied or a timeout has elapsed.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/AuditListenerServiceIntegrationSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.util.concurrent.PollingConditions</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AuditListenerServiceIntegrationSpec</span> <span class="directive">extends</span> Specification {
+
+    BookDataService bookDataService
+    AuditDataService auditDataService
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">saving a Book causes an Audit instance to be saved</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> conditions = <span class="keyword">new</span> PollingConditions(<span class="key">timeout</span>: <span class="integer">30</span>)
+
+        <span class="predefined-type">Book</span> book = bookDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Practical Grails 3</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Eric Helgeson</span><span class="delimiter">'</span></span>, <span class="integer">1</span>)
+
+        <span class="key">then</span>:
+        book
+        book.id
+        conditions.eventually {
+            <span class="keyword">assert</span> auditDataService.count() == old(auditDataService.count()) + <span class="integer">1</span>
+        }
+
+        <span class="key">when</span>:
+        Audit lastAudit = <span class="local-variable">this</span>.lastAudit()
+
+        <span class="key">then</span>:
+        lastAudit.event == <span class="string"><span class="delimiter">&quot;</span><span class="content">Book saved</span><span class="delimiter">&quot;</span></span>
+        lastAudit.bookId == book.id
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A books is updated</span><span class="delimiter">'</span></span>
+        book = bookDataService.update(book.id, <span class="string"><span class="delimiter">'</span><span class="content">Grails 3</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a new audit instance is created</span><span class="delimiter">'</span></span>
+        conditions.eventually {
+            <span class="keyword">assert</span> auditDataService.count() == old(auditDataService.count()) + <span class="integer">1</span>
+        }
+
+        <span class="key">when</span>:
+        lastAudit = <span class="local-variable">this</span>.lastAudit()
+
+        <span class="key">then</span>:
+        book.title == <span class="string"><span class="delimiter">'</span><span class="content">Grails 3</span><span class="delimiter">'</span></span>
+        lastAudit.event == <span class="string"><span class="delimiter">'</span><span class="content">Book updated</span><span class="delimiter">'</span></span>
+        lastAudit.bookId == book.id
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A book is deleted</span><span class="delimiter">'</span></span>
+        bookDataService.delete(book.id)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a new audit instance is created</span><span class="delimiter">'</span></span>
+        conditions.eventually {
+            <span class="keyword">assert</span> auditDataService.count() == old(auditDataService.count()) + <span class="integer">1</span>
+        }
+
+        <span class="key">when</span>:
+        lastAudit = <span class="local-variable">this</span>.lastAudit()
+
+        <span class="key">then</span>:
+        lastAudit.event == <span class="string"><span class="delimiter">'</span><span class="content">Book deleted</span><span class="delimiter">'</span></span>
+        lastAudit.bookId == book.id
+
+        <span class="key">cleanup</span>:
+        auditDataService.deleteByBookId(book.id)
+    }
+
+    Audit lastAudit() {
+        <span class="type">int</span> offset = <span class="predefined-type">Math</span>.max(((auditDataService.count() <span class="keyword">as</span> <span class="type">int</span>) - <span class="integer">1</span>), <span class="integer">0</span>)
+        auditDataService.findAll([<span class="key">max</span>: <span class="integer">1</span>, <span class="key">offset</span>: offset]).first()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheTests.html"><strong>4</strong><span>Running the Tests</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/gorm-event-listeners"><img src="https://travis-ci.org/grails-guides/gorm-event-listeners.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/gorm-event-listeners">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-event-listeners.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-event-listeners.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-event-listeners'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/gorm-event-listeners.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/gorm-event-listeners/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
