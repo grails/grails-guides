@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>9 Testing your App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/creatingTheApp.html"><strong>3</strong><span>Creating your Grails App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/domainClasses.html"><strong>5</strong><span>Domain Classes</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/controllers.html"><strong>6</strong><span>Controllers</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/views.html"><strong>7</strong><span>Views</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/services.html"><strong>8</strong><span>Services</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>9</strong><span>Testing your App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/deployment.html"><strong>10</strong><span>Deploying your App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>11</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/services.html">&lt;&lt; <strong>8</strong><span>Services</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/deployment.html"><strong>10</strong><span>Deploying your App</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="testing">9 Testing your App</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/grails3/src/main/docs/guide/testing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Testing is a vital part of web application development. Grails provides support for three types of testing: unit tests, integration tests, and functional tests. <a href="http://docs.grails.org/latest/guide/testing.html#unitTesting">Unit tests</a> are usually the simplest kind, focusing on a specific piece of code without depending on other parts of your app. <a href="http://docs.grails.org/latest/guide/testing.html#integrationTesting">Integration tests</a> require the Grails environment to be up and running, and are used to test features that depend on database or network resources. <a href="http://docs.grails.org/latest/guide/testing.html#functionalTesting">Functional tests</a> require the app to be running, and are designed to exercise the application almost as a user would, by making HTTP requests against it. These tend to be the most complex tests to write.</p>
+</div>
+<div class="paragraph">
+<p>The testing framework used by Grails is <a href="http://spockframework.org">Spock</a>. Spock provides an expressive syntax for writing test cases, based on the Groovy language, and so is a great fit for Grails. It includes a JUnit runner, which means IDE support is effectively universal (any IDE that can run JUnit tests can run Spock tests).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Spock is a rich framework (even outside of Grails applications) and well worth your time to master, if you haven&#8217;t already. Check out the <a href="http://docs.spockframework.org">extensive documentation</a> for an introduction to Spock.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Grails tests are stored (by convention) in the <code>src/test/groovy</code> directory (unit tests) and <code>src/integration-test/groovy</code> directory (integration/functional tests).</p>
+</div>
+<div class="paragraph">
+<p>You can run your Grails tests using the <a href="http://docs.grails.org/latest/ref/Command%20Line/test-app.html"><code>test-app</code></a> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you want to run only unit tests or integration/functional tests, you can pass in a command line flag to choose one or the other.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app -unit
+$ ./grailsw test-app -integration</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also run a specific test by passing the test class as an argument:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app org.grails.guides.MyTestSpec</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Writing tests is a very broad topic and worthy of its own guide. In practice, the simplest (and often most useful) tests are unit tests, so let&#8217;s write a simple unit test to exercise our <code>ValueEstimateService</code>.</p>
+</div>
+<div class="paragraph">
+<p>Grails automatically creates a test spec for services created with the <code>create-service</code> command. Open <code>src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
+
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;ValueEstimateService&gt;, DataTest {
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+    }
+
+    <span class="keyword">def</span> <span class="function">cleanup</span>() {
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test something</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">expect</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">fix me</span><span class="delimiter">&quot;</span></span>
+            <span class="predefined-constant">true</span> == <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Currently our test spec has one test, <code>"test something"</code>, which asserts that <code>true == false</code>. Grails is helpfully encouraging you to do the right thing by kicking things off with a failing test.</p>
+</div>
+<div class="paragraph">
+<p>Try running the test, just to confirm it fails:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ /grailsw test-app org.grails.guides.ValueEstimateServiceSpec
+
+...
+&gt; There were failing tests. See the report at: file:///Users/dev/projects/creating-your-first-grails-app/complete/build/reports/tests/test/index.html
+
+BUILD FAILED
+
+Total time: 6.353 secs
+| Tests FAILED Test execution failed</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that we&#8217;ve confirmed our test is failing, let&#8217;s edit this test case to exercise our <code>getEstimate</code> method. Edit <code>src/test/groovy/org/grails/guides/ValueEstimateServiceSpec</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/grails/guides/ValueEstimateServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
+
+<span class="keyword">import</span> <span class="include">grails.testing.gorm.DataTest</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">ValueEstimateServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;ValueEstimateService&gt;, DataTest {
+
+    <span class="type">void</span> setupSpec() { <i class="conum" data-value="1"></i><b>(1)</b>
+        mockDomain Make
+        mockDomain Model
+        mockDomain Vehicle
+    }
+
+    <span class="type">void</span> testEstimateRetrieval() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">'</span><span class="content">a vehicle</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> make = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>)
+        <span class="keyword">def</span> model = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>, <span class="key">make</span>: make)
+        <span class="keyword">def</span> vehicle = <span class="keyword">new</span> Vehicle(<span class="key">year</span>: <span class="integer">2000</span>, <span class="key">make</span>: make, <span class="key">model</span>: model, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test Vehicle</span><span class="delimiter">'</span></span>)
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">service is called</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> estimate = service.getEstimate(vehicle)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a non-zero result is returned</span><span class="delimiter">'</span></span>
+        estimate &gt; <span class="integer">0</span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">estimate is not too large</span><span class="delimiter">'</span></span>
+        estimate &lt; <span class="integer">1000000</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>When mocking multiple objects using the updated testing framework in Grails 3.3 we now perform mocks during setup and no
+longer require the @Mock annotation.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve kept things pretty simple in this test, since we don&#8217;t have very complex logic to test, but also so you can focus on the basic formula of the Spock test case. Spock provides a set of keywords which allow you to lay out your test in a very human-readable form.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>given</code> indicates a "setup" block - here you can set up any objects or variables needed to complete your test.</p>
+</li>
+<li>
+<p><code>when</code> and <code>then</code> are one of the most common "pairings" in Spock (another one, not used here, is <code>expect</code>/<code>where</code> - they define a statement and an expected result.</p>
+</li>
+<li>
+<p><code>and</code> simply continues on the current <code>then</code> block, but it allows you to specify your expectations for multiple assertions. Note that all of these blocks accept (optionally) a string description, which makes your test even more readable. E.g., <code>when: "this method is called"</code>, <code>then: "expect this result"</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Go ahead and rerun this test - if all&#8217;s well, it should pass with flying colors.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./grailsw test-app org.grails.guides.ValueEstimateServiceSpec
+
+...
+
+BUILD SUCCESSFUL
+
+| Tests PASSED</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/services.html">&lt;&lt; <strong>8</strong><span>Services</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/deployment.html"><strong>10</strong><span>Deploying your App</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/creating-your-first-grails-app"><img src="https://travis-ci.org/grails-guides/creating-your-first-grails-app.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/creating-your-first-grails-app">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/creating-your-first-grails-app.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/creating-your-first-grails-app.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/creating-your-first-grails-app/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

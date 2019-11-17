@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6.5 Render a response</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/creatingTheApp.html"><strong>3</strong><span>Creating your Grails App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/domainClasses.html"><strong>5</strong><span>Domain Classes</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/controllers.html"><strong>6</strong><span>Controllers</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/views.html"><strong>7</strong><span>Views</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/services.html"><strong>8</strong><span>Services</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/testing.html"><strong>9</strong><span>Testing your App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/deployment.html"><strong>10</strong><span>Deploying your App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>11</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/domainClasses.html">&lt;&lt; <strong>5</strong><span>Domain Classes</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/views.html"><strong>7</strong><span>Views</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="respond">6.5 Render a response</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/creating-your-first-grails-app/edit/grails3/src/main/docs/guide/respond.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s modify our <code>HomeController</code> to render some custom content on our home page. Edit <code>grails-app/controllers/org/grails/guides/HomeController.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/org/grails/guides/HomeController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
+
+<span class="type">class</span> <span class="class">HomeController</span> {
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        respond([<span class="key">name</span>: session.name ?: <span class="string"><span class="delimiter">'</span><span class="content">User</span><span class="delimiter">'</span></span>, <span class="key">vehicleTotal</span>: Vehicle.count()]) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    <span class="keyword">def</span> <span class="function">updateName</span>(<span class="predefined-type">String</span> name) {
+        session.name = name <i class="conum" data-value="2"></i><b>(2)</b>
+
+        flash.message = <span class="string"><span class="delimiter">&quot;</span><span class="content">Name has been updated</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+
+        redirect <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We&#8217;re calling the <code>respond</code> method to render a Groovy map of content to the requestor, containing a <code>name</code> property from the session (defaulting to "User" if no session value exists) and the current total of <code>Vehicle</code> instances from GORM&#8217;s <code>count</code> method.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>session</code> is an instance of the Servlet API’s`HttpSession` class, and is available in every controller. We can retrieve and store properties in the session - in this case, we&#8217;re storing a <code>String</code> with the attribute <code>name</code> in the session. For more see the <a href="https://docs.grails.org/latest/ref/Controllers/session.html">Grails documentation</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We&#8217;re using <code>flash</code> scope to set a message to display upon the next request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We don&#8217;t have any specific content to display in this action, so we issue a redirect back to the <code>index</code> action (note that in Groovy method parenthesis are optional so long as there is at least one argument).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve updated our <code>index</code>  action to render some custom content to the page, and we&#8217;ve created a new action <code>updateName</code>, which takes a <code>String</code> parameter and saves it to the <code>session</code> for later retrieval. However, we need to update our view to 1. display the newly available content, and 2. provide some means of calling <code>updateName</code> and setting the <code>session</code> attribute.</p>
+</div>
+<div class="paragraph">
+<p>Edit <code>grails-app/views/home/index.gsp</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/home/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="xml"><span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">content</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Home Page<span class="tag">&lt;/title&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+
+<span class="tag">&lt;div</span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+    <span class="tag">&lt;section</span> <span class="attribute-name">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Welcome ${name}!<span class="tag">&lt;/h1&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="tag">&lt;h4&gt;</span>${flash.message}<span class="tag">&lt;/h4&gt;</span>  <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="tag">&lt;p&gt;</span>There are ${vehicleTotal} vehicles in the database.<span class="tag">&lt;/p&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="tag">&lt;form</span> <span class="attribute-name">action</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">/home/updateName</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">method</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">style</span>=<span class="string"><span class="delimiter">&quot;</span><span class="key">margin</span>: <span class="float">0</span> <span class="value">auto</span>; <span class="key">width</span>:<span class="float">320px</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span> <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+            <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Update name</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Update name</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Update name</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+
+    <span class="tag">&lt;/section&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We can refer to any values in our "model" by name in a GSP page, using Groovy String Expressions <code>${name}</code> <code>${vehicleTotal}</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re accessing our <code>flash.message</code> property - if it&#8217;s null then nothing will render here.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This is a plain HTML form that will submit the <code>name</code> text field to the <code>updateName</code> action we just created.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Run the app and you should see our new message in the <code>&lt;h1&gt;</code> header: "Welcome User!", as well as the current total of <code>Vehicle</code> instances in the database.</p>
+</div>
+<div class="paragraph">
+<p>Try entering your own name in the form and submitting it - you should see the page reload and your own name will replace "User". Refresh the page a few times. Because we stored the <code>name</code> in the session, it will persist as long as the session is valid.</p>
+</div>
+<div class="sect1">
+<h2 id="_content_negotiation">Content Negotiation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Remember we used the <code>respond</code> method, instead of the simpler <code>render</code> method to send our "model" to the page. This means we can get our model using other formats besides an HTML page, such as JSON or XML.</p>
+</div>
+<div class="paragraph">
+<p>Run the following command in a terminal (while the app is running)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl -i -H &quot;Accept: application/json&quot; &quot;http://localhost:8080/home/index&quot;
+
+HTTP/1.1 200
+X-Application-Context: application:development
+Set-Cookie: JSESSIONID=008B45AAA1A820CE5C9FDC2741D345F3;path=/;HttpOnly
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 11 Jan 2017 04:06:57 GMT
+
+{&quot;name&quot;:&quot;User&quot;,&quot;vehicleTotal&quot;:3}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve used <code>curl</code> to call our <code>index</code> action, but we&#8217;ve changed our <code>Accept</code> header to <code>application/json</code>. Now instead of an HTML page, we receive the same data in JSON.</p>
+</div>
+<div class="paragraph">
+<p>You can request difference content types in the browser as well, thanks to Grails' default URL Mappings (shown below):</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/org/grails/guides/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span> {
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note the <code>(.$format)?</code> token in the mapping. This will match a suffix on our URL such as <code>.json</code> or <code>.xml</code>. Test this out in your browser.</p>
+</div>
+<div class="paragraph">
+<p>Browse to <code><a href="http://localhost:8080/home/index.json" class="bare">http://localhost:8080/home/index.json</a></code>. You should see the same JSON body we retrieved using <code>curl</code>.</p>
+</div>
+<div class="paragraph">
+<p>Try changing <code>.json</code> to <code>.xml</code>. You should see an XML representation of the model. Content negotiation allows your controllers to be very versatile and to return appropriate data to different clients from the same actions.</p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/domainClasses.html">&lt;&lt; <strong>5</strong><span>Domain Classes</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/views.html"><strong>7</strong><span>Views</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/creating-your-first-grails-app"><img src="https://travis-ci.org/grails-guides/creating-your-first-grails-app.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/creating-your-first-grails-app">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/creating-your-first-grails-app.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/creating-your-first-grails-app'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/creating-your-first-grails-app.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/creating-your-first-grails-app/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
