@@ -142,7 +142,7 @@ Controllers are for "web logic", services for "business logic"
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 
 <span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">ValueEstimateService</span> {
@@ -161,7 +161,7 @@ Controllers are for "web logic", services for "business logic"
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 
 <span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">ValueEstimateService</span> {
@@ -189,10 +189,10 @@ Controllers are for "web logic", services for "business logic"
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
 <span class="keyword">import</span> <span class="include">org.grails.guides.Vehicle</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
 
-<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])
-<span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>) <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<span class="annotation">@SuppressWarnings</span>([<span class="string"><span class="delimiter">'</span><span class="content">LineLength</span><span class="delimiter">'</span></span>])</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -209,9 +209,8 @@ Controllers are for "web logic", services for "business logic"
 <div class="listingblock">
 <div class="title">grails-app/controllers/org/grails/guides/VehicleController.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
-    respond Vehicle.list(params), <span class="key">model</span>:[<span class="key">vehicleCount</span>: Vehicle.count()]
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+    params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -225,16 +224,9 @@ Controllers are for "web logic", services for "business logic"
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">show-vehicle</span><span class="delimiter">&quot;</span></span> <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">content scaffold-show</span><span class="delimiter">&quot;</span></span> <span class="class">role</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
     &lt;h1&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">default.show.label</span><span class="delimiter">&quot;</span></span> args=<span class="string"><span class="delimiter">&quot;</span><span class="content">[entityName]</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
-</span>    &lt;h1&gt;Estimated <span class="key">Value</span>: &lt;<span class="key">g</span>:formatNumber number=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>estimatedValue<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> type=<span class="string"><span class="delimiter">&quot;</span><span class="content">currency</span><span class="delimiter">&quot;</span></span> currencyCode=<span class="string"><span class="delimiter">&quot;</span><span class="content">USD</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;  </span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</span>    &lt;h1&gt;Estimated <span class="key">Value</span>: &lt;<span class="key">g</span>:formatNumber number=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>estimatedValue<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> type=<span class="string"><span class="delimiter">&quot;</span><span class="content">currency</span><span class="delimiter">&quot;</span></span> currencyCode=<span class="string"><span class="delimiter">&quot;</span><span class="content">USD</span><span class="delimiter">&quot;</span></span> /&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">h1&gt;</span></span><span class="error">
+</span></code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>&lt;g:formatNumber&gt;</code> is another GSP tag which provides many useful options for rendering numbers, including currency and decimal precision. See the <a href="http://docs.grails.org/latest/ref/Tags/formatNumber.html">Grails documentation</a> for more.</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>Restart the application and browse to the show page for a <code>Vehicle</code>, such as <code><a href="http://localhost:8080/vehicle/show/1" class="bare">http://localhost:8080/vehicle/show/1</a></code>. You should see the "Estimated Value" on the page</p>

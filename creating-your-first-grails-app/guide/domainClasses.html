@@ -406,20 +406,26 @@ The <code>belongsTo</code> property is one of several properties that GORM uses 
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.grails.guides
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">BootStrap</span> {
 
+    MakeService makeService
+    ModelService modelService
+    VehicleService vehicleService
     <span class="keyword">def</span> init = { servletContext -&gt;
 
-        <span class="keyword">def</span> nissan = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nissan</span><span class="delimiter">'</span></span>).save()
-        <span class="keyword">def</span> ford = <span class="keyword">new</span> Make(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ford</span><span class="delimiter">'</span></span>).save()
+        Make nissan = makeService.save(<span class="string"><span class="delimiter">'</span><span class="content">Nissan</span><span class="delimiter">'</span></span>)
+        Make ford = makeService.save( <span class="string"><span class="delimiter">'</span><span class="content">Ford</span><span class="delimiter">'</span></span>)
 
-        <span class="keyword">def</span> titan = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Titan</span><span class="delimiter">'</span></span>, <span class="key">make</span>: nissan).save()
-        <span class="keyword">def</span> leaf = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Leaf</span><span class="delimiter">'</span></span>, <span class="key">make</span>: nissan).save()
-        <span class="keyword">def</span> windstar = <span class="keyword">new</span> Model(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Windstar</span><span class="delimiter">'</span></span>, <span class="key">make</span>: ford).save()
+        Model titan = modelService.save(<span class="string"><span class="delimiter">'</span><span class="content">Titan</span><span class="delimiter">'</span></span>, nissan)
+        Model leaf = modelService.save(<span class="string"><span class="delimiter">'</span><span class="content">Leaf</span><span class="delimiter">'</span></span>, nissan)
+        Model windstar = modelService.save(<span class="string"><span class="delimiter">'</span><span class="content">Windstar</span><span class="delimiter">'</span></span>, ford)
 
-        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Pickup</span><span class="delimiter">'</span></span>,  <span class="key">make</span>: nissan, <span class="key">model</span>: titan, <span class="key">year</span>: <span class="integer">2012</span>).save()
-        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Economy</span><span class="delimiter">'</span></span>, <span class="key">make</span>: nissan, <span class="key">model</span>: leaf, <span class="key">year</span>: <span class="integer">2014</span>).save()
-        <span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Minivan</span><span class="delimiter">'</span></span>, <span class="key">make</span>: ford, <span class="key">model</span>: windstar, <span class="key">year</span>: <span class="integer">1990</span>).save()
+        vehicleService.save(<span class="string"><span class="delimiter">'</span><span class="content">Pickup</span><span class="delimiter">'</span></span>, nissan, titan, <span class="integer">2012</span>).save()
+        vehicleService.save(<span class="string"><span class="delimiter">'</span><span class="content">Economy</span><span class="delimiter">'</span></span>, nissan, leaf, <span class="integer">2014</span>).save()
+        vehicleService.save(<span class="string"><span class="delimiter">'</span><span class="content">Minivan</span><span class="delimiter">'</span></span>, ford, windstar, <span class="integer">1990</span>).save()
     }
     <span class="keyword">def</span> destroy = {
     }
