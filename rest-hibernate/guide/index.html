@@ -14,38 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grails.org/learning.html'>Learning</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Guides</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -121,7 +121,7 @@
         <h1>Building a REST application with GORM and Hibernate 5</h1>
         <p>This guide will demonstrate how you can use Grails, GORM and Hibernate 5 to build a REST application</p>
         <p><strong>Authors:</strong> Graeme Rocher</p>
-        <p><strong>Grails Version:</strong> 3.3.0</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -223,7 +223,7 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -298,7 +298,7 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 </table>
 </div>
 <div class="paragraph">
-<p>Alternatively, if you already have Grails 3.3.0 installed then you can create a new application using the following command in a Terminal window:</p>
+<p>Alternatively, if you already have Grails 4.0.1 installed then you can create a new application using the following command in a Terminal window:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -618,6 +618,7 @@ Product.first().price == <span class="float">2.15d</span></code></pre>
     ProductController() {
         <span class="local-variable">super</span>(Product)
     }
+    ProductService productService
 }</code></pre>
 </div>
 </div>
@@ -686,10 +687,7 @@ patch <span class="string"><span class="delimiter">&quot;</span><span class="con
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">search</span>(<span class="predefined-type">String</span> q, <span class="predefined-type">Integer</span> max ) { <i class="conum" data-value="1"></i><b>(1)</b>
     <span class="keyword">if</span> (q) {
-        <span class="keyword">def</span> query = Product.where { <i class="conum" data-value="2"></i><b>(2)</b>
-            name ==~ <span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="inline"><span class="inline-delimiter">${</span>q<span class="inline-delimiter">}</span></span><span class="content">%</span><span class="delimiter">&quot;</span></span>
-        }
-        respond query.list(<span class="key">max</span>: <span class="predefined-type">Math</span>.min( max ?: <span class="integer">10</span>, <span class="integer">100</span>)) <i class="conum" data-value="3"></i><b>(3)</b>
+        respond productService.findByNameLike(<span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="inline"><span class="inline-delimiter">${</span>q<span class="inline-delimiter">}</span></span><span class="content">%</span><span class="delimiter">&quot;</span></span>.toString(), [<span class="key">max</span>: <span class="predefined-type">Math</span>.min( max ?: <span class="integer">10</span>, <span class="integer">100</span>)]) <i class="conum" data-value="3"></i><b>(3)</b>
     }
     <span class="keyword">else</span> {
         respond(<span class="type">[]</span>) <i class="conum" data-value="4"></i><b>(4)</b>
@@ -794,31 +792,16 @@ See the Grails user guide on <a href="http://docs.grails.org/latest/guide//theWe
 <p>The <code>doWithSpring</code> block is used to register additional Spring configuration (beans) for the context of the test. In this case we wish to test the controller responds with JSON views, so a <code>jsonSmartViewResolver</code> bean is registered.</p>
 </div>
 <div class="paragraph">
-<p>Next in order to prepare the test we setup some test data using the <code>setup</code> method:</p>
-</div>
-<div class="listingblock">
-<div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> setup() {
-    Product.saveAll(
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Apple</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">2.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Orange</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">3.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Banana</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">1.0</span>),
-        <span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Cake</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">4.0</span>)
-    )
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>setup</code> method uses the <code>saveAll</code> method to save multiple domain classes to serve as test data.</p>
-</div>
-<div class="paragraph">
 <p>Finally, we are ready to implement the test and can perform a search by executing the <code>search</code> method, passing appropriate arguments and verifying the JSON written to the response:</p>
 </div>
 <div class="listingblock">
 <div class="title">src/test/groovy/hibernate/example/ProductControllerSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test the search action finds results</span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>:
+        controller.productService = <span class="predefined-type">Stub</span>(ProductService) {
+            findByNameLike(_, _) &gt;&gt; [<span class="keyword">new</span> Product(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Apple</span><span class="delimiter">'</span></span>, <span class="key">price</span>: <span class="float">2.0</span>)]
+        }
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">A query is executed that finds results</span><span class="delimiter">'</span></span>
         controller.search(<span class="string"><span class="delimiter">'</span><span class="content">pp</span><span class="delimiter">'</span></span>, <span class="integer">10</span>)
 
@@ -1295,23 +1278,23 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
@@ -1326,6 +1309,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
