@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Building the app</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writing.html"><strong>3</strong><span>Writing the Guide</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/building.html"><strong>4</strong><span>Building the app</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/usingOnlyDocker.html"><strong>5</strong><span>Using only Docker</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/writing.html">&lt;&lt; <strong>3</strong><span>Writing the Guide</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/usingOnlyDocker.html"><strong>5</strong><span>Using only Docker</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="building">4 Building the app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-as-docker-container/edit/grails3/src/main/docs/guide/building.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>After creating the new Gradle tasks, now we can execute:</p>
+</div>
+<div class="paragraph">
+<p><code>./gradlew buildImage</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">...
+...
+:complete:jar
+:complete:bootRepackage
+:complete:assemble <i class="conum" data-value="1"></i><b>(1)</b>
+:complete:prepareDocker
+:complete:createDockerfile
+:complete:buildImage <i class="conum" data-value="2"></i><b>(2)</b>
+Building image using context '/home/ivan/workspaces/oci/guides/grails-as-docker-container/complete/build/docker'.
+Using tag 'grails-sample/complete:0.1' for image.
+Step 1/8 : FROM openjdk:8u151-jdk-alpine
+---&gt; 3642e636096d
+Step 2/8 : MAINTAINER John Doe &quot;john.doe@example.com&quot;
+---&gt; Using cache
+---&gt; 3e1c67b067e8
+Step 3/8 : EXPOSE 8080
+---&gt; Using cache
+---&gt; 144aadd0580e
+Step 4/8 : WORKDIR /app
+---&gt; Using cache
+---&gt; c9af01e696f8
+Step 5/8 : COPY complete-0.1.jar application.jar
+---&gt; e4f41e8f0840
+Removing intermediate container 6dccf4039811
+Step 6/8 : COPY app-entrypoint.sh app-entrypoint.sh
+---&gt; 0be562313720
+Removing intermediate container 595d0cb7b9d2
+Step 7/8 : RUN chmod +x app-entrypoint.sh
+---&gt; Running in 3b41eb944045
+---&gt; 5f6fa6b0ab9a
+Removing intermediate container 3b41eb944045
+Step 8/8 : ENTRYPOINT /app/app-entrypoint.sh
+---&gt; Running in 3221a85ae904
+---&gt; 68f5588d1134
+Removing intermediate container 3221a85ae904
+Successfully built 68f5588d1134
+Successfully tagged grails-sample/complete:0.1 <i class="conum" data-value="3"></i><b>(3)</b>
+Created image with ID '68f5588d1134'.
+
+BUILD SUCCESSFUL
+
+Total time: 11.453 secs</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>After the <code>assemble</code> task the new docker tasks are executed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Build image using the <code>Dockerfile</code> generated in the previous task. The output of the docker command is displayed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The image <code>grails-sample/complete:0.1</code> has been created</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker images
+REPOSITORY                     TAG                 IMAGE ID            CREATED             SIZE
+grails-sample/complete         0.1                 68f5588d1134        3 minutes ago       143MB</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_running_the_application">Running the application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Running our <em>dockerized</em> Grails application is as simple as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker run -p 8080:8080 grails-sample/complete:0.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And after a few seconds we will see the message
+<code>Grails application running at <a href="http://localhost:8080" class="bare">http://localhost:8080</a> in environment: production</code></p>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/writing.html">&lt;&lt; <strong>3</strong><span>Writing the Guide</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/usingOnlyDocker.html"><strong>5</strong><span>Using only Docker</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-as-docker-container"><img src="https://travis-ci.org/grails-guides/grails-as-docker-container.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-as-docker-container">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-as-docker-container.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-as-docker-container.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-as-docker-container'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-as-docker-container.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-as-docker-container/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
