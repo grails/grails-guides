@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>How to test Domain class constraints? | Grails Guides | Grails Framework</title>
+    <meta name='description' content='How to test Domain class constraints?. ' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-test-domain-class-constraints"><img src="https://travis-ci.org/grails-guides/grails-test-domain-class-constraints.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-test-domain-class-constraints&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-test-domain-class-constraints.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-test-domain-class-constraints.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-test-domain-class-constraints.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-test-domain-class-constraints/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domainClass"><strong>3.1</strong><span>Domain Class</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#unitTests"><strong>3.2</strong><span>Unit Tests</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#testingTheApp"><strong>4</strong><span>Testing the Application</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>How to test Domain class constraints?</h1>
+        <p></p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.8</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you are going to learn how to define constraints for your Domain classes and test those constraints in  isolation.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-test-domain-class-constraints/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-test-domain-class-constraints.git" class="bare">https://github.com/grails-guides/grails-test-domain-class-constraints.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-test-domain-class-constraints/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-test-domain-class-constraints/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="domainClass">3.1 Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/domainClass.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a persistent entity to store <em>Hotel</em> entities. Most common way to handle persistence in Grails is the use of <a href="https://docs.grails.org/latest/ref/Domain%20Classes/Usage.html">Grails Domain Classes</a>:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A domain class fulfills the M in the Model View Controller (MVC) pattern and represents a persistent entity that is
+mapped onto an underlying database table. In Grails a domain is a class that lives in the grails-app/domain directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw create-domain-class Hotel
+CONFIGURE SUCCESSFUL
+
+| Created grails-app/domain/demo/Hotel.groovy
+| Created src/test/groovy/demo/HotelSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Hotel</code> domain class is our data model. We define different properties to store the <code>Hotel</code> characteristics.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/Hotel.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> demo
+
+<span class="error">@</span>SuppressWarnings(<span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>)
+<span class="reserved">class</span> Hotel {
+    String name
+    String url
+    String email
+    String about
+    BigDecimal latitude
+    BigDecimal longitude
+
+    <span class="reserved">static</span> constraints = {
+        name blank: <span class="predefined-constant">false</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
+        url nullable: <span class="predefined-constant">true</span>, <span class="key">url</span>: <span class="predefined-constant">true</span>, <span class="key">maxSize</span>: <span class="integer">255</span>
+        email nullable: <span class="predefined-constant">true</span>, <span class="key">email</span>: <span class="predefined-constant">true</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        about nullable: <span class="predefined-constant">true</span>
+        <span class="comment">// tag::latitudeCustomValidator[]</span>
+        latitude nullable: <span class="predefined-constant">true</span>, <span class="key">validator</span>: { val, obj, errors -&gt;
+            <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
+                <span class="keyword">return</span> <span class="predefined-constant">true</span>
+            }
+            <span class="keyword">if</span> (val &lt; -<span class="float">90.0</span>) {
+                errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toosmall</span><span class="delimiter">'</span></span>)
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="keyword">if</span> (val &gt; <span class="float">90.0</span>) {
+                errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>)
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="predefined-constant">true</span>
+        }
+        <span class="comment">// end::latitudeCustomValidator[]</span>
+        longitude nullable: <span class="predefined-constant">true</span>, <span class="key">validator</span>: { val, obj, errors -&gt;
+            <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
+                <span class="keyword">return</span> <span class="predefined-constant">true</span>
+            }
+            <span class="keyword">if</span> (val &lt; -<span class="float">180.0</span>) {
+                errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toosmall</span><span class="delimiter">'</span></span>)
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="keyword">if</span> (val &gt; <span class="float">180.0</span>) {
+                errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>)
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>
+            }
+            <span class="predefined-constant">true</span>
+        }
+    }
+
+    <span class="comment">// tag::hotelMapping[]</span>
+    <span class="reserved">static</span> mapping = {
+        about type: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+    }
+    <span class="comment">// end::hotelMapping[]</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We define multiple <a href="https://docs.grails.org/latest/ref/Constraints/Usage.html">validation constraints</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Constraints provide Grails with a declarative DSL for defining validation rules, schema generation and CRUD generation meta data.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Grails comes with multiple constraints ready to use:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/attributes.html">attributes</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/bindable.html">bindable</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/blank.html">blank</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/creditCard.html">creditCard</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/email.html">email</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/inList.html">inList</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/matches.html">matches</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/max.html">max</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/maxSize.html">maxSize</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/min.html">min</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/minSize.html">minSize</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/notEqual.html">notEqual</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/nullable.html">nullable</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/range.html">range</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/scale.html">scale</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/size.html">size</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/unique.html">unique</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/url.html">url</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/validator.html">validator</a></p>
+</li>
+<li>
+<p><a href="https://docs.grails.org/latest/ref/Constraints/widget.html">widget</a></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can define your <a href="https://docs.grails.org/latest/ref/Constraints/validator.html">custom validators</a> if needed.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="unitTests">3.2 Unit Tests</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/unitTests.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We want to <a href="http://docs.grails.org/latest/guide/testing.html">unit test</a> our validation constraints.</p>
+</div>
+<div class="paragraph">
+<p>Implement the <code>DomainUnitTest</code> trait. It indicates we are testing a Grails artifact; a domain class.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">HotelSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> DomainUnitTest&lt;Hotel&gt; {</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is the key take-away of this guide:</p>
+</div>
+<div class="paragraph">
+<p><strong>When you pass a list of Strings to the validate method, the validate method will only validate the
+properties you pass. A domain class may have many properties.
+This allows you to tests properties validation
+on isolation.</strong></p>
+</div>
+<div class="sect2">
+<h3 id="_name_property_constraints_testing">Name property constraints testing</h3>
+<div class="paragraph">
+<p>We want to map our <code>name</code> property to a relational database with a VARCHAR(255). We
+want this property to be required and with a max length of 255 characters.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test name cannot be null</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.name = <span class="predefined-constant">null</span>
+
+    <span class="key">then</span>:
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">nullable</span><span class="delimiter">'</span></span>
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test name cannot be blank</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.name = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+
+    <span class="key">then</span>:
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test name can have a maximum of 255 characters</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> * <span class="integer">256</span>
+    domain.name = str
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation fails</span><span class="delimiter">'</span></span>
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
+
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+    str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> * <span class="integer">255</span>
+    domain.name = str
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">name validation passes</span><span class="delimiter">'</span></span>
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>])
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_url_property_constraints_testing">Url property constraints testing</h3>
+<div class="paragraph">
+<p>We want to map our <code>url</code> property to a relational database with a VARCHAR(255). We
+want this property to be either a valid url or a null or blank value.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Ignore</span>
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test url can have a maximum of 255 characters</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">String</span> urlprefifx = <span class="string"><span class="delimiter">'</span><span class="content">http://</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">String</span> urlsufifx = <span class="string"><span class="delimiter">'</span><span class="content">.com</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> * (<span class="integer">256</span> - (urlprefifx.size() + urlsufifx.size()))
+    str = urlprefifx + str + urlsufifx
+    domain.url = str
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">url validation fails</span><span class="delimiter">'</span></span>
+    !domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>].code == <span class="string"><span class="delimiter">'</span><span class="content">maxSize.exceeded</span><span class="delimiter">'</span></span>
+
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+    str = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>urlprefifx<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span><span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> * (<span class="integer">255</span> - (urlprefifx.size() + urlsufifx.size()))<span class="inline-delimiter">}</span></span><span class="inline"><span class="inline-delimiter">${</span>urlsufifx<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    domain.url = str
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">url validation passes</span><span class="delimiter">'</span></span>
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+}
+
+<span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with url: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
+<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test url validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    domain.url = value
+
+    <span class="key">then</span>:
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+
+    <span class="key">where</span>:
+    value                  | expected | expectedErrorCode
+    <span class="predefined-constant">null</span>                   | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>                     | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="content">http://hilton.com</span><span class="delimiter">'</span></span>    | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="content">hilton</span><span class="delimiter">'</span></span>               | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">url.invalid</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_property_constraints_testing">Email property constraints testing</h3>
+<div class="paragraph">
+<p>We want <code>email</code> to be either a valid email or a null or blank value.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with email: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
+<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test email validation</span><span class="delimiter">&quot;</span></span>() {
+    <span class="key">when</span>:
+    domain.email = value
+
+    <span class="key">then</span>:
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+
+    <span class="key">where</span>:
+    value                  | expected | expectedErrorCode
+    <span class="predefined-constant">null</span>                   |  <span class="predefined-constant">true</span>    | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>                     |  <span class="predefined-constant">true</span>    | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="content">contact@hilton.com</span><span class="delimiter">'</span></span>   |  <span class="predefined-constant">true</span>    | <span class="predefined-constant">null</span>
+    <span class="string"><span class="delimiter">'</span><span class="content">hilton</span><span class="delimiter">'</span></span>               |  <span class="predefined-constant">false</span>   | <span class="string"><span class="delimiter">'</span><span class="content">email.invalid</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Email validator ensures it has less than 255 characters
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_email_unique_constraint_testing">Email Unique constraint testing</h3>
+<div class="paragraph">
+<p>We have added a <code>unique</code> constraint to the Hotel&#8217;s email address.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Unique: It constrains a property as unique at the database level. Unique is a persistent call and will query the database.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>You can test a unique constraint with such a test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelEmailUniqueConstraintSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.test.hibernate.HibernateSpec</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">HotelEmailUniqueConstraintSpec</span> <span class="directive">extends</span> HibernateSpec {
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() { [Hotel] }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">hotel's email unique constraint</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">You instantiate a hotel with name and an email address which has been never used before</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hotel = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hotel Transilvania</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">hotel is valid instance</span><span class="delimiter">'</span></span>
+        hotel.validate()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">we can save it, and we get back a not null GORM Entity</span><span class="delimiter">'</span></span>
+        hotel.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">there is one additional Hotel</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count()) + <span class="integer">1</span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">instanting a different hotel with the same email address</span><span class="delimiter">'</span></span>
+        <span class="keyword">def</span> hilton = <span class="keyword">new</span> Hotel(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hilton Hotel</span><span class="delimiter">'</span></span>, <span class="key">email</span>: <span class="string"><span class="delimiter">'</span><span class="content">info@hoteltransilvania.com</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the hotel instance is not valid</span><span class="delimiter">'</span></span>
+        !hilton.validate([<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>])
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">unique error code is populated</span><span class="delimiter">'</span></span>
+        hilton.errors[<span class="string"><span class="delimiter">'</span><span class="content">email</span><span class="delimiter">'</span></span>]?.code == <span class="string"><span class="delimiter">'</span><span class="content">unique</span><span class="delimiter">'</span></span>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">trying to save fails too</span><span class="delimiter">'</span></span>
+        !hilton.save()
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">no hotel has been added</span><span class="delimiter">'</span></span>
+        Hotel.count() == old(Hotel.count())
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_about_property_constraints_testing">About property constraints testing</h3>
+<div class="paragraph">
+<p>We want <code>about</code> to be a null, blank or a block of text. We don&#8217;t want <code>about</code> to be constrained
+to 255 characters. We used the <code>mapping</code> block in our domain class to indicate this characteristic.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/Hotel.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">static</span> mapping = {
+    about type: <span class="string"><span class="delimiter">'</span><span class="content">text</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These are the tests to validate <code>about</code> constraints.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test about can be null</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.about = <span class="predefined-constant">null</span>
+
+    <span class="key">then</span>:
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test about can be blank</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.about = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
+
+    <span class="key">then</span>:
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+}
+
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test about can have a more than 255 characters</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">for a string of 256 characters</span><span class="delimiter">'</span></span>
+    <span class="predefined-type">String</span> str = <span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span> * <span class="integer">256</span>
+    domain.about = str
+
+    <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">about validation passes</span><span class="delimiter">'</span></span>
+    domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">about</span><span class="delimiter">'</span></span>])
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_latitude_and_longitude_properties_constraints_testing">Latitude and longitude properties constraints testing</h3>
+<div class="paragraph">
+<p>We want <code>latitude</code> to be null or a value between -90 to 90 degrees.
+We want <code>longitude</code> to be null or a value between -180 to 180 degrees.</p>
+</div>
+<div class="paragraph">
+<p>You maybe tempted to use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">latitude <span class="key">nullable</span>: <span class="predefined-constant">true</span>, <span class="key">range</span>: -<span class="integer">90</span>..<span class="integer">90</span>
+longitude <span class="key">nullable</span>: <span class="predefined-constant">true</span>, <span class="key">range</span>: -<span class="integer">180</span>..<span class="integer">180</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, a value such as <code>latitude</code> of 90.1 will be a valid value using the  <a href="https://docs.grails.org/latest/ref/Constraints/range.html">Range Constraint</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Set to a Groovy range which can contain numbers in the form of an IntRange, dates or any object that implements Comparable and provides next and previous methods for navigation.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Instead we are using a <a href="https://docs.grails.org/latest/ref/Constraints/validator.html">custom validation</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/domain/demo/Hotel.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">latitude nullable: <span class="predefined-constant">true</span>, <span class="key">validator</span>: { val, obj, errors -&gt;
+    <span class="keyword">if</span> ( val == <span class="predefined-constant">null</span> ) {
+        <span class="keyword">return</span> <span class="predefined-constant">true</span>
+    }
+    <span class="keyword">if</span> (val &lt; -<span class="float">90.0</span>) {
+        errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toosmall</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span> <span class="predefined-constant">false</span>
+    }
+    <span class="keyword">if</span> (val &gt; <span class="float">90.0</span>) {
+        errors.rejectValue(<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>)
+        <span class="keyword">return</span> <span class="predefined-constant">false</span>
+    }
+    <span class="predefined-constant">true</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These are the tests to validate <code>latitude</code> and <code>longitude</code> constraints.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/HotelSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.validate() with latitude: #value should have returned #expected with errorCode: #expectedErrorCode</span><span class="delimiter">'</span></span>)
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test latitude validation</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.latitude = value
+
+    <span class="key">then</span>:
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">latitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+
+    <span class="key">where</span>:
+    value                  | expected | expectedErrorCode
+    <span class="predefined-constant">null</span>                   | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="integer">0</span>                      | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="float">0.5</span>                    | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="integer">90</span>                     | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="float">90.5</span>                   | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>
+    -<span class="integer">90</span>                    | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    -<span class="integer">180</span>                   | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">range.toosmall</span><span class="delimiter">'</span></span>
+    <span class="integer">180</span>                    | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>
+}
+
+<span class="annotation">@Unroll</span>(<span class="string"><span class="delimiter">'</span><span class="content">Hotel.longitude() with latitude: #value should have returned #expected with error code: #expectedErrorCode</span><span class="delimiter">'</span></span>)
+<span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test longitude validation</span><span class="delimiter">'</span></span>() {
+    <span class="key">when</span>:
+    domain.longitude = value
+
+    <span class="key">then</span>:
+    expected == domain.validate([<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>])
+    domain.errors[<span class="string"><span class="delimiter">'</span><span class="content">longitude</span><span class="delimiter">'</span></span>]?.code == expectedErrorCode
+
+    <span class="key">where</span>:
+    value                  | expected | expectedErrorCode
+    <span class="predefined-constant">null</span>                   | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="integer">0</span>                      | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="integer">90</span>                     | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="float">90.1</span>                   | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    -<span class="integer">90</span>                    | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    -<span class="integer">180</span>                   | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="integer">180</span>                    | <span class="predefined-constant">true</span>     | <span class="predefined-constant">null</span>
+    <span class="float">180.1</span>                  | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">range.toobig</span><span class="delimiter">'</span></span>
+    -<span class="float">180.1</span>                 | <span class="predefined-constant">false</span>    | <span class="string"><span class="delimiter">'</span><span class="content">range.toosmall</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+
+
+<h1 id="testingTheApp">4 Testing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-domain-class-constraints/edit/grails3/src/main/docs/guide/testingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw
+grails&gt; test-app
+grails&gt; open test-report</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew check
+open build/reports/tests/index.html</code></pre>
+</div>
+</div>
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
