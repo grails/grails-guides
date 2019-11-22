@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.6 Test Web Endpoint</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/appendixA.html"><strong>5</strong><span>Appendix A</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="testing">3.6 Test Web Endpoint</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-security/edit/grails3/src/main/docs/guide/testing.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now we are going to execute a Functional Test using the <a href="http://gebish.org">Geb framework</a>.</p>
+</div>
+<div class="paragraph">
+<p>To make this test easier to read and maintain we&#8217;ve created two Geb Pages: a <em>LoginPage</em> and an
+<em>AnnouncementListingPage</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/LoginPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">LoginPage</span> <span class="directive">extends</span> Page {
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/login/auth</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> at = {
+        title == <span class="string"><span class="delimiter">'</span><span class="content">Login</span><span class="delimiter">'</span></span>
+    }
+
+    <span class="directive">static</span> content = {
+        loginButton { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        usernameInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#username</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        passwordInputField { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#password</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+    }
+
+    <span class="type">void</span> login(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password) {
+        usernameInputField &lt;&lt; username
+        passwordInputField &lt;&lt; password
+        loginButton.click()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/AnnouncementListingPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">AnnouncementListingPage</span> <span class="directive">extends</span> Page {
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> at = {
+        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#list-announcement</span><span class="delimiter">'</span></span>).text()?.contains <span class="string"><span class="delimiter">'</span><span class="content">Announcement List</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/src/integration-test/groovy/example/grails/AnnouncementControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+
+<span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">MethodName</span><span class="delimiter">'</span></span>)
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_BOSS</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">try to visit announcement listing without login</span><span class="delimiter">'</span></span>
+        go <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">it is redirected to login page</span><span class="delimiter">'</span></span>
+        at LoginPage
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">signs in with a ROLE_BOSS user</span><span class="delimiter">'</span></span>
+        LoginPage page = browser.page(LoginPage)
+        page.login(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">he gets access to the announcement listing page</span><span class="delimiter">'</span></span>
+        at AnnouncementListingPage
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">test /announcement/index is secured, but accesible to users with role ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">try to visit announcement listing without login</span><span class="delimiter">'</span></span>
+        go <span class="string"><span class="delimiter">'</span><span class="content">/announcement/index</span><span class="delimiter">'</span></span>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">it is redirected to login page</span><span class="delimiter">'</span></span>
+        at LoginPage
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">signs in with a ROLE_EMPLOYEE user</span><span class="delimiter">'</span></span>
+        LoginPage page = browser.page(LoginPage)
+        page.login(<span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">he gets access to the announcement listing page</span><span class="delimiter">'</span></span>
+        at AnnouncementListingPage
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-test-security"><img src="https://travis-ci.org/grails-guides/grails-test-security.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-test-security">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-test-security.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-test-security.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-test-security'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-test-security.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-test-security/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
