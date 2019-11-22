@@ -42,10 +42,7 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
                         </div>
                         
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/appendixA.html"><strong>5</strong><span>Appendix A</span></a>
-                        </div>
-                        
-                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Do you need help with Grails?</span></a>
                         </div>
                         
                     </div>
@@ -246,8 +243,8 @@ to our <code>build.gradle</code> file.</p>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.RC1</span><span class="delimiter">'</span></span>
-    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.3</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:3.0.0.RC1</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:4.0.0.RC2</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -593,43 +590,93 @@ beans = {
 <p>We&#8217;ll populate our database in <code>BootStrap</code>, inserting two users when the application starts.</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/services/example/grails/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(User)
+<span class="type">interface</span> UserService {
+
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password)
+
+    User findByUsername(<span class="predefined-type">String</span> username)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/SecurityRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(SecurityRole)
+<span class="type">interface</span> SecurityRoleService {
+
+    SecurityRole save(<span class="predefined-type">String</span> authority)
+
+    SecurityRole findByAuthority(<span class="predefined-type">String</span> authority)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/UserSecurityRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(UserSecurityRole)
+<span class="type">interface</span> UserSecurityRoleService {
+
+    UserSecurityRole save(User user, SecurityRole securityRole)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
 <div class="title">grails-app/init/example/grails/BootStrap.groovy</div>
 <div class="content">
-<pre>package example.grails
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-import grails.compiler.GrailsCompileStatic
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
 
-@GrailsCompileStatic
-class BootStrap {
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
 
     AnnouncementService announcementService
 
-    def init = { servletContext -&gt;
+    UserService userService
 
-        def authorities = ['ROLE_BOSS', 'ROLE_EMPLOYEE']
-        authorities.each { String authority -&gt;
-            if ( !SecurityRole.findByAuthority(authority) ) {
-                new SecurityRole(authority: authority).save()
+    SecurityRoleService securityRoleService
+
+    UserSecurityRoleService userSecurityRoleService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; authorities = [<span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>]
+        authorities.each { <span class="predefined-type">String</span> authority -&gt;
+            <span class="keyword">if</span> ( !securityRoleService.findByAuthority(authority) ) {
+                securityRoleService.save(authority)
             }
         }
 
-        if ( !User.findByUsername('sherlock') ) {
-            def u = new User(username: 'sherlock', password: 'elementary')
-            u.save()
-            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_BOSS')).save()
+        <span class="keyword">if</span> ( !userService.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>) ) {
+            User u = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+            userSecurityRoleService.save(u, securityRoleService.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span>))
         }
 
-        if ( !User.findByUsername('watson') ) {
-            def u = new User(username: 'watson', password: '221Bbakerstreet')
-            u.save()
-            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_EMPLOYEE')).save()
+        <span class="keyword">if</span> ( !userService.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>) ) {
+            User u = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>)
+            userSecurityRoleService.save(u, securityRoleService.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>))
         }
 
-        announcementService.save('The Hound of the Baskervilles')
+        announcementService.save(<span class="string"><span class="delimiter">'</span><span class="content">The Hound of the Baskervilles</span><span class="delimiter">'</span></span>)
     }
-    def destroy = {
+    <span class="keyword">def</span> destroy = {
     }
-}</pre>
+}</code></pre>
 </div>
 </div>
 
@@ -647,21 +694,9 @@ class BootStrap {
 <p>To test REST part of the application, we use <a href="https://docs.micronaut.io/snapshot/guide/index.html#httpClient">Micronaut&#8217;s HttpClient</a>. We need to add the dependency:</p>
 </div>
 <div class="listingblock">
-<div class="title">/gradle.properties</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.8</span>
-gormVersion=<span class="float">6.1</span><span class="float">.10</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.5</span>
-assetPipelineVersion=<span class="float">2.14</span><span class="float">.8</span>
-micronautVersion=<span class="float">1.0</span><span class="float">.0</span>
-gebVersion=<span class="float">2.3</span>
-seleniumVersion=<span class="float">3.14</span><span class="float">.0</span></code></pre>
-</div>
-</div>
-<div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client:</span><span class="inline"><span class="inline-delimiter">$</span>micronautVersion</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">

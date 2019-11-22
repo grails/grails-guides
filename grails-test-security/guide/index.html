@@ -14,38 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grails.org/learning.html'>Learning</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Guides</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -99,9 +99,7 @@
             
             <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
             
-            <div class="toc-item" style="margin-left:0px"><a href="#appendixA"><strong>5</strong><span>Appendix A</span></a></div>
-            
-            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Do you need help with Grails?</span></a></div>
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
             
             <div style="clear:both" ></div>
         </div>
@@ -111,7 +109,7 @@
         <h1>Testing a Secured Grails Application</h1>
         <p>In this guide you will see how to test the security constraints you added with Grails Spring Security REST Plugin and Grails Spring Security Core Plugin.</p>
         <p><strong>Authors:</strong> Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.8</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -224,7 +222,7 @@ to access such a page you are redirected to a sign-in form.</p>
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -448,8 +446,8 @@ to our <code>build.gradle</code> file.</p>
 <div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:2.0.0.RC1</span><span class="delimiter">'</span></span>
-    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.3</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-rest:3.0.0.RC1</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:4.0.0.RC2</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -795,43 +793,93 @@ beans = {
 <p>We&#8217;ll populate our database in <code>BootStrap</code>, inserting two users when the application starts.</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/services/example/grails/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(User)
+<span class="type">interface</span> UserService {
+
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password)
+
+    User findByUsername(<span class="predefined-type">String</span> username)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/SecurityRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(SecurityRole)
+<span class="type">interface</span> SecurityRoleService {
+
+    SecurityRole save(<span class="predefined-type">String</span> authority)
+
+    SecurityRole findByAuthority(<span class="predefined-type">String</span> authority)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/UserSecurityRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(UserSecurityRole)
+<span class="type">interface</span> UserSecurityRoleService {
+
+    UserSecurityRole save(User user, SecurityRole securityRole)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
 <div class="title">grails-app/init/example/grails/BootStrap.groovy</div>
 <div class="content">
-<pre>package example.grails
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-import grails.compiler.GrailsCompileStatic
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
 
-@GrailsCompileStatic
-class BootStrap {
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
 
     AnnouncementService announcementService
 
-    def init = { servletContext -&gt;
+    UserService userService
 
-        def authorities = ['ROLE_BOSS', 'ROLE_EMPLOYEE']
-        authorities.each { String authority -&gt;
-            if ( !SecurityRole.findByAuthority(authority) ) {
-                new SecurityRole(authority: authority).save()
+    SecurityRoleService securityRoleService
+
+    UserSecurityRoleService userSecurityRoleService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; authorities = [<span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>]
+        authorities.each { <span class="predefined-type">String</span> authority -&gt;
+            <span class="keyword">if</span> ( !securityRoleService.findByAuthority(authority) ) {
+                securityRoleService.save(authority)
             }
         }
 
-        if ( !User.findByUsername('sherlock') ) {
-            def u = new User(username: 'sherlock', password: 'elementary')
-            u.save()
-            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_BOSS')).save()
+        <span class="keyword">if</span> ( !userService.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>) ) {
+            User u = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+            userSecurityRoleService.save(u, securityRoleService.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_BOSS</span><span class="delimiter">'</span></span>))
         }
 
-        if ( !User.findByUsername('watson') ) {
-            def u = new User(username: 'watson', password: '221Bbakerstreet')
-            u.save()
-            new UserSecurityRole(user: u, securityRole: SecurityRole.findByAuthority('ROLE_EMPLOYEE')).save()
+        <span class="keyword">if</span> ( !userService.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>) ) {
+            User u = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">watson</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">221Bbakerstreet</span><span class="delimiter">'</span></span>)
+            userSecurityRoleService.save(u, securityRoleService.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_EMPLOYEE</span><span class="delimiter">'</span></span>))
         }
 
-        announcementService.save('The Hound of the Baskervilles')
+        announcementService.save(<span class="string"><span class="delimiter">'</span><span class="content">The Hound of the Baskervilles</span><span class="delimiter">'</span></span>)
     }
-    def destroy = {
+    <span class="keyword">def</span> destroy = {
     }
-}</pre>
+}</code></pre>
 </div>
 </div>
 
@@ -849,21 +897,9 @@ class BootStrap {
 <p>To test REST part of the application, we use <a href="https://docs.micronaut.io/snapshot/guide/index.html#httpClient">Micronaut&#8217;s HttpClient</a>. We need to add the dependency:</p>
 </div>
 <div class="listingblock">
-<div class="title">/gradle.properties</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.8</span>
-gormVersion=<span class="float">6.1</span><span class="float">.10</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.5</span>
-assetPipelineVersion=<span class="float">2.14</span><span class="float">.8</span>
-micronautVersion=<span class="float">1.0</span><span class="float">.0</span>
-gebVersion=<span class="float">2.3</span>
-seleniumVersion=<span class="float">3.14</span><span class="float">.0</span></code></pre>
-</div>
-</div>
-<div class="listingblock">
 <div class="title">/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client:</span><span class="inline"><span class="inline-delimiter">$</span>micronautVersion</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1209,34 +1245,7 @@ grails&gt; open test-report</code></pre>
 </div>
 
 
-<h1 id="appendixA">5 Appendix A</h1>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-security/edit/master/src/main/docs/guide/appendixA.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>For versions of GORM older than 6.0.10 or Spring Security Core Plugin prior to 3.1.2, <code>s2-quickstart</code> handles password
-encoding directly with the
-injection of <code>SpringSecurityService</code> in the User class. Since Grails 3.2.8. service injection
-is disabled in domain classes. However, you can turn service injection on in domain classes:</p>
-</div>
-<div class="listingblock">
-<div class="title">grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
-    <span class="key">gorm</span>:
-        <span class="error">#</span> Whether to autowire entities.
-        <span class="error">#</span> Disabled by <span class="keyword">default</span> <span class="keyword">for</span> performance reasons.
-        autowire: <span class="predefined-constant">true</span></code></pre>
-</div>
-</div>
-
-
-<h1 id="helpWithGrails">6 Do you need help with Grails?</h1>
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-test-security/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
@@ -1362,23 +1371,23 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
@@ -1393,6 +1402,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
