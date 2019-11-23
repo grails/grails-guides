@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails Controller Testing | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails Controller Testing. In this guide, we explore Controller testing in Grails.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-controller-testing"><img src="https://travis-ci.org/grails-guides/grails-controller-testing.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-controller-testing&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-controller-testing.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-controller-testing.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-controller-testing.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-controller-testing/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domainClassAndScaffold"><strong>3.1</strong><span>Domain Class and Scaffold</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#staticScaffolding"><strong>3.2</strong><span>Static Scaffolding</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#unitTestIndex"><strong>3.3</strong><span>Unit Test - Index Method</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#unitTestSave"><strong>3.4</strong><span>Unit Test - Save Method</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#allowedMethods"><strong>3.5</strong><span>Test Allowed Methods</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#functionalTestController"><strong>3.6</strong><span>Functional Test</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#summary"><strong>4</strong><span>Summary</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>5</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails Controller Testing</h1>
+        <p>In this guide, we explore Controller testing in Grails.</p>
+        <p><strong>Authors:</strong> Nirav Assar, Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.0</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you explore Controller Testing in Grails. We are going
+to focus on some of the most common use cases:</p>
+</div>
+<div class="paragraph">
+<p><strong>Unit Tests</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Validate allowed methods.</p>
+</li>
+<li>
+<p>Validate <em>model</em>, <em>views</em>, <em>status</em> and <em>redirect</em></p>
+</li>
+<li>
+<p>Use a Stub when you work with a service</p>
+</li>
+<li>
+<p>Validate HTTP parameters bind to a command object</p>
+</li>
+<li>
+<p>Validate a JSON payload is bound to a command object</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Functional Tests</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>JSON response, status code</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-controller-testing/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-controller-testing.git" class="bare">https://github.com/grails-guides/grails-controller-testing.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-controller-testing/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-controller-testing/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to write a simple CRUD application involving one domain class <code>Student</code>.</p>
+</div>
+<div class="paragraph">
+<p>We will have one Controller and one Service class. We will be able to explore
+Controller testing approaches within this context.</p>
+</div>
+
+
+<h2 id="domainClassAndScaffold">3.1 Domain Class and Scaffold</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/domainClassAndScaffold.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will create a Domain class <code>Student</code>.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A domain class fulfills the M in the Model View Controller (MVC) pattern and represents a persistent entity that is
+mapped onto an underlying database table. In Grails a domain is a class that lives in the grails-app/domain directory.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails create-domain-class Student</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add domain properties (<code>name</code> and <code>grade</code>) to the created domain class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Student.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Student</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">BigDecimal</span> grade
+
+    <span class="predefined-type">String</span> toString() {
+        name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you generated the domain class with the <code>create-domain-class</code> command, a Spock Specification
+for the domain class is created.</p>
+</div>
+<div class="paragraph">
+<p>Delete this file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ src/test/groovy/demo/StudentSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Learn more about testing domain classes in the <a href="http://guides.grails.org/grails-test-domain-class-constraints/guide/index.html">How to test Domain Class constraints?</a> Guide.</p>
+</div>
+
+
+<h2 id="staticScaffolding">3.2 Static Scaffolding</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/staticScaffolding.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Generate a Controller and Views for this domain class with the help
+of Grails Static scaffolding capabilities.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Learn more about scaffolding in the <a href="http://docs.grails.org/latest/guide/scaffolding.html">Grails documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails generate-all demo.Student</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous command generates a sample controller and GSP views. It generates a Spock Specification
+for the generated controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">.grails-app/controllers/demo/StudentController.groovy
+.grails-app/views/student/create.gsp
+.grails-app/views/student/edit.gsp
+.grails-app/views/student/index.gsp
+.grails-app/views/student/show.gsp
+.src/test/groovy/demo/StudentControllerSpec.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Those artifacts provide CRUD functionality for the <code>Student</code> domain class.</p>
+</div>
+<div class="paragraph">
+<p>We have edited the generated controller and moved the code dealing with Transactional behavior into a service.
+You can check the complete solution in the <code>complete</code> folder.</p>
+</div>
+<div class="paragraph">
+<p><strong>The Grails team discourages the embedding of core application logic inside controllers, as
+it does not promote reuse and a clean separation of concerns. A controller&#8217;s responsibility should be to handle a request and create or prepare a response.
+A controller can generate the response directly or delegate to a view.</strong></p>
+</div>
+
+
+<h2 id="unitTestIndex">3.3 Unit Test - Index Method</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/unitTestIndex.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>index()</code> action method returns a <code>studentList</code> and <code>studentCount</code> as a model back to the view.</p>
+</div>
+<div class="paragraph">
+<p>Next code sample, shows the <em>index</em> method of the <em>StudentController</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/StudentController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">StudentController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+                             <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+                             <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
+
+    StudentService studentService
+
+    MessageSource messageSource
+
+    <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">Integer</span> max) {
+        params.max = <span class="predefined-type">Math</span>.min(max ?: <span class="integer">10</span>, <span class="integer">100</span>)
+        <span class="predefined-type">List</span>&lt;Student&gt; studentList = studentService.list(params)
+        respond studentList, <span class="key">model</span>: [<span class="key">studentCount</span>: studentService.count()]
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous action uses a service (the collaborator) to get some objects. Then, it returns
+those objects as the model. We are going verify that the objects returned by the service are
+indeed used as the model. To see this we will use a Stub to help us.</p>
+</div>
+<div class="paragraph">
+<p><strong>When should I use a Mock, and when should I use a Stub?</strong></p>
+</div>
+<div class="paragraph">
+<p>From the book <a href="http://shop.oreilly.com/product/0636920038597.do">Spock Up &amp; Running</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>If the test is concerned with proving that the test subject interacts with a collaborator
+in a particular way, use a mock. If the fact that a collaborator behaves in a certain way exposes
+a particular behavior in the test subject the outcome of <em>that</em> behavior is what you are testing, use a stub</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;StudentController&gt; {
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">Test the index action returns the correct model</span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">List</span>&lt;Student&gt; sampleStudents = [<span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">100</span>),
+                                        <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">95</span>),
+                                        <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">90</span>),]
+        controller.studentService = <span class="predefined-type">Stub</span>(StudentService) {
+            list(_) &gt;&gt; sampleStudents
+            count() &gt;&gt; sampleStudents.size()
+        }
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">The index action is executed</span><span class="delimiter">'</span></span>
+        controller.index()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The model is correct</span><span class="delimiter">'</span></span>
+        model.studentList <i class="conum" data-value="1"></i><b>(1)</b>
+        model.studentList.size() == <span class="integer">3</span>
+        model.studentList.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span> &amp;&amp; <span class="local-variable">it</span>.grade == <span class="integer">100</span> }
+        model.studentList.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span> &amp;&amp; <span class="local-variable">it</span>.grade == <span class="integer">95</span> }
+        model.studentList.find { <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span> &amp;&amp; <span class="local-variable">it</span>.grade == <span class="integer">90</span> }
+        model.studentCount == <span class="integer">3</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We can verify the model contains the information we expect</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="unitTestSave">3.4 Unit Test - Save Method</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/unitTestSave.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>save()</code> action method use a command object as a parameter.</p>
+</div>
+<div class="paragraph">
+<p>Check the guide <a href="http://guides.grails.org/command-objects-and-forms/guide/index.html">Using Command Objects to handle form data</a> to learn more about command objects.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/StudentSaveCommand.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">StudentSaveCommand</span> <span class="directive">implements</span> Validateable {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">BigDecimal</span> grade
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        grade <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">min</span>: <span class="float">0.0</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/StudentController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.CREATED</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.OK</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NOT_FOUND</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">org.springframework.http.HttpStatus.NO_CONTENT</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">StudentController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+                             <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+                             <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]
+
+    StudentService studentService
+
+    MessageSource messageSource
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="keyword">def</span> <span class="function">save</span>(StudentSaveCommand cmd) {
+        <span class="keyword">if</span> (cmd.hasErrors()) { <i class="conum" data-value="1"></i><b>(1)</b>
+            respond cmd.errors, [<span class="key">model</span>: [<span class="key">student</span>: cmd], <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>]
+            <span class="keyword">return</span>
+        }
+
+        Student student = studentService.save(cmd, <span class="predefined-constant">true</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="keyword">if</span> (student.hasErrors()) { <i class="conum" data-value="3"></i><b>(3)</b>
+            respond student.errors, <span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span>
+        }
+
+        request.withFormat {  <i class="conum" data-value="4"></i><b>(4)</b>
+            form multipartForm {  <i class="conum" data-value="5"></i><b>(5)</b>
+                <span class="predefined-type">String</span> msg = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">student.label</span><span class="delimiter">'</span></span>, <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="string"><span class="delimiter">'</span><span class="content">Student</span><span class="delimiter">'</span></span>, request.locale)
+                flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">default.created.message</span><span class="delimiter">'</span></span>, [msg, student.id] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>, <span class="string"><span class="delimiter">'</span><span class="content">Student created</span><span class="delimiter">'</span></span>, request.locale)
+                redirect(<span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>, <span class="key">id</span>: student.id)
+            }
+            <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span> { respond student, [<span class="key">status</span>: CREATED] }
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Grails binds the parameters in the command object and calls  <em>validate()</em> before the controller&#8217;s <em>save</em> action starts.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If the command object is valid, it tries to save the new student with the help of a service (a collaborator).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Inspect the collaborator response. The action result depends on the collaborator&#8217;s response.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If everything went well, it would return a different answer depending on the Content Type.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>For example, for <em>"application/x-www-form-urlencoded</em> Content Type, it redirect to the <em>show</em> action to display the Student.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We could unit test it with the next feature methods:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+
+<span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;StudentController&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">If you save without supplying name and grade(both required) you remain in the create form</span><span class="delimiter">'</span></span>() {
+
+        <span class="key">when</span>:
+        request.contentType = FORM_CONTENT_TYPE <i class="conum" data-value="1"></i><b>(1)</b>
+        request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+        controller.save()
+
+        <span class="key">then</span>:
+        model.student
+        view == <span class="string"><span class="delimiter">'</span><span class="content">create</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Thanks to the <em>@TestFor</em> annotation, we change the request content type. The action under test outputs a different status code depending on the ContentType see <em>request.withFormat</em> closure.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Thanks to the <em>@TestFor</em> annotation, we change the request method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We can verify the view used.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+
+<span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;StudentController&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">if the users supplies both name and grade, save is successful </span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">BigDecimal</span> grade = <span class="integer">100</span>
+        <span class="predefined-type">Long</span> id = <span class="integer">1L</span>
+        controller.studentService = <span class="predefined-type">Stub</span>(StudentService) {
+            save(_, _) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
+            read(_) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
+        }
+        <span class="key">when</span>:
+        request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
+        request.contentType = FORM_CONTENT_TYPE
+        params[<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>] =  name <i class="conum" data-value="1"></i><b>(1)</b>
+        params[<span class="string"><span class="delimiter">'</span><span class="content">grade</span><span class="delimiter">'</span></span>] = grade
+        controller.save() <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">a message indicating that the user has been saved is placed</span><span class="delimiter">'</span></span>
+        flash.message <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the user is redirected to show the student</span><span class="delimiter">'</span></span>
+        response.redirectedUrl.startsWith(<span class="string"><span class="delimiter">'</span><span class="content">/student/show</span><span class="delimiter">'</span></span>) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">a found response code is used</span><span class="delimiter">'</span></span>
+        response.status == <span class="integer">302</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Supply the parameters as you would normally do.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Don&#8217;t supply parameters to the action method. Call the action method without parameters. Grails does the binding. It simulates more closely what happens in real code.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>You can check that a flash message has been populated</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Verify the redirected url is what we expected.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>You can verify the expected status code is present.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+
+<span class="type">class</span> <span class="class">StudentControllerSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;StudentController&gt; {
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">'</span><span class="content">JSON payload is bound to the command object. If the student is saved, a 201 is returned</span><span class="delimiter">'</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">BigDecimal</span> grade = <span class="integer">100</span>
+        <span class="predefined-type">Long</span> id = <span class="integer">1L</span>
+        controller.studentService = <span class="predefined-type">Stub</span>(StudentService) {
+            save(_, _) &gt;&gt; <span class="keyword">new</span> Student(<span class="key">name</span>: name, <span class="key">grade</span>: grade, <span class="key">id</span>: id)
+        }
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">json request is sent with domain conversion</span><span class="delimiter">'</span></span>
+        request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
+        request.json = <span class="string"><span class="delimiter">'</span><span class="content">{&quot;name&quot;:&quot;</span><span class="delimiter">'</span></span> + name + <span class="string"><span class="delimiter">'</span><span class="content">&quot;,&quot;grade&quot;:</span><span class="delimiter">'</span></span> + grade + <span class="string"><span class="delimiter">'</span><span class="content">}</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+        controller.save()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">CREATED status code is set</span><span class="delimiter">'</span></span>
+        response.status == <span class="integer">201</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Grails supports data binding of JSON requests to command objects.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can verify the expected status code is present.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="allowedMethods">3.5 Test Allowed Methods</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/allowedMethods.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We have restricted the <em>save</em> action to only POST requests with the help of
+the property <code>allowedMethods</code>.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>allowedMethods: Limits access to controller actions based on the HTTP request method, sending a 405 (Method Not Allowed) error code when an incorrect HTTP method is used.</p>
+</div>
+</blockquote>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/StudentController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>,
+                             <span class="key">update</span>: <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>,
+                             <span class="key">delete</span>: <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>,]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can verify it with a unit test:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/StudentControllerAllowedMethodsSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">javax.servlet.http.HttpServletResponse.SC_OK</span>
+<span class="keyword">import</span> <span class="include">grails.testing.web.controllers.ControllerUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Unroll</span>
+
+<span class="type">class</span> <span class="class">StudentControllerAllowedMethodsSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ControllerUnitTest&lt;StudentController&gt; {
+
+    <span class="annotation">@Unroll</span>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">StudentController.save does not accept #method requests</span><span class="delimiter">&quot;</span></span>(<span class="predefined-type">String</span> method) {
+        <span class="key">when</span>:
+        request.method = method
+        controller.save()
+
+        <span class="key">then</span>:
+        response.status == SC_METHOD_NOT_ALLOWED
+
+        <span class="key">where</span>:
+        method &lt;&lt; [<span class="string"><span class="delimiter">'</span><span class="content">PATCH</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">DELETE</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">PUT</span><span class="delimiter">'</span></span>]
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">StudentController.save accepts POST requests</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        request.method = <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>
+        controller.save()
+
+        <span class="key">then</span>:
+        response.status == SC_OK
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="functionalTestController">3.6 Functional Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/functionalTestController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to use a functional test to verify the index method
+returns a JSON payload with a list of Students.</p>
+</div>
+<div class="paragraph">
+<p>We can use <code>RestBuilder</code> from the Rest Client Builder Grails Plugin. Import the
+dependency into the <code>build.gradle</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can invoke the controller actions by using the appropriate URL in the <code>RestBuilder</code> API. We will get back a
+<code>RestResponse</code> object and with that object, we can validate the returned items of the controller.</p>
+</div>
+<div class="paragraph">
+<p>The next feature method invokes the <code>index()</code> action and return a JSON list of students.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/StudentControllerIntSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+
+<span class="annotation">@Integration</span>
+<span class="annotation">@Rollback</span>
+<span class="type">class</span> <span class="class">StudentControllerIntSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span> RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        Student.saveAll(
+                <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">100</span>),
+                <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">95</span>),
+                <span class="keyword">new</span> Student(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="key">grade</span>: <span class="integer">90</span>),
+        )
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">test json in URI to return students</span><span class="delimiter">'</span></span>() {
+        <span class="key">when</span>:
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/student.json</span><span class="delimiter">&quot;</span></span>)  <i class="conum" data-value="1"></i><b>(1)</b> <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        resp.json.size() == <span class="integer">3</span>
+        resp.json.find { <span class="local-variable">it</span>.grade == <span class="integer">100</span> &amp;&amp; <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Nirav</span><span class="delimiter">'</span></span> }
+        resp.json.find { <span class="local-variable">it</span>.grade == <span class="integer">95</span> &amp;&amp;  <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Jeff</span><span class="delimiter">'</span></span> }
+        resp.json.find { <span class="local-variable">it</span>.grade == <span class="integer">90</span> &amp;&amp;  <span class="local-variable">it</span>.name == <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span> }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>.json</code> can be appended to the URL to declare we want a JSON response.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>serverPort</code> is automatically injected.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>use the <code>RestResponse</code> object to validate the status code, JSON Payload etc.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>serverPort</code> property is automatically injected. It contains the random port where the Grails application runs during the functional test.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="summary">4 Summary</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/summary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To summarize this guide, we learned how . . .</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To use controller unit test properties to validate <code>model, views, status and redirect</code>.</p>
+</li>
+<li>
+<p>To validate data binding to command objects in a controller action method</p>
+</li>
+<li>
+<p>To use integration tests to invoke controllers and test end to end</p>
+</li>
+</ul>
+</div>
+
+
+<h1 id="runningTheApp">5 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./grailsw
+grails&gt; test-app
+grails&gt; open test-report</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew test</code></pre>
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">6 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-controller-testing/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
