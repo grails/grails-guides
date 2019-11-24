@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='icon' href='../img/favicon.ico' />
     <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
@@ -13,41 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grailsblog.objectcomputing.com'>Blog</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/books.html'>Books</a>
-  </li>
-  <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Learning</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -115,7 +113,7 @@
         <h1>Grails Service Testing</h1>
         <p>In this guide we are going to explore Service testing in Grails. Unit test GORM, Integration Tests, Mocking collaborators...</p>
         <p><strong>Authors:</strong> Nirav Assar</p>
-        <p><strong>Grails Version:</strong> 3.3.0</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -147,15 +145,14 @@ var getJSON = function(url, callback) {
     };
     xhr.send();
 };
-var ociTrainingTrack = 11;
-getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
   var msg = '';
   if (err != null) {
       msg = 'Something went wrong while retrieving OCI training offerings';
 
   } else {
       if ( data.length == 0 ) {
-         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
 
       } else {
         msg += '<table>';
@@ -163,8 +160,15 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -225,7 +229,7 @@ about:</p>
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -393,96 +397,32 @@ A <code>Student</code> can be enrolled in one <code>Classroom</code> or none.</p
 
 
 <div class="paragraph">
-<p>We are using the GORM 6.1.6.RELEASE.</p>
+<p>We are using the GORM 7.0.2.RELEASE.</p>
 </div>
 <div class="listingblock">
 <div class="title">gradle.properties</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.0</span>
-grailsWrapperVersion=<span class="float">1.0</span><span class="float">.0</span>
-gormVersion=<span class="float">6.1</span><span class="float">.6</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.5</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">4.0</span><span class="float">.1</span>
+gormVersion=<span class="float">7.0</span><span class="float">.2</span>.RELEASE</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
-    repositories {
-        mavenLocal()
-        maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
-    }
+...
     dependencies {
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2</span><span class="delimiter">&quot;</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+        ...
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:7.0.0</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }
 
-version <span class="string"><span class="delimiter">&quot;</span><span class="content">0.1</span><span class="delimiter">&quot;</span></span>
-group <span class="string"><span class="delimiter">&quot;</span><span class="content">grails.mock.basics</span><span class="delimiter">&quot;</span></span>
-
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eclipse</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">idea</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">war</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-web</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">asset-pipeline</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
-apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">codenarc</span><span class="delimiter">'</span></span>
-
-repositories {
-    mavenLocal()
-    maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
-}
-
+...
 dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-logging</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-autoconfigure</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-core</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-actuator</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-boot</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-logging</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-rest</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-databinding</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-i18n</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-services</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-url-mappings</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-plugin-interceptors</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:cache</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:async</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:scaffolding</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:events</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.5.Final</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:gsp</span><span class="delimiter">&quot;</span></span>
-    console <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-console</span><span class="delimiter">&quot;</span></span>
-    profile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.profiles:web</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.glassfish.web:el-impl:2.1.2-b03</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat:tomcat-jdbc</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:2.14.2</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gorm-testing-support</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-testing-support</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.18</span><span class="delimiter">&quot;</span></span>
-}
-
-bootRun {
-    jvmArgs(<span class="string"><span class="delimiter">'</span><span class="content">-Dspring.output.ansi.enabled=always</span><span class="delimiter">'</span></span>)
-    addResources = <span class="predefined-constant">true</span>
-}
-
-assets {
-    minifyJs = <span class="predefined-constant">true</span>
-    minifyCss = <span class="predefined-constant">true</span>
-}
-
-codenarc {
-    toolVersion = <span class="string"><span class="delimiter">'</span><span class="content">0.27.0</span><span class="delimiter">'</span></span>
-    configFile = file(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>project.projectDir<span class="inline-delimiter">}</span></span><span class="content">/config/codenarc/rules.groovy</span><span class="delimiter">&quot;</span></span>)
-    reportFormat = <span class="string"><span class="delimiter">'</span><span class="content">html</span><span class="delimiter">'</span></span>
+...
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.4.0.Final</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="1"></i><b>(1)</b>
+    }
 }</code></pre>
 </div>
 </div>
@@ -514,7 +454,8 @@ codenarc {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
 <span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+
 
 <span class="annotation">@GrailsCompileStatic</span>
 <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
@@ -607,7 +548,7 @@ codenarc {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
 <span class="annotation">@CompileStatic</span>
@@ -652,8 +593,9 @@ codenarc {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> grails.mock.basics
 
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Rollback</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
@@ -909,32 +851,40 @@ grails&gt; open test-report</code></pre>
 <pre class="CodeRay highlight"><code data-lang="bash">./gradlew test</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>To run the integration tests</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">./gradlew integrationTest</code></pre>
+</div>
+</div>
 
 </article></div><footer>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails.slack.com'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
-  <li>Grails' repositories is hosted by
+  <li>Grails' repositories are hosted by
     <a href='http://artifactoryonline.com/'>Artifactory</a>
   </li>
   <li>Website hosting provided by
@@ -945,6 +895,9 @@ grails&gt; open test-report</code></pre>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
