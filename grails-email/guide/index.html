@@ -36,7 +36,7 @@
     <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
     <a href='https://guides.grails.org/index.html'>Guides</a>
@@ -105,7 +105,7 @@
         <h1>Send Email and Spock Spring</h1>
         <p>Learn how to send emails with AWS SES and SendGrid from a Grails app and leverage Spock Spring integration to verify interaction.</p>
         <p><strong>Authors:</strong> Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.5</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -142,7 +142,7 @@
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -427,168 +427,128 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">com.amazonaws:aws-java-sdk-ses:1.11.285</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">'</span><span class="content">software.amazon.awssdk:ses:2.10.24</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Add configuration properties which can be passed via system properties / command line arguments:</p>
+<p>Also, add configuration properties which can be passed via system properties / command line arguments:</p>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/conf/application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">aws</span>:
-    <span class="key">accessKeyId</span>: <span class="string"><span class="delimiter">'</span><span class="content">${AWS_ACCESS_KEY_ID}</span><span class="delimiter">'</span></span>
-    <span class="key">secretKey</span>: <span class="string"><span class="delimiter">'</span><span class="content">${AWS_SECRET_KEY}</span><span class="delimiter">'</span></span>
-    <span class="key">sourceEmail</span>: <span class="string"><span class="delimiter">'</span><span class="content">${AWS_SOURCE_EMAIL}</span><span class="delimiter">'</span></span>
     <span class="key">ses</span>:
+        <span class="key">source</span>: <span class="string"><span class="delimiter">'</span><span class="content">${AWS_SOURCE}</span><span class="delimiter">'</span></span>
         <span class="key">region</span>: <span class="string"><span class="delimiter">'</span><span class="content">${AWS_REGION}</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Create two services which encapsulate the integration with SES:</p>
+<p>Create one service which encapsulates the integration with SES. There are several way to provide programmatic credentials.</p>
 </div>
-<div class="listingblock">
-<div class="title">grails-app/services/example/grails/AwsCredentialsProviderService.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
-
-<span class="keyword">import</span> <span class="include">com.amazonaws.auth.AWSCredentials</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.auth.AWSCredentialsProvider</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.auth.BasicAWSCredentials</span>
-<span class="keyword">import</span> <span class="include">grails.config.Config</span>
-<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
-
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">AwsCredentialsProviderService</span> <span class="directive">implements</span> AWSCredentialsProvider, GrailsConfigurationAware { <i class="conum" data-value="1"></i><b>(1)</b>
-
-    <span class="predefined-type">String</span> accessKey
-
-    <span class="predefined-type">String</span> secretKey
-
-    <span class="annotation">@Override</span>
-    AWSCredentials getCredentials() {
-        <span class="keyword">return</span> <span class="keyword">new</span> BasicAWSCredentials(accessKey, secretKey)
-    }
-
-    <span class="annotation">@Override</span>
-    <span class="type">void</span> refresh() {
-
-    }
-
-    <span class="annotation">@Override</span>
-    <span class="type">void</span> setConfiguration(Config co) {
-        <span class="local-variable">this</span>.accessKey = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.accessKeyId</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
-        <span class="keyword">if</span> (!<span class="local-variable">this</span>.accessKey) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">aws.accessKeyId not set</span><span class="delimiter">'</span></span>)
-        }
-        <span class="local-variable">this</span>.secretKey = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.secretKey</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
-        <span class="keyword">if</span> (!<span class="local-variable">this</span>.secretKey) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">aws.secretKey not set</span><span class="delimiter">'</span></span>)
-        }
-    }
-}</code></pre>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The client searches for credentials using the default credentials provider chain, in the following order:</p>
 </div>
+<div class="paragraph">
+<p>In the Java system properties: aws.accessKeyId and aws.secretKey.</p>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><a href="http://grailsblog.objectcomputing.com/posts/2016/08/31/retrieving-config-values.html">Retrieve configuration values</a> with <code>GrailsConfigurationAware</code></td>
-</tr>
-</table>
+<div class="paragraph">
+<p>In system environment variables: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.</p>
+</div>
+<div class="paragraph">
+<p>In the default credentials file (the location of this file varies by platform).</p>
+</div>
+<div class="paragraph">
+<p>In the Amazon ECS environment variable: AWS_CONTAINER_CREDENTIALS_RELATIVE_URI.</p>
+</div>
+<div class="paragraph">
+<p>In the instance profile credentials, which exist within the instance metadata associated with the IAM role for the EC2 instance.</p>
+</div>
+</blockquote>
 </div>
 <div class="listingblock">
 <div class="title">grails-app/services/example/grails/AwsSesMailService.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.SendEmailResult</span>
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.AmazonSimpleEmailService</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.Body</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.Content</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.Destination</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.Message</span>
-<span class="keyword">import</span> <span class="include">com.amazonaws.services.simpleemail.model.SendEmailRequest</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.regions.Region</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.SesClient</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.Body</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.Content</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.Destination</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.Message</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.SendEmailRequest</span>
+<span class="keyword">import</span> <span class="include">software.amazon.awssdk.services.ses.model.SendEmailResponse</span>
 
 <span class="annotation">@Slf4j</span>
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">AwsSesMailService</span> <span class="directive">implements</span> EmailService, GrailsConfigurationAware {  <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="predefined-type">String</span> awsRegion
-
     <span class="predefined-type">String</span> sourceEmail
 
-    AwsCredentialsProviderService awsCredentialsProviderService
+    SesClient sesClient
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> setConfiguration(Config co) {
-        <span class="local-variable">this</span>.awsRegion = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.ses.region</span><span class="delimiter">'</span></span>)
-        <span class="keyword">if</span> (!<span class="local-variable">this</span>.awsRegion) {
+
+        <span class="predefined-type">String</span> awsRegion = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.ses.region</span><span class="delimiter">'</span></span>)
+        <span class="keyword">if</span> (!awsRegion) {
             <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">aws.ses.region not set</span><span class="delimiter">'</span></span>)
         }
+        <span class="local-variable">this</span>.sesClient = SesClient.builder().region(<span class="predefined-type">Region</span>.of(awsRegion)).build();
 
-        <span class="local-variable">this</span>.sourceEmail = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.sourceEmail</span><span class="delimiter">'</span></span>)
+        <span class="local-variable">this</span>.sourceEmail = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">aws.ses.source</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
         <span class="keyword">if</span> (!<span class="local-variable">this</span>.sourceEmail) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">aws.sourceEmaill not set</span><span class="delimiter">'</span></span>)
+            log.warn(<span class="string"><span class="delimiter">'</span><span class="content">aws.sourceEmail not set</span><span class="delimiter">'</span></span>)
         }
     }
 
     <span class="directive">private</span> Body bodyOfEmail(Email email) {
         <span class="keyword">if</span> (email.htmlBody) {
-            Content htmlBody = <span class="keyword">new</span> Content().withData(email.htmlBody)
-            <span class="keyword">return</span> <span class="keyword">new</span> Body().withHtml(htmlBody)
+            Content htmlBody = Content.builder().data(email.htmlBody).build()
+            <span class="keyword">return</span> Body.builder().html(htmlBody).build()
         }
         <span class="keyword">if</span> (email.textBody) {
-            Content textBody = <span class="keyword">new</span> Content().withData(email.textBody)
-            <span class="keyword">return</span> <span class="keyword">new</span> Body().withHtml(textBody)
+            Content textBody = Content.builder().data(email.textBody).build()
+            <span class="keyword">return</span> Body.builder().text(textBody).build()
         }
-        <span class="keyword">new</span> Body()
+        Body.builder().build()
+    }
+
+    <span class="directive">private</span> <span class="predefined-type">Destination</span> destination(Email email) {
+        <span class="predefined-type">Destination</span>.Builder destinationBuilder = <span class="predefined-type">Destination</span>.builder().toAddresses(email.recipient)
+        <span class="keyword">if</span> ( email.getCc() ) {
+            destinationBuilder = destinationBuilder.ccAddresses(email.getCc())
+        }
+        <span class="keyword">if</span> ( email.getBcc() ) {
+            destinationBuilder = destinationBuilder.bccAddresses(email.getBcc())
+        }
+        destinationBuilder.build()
+    }
+
+    <span class="directive">private</span> Message composeMessage(Email email) {
+        Content subject = Content.builder().data(email.getSubject()).build()
+        Body body = bodyOfEmail(email)
+        Message.builder().subject(subject).body(body).build()
     }
 
     <span class="annotation">@Override</span>
      <span class="type">void</span> send(Email email) {
-
-        <span class="keyword">if</span> ( !awsCredentialsProviderService ) {
-            log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">AWS Credentials provider not configured</span><span class="delimiter">&quot;</span></span>)
-            <span class="keyword">return</span>
-        }
-
-        <span class="predefined-type">Destination</span> destination = <span class="keyword">new</span> <span class="predefined-type">Destination</span>().withToAddresses(email.recipient)
-        <span class="keyword">if</span> ( email.getCc() ) {
-            destination = destination.withCcAddresses(email.getCc())
-        }
-        <span class="keyword">if</span> ( email.getBcc() ) {
-            destination = destination.withBccAddresses(email.getBcc())
-        }
-        Content subject = <span class="keyword">new</span> Content().withData(email.getSubject())
-        Body body = bodyOfEmail(email)
-        Message message = <span class="keyword">new</span> Message().withSubject(subject).withBody(body)
-
-        SendEmailRequest request = <span class="keyword">new</span> SendEmailRequest()
-                .withSource(sourceEmail)
-                .withDestination(destination)
-                .withMessage(message)
-
-        <span class="keyword">if</span> ( email.getReplyTo() ) {
-            request = request.withReplyToAddresses()
-        }
-
         <span class="keyword">try</span> {
-            log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Attempting to send an email through Amazon SES by using the AWS SDK for Java...</span><span class="delimiter">&quot;</span></span>)
-
-            AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                    .withCredentials(awsCredentialsProviderService)
-                    .withRegion(awsRegion)
+            <span class="predefined-type">Destination</span> destination = destination(email)
+            Message message = composeMessage(email)
+            SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
+                    .source(sourceEmail)
+                    .destination(destination)
+                    .message(message)
                     .build()
-
-            SendEmailResult sendEmailResult = client.sendEmail(request)
-            log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Email sent! {}</span><span class="delimiter">&quot;</span></span>, sendEmailResult.toString())
+            SendEmailResponse response = sesClient.sendEmail(sendEmailRequest)
+            log.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Email sent! {}</span><span class="delimiter">&quot;</span></span>, response.messageId())
 
         } <span class="keyword">catch</span> (<span class="exception">Exception</span> ex) {
             log.warn(<span class="string"><span class="delimiter">&quot;</span><span class="content">The email was not sent.</span><span class="delimiter">&quot;</span></span>)
@@ -646,8 +606,8 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <div class="title">grails-app/conf/application.yml</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">sendgrid</span>:
-    <span class="key">apiKey</span>: <span class="string"><span class="delimiter">'</span><span class="content">${SENDGRID_APIKEY}</span><span class="delimiter">'</span></span>
-    <span class="key">fromEmail</span>: <span class="string"><span class="delimiter">'</span><span class="content">${SENDGRID_FROM_EMAIL}</span><span class="delimiter">'</span></span></code></pre>
+    <span class="key">api</span>: <span class="string"><span class="delimiter">'</span><span class="content">${SENDGRID_APIKEY}</span><span class="delimiter">'</span></span>
+    <span class="key">from</span>: <span class="string"><span class="delimiter">'</span><span class="content">${SENDGRID_FROM_EMAIL}</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -674,66 +634,26 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">SendGridEmailService</span> <span class="directive">implements</span> EmailService, GrailsConfigurationAware {  <i class="conum" data-value="1"></i><b>(1)</b>
 
-    <span class="predefined-type">String</span> apiKey
+    <span class="predefined-type">String</span> api
 
-    <span class="predefined-type">String</span> fromEmail
+    <span class="predefined-type">String</span> from
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> setConfiguration(Config co) {
-        <span class="local-variable">this</span>.apiKey = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.apiKey</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
-        <span class="keyword">if</span> (!<span class="local-variable">this</span>.apiKey) {
+        <span class="local-variable">this</span>.api = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.api</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+        <span class="keyword">if</span> (!<span class="local-variable">this</span>.api) {
+            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.api not set</span><span class="delimiter">'</span></span>)
+        }
+        <span class="local-variable">this</span>.from = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.from</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
+        <span class="keyword">if</span> (!<span class="local-variable">this</span>.from) {
             <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.apiKey not set</span><span class="delimiter">'</span></span>)
         }
-        <span class="local-variable">this</span>.fromEmail = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.fromEmail</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
-        <span class="keyword">if</span> (!<span class="local-variable">this</span>.fromEmail) {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalStateException</span>(<span class="string"><span class="delimiter">'</span><span class="content">sendgrid.apiKey not set</span><span class="delimiter">'</span></span>)
-        }
-    }
-
-    <span class="directive">protected</span> Content contentOfEmail(Email email) {
-        <span class="keyword">if</span> ( email.textBody ) {
-            <span class="keyword">return</span> <span class="keyword">new</span> Content(<span class="string"><span class="delimiter">&quot;</span><span class="content">text/plain</span><span class="delimiter">&quot;</span></span>, email.textBody)
-        }
-        <span class="keyword">if</span> ( email.htmlBody ) {
-            <span class="keyword">return</span> <span class="keyword">new</span> Content(<span class="string"><span class="delimiter">&quot;</span><span class="content">text/html</span><span class="delimiter">&quot;</span></span>, email.htmlBody)
-        }
-        <span class="keyword">return</span> <span class="predefined-constant">null</span>
     }
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> send(Email email) {
-
-        Personalization personalization = <span class="keyword">new</span> Personalization()
-        personalization.subject = email.subject
-
-        com.sendgrid.Email to = <span class="keyword">new</span> com.sendgrid.Email(email.recipient)
-        personalization.addTo(to)
-
-        <span class="keyword">if</span> ( email.getCc() ) {
-            <span class="keyword">for</span> ( <span class="predefined-type">String</span> cc : email.getCc() ) {
-                com.sendgrid.Email ccEmail = <span class="keyword">new</span> com.sendgrid.Email()
-                ccEmail.email = cc
-                personalization.addCc(ccEmail)
-            }
-        }
-
-        <span class="keyword">if</span> ( email.getBcc() ) {
-            <span class="keyword">for</span> ( <span class="predefined-type">String</span> bcc : email.getBcc() ) {
-                com.sendgrid.Email bccEmail = <span class="keyword">new</span> com.sendgrid.Email()
-                bccEmail.email = bcc
-                personalization.addBcc(bccEmail)
-            }
-        }
-
-        Mail mail = <span class="keyword">new</span> Mail()
-        com.sendgrid.Email from = <span class="keyword">new</span> com.sendgrid.Email()
-        from.email = fromEmail
-        mail.from = from
-        mail.addPersonalization(personalization)
-        Content content = contentOfEmail(email)
-        mail.addContent(content)
-
-        SendGrid sg = <span class="keyword">new</span> SendGrid(apiKey)
+        Mail mail = buildEmail(email)
+        SendGrid sg = <span class="keyword">new</span> SendGrid(api)
         Request request = <span class="keyword">new</span> Request()
         <span class="keyword">try</span> {
             request.with {
@@ -753,6 +673,52 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
         } <span class="keyword">catch</span> (<span class="exception">IOException</span> ex) {
             log.error(ex.getMessage())
         }
+    }
+
+    <span class="directive">private</span> Content contentOfEmail(Email email) {
+        <span class="keyword">if</span> ( email.textBody ) {
+            <span class="keyword">return</span> <span class="keyword">new</span> Content(<span class="string"><span class="delimiter">&quot;</span><span class="content">text/plain</span><span class="delimiter">&quot;</span></span>, email.textBody)
+        }
+        <span class="keyword">if</span> ( email.htmlBody ) {
+            <span class="keyword">return</span> <span class="keyword">new</span> Content(<span class="string"><span class="delimiter">&quot;</span><span class="content">text/html</span><span class="delimiter">&quot;</span></span>, email.htmlBody)
+        }
+        <span class="keyword">return</span> <span class="predefined-constant">null</span>
+    }
+
+    <span class="directive">private</span> Personalization buildPersonalization(Email email) {
+        Personalization personalization = <span class="keyword">new</span> Personalization()
+        personalization.subject = email.subject
+
+        com.sendgrid.Email to = <span class="keyword">new</span> com.sendgrid.Email(email.recipient)
+        personalization.addTo(to)
+
+        <span class="keyword">if</span> ( email.getCc() ) {
+            <span class="keyword">for</span> ( <span class="predefined-type">String</span> cc : email.getCc() ) {
+                com.sendgrid.Email ccEmail = <span class="keyword">new</span> com.sendgrid.Email()
+                ccEmail.email = cc
+                personalization.addCc(ccEmail)
+            }
+        }
+        <span class="keyword">if</span> ( email.getBcc() ) {
+            <span class="keyword">for</span> ( <span class="predefined-type">String</span> bcc : email.getBcc() ) {
+                com.sendgrid.Email bccEmail = <span class="keyword">new</span> com.sendgrid.Email()
+                bccEmail.email = bcc
+                personalization.addBcc(bccEmail)
+            }
+        }
+        personalization
+    }
+
+    <span class="directive">private</span> Mail buildEmail(Email email) {
+        Personalization personalization = buildPersonalization(email)
+        Mail mail = <span class="keyword">new</span> Mail()
+        com.sendgrid.Email from = <span class="keyword">new</span> com.sendgrid.Email()
+        from.email = from
+        mail.from = from
+        mail.addPersonalization(personalization)
+        Content content = contentOfEmail(email)
+        mail.addContent(content)
+        mail
     }
 }</code></pre>
 </div>
@@ -792,12 +758,10 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 <span class="keyword">import</span> <span class="include">example.grails.SendGridEmailService</span>
 
 beans = {
-    <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_REGION</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SOURCE_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_ACCESS_KEY_ID</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SECRET_KEY</span><span class="delimiter">'</span></span>) ) {
-        emailService(AwsSesMailService) {
-            awsCredentialsProviderService = ref(<span class="string"><span class="delimiter">'</span><span class="content">awsCredentialsProviderService</span><span class="delimiter">'</span></span>)
-        }
-    } <span class="keyword">else</span> <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_FROM_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_APIKEY</span><span class="delimiter">'</span></span>) ) {
+    <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_FROM_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_APIKEY</span><span class="delimiter">'</span></span>) ) {
         emailService(SendGridEmailService)
+    } <span class="keyword">else</span> <span class="keyword">if</span> (<span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_REGION</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SOURCE</span><span class="delimiter">'</span></span>)) {
+        emailService(AwsSesMailService)
     }
 }</code></pre>
 </div>
@@ -827,7 +791,9 @@ logger(<span class="string"><span class="delimiter">'</span><span class="content
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew -DAWS_REGION=eu-west-1 -DAWS_SOURCE_EMAIL=email@email.com -DAWS_ACCESS_KEY_ID=XXXXXXXX -DAWS_SECRET_KEY=XXXXXXXX  bootRun</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ export AWS_ACCESS_KEY_ID=XXXXXXXX
+$ export AWS_SECRET_ACCESS_KEY=XXXXXXXX
+$ ./gradlew -DAWS_REGION=eu-west-1 -DAWS_SOURCE=email@email.com  bootRun</code></pre>
 </div>
 </div>
 
@@ -853,7 +819,7 @@ logger(<span class="string"><span class="delimiter">'</span><span class="content
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.spockframework:spock-spring:1.1-groovy-2.4</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.spockframework:spock-spring:1.3-groovy-2.5</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -886,40 +852,44 @@ logger(<span class="string"><span class="delimiter">'</span><span class="content
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
 
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Qualifier</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
 <span class="keyword">import</span> <span class="include">org.springframework.boot.test.context.TestConfiguration</span>
 <span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Bean</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 <span class="keyword">import</span> <span class="include">spock.mock.DetachedMockFactory</span>
 
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">MailControllerSpec</span> <span class="directive">extends</span> Specification {
 
+    <span class="annotation">@Shared</span>
+    HttpClient client
+
     EmailService emailService
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/mail/send interacts once email service</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
+    }
 
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">/mail/send interacts once email service</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
-        RestResponse resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/mail/send</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                subject = <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>
-                recipient = <span class="string"><span class="delimiter">'</span><span class="content">delamos@grails.example</span><span class="delimiter">'</span></span>
-                textBody  = <span class="string"><span class="delimiter">'</span><span class="content">Hola hola</span><span class="delimiter">'</span></span>
-            }
-        }
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/mail/send</span><span class="delimiter">'</span></span>, [
+                <span class="key">subject</span>: <span class="string"><span class="delimiter">'</span><span class="content">Test</span><span class="delimiter">'</span></span>,
+                <span class="key">recipient</span>: <span class="string"><span class="delimiter">'</span><span class="content">delamos@grails.example</span><span class="delimiter">'</span></span>,
+                <span class="key">textBody</span>: <span class="string"><span class="delimiter">'</span><span class="content">Hola hola</span><span class="delimiter">'</span></span>
+        ])
+        HttpResponse resp = client.toBlocking().exchange(request)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
+        resp.status == HttpStatus.OK
         <span class="integer">1</span> * emailService.send(_) <i class="conum" data-value="1"></i><b>(1)</b>
-
     }
 
     <span class="annotation">@TestConfiguration</span>

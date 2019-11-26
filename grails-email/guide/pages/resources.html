@@ -91,12 +91,10 @@ function addJsClass() {
 <span class="keyword">import</span> <span class="include">example.grails.SendGridEmailService</span>
 
 beans = {
-    <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_REGION</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SOURCE_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_ACCESS_KEY_ID</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SECRET_KEY</span><span class="delimiter">'</span></span>) ) {
-        emailService(AwsSesMailService) {
-            awsCredentialsProviderService = ref(<span class="string"><span class="delimiter">'</span><span class="content">awsCredentialsProviderService</span><span class="delimiter">'</span></span>)
-        }
-    } <span class="keyword">else</span> <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_FROM_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_APIKEY</span><span class="delimiter">'</span></span>) ) {
+    <span class="keyword">if</span> ( <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_FROM_EMAIL</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">SENDGRID_APIKEY</span><span class="delimiter">'</span></span>) ) {
         emailService(SendGridEmailService)
+    } <span class="keyword">else</span> <span class="keyword">if</span> (<span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_REGION</span><span class="delimiter">'</span></span>) &amp;&amp; <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">AWS_SOURCE</span><span class="delimiter">'</span></span>)) {
+        emailService(AwsSesMailService)
     }
 }</code></pre>
 </div>
@@ -126,7 +124,9 @@ logger(<span class="string"><span class="delimiter">'</span><span class="content
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew -DAWS_REGION=eu-west-1 -DAWS_SOURCE_EMAIL=email@email.com -DAWS_ACCESS_KEY_ID=XXXXXXXX -DAWS_SECRET_KEY=XXXXXXXX  bootRun</code></pre>
+<pre class="CodeRay highlight"><code data-lang="bash">$ export AWS_ACCESS_KEY_ID=XXXXXXXX
+$ export AWS_SECRET_ACCESS_KEY=XXXXXXXX
+$ ./gradlew -DAWS_REGION=eu-west-1 -DAWS_SOURCE=email@email.com  bootRun</code></pre>
 </div>
 </div>
 
