@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails Mock Logging with Slf4j Test | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails Mock Logging with Slf4j Test. In this guide, we will learn how to mock and verify log statements in Grails.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-mock-logging-slf4j-test"><img src="https://travis-ci.org/grails-guides/grails-mock-logging-slf4j-test.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-mock-logging-slf4j-test&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-mock-logging-slf4j-test.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-logging-slf4j-test.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-mock-logging-slf4j-test.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-mock-logging-slf4j-test/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#personDomainAndDataService"><strong>3.1</strong><span>Person Domain and Data Service</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#createPerson"><strong>3.2</strong><span>Create a Person</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#offerAdvice"><strong>3.3</strong><span>Offer Advice to a Person</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#mockLogging"><strong>4</strong><span>Mock Logging with Slf4j Test</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#verifyLogsInController"><strong>4.1</strong><span>Verify Logs in Controller</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#verifyLogsInController2"><strong>4.2</strong><span>Verify More Logs</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#verifyLogsInGroovyPogo"><strong>4.3</strong><span>Verify Logs in Groovy POGO</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>5</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>6</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails Mock Logging with Slf4j Test</h1>
+        <p>In this guide, we will learn how to mock and verify log statements in Grails.</p>
+        <p><strong>Authors:</strong> Nirav Assar</p>
+        <p><strong>Grails Version:</strong> 3.3.5</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to learn how to mock logging and verify logs events in a Grails Application by using the
+<a href="http://projects.lidalia.org.uk/slf4j-test/">Slf4j Test</a> library.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-mock-logging-slf4j-test.git" class="bare">https://github.com/grails-guides/grails-mock-logging-slf4j-test.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-mock-logging-slf4j-test/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-mock-logging-slf4j-test/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to write a simple application with logging.  For a simple concept, we will create a <code>Person</code> domain object with a
+<code>name</code> and <code>age</code>. The application will log "friendly" advice for the person based on age.  Through this contrived example, we will
+develop tests that verify the correct logging events occur.</p>
+</div>
+<div class="paragraph">
+<p>First, let&#8217;s configure the application to only log items pertinent to the exercise.  In <code>logback.groovy</code>, delete the line at the bottom
+of the file: <code>root(ERROR, ['STDOUT'])</code>. Then add the below snippet. This will activate loggers in the package <code>example.grails</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/logback.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.grails</span><span class="delimiter">&quot;</span></span>, DEBUG, [<span class="string"><span class="delimiter">'</span><span class="content">STDOUT</span><span class="delimiter">'</span></span>])</code></pre>
+</div>
+</div>
+
+
+<h2 id="personDomainAndDataService">3.1 Person Domain and Data Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/personDomainAndDataService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will create a Domain class <code>Person</code> with properties <code>name</code> and <code>age</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails create-domain-class Person</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edit the class to end up like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+
+    <span class="predefined-type">String</span> toString() {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">name: </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="content">, age: </span><span class="inline"><span class="inline-delimiter">$</span>age</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to create and find a student, we will use <a href="http://gorm.grails.org/6.1.x/hibernate/manual/#dataServices">GORM Data Services</a>, which
+automatically implements an interface to provide data access logic. This can be injected into another Grails artefact such as a Controller.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/PersonDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(Person)
+<span class="type">interface</span> PersonDataService {
+    Person findPerson(<span class="predefined-type">String</span> name)
+    Person savePerson(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="createPerson">3.2 Create a Person</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/createPerson.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s implement functionality to create a <code>Person</code>. We can inject the <code>PersonDataService</code> into a <code>PersonController</code> to save a person.
+Upon a successful save, log a message. On an unsuccessful save, catch the exception and log an error message.  We have added
+<code>static scaffold = Person</code> to the controller for the convenience sake of a quick UI.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/PersonController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.validation.ValidationException</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">PersonController</span> {
+
+    <span class="directive">static</span> scaffold = Person
+
+    PersonDataService personDataService
+
+    <span class="keyword">def</span> <span class="function">createPerson</span>(<span class="predefined-type">String</span> name, <span class="predefined-type">Integer</span> age) {
+        <span class="keyword">try</span> {
+            Person person = personDataService.savePerson(name, age)
+            log.info <span class="string"><span class="delimiter">&quot;</span><span class="content">person saved successfully: </span><span class="inline"><span class="inline-delimiter">${</span>person<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+            respond person, <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>
+        } <span class="keyword">catch</span> (ValidationException e) {
+            log.error <span class="string"><span class="delimiter">&quot;</span><span class="content">Error occurred on save!</span><span class="delimiter">&quot;</span></span>
+            redirect <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="offerAdvice">3.3 Offer Advice to a Person</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/offerAdvice.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Implement another method in the <code>PersonController</code> which will offer advice based on the name passed in. This method will first
+find a person by name, then use a POGO (Plain Old Groovy Object) called <code>AgeAdvisor</code>  for logging "friendly" advice.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/PersonController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">offerAdvice</span>(<span class="predefined-type">String</span> name) {
+        AgeAdvisor ageAdvisor = <span class="keyword">new</span> AgeAdvisor()
+
+        Person person = personDataService.findPerson(name)
+        <span class="keyword">if</span> (person) {
+            ageAdvisor.offerAgeAdvice(person.age)
+        } <span class="keyword">else</span> {
+            log.error <span class="string"><span class="delimiter">&quot;</span><span class="content">No person by name </span><span class="inline"><span class="inline-delimiter">${</span>name<span class="inline-delimiter">}</span></span><span class="content"> found.</span><span class="delimiter">&quot;</span></span>
+        }
+        redirect <span class="key">action</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">index</span><span class="delimiter">&quot;</span></span>
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The POGO is simple and uses <code>@Slf4j</code> groovy annotation to establish the logger.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/AgeAdvisor.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+
+<span class="annotation">@Slf4j</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">AgeAdvisor</span> {
+
+    <span class="type">void</span> offerAgeAdvice(<span class="predefined-type">Integer</span> age) {
+        <span class="keyword">if</span> (age <span class="keyword">in</span> <span class="integer">0</span>..&lt;<span class="integer">30</span> ) {
+            log.info (<span class="string"><span class="delimiter">&quot;</span><span class="content">You are a young and vibrant!</span><span class="delimiter">&quot;</span></span>)
+            log.info (<span class="string"><span class="delimiter">&quot;</span><span class="content">Live life to the fullest.</span><span class="delimiter">&quot;</span></span>)
+        } <span class="keyword">else</span> <span class="keyword">if</span> (<span class="integer">30</span> &lt;= age) {
+            log.warn (<span class="string"><span class="delimiter">&quot;</span><span class="content">It's all downhill from here, sorry.</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note the <code>@Slf4j</code> annotation - This is needed for POGOs, as only Grails artefacts have loggers injected by the Grails Framework.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="mockLogging">4 Mock Logging with Slf4j Test</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/mockLogging.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://projects.lidalia.org.uk/slf4j-test/">Slf4j Test</a> is a test implementation of Slf4j that stores log messages in memory and provides methods to retrieving them for verification.
+It is basically a substitute implementation and should be the only one on the test classpath. To achieve this, declare the dependency and also
+exclude the Logback dependency from the testCompile build phase.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    testCompile <span class="string"><span class="delimiter">'</span><span class="content">uk.org.lidalia:slf4j-test:1.1.0</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations {
+    testCompile.exclude <span class="key">group</span>: <span class="string"><span class="delimiter">'</span><span class="content">ch.qos.logback</span><span class="delimiter">'</span></span>, <span class="key">module</span>: <span class="string"><span class="delimiter">'</span><span class="content">logback-classic</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, we will be using the <code>RestBuilder</code> for testing. Add this dependency below.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="verifyLogsInController">4.1 Verify Logs in Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/verifyLogsInController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We can verify that log events occur in the Controller with Slf4j Test. We will create a Grails Integration test so the Data Service gets
+injected automatically without the worry of mocking. We will use <code>RestBuilder</code> to interact over HTTP with the controller methods.</p>
+</div>
+<div class="paragraph">
+<p>The process is straightforward for each test:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Access the test logger.</p>
+</li>
+<li>
+<p>Invoke the functionality.</p>
+</li>
+<li>
+<p>Use the test logger to retrieve events.</p>
+</li>
+<li>
+<p>Verify the events according to the scenario.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/PersonControllerIntSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">com.google.common.collect.ImmutableList</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Rollback</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jext.Level</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.LoggingEvent</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.TestLogger</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.TestLoggerFactory</span>
+
+<span class="annotation">@Integration</span>
+<span class="annotation">@Rollback</span>
+<span class="type">class</span> <span class="class">PersonControllerIntSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span>
+    TestLogger personControllerLogger = TestLoggerFactory.getTestLogger(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.grails.PersonController</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="annotation">@Shared</span>
+    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+    <span class="keyword">def</span> <span class="function">cleanup</span>() {
+        TestLoggerFactory.clearAll() <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test create person successful logs</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">a person is created</span><span class="delimiter">&quot;</span></span>
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/createPerson?name=Nirav&amp;age=40</span><span class="delimiter">&quot;</span></span>)
+        ImmutableList&lt;LoggingEvent&gt; loggingEvents = personControllerLogger.getAllLoggingEvents() <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
+        resp.status == <span class="integer">200</span>
+        loggingEvents.size() == <span class="integer">1</span> <i class="conum" data-value="4"></i><b>(4)</b>
+        loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">person saved successfully: name: Nirav, age: 40</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="5"></i><b>(5)</b>
+        loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.INFO
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Retrieve the test logger from <code>TestLoggerFactory</code> by using the logger name.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Clear in-memory logging events between tests.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Retrieve logging events so we can verify them.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Assert the size of the logging events.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Verify the message, and subsequently the log level.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="verifyLogsInController2">4.2 Verify More Logs</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/verifyLogsInController2.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add two more tests to cover the other scenarios.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/PersonControllerIntSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test create person unsuccessful logs</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">a person is created, but has a input error</span><span class="delimiter">&quot;</span></span>
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/createPerson?name=Bob&amp;age=Twenty</span><span class="delimiter">&quot;</span></span>)
+        ImmutableList&lt;LoggingEvent&gt; loggingEvents = personControllerLogger.getAllLoggingEvents()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
+        resp.status == <span class="integer">200</span>
+        loggingEvents.size() == <span class="integer">1</span>
+        loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Error occurred on save!</span><span class="delimiter">&quot;</span></span>
+        loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.ERROR
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test offerAdvice to old person</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">A person is already created</span><span class="delimiter">&quot;</span></span>
+        RestResponse resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/createPerson?name=John&amp;age=35</span><span class="delimiter">&quot;</span></span>)
+        TestLogger ageAdvisorLogger = TestLoggerFactory.getTestLogger(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.grails.AgeAdvisor</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">we ask for advice</span><span class="delimiter">&quot;</span></span>
+        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person/offerAdvice?name=John</span><span class="delimiter">&quot;</span></span>)
+        ImmutableList&lt;LoggingEvent&gt; loggingEvents = ageAdvisorLogger.getAllLoggingEvents()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
+        resp.status == <span class="integer">200</span>
+        loggingEvents.size() == <span class="integer">1</span>
+        loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">It's all downhill from here, sorry.</span><span class="delimiter">&quot;</span></span>
+        loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.WARN
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Notice we are accessing the logger for <code>example.grails.AgeAdvisor</code>. The factory is able to access any logger to verify activity.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="verifyLogsInGroovyPogo">4.3 Verify Logs in Groovy POGO</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/verifyLogsInGroovyPogo.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Slf4j Test handles POGO objects in the same fashion. In <code>AgeAdvisor</code>, recall the logger is established with the <code>@Slf4J</code> annotation.
+This does not alter the approach to verifying logs events.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/example/grails/AgeAdvisorSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">com.google.common.collect.ImmutableList</span>
+<span class="keyword">import</span> <span class="include">example.grails.AgeAdvisor</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jext.Level</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.LoggingEvent</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.TestLogger</span>
+<span class="keyword">import</span> <span class="include">uk.org.lidalia.slf4jtest.TestLoggerFactory</span>
+
+<span class="type">class</span> <span class="class">AgeAdvisorSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span>
+    AgeAdvisor ageAdvisor = <span class="keyword">new</span> AgeAdvisor()
+    <span class="annotation">@Shared</span>
+    TestLogger logger = TestLoggerFactory.getTestLogger(<span class="string"><span class="delimiter">&quot;</span><span class="content">example.grails.AgeAdvisor</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="keyword">def</span> <span class="function">cleanup</span>() {
+        TestLoggerFactory.clear()
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">verify young age logs</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">method is invoked</span><span class="delimiter">&quot;</span></span>
+        ageAdvisor.offerAgeAdvice(<span class="integer">15</span>)
+        ImmutableList&lt;LoggingEvent&gt; loggingEvents = logger.getLoggingEvents()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
+        loggingEvents.size() == <span class="integer">2</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">You are a young and vibrant!</span><span class="delimiter">&quot;</span></span>
+        loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.INFO
+        loggingEvents[<span class="integer">1</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Live life to the fullest.</span><span class="delimiter">&quot;</span></span>
+        loggingEvents[<span class="integer">1</span>].level == <span class="predefined-type">Level</span>.INFO
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">verify old age logs</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">method is invoked</span><span class="delimiter">&quot;</span></span>
+        ageAdvisor.offerAgeAdvice(<span class="integer">31</span>)
+        ImmutableList&lt;LoggingEvent&gt; loggingEvents = logger.getLoggingEvents()
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">check the logging events</span><span class="delimiter">&quot;</span></span>
+        loggingEvents.size() == <span class="integer">1</span>
+        loggingEvents[<span class="integer">0</span>].message == <span class="string"><span class="delimiter">&quot;</span><span class="content">It's all downhill from here, sorry.</span><span class="delimiter">&quot;</span></span>
+        loggingEvents[<span class="integer">0</span>].level == <span class="predefined-type">Level</span>.WARN
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In a POGO which uses <code>@Slf4j</code> Annotation, we simply retrieve the logger in the same manner.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Note we are able to validate multiple log events.</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">5 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+<div class="paragraph">
+<p>To run the tests use <code>./gradlew check</code>.</p>
+</div>
+
+
+<h1 id="helpWithGrails">6 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-logging-slf4j-test/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
