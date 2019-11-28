@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails & SOAP | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails & SOAP. Learn how to consume a SOAP endpoint from a Grails Application' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-soap"><img src="https://travis-ci.org/grails-guides/grails-soap.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-soap&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-soap.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-soap.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-soap.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-soap/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Help with Grails</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#soapLibrary"><strong>3.1</strong><span>SOAP library</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#countries"><strong>3.2</strong><span>Countries</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#controllerandview"><strong>3.3</strong><span>Controller and View</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#test"><strong>3.4</strong><span>Functional Test</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>4</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails &amp; SOAP</h1>
+        <p>Learn how to consume a SOAP endpoint from a Grails Application</p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.1</p>
+    </header>
+    
+
+<h1 id="training">1 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to consume a SOAP webservice from a Grails Application.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-soap/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-soap.git" class="bare">https://github.com/grails-guides/grails-soap.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-soap/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-soap/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>VIES (<a href="http://ec.europa.eu/taxation_customs/vies/faq.html">VAT Information Exchange System</a>) is an electronic mean of validating VAT-identification numbers of economic operators registered in the European Union for cross border transactions on goods or services.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you create an e-commerce Web application in the European union you would need to check the validity of the purchaser&#8217;s
+VAT Number in order to create a proper invoice.</p>
+</div>
+<div class="paragraph">
+<p>To automate the validation checks, the EU does not offer a REST endpoint but a SOAP service. Its WSDL file can be obtained <a href="http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl">here</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>SOAP</strong> (originally Simple Object Access Protocol) is a protocol specification for exchanging structured information in the implementation of web services in computer networks. Its purpose is to induce extensibility, neutrality and independence</p>
+</div>
+
+
+<h2 id="soapLibrary">3.1 SOAP library</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/soapLibrary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To consume the SOAP Web Service we use <strong>groovy-wslite</strong>. A library for Groovy that provides no-frills SOAP and REST webservice clients.</p>
+</div>
+<div class="paragraph">
+<p>Add <em>wslite</em> dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">com.github.groovy-wslite:groovy-wslite:1.1.2</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We encapsulate the SOAP code in Grails service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/VatService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">wslite.soap.SOAPClient</span>
+<span class="keyword">import</span> <span class="include">wslite.soap.SOAPResponse</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">VatService</span> {
+    <span class="predefined-type">String</span> url = <span class="string"><span class="delimiter">'</span><span class="content">http://ec.europa.eu/taxation_customs/vies/services/checkVatService</span><span class="delimiter">'</span></span>
+    SOAPClient client = <span class="keyword">new</span> SOAPClient(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>url<span class="inline-delimiter">}</span></span><span class="content">.wsdl</span><span class="delimiter">&quot;</span></span>)
+
+    <span class="annotation">@CompileDynamic</span>
+    <span class="predefined-type">Boolean</span> validateVat(<span class="predefined-type">String</span> memberStateCode, <span class="predefined-type">String</span> vatNumberCode) {
+        SOAPResponse response = client.send(<span class="key">SOAPAction</span>: url) {
+            body(<span class="string"><span class="delimiter">'</span><span class="content">xmlns</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">urn:ec.europa.eu:taxud:vies:services:checkVat:types</span><span class="delimiter">'</span></span>) {
+                checkVat {
+                    countryCode(memberStateCode)
+                    vatNumber(vatNumberCode)
+                }
+            }
+        }
+        response.checkVatResponse.valid.text() == <span class="string"><span class="delimiter">'</span><span class="content">true</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We test it using the <a href="http://testing.grails.org">Grails Testing Framework</a></p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/demo/VatServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Unroll</span>
+
+<span class="type">class</span> <span class="class">VatServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;VatService&gt; {
+
+    <span class="annotation">@Unroll</span>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">#memberState : #vatNumber #unrollDescription</span><span class="delimiter">&quot;</span></span>(<span class="predefined-type">String</span> memberState, <span class="predefined-type">String</span> vatNumber, <span class="predefined-type">Boolean</span> expected, <span class="predefined-type">String</span> unrollDescription) {
+
+        <span class="key">expect</span>:
+        expected == service.validateVat(memberState, vatNumber)
+
+        <span class="key">where</span>:
+        memberState | vatNumber   || expected
+        <span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">B99286353</span><span class="delimiter">'</span></span> || <span class="predefined-constant">true</span>
+        <span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">B19280031</span><span class="delimiter">'</span></span> || <span class="predefined-constant">true</span>
+        <span class="string"><span class="delimiter">'</span><span class="content">es</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">XXXXXXXXX</span><span class="delimiter">'</span></span> || <span class="predefined-constant">false</span>
+
+        unrollDescription = expected ? <span class="string"><span class="delimiter">'</span><span class="content">is valid</span><span class="delimiter">'</span></span> : <span class="string"><span class="delimiter">'</span><span class="content"> is not valid</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="countries">3.2 Countries</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/countries.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>It is best to encapsulate the countries which we want to support in the configuration files.</p>
+</div>
+<div class="paragraph">
+<p>That way, if a country leaves the EU (e.g. UK ) it is an easy change in our app.</p>
+</div>
+<div class="paragraph">
+<p>Add a list of countries in <em>application.yml</em></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">eu</span>:
+    <span class="key">countries</span>:
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">AT</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Austria</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">BE</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Belgium</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">BG</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Bulgaria</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">CY</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Cyprus</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">CZ</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Czech Republic</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">DE</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Germany</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">DK</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Denmark</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">EE</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Estonia</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">EL</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Greece</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">ES</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Spain</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">FI</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Finland</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">FR</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">France</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">GB</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">United Kingdom</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">HR</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Croatia</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">HU</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Hungary</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">IE</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Ireland</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">IT</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Italy</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">LT</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Lithuania</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">LU</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Luxembourg</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">LV</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Latvia</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">MT</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Malta</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">NL</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">The Netherlands</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">PL</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Poland</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">PT</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Portugal</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">RO</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Romania</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">SE</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Sweden</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">SI</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Slovenia</span></span>
+        -
+            <span class="key">code</span>: <span class="string"><span class="content">SK</span></span>
+            <span class="key">name</span>: <span class="string"><span class="content">Slovakia</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a POGO:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/Country.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Country</span> {
+    <span class="predefined-type">String</span> code
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Read the countries in a Grails Service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/CountryService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.config.Config</span>
+<span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CountryService</span> <span class="directive">implements</span> GrailsConfigurationAware {
+
+    <span class="predefined-type">List</span>&lt;Country&gt; countries = <span class="type">[]</span> <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;Country&gt;
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setConfiguration(Config co) {
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; l = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">eu.countries</span><span class="delimiter">'</span></span>, <span class="predefined-type">List</span>)
+        <span class="keyword">for</span> ( <span class="predefined-type">Map</span> m : l ) {
+            countries &lt;&lt; <span class="keyword">new</span> Country(<span class="key">name</span>: m.get(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="predefined-type">String</span>, <span class="key">code</span>: m.get(<span class="string"><span class="delimiter">'</span><span class="content">code</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="predefined-type">String</span>)
+        }
+    }
+
+    <span class="predefined-type">List</span>&lt;Country&gt; findAll() {
+        countries
+    }
+
+
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="controllerandview">3.3 Controller and View</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/controllerandview.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The app allow users to submit a form and check if a VAT Number is valid for a particular state.</p>
+</div>
+<div class="paragraph">
+<p>We encapsulate the request in a command object:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/VatCommand.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.validation.Validateable</span>
+
+<span class="type">class</span> <span class="class">VatCommand</span> <span class="directive">implements</span> Validateable {
+
+    <span class="predefined-type">String</span> code
+    <span class="predefined-type">String</span> vatNumber
+
+    <span class="directive">static</span> constraints = {
+        code <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        vatNumber <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a <em>VatController</em> to handle the request, collaborate with the services previously introduced and generate a response via <em>flash</em> messages or errors.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/VatController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.MessageSource</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">VatController</span> {
+
+    <span class="directive">static</span> allowedMethods = [<span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>, <span class="key">validate</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>]
+
+    VatService vatService
+
+    CountryService countryService
+
+    MessageSource messageSource
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">countries</span>: countryService.findAll()]
+    }
+
+    <span class="keyword">def</span> <span class="function">validate</span>(VatCommand cmd) {
+
+        <span class="keyword">if</span> ( cmd.hasErrors() ) {
+            render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">cmd</span>: cmd, <span class="key">countries</span>: countryService.findAll()]
+            <span class="keyword">return</span>
+        }
+        <span class="type">boolean</span> isValid = vatService.validateVat(cmd.code, cmd.vatNumber)
+        <span class="keyword">if</span> ( isValid ) {
+            flash.message = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">vat.valid</span><span class="delimiter">'</span></span>,
+                    [cmd.code, cmd.vatNumber] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                    <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd.code<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>cmd.vatNumber<span class="inline-delimiter">}</span></span><span class="content"> is valid</span><span class="delimiter">&quot;</span></span>,
+                    request.locale)
+
+        } <span class="keyword">else</span> {
+            flash.error = messageSource.getMessage(<span class="string"><span class="delimiter">'</span><span class="content">vat.valid</span><span class="delimiter">'</span></span>,
+                    [cmd.code, cmd.vatNumber] <span class="keyword">as</span> <span class="predefined-type">Object</span><span class="type">[]</span>,
+                    <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd.code<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>cmd.vatNumber<span class="inline-delimiter">}</span></span><span class="content"> is NOT valid</span><span class="delimiter">&quot;</span></span>,
+                    request.locale)
+        }
+        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">cmd</span>: cmd, <span class="key">countries</span>: countryService.findAll()]
+
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a GSP to render the form and render the  <em>flash</em> messages or errors.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/vat/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;VAT <span class="predefined-type">Validator</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">title&gt;</span></span><span class="error">
+</span>    &lt;meta name=<span class="string"><span class="delimiter">&quot;</span><span class="content">layout</span><span class="delimiter">&quot;</span></span> content=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span> /&gt;
+    &lt;style type=<span class="string"><span class="delimiter">&quot;</span><span class="content">text/css</span><span class="delimiter">&quot;</span></span>&gt;
+        form ol li { list-style-<span class="key">type</span>: none; }
+    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">style&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">head&gt;</span></span><span class="error">
+</span>&lt;body&gt;
+&lt;div id=<span class="string"><span class="delimiter">&quot;</span><span class="content">content</span><span class="delimiter">&quot;</span></span> role=<span class="string"><span class="delimiter">&quot;</span><span class="content">main</span><span class="delimiter">&quot;</span></span>&gt;
+    &lt;section <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">row colset-2-its</span><span class="delimiter">&quot;</span></span>&gt;
+        &lt;<span class="class">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.message<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;p <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.message}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>        &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>flash.error<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;p <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">errors</span><span class="delimiter">&quot;</span></span>&gt;<span class="error">$</span>{flash.error}&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>        &lt;<span class="key">g</span>:<span class="keyword">if</span> test=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;<span class="key">g</span>:hasErrors bean=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>&gt;
+                &lt;div <span class="type">class</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">errors</span><span class="delimiter">&quot;</span></span>&gt;
+                    &lt;<span class="class">g</span>:eachError&gt;&lt;p&gt;&lt;<span class="key">g</span>:message error=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">p&gt;&lt;</span><span class="delimiter">/</span></span><span class="key">g</span>:eachError&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:hasErrors&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:if&gt;</span></span><span class="error">
+</span>        &lt;<span class="key">g</span>:form controller=<span class="string"><span class="delimiter">&quot;</span><span class="content">vat</span><span class="delimiter">&quot;</span></span> method=<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>&gt;
+            &lt;ol&gt;
+                &lt;li&gt;
+                    &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">vat.country</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">Country</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>                    &lt;<span class="key">g</span>:select id=<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span> name=<span class="string"><span class="delimiter">'</span><span class="content">code</span><span class="delimiter">'</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd?.code<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+                              noSelection=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>[<span class="string"><span class="delimiter">'</span><span class="content">null</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">Select One...</span><span class="delimiter">'</span></span>]<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+                              from=<span class="string"><span class="delimiter">'</span><span class="content">${countries}</span><span class="delimiter">'</span></span>
+                              optionKey=<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span> optionValue=<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:select&gt;</span></span><span class="error">
+</span>                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>                &lt;li&gt;
+                    &lt;label <span class="keyword">for</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">code</span><span class="delimiter">&quot;</span></span>&gt;&lt;<span class="key">g</span>:message code=<span class="string"><span class="delimiter">&quot;</span><span class="content">vat.vatNumber</span><span class="delimiter">&quot;</span></span> <span class="keyword">default</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">VAT Number</span><span class="delimiter">&quot;</span></span>/&gt;&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">label&gt;</span></span><span class="error">
+</span>                    &lt;<span class="key">g</span>:textField name=<span class="string"><span class="delimiter">&quot;</span><span class="content">vatNumber</span><span class="delimiter">&quot;</span></span> id=<span class="string"><span class="delimiter">&quot;</span><span class="content">vatNumber</span><span class="delimiter">&quot;</span></span> vatNumber=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cmd?.vatNumber<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>                &lt;li&gt;
+                    &lt;<span class="key">g</span>:actionSubmit id=<span class="string"><span class="delimiter">&quot;</span><span class="content">submit</span><span class="delimiter">&quot;</span></span> value=<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>message(<span class="key">code</span>:<span class="string"><span class="delimiter">'</span><span class="content">vat.check</span><span class="delimiter">'</span></span>, <span class="keyword">default</span>: <span class="string"><span class="delimiter">'</span><span class="content">Check</span><span class="delimiter">'</span></span>)<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> action=<span class="string"><span class="delimiter">&quot;</span><span class="content">validate</span><span class="delimiter">&quot;</span></span>/&gt;
+                &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">li&gt;</span></span><span class="error">
+</span>            &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">ol&gt;</span></span><span class="error">
+</span>        &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">g:form&gt;</span></span><span class="error">
+</span>    &lt;<span class="regexp"><span class="delimiter">/</span><span class="content">section&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">div&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">body&gt;</span></span><span class="error">
+</span>&lt;<span class="regexp"><span class="delimiter">/</span><span class="content">html&gt;</span></span></code></pre>
+</div>
+</div>
+
+
+<h2 id="test">3.4 Functional Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Add several Geb dependencies. Read our guide <a href="http://guides.grails.org/grails-geb-multiple-browsers/guide/index.html">Run Grails Geb Functional Tests with Multiple Browsers</a> to learn more.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:2.53.1</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:2.53.1</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.18</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ensure you can pass system properties to the Gradle Task <em>integrationTest</em>. You can supply the geb enviroment via the
+System Property <em>geb.env</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">integrationTest {
+    systemProperties <span class="predefined-type">System</span>.properties
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configure different browser drivers per Geb environment.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/GebConfig.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.openqa.selenium.firefox.FirefoxDriver</span>
+<span class="keyword">import</span> <span class="include">org.openqa.selenium.htmlunit.HtmlUnitDriver</span>
+
+environments {
+
+    htmlUnit {
+        driver = { <span class="keyword">new</span> HtmlUnitDriver() }
+    }
+
+    firefox {
+        driver = { <span class="keyword">new</span> FirefoxDriver() }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a Geb Page to encapsulate the form markup. The use of Geb pages makes our tests easier to maintain.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/VatFormPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+
+<span class="type">class</span> <span class="class">VatFormPage</span> <span class="directive">extends</span> Page {
+
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/vat/index</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> content = {
+        vatNumberInput { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">input#vatNumber</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        codeSelect { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">select#code</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+        submitButton { <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">input#submit</span><span class="delimiter">'</span></span>, <span class="integer">0</span>) }
+    }
+
+    <span class="type">void</span> validate(<span class="predefined-type">String</span> code, <span class="predefined-type">String</span> vatNumber ) {
+        vatNumberInput = vatNumber
+        codeSelect = code.toUpperCase()
+        submitButton.click()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a functional test which submits the form with several values:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/VatControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Unroll</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">VatControllerSpec</span> <span class="directive">extends</span> GebSpec {
+
+    <span class="annotation">@Unroll</span>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">#memberState : #vatNumber validation #unrollDescription when you submit the form</span><span class="delimiter">&quot;</span></span>(<span class="predefined-type">String</span> memberState, <span class="predefined-type">String</span> vatNumber, <span class="predefined-type">Boolean</span> expected, <span class="predefined-type">String</span> unrollDescription) {
+
+        <span class="key">when</span>:
+        VatFormPage page = browser.to VatFormPage
+        page.validate(memberState, vatNumber)
+
+        <span class="key">then</span>:
+        <span class="keyword">if</span> ( expected) {
+            browser.driver.pageSource.contains(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>memberState<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>vatNumber<span class="inline-delimiter">}</span></span><span class="content"> is valid</span><span class="delimiter">&quot;</span></span>)
+        } <span class="keyword">else</span> {
+            browser.driver.pageSource.contains(<span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>memberState<span class="inline-delimiter">}</span></span><span class="content"> : </span><span class="inline"><span class="inline-delimiter">${</span>vatNumber<span class="inline-delimiter">}</span></span><span class="content"> is NOT valid</span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">where</span>:
+        memberState | vatNumber   || expected
+        <span class="string"><span class="delimiter">'</span><span class="content">ES</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">B99286353</span><span class="delimiter">'</span></span> || <span class="predefined-constant">true</span>
+        <span class="string"><span class="delimiter">'</span><span class="content">ES</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">B19280031</span><span class="delimiter">'</span></span> || <span class="predefined-constant">true</span>
+        <span class="string"><span class="delimiter">'</span><span class="content">ES</span><span class="delimiter">'</span></span>        | <span class="string"><span class="delimiter">'</span><span class="content">XXXXXXXXX</span><span class="delimiter">'</span></span> || <span class="predefined-constant">false</span>
+
+        unrollDescription = expected ? <span class="string"><span class="delimiter">'</span><span class="content">is successful</span><span class="delimiter">'</span></span> : <span class="string"><span class="delimiter">'</span><span class="content"> fails</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">4 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-soap/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
