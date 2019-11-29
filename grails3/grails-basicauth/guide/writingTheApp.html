@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Writing the App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>2</strong><span>Writing the App</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>3</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>3</strong><span>Do you need help with Grails?</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#dependencies"><strong>2.1</strong><span>Add Security Dependencies</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#controller"><strong>2.2</strong><span>Controller</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#views"><strong>2.3</strong><span>Views</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#services"><strong>2.4</strong><span>GORM Data Service</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#test"><strong>2.5</strong><span>Test</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#next"><strong>2.6</strong><span>Next Steps</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">2 Writing the App</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create an app with the <code>rest-api</code> profile</p>
+</div>
+<div class="paragraph">
+<p><code>grails create-app example --profile=rest-api</code></p>
+</div>
+
+
+<h2 id="dependencies">2.1 Add Security Dependencies</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/dependencies.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>First thing we need to do is add the <code>spring-security-core</code> Grails Plugin to <code>build.gradle</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:spring-security-core:3.2.1</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then run the command:</p>
+</div>
+<div class="paragraph">
+<p><code>grails s2-quickstart example.grails User Role</code></p>
+</div>
+<div class="paragraph">
+<p>The command generates the following domain classes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>grails-app/domain/example.grails.User</code></p>
+</li>
+<li>
+<p><code>grails-app/domain/example.grails.Role</code></p>
+</li>
+<li>
+<p><code>grails-app/domain/example.grails.UserRole</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>a password encoder listener:</p>
+</div>
+<div class="paragraph">
+<p><code>src/main/groovy/example.grails.UserPasswordEncoderListener</code></p>
+</div>
+<div class="paragraph">
+<p>and default security configuration at:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>grails-app/conf/application.groovy</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Modify the generated <code>application.groovy</code> to enable basic auth.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.plugin.springsecurity.useBasicAuth = <span class="predefined-constant">true</span></code></pre>
+</div>
+</div>
+
+
+<h2 id="controller">2.2 Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create <code>HomeController</code> which returns the username of the authenticated user.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/HomeController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.annotation.Secured</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.userdetails.GrailsUser</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Secured</span>(<span class="string"><span class="delimiter">'</span><span class="content">isAuthenticated()</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">HomeController</span> {
+
+    <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">json</span><span class="delimiter">'</span></span>]
+
+    SpringSecurityService springSecurityService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">name</span>: loggedUsername()]
+    }
+
+    <span class="predefined-type">String</span> loggedUsername() {
+        <span class="keyword">if</span> ( springSecurityService.principal == <span class="predefined-constant">null</span> ) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span>
+        }
+        <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> <span class="predefined-type">String</span> ) {
+            <span class="keyword">return</span> springSecurityService.principal
+        }
+        <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> GrailsUser ) {
+            <span class="keyword">return</span> ((GrailsUser) springSecurityService.principal).username
+        }
+        <span class="predefined-constant">null</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="views">2.3 Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/views.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Render the controller output as a JSON Payload with the aid of <a href="http://views.grails.org">JSON Views</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/home/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">model {
+    <span class="predefined-type">String</span> name
+}
+
+json {
+    username name
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="services">2.4 GORM Data Service</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/services.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>GORM Data Services take the work out of implemented service layer logic by adding the ability to automatically implement abstract classes or interfaces using GORM logic.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Create a GORM Data service to ease <code>User</code> domain class CRUD operations.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/UserDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(User)
+<span class="type">interface</span> UserDataService {
+
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="type">boolean</span> enabled, <span class="type">boolean</span> accountExpired, <span class="type">boolean</span> accountLocked, <span class="type">boolean</span> passwordExpired)
+
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+
+    <span class="type">int</span> count()
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="test">2.5 Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a test which verifies the user authentication flow via Basic Auth.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/HomeControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">HomeControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    UserDataService userDataService
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">verify basic auth is possible</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+        <span class="directive">final</span> <span class="predefined-type">String</span> username = <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>
+        <span class="directive">final</span> <span class="predefined-type">String</span> password = <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>:
+        User user = userDataService.save(username, password, <span class="predefined-constant">true</span>, <span class="predefined-constant">false</span>, <span class="predefined-constant">false</span>, <span class="predefined-constant">false</span>, )
+
+        <span class="key">then</span>:
+        userDataService.count() == old(userDataService.count()) + <span class="integer">1</span>
+
+        <span class="key">when</span>:
+        <span class="predefined-type">String</span> token = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>username<span class="inline-delimiter">}</span></span><span class="content">:</span><span class="inline"><span class="inline-delimiter">${</span>password<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.encodeAsBase64()
+        RestResponse rsp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/home</span><span class="delimiter">&quot;</span></span>) {
+            auth(<span class="string"><span class="delimiter">&quot;</span><span class="content">Basic </span><span class="inline"><span class="inline-delimiter">$</span>token</span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>:
+        rsp.status == <span class="integer">200</span>
+
+        <span class="key">and</span>:
+        rsp.json.username == username
+
+        <span class="key">cleanup</span>:
+        userDataService?.delete(user?.id)
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="next">2.6 Next Steps</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-basicauth/edit/grails3/src/main/docs/guide/writingTheApp/next.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Read <a href="https://grails-plugins.github.io/grails-spring-security-core/3.2.x/index.html#authentication">Basic and Digest Authentication</a> section
+of the Grails Springs Security Core Plugin documentation to learn about the different configuration options available for Basic Authentication.</p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>1</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>3</strong><span>Do you need help with Grails?</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-basicauth"><img src="https://travis-ci.org/grails-guides/grails-basicauth.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-basicauth">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-basicauth.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-basicauth.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-basicauth'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-basicauth.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-basicauth/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
