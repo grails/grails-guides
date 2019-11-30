@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Building our API</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runningTheApp.html"><strong>3</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/buildingApi.html"><strong>4</strong><span>Building our API</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/hal.html"><strong>5</strong><span>Make our API Discoverable via HAL</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/explorableAPI.html"><strong>6</strong><span>Explore the API</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>7</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/hal.html"><strong>5</strong><span>Make our API Discoverable via HAL</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#jsonViews"><strong>4.1</strong><span>Introducing JSON Views</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#customizingOurApi"><strong>4.2</strong><span>Customizing our API</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="buildingApi">4 Building our API</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/grails3/src/main/docs/guide/buildingApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The default JSON rendered by Grails is a good start, but it doesn&#8217;t necessarily express the details we want in our public-facing API. <a href="http://views.grails.org/latest/">JSON Views</a> allow us to render our data using Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/gapi/groovy/json/StreamingJsonBuilder.html"><code>StreamingJsonBuilder</code></a>, in a statically-compiled Groovy view. JSON views provide a powerful DSL-based tool for expressing the JSON output from our API.</p>
+</div>
+
+
+<h2 id="jsonViews">4.1 Introducing JSON Views</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/grails3/src/main/docs/guide/jsonViews.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Here&#8217;s a trivial example of a JSON view:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">json.message {
+    hello <span class="string"><span class="delimiter">&quot;</span><span class="content">world</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This JSON view would produce the following ouput when rendered:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">{<span class="key"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>:{ <span class="key"><span class="delimiter">&quot;</span><span class="content">hello</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">world</span><span class="delimiter">&quot;</span></span>}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JSON views also support a <code>model</code> which references the data passed in to the view, as seen below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">model {
+    <span class="predefined-type">String</span> message
+}
+json.message {
+    hello message
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JSON views are Groovy files with the file extension <code>gson</code>, and they reside in the <code>grails-app/views</code> directory, just like GSP views. They are resolved (by convention) to a controller with the same name as the view directory, again like GSP views.</p>
+</div>
+
+
+<h2 id="customizingOurApi">4.2 Customizing our API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/using-hal-with-json-views/edit/grails3/src/main/docs/guide/customizingOurApi.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s create a JSON view to customize the output from the <code>/api/orders/$id</code> endpoint. Right now, the default JSON renderer includes ids of all associated objects. However, we don&#8217;t want to expose the <code>id</code> of the <code>shippingAddress</code> property (which is an instance of our <code>Address</code> domain class) - it&#8217;s not exposed as a domain resource in our API and it&#8217;s only relevant to users of API as part of an <code>Order</code> or <code>Customer</code>. Ideally, we&#8217;d like to include the <code>shippingAddress</code> fields in the JSON output of our <code>Order</code> API.</p>
+</div>
+<div class="paragraph">
+<p>In addition, we&#8217;d like to express the <code>orderId</code> property as the order&#8217;s <code>id</code>, rather than the actual id from the database.</p>
+</div>
+<div class="paragraph">
+<p>Create a new directory under <code>grails-app/views</code>, called <code>order</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/order</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you&#8217;re familiar with Grails' view resolution, you may be thinking we need to create an <code>OrderController</code> in order to use views from our <code>order</code> directory. We could do that, however because we&#8217;re making use of the <code>@Resource</code> annotation on our domain class, Grails will generate an associated <code>OrderController</code> (which will in turn inherit from <code>RestfulController</code>) for us. So at this point, we don&#8217;t need to create a controller for our <code>Order</code> class.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a new JSON view called <code>show.gson</code>. This will resolve to the <code>show</code> action in our controller, just as a <code>show.gsp</code> page would in a normal Grails application. Edit the new view with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/order/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
+
+model {
+    Order order
+}
+json {
+    id order.orderId
+    shippingCost order.shippingCost
+    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    shippingAddress { <i class="conum" data-value="2"></i><b>(2)</b>
+        street order.shippingAddress.street
+        street2 order.shippingAddress.street2
+        city order.shippingAddress.city
+        state order.shippingAddress.state
+        zip order.shippingAddress.zip
+    }
+
+    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="3"></i><b>(3)</b>
+
+    customer {
+        id order.customer.id
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Note that we are using Groovy&#8217;s <code>format</code> method on the <code>Date</code> class to customize the format of the <code>orderPlaced</code> property</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re filling out our <code>shippingAddress</code> with the fields from the <code>Address</code> class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Notice that we&#8217;re iterating over a collect (<code>order.products</code>) with the <code>collect</code> method and returning a map - this will create a JSON array of objects</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now if you make a request to <code>/api/orders/1</code>, you should see the following output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">curl -H &quot;Accept: application/json&quot; localhost:8080/api/orders/1</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">{
+    <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingCost</span>: <span class="float">13.54</span>,
+    <span class="key">date</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2-08-2017</span><span class="delimiter">&quot;</span></span>,
+    <span class="key">shippingAddress</span>: {
+        <span class="key">street</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">321 Arrow Ln</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">street2</span>: <span class="predefined-constant">null</span>,
+        <span class="key">city</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Chicago</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">state</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">IL</span><span class="delimiter">&quot;</span></span>,
+        <span class="key">zip</span>: <span class="integer">646465</span>
+    },
+    <span class="key">products</span>: [
+            {
+                <span class="key">id</span>: <span class="integer">11</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">1</span>
+            },
+            {
+                <span class="key">id</span>: <span class="integer">6</span>
+            }
+    ],
+    <span class="key">customer</span>: {
+        <span class="key">id</span>: <span class="integer">1</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create another JSON view for our <code>Customer</code> domain class. Create a new directory under <code>grails-app/views</code>, called <code>customer</code>, and a new JSON view <code>show.gson</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ mkdir grails-app/views/customer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new JSON view called <code>show.gson</code>. This will resolve to the <code>show</code> action in our controller, just as a <code>show.gsp</code> page would in a normal Grails application. Edit the new view with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/customer/show.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Customer</span>
+
+model {
+    Customer customer
+}
+json {
+    id customer.id
+    firstName customer.firstName
+    lastName customer.lastName
+    fullName <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>customer.firstName<span class="inline-delimiter">}</span></span><span class="content"> </span><span class="inline"><span class="inline-delimiter">${</span>customer.lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+    address {
+        street customer.address.street
+        street2 customer.address.street2
+        city customer.address.city
+        state customer.address.state
+        zip customer.address.zip
+    }
+
+    orders customer.orders.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/runningTheApp.html">&lt;&lt; <strong>3</strong><span>Running the Application</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/hal.html"><strong>5</strong><span>Make our API Discoverable via HAL</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/using-hal-with-json-views"><img src="https://travis-ci.org/grails-guides/using-hal-with-json-views.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/using-hal-with-json-views">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/using-hal-with-json-views.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/using-hal-with-json-views'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/using-hal-with-json-views.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/using-hal-with-json-views/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
