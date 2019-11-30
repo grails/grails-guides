@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='icon' href='../img/favicon.ico' />
     <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
@@ -13,41 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grailsblog.objectcomputing.com'>Blog</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/books.html'>Books</a>
-  </li>
-  <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Learning</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -117,7 +115,7 @@
         <h1>Using HAL with JSON Views</h1>
         <p>Learn to build discoverable APIs with Grails</p>
         <p><strong>Authors:</strong> ZacharyKlein</p>
-        <p><strong>Grails Version:</strong> 3.3.1</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -149,15 +147,14 @@ var getJSON = function(url, callback) {
     };
     xhr.send();
 };
-var ociTrainingTrack = 11;
-getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
   var msg = '';
   if (err != null) {
       msg = 'Something went wrong while retrieving OCI training offerings';
 
   } else {
       if ( data.length == 0 ) {
-         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
 
       } else {
         msg += '<table>';
@@ -165,8 +162,15 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -225,7 +229,7 @@ For a thorough introduction to HAL, check out the overview and specification at 
 <p>Grails provides support for HAL through JSON views, which are part of the Grails Views library. You can use this library in an existing application following the installation steps in the documentation, or you can create a new application using either the <code>rest-api</code> profile or one of the frontend profiles (<code>angular</code>, <code>angular2</code> and <code>react</code>) which extend the <code>rest-api</code> profile.</p>
 </div>
 <div class="paragraph">
-<p>In this guide, we have provided a basic Grails 3.3.1 application using the <code>rest-api</code> profile in the <code>initial</code> project. We have also included a few domain classes to expose via our API. You may generate your own project if you wish (in which case you will need to copy the domain classes from <code>initial/grails-app/domain/</code> into your own project), or simply use the <code>initial</code> project to follow along with the guide.</p>
+<p>In this guide, we have provided a basic Grails 4.0.1 application using the <code>rest-api</code> profile in the <code>initial</code> project. We have also included a few domain classes to expose via our API. You may generate your own project if you wish (in which case you will need to copy the domain classes from <code>initial/grails-app/domain/</code> into your own project), or simply use the <code>initial</code> project to follow along with the guide.</p>
 </div>
 
 
@@ -250,7 +254,7 @@ For a thorough introduction to HAL, check out the overview and specification at 
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -373,29 +377,100 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">[
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'''</span><span class="content">
+[
   {
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    &quot;id&quot;: 1,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
     },
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">inventoryId</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH001</span><span class="delimiter">&quot;</span></span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Cargo Pants</span><span class="delimiter">&quot;</span></span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>: <span class="float">15.00</span>
+    &quot;inventoryId&quot;: &quot;CLOTH001&quot;,
+    &quot;name&quot;: &quot;Cargo Pants&quot;,
+    &quot;price&quot;: 15.00
   },
   {
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">2</span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    &quot;id&quot;: 2,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
     },
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">inventoryId</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">CLOTH002</span><span class="delimiter">&quot;</span></span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Sweater</span><span class="delimiter">&quot;</span></span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">price</span><span class="delimiter">&quot;</span></span>: <span class="float">12.00</span>
+    &quot;inventoryId&quot;: &quot;CLOTH002&quot;,
+    &quot;name&quot;: &quot;Sweater&quot;,
+    &quot;price&quot;: 12.00
   },
   {
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">3</span>,
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">category</span><span class="delimiter">&quot;</span></span>: {
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    &quot;id&quot;: 3,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
+    },
+    &quot;inventoryId&quot;: &quot;CLOTH003&quot;,
+    &quot;name&quot;: &quot;Jeans&quot;,
+    &quot;price&quot;: 15.00
+  },
+  {
+    &quot;id&quot;: 4,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
+    },
+    &quot;inventoryId&quot;: &quot;CLOTH004&quot;,
+    &quot;name&quot;: &quot;Blouse&quot;,
+    &quot;price&quot;: 18.00
+  },
+  {
+    &quot;id&quot;: 5,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
+    },
+    &quot;inventoryId&quot;: &quot;CLOTH005&quot;,
+    &quot;name&quot;: &quot;T-Shirt&quot;,
+    &quot;price&quot;: 10.00
+  },
+  {
+    &quot;id&quot;: 6,
+    &quot;category&quot;: {
+      &quot;id&quot;: 1
+    },
+    &quot;inventoryId&quot;: &quot;CLOTH006&quot;,
+    &quot;name&quot;: &quot;Jacket&quot;,
+    &quot;price&quot;: 20.00
+  },
+  {
+    &quot;id&quot;: 7,
+    &quot;category&quot;: {
+      &quot;id&quot;: 2
+    },
+    &quot;inventoryId&quot;: &quot;FURN001&quot;,
+    &quot;name&quot;: &quot;Bookcase&quot;,
+    &quot;price&quot;: 40.00
+  },
+  {
+    &quot;id&quot;: 8,
+    &quot;category&quot;: {
+      &quot;id&quot;: 2
+    },
+    &quot;inventoryId&quot;: &quot;FURN002&quot;,
+    &quot;name&quot;: &quot;Coffee Table&quot;,
+    &quot;price&quot;: 50.00
+  },
+  {
+    &quot;id&quot;: 9,
+    &quot;category&quot;: {
+      &quot;id&quot;: 2
+    },
+    &quot;inventoryId&quot;: &quot;FURN003&quot;,
+    &quot;name&quot;: &quot;Vanity&quot;,
+    &quot;price&quot;: 90.00
+  },
+  {
+    &quot;id&quot;: 10,
+    &quot;category&quot;: {
+      &quot;id&quot;: 3
+    },
+    &quot;inventoryId&quot;: &quot;TOOL001&quot;,
+    &quot;name&quot;: &quot;Table Saw&quot;,
+    &quot;price&quot;: 120.00
+  }
+]
+</span><span class="delimiter">'''</span></span>
 <span class="comment">//...</span>
 ]</code></pre>
 </div>
@@ -410,29 +485,31 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">{
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>,
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingAddress</span><span class="delimiter">&quot;</span></span> : {
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="string"><span class="delimiter">'''</span><span class="content">
+{
+   &quot;id&quot; : 1,
+   &quot;shippingAddress&quot; : {
+      &quot;id&quot; : 1
    },
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingCost</span><span class="delimiter">&quot;</span></span> : <span class="float">13.54</span>,
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">orderId</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">orderPlaced</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">2017-02-08T09:10:36Z</span><span class="delimiter">&quot;</span></span>,
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">products</span><span class="delimiter">&quot;</span></span> : [
+   &quot;shippingCost&quot; : 13.54,
+   &quot;orderId&quot; : &quot;0A12321&quot;,
+   &quot;orderPlaced&quot; : &quot;2017-02-08T09:10:36Z&quot;,
+   &quot;products&quot; : [
       {
-         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">11</span>
+         &quot;id&quot; : 11
       },
       {
-         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">6</span>
+         &quot;id&quot; : 6
       },
       {
-         <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+         &quot;id&quot; : 1
       }
    ],
-   <span class="string"><span class="delimiter">&quot;</span><span class="content">customer</span><span class="delimiter">&quot;</span></span> : {
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span> : <span class="integer">1</span>
+   &quot;customer&quot; : {
+      &quot;id&quot; : 1
    }
-}</code></pre>
+}
+</span><span class="delimiter">'''</span></span></code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -551,15 +628,19 @@ If you&#8217;re familiar with Grails' view resolution, you may be thinking we ne
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
 
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="predefined-type">SimpleDateFormat</span> simpleDateFormat = <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
 model {
     Order order
 }
 json {
     id order.orderId
     shippingCost order.shippingCost
-    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    date simpleDateFormat.format(order.orderPlaced)
 
-    shippingAddress { <i class="conum" data-value="2"></i><b>(2)</b>
+    shippingAddress { <i class="conum" data-value="1"></i><b>(1)</b>
         street order.shippingAddress.street
         street2 order.shippingAddress.street2
         city order.shippingAddress.city
@@ -567,7 +648,7 @@ json {
         zip order.shippingAddress.zip
     }
 
-    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="3"></i><b>(3)</b>
+    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="2"></i><b>(2)</b>
 
     customer {
         id order.customer.id
@@ -579,14 +660,10 @@ json {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Note that we are using Groovy&#8217;s <code>format</code> method on the <code>Date</code> class to customize the format of the <code>orderPlaced</code> property</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Here we&#8217;re filling out our <code>shippingAddress</code> with the fields from the <code>Address</code> class</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Notice that we&#8217;re iterating over a collect (<code>order.products</code>) with the <code>collect</code> method and returning a map - this will create a JSON array of objects</td>
 </tr>
 </table>
@@ -804,6 +881,10 @@ json {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
 
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="predefined-type">SimpleDateFormat</span> simpleDateFormat = <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
 model {
     Order order
 }
@@ -812,7 +893,7 @@ json {
 
     id order.orderId
     shippingCost order.shippingCost
-    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+    date simpleDateFormat.format(order.orderPlaced)
 
     shippingAddress {
         street order.shippingAddress.street
@@ -925,6 +1006,10 @@ json {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
 
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="predefined-type">SimpleDateFormat</span> simpleDateFormat = <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
 model {
     Order order
 }
@@ -933,7 +1018,7 @@ json {
 
     id order.orderId
     shippingCost order.shippingCost
-    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+    date simpleDateFormat.format(order.orderPlaced)
 
     shippingAddress {
         street order.shippingAddress.street
@@ -1218,12 +1303,31 @@ json {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
 
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="predefined-type">SimpleDateFormat</span> simpleDateFormat = <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
 model {
     Order order
 }
 json {
     hal.links(<span class="key">self</span>: order, <span class="key">customer</span>: order.customer)
-    hal.embedded(<span class="key">customer</span>: order.customer) <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+    hal.embedded(<span class="key">customer</span>: order.customer) <i class="conum" data-value="1"></i><b>(1)</b>
+
+    id order.orderId
+    shippingCost order.shippingCost
+    date simpleDateFormat.format(order.orderPlaced)
+
+    shippingAddress {
+        street order.shippingAddress.street
+        street2 order.shippingAddress.street2
+        city order.shippingAddress.city
+        state order.shippingAddress.state
+        zip order.shippingAddress.zip
+    }
+
+    products tmpl.product(order.products)
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1231,7 +1335,15 @@ json {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    }
+<pre class="CodeRay highlight"><code data-lang="groovy">      <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/orders?id=1</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+    },
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">customer</span><span class="delimiter">&quot;</span></span>: {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/customers?id=1</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+    }
   },
   <span class="string"><span class="delimiter">&quot;</span><span class="content">_embedded</span><span class="delimiter">&quot;</span></span>: {
     <span class="string"><span class="delimiter">&quot;</span><span class="content">customer</span><span class="delimiter">&quot;</span></span>: {
@@ -1244,7 +1356,52 @@ json {
       },
       <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Peter</span><span class="delimiter">&quot;</span></span>,
       <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">River</span><span class="delimiter">&quot;</span></span>,
-      <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="integer">0</span></code></pre>
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>: <span class="integer">0</span>
+    }
+  },
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">0A12321</span><span class="delimiter">&quot;</span></span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingCost</span><span class="delimiter">&quot;</span></span>: <span class="float">13.54</span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">date</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">2-08-2017</span><span class="delimiter">&quot;</span></span>,
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">shippingAddress</span><span class="delimiter">&quot;</span></span>: {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">street</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">321 Arrow Ln</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">street2</span><span class="delimiter">&quot;</span></span>: <span class="predefined-constant">null</span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Chicago</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">state</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">IL</span><span class="delimiter">&quot;</span></span>,
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">zip</span><span class="delimiter">&quot;</span></span>: <span class="integer">646465</span>
+  },
+  <span class="string"><span class="delimiter">&quot;</span><span class="content">products</span><span class="delimiter">&quot;</span></span>: [
+    {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/6</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+      },
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">6</span>
+    },
+    {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/11</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+      },
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">11</span>
+    },
+    {
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>: {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">self</span><span class="delimiter">&quot;</span></span>: {
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/products/1</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">hreflang</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">en</span><span class="delimiter">&quot;</span></span>,
+          <span class="string"><span class="delimiter">&quot;</span><span class="content">type</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">application/hal+json</span><span class="delimiter">&quot;</span></span>
+        }
+      },
+      <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>: <span class="integer">1</span>
+    }
+  ]
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1930,27 +2087,27 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails.slack.com'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
-  <li>Grails' repositories is hosted by
+  <li>Grails' repositories are hosted by
     <a href='http://artifactoryonline.com/'>Artifactory</a>
   </li>
   <li>Website hosting provided by
@@ -1961,6 +2118,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>

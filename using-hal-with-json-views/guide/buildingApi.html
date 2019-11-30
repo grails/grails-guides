@@ -191,15 +191,19 @@ If you&#8217;re familiar with Grails' view resolution, you may be thinking we ne
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.Order</span>
 
+<span class="keyword">import</span> <span class="include">java.text.SimpleDateFormat</span>
+
+<span class="predefined-type">SimpleDateFormat</span> simpleDateFormat = <span class="keyword">new</span> <span class="predefined-type">SimpleDateFormat</span>(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>)
+
 model {
     Order order
 }
 json {
     id order.orderId
     shippingCost order.shippingCost
-    date order.orderPlaced.format(<span class="string"><span class="delimiter">'</span><span class="content">M-dd-yyy</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    date simpleDateFormat.format(order.orderPlaced)
 
-    shippingAddress { <i class="conum" data-value="2"></i><b>(2)</b>
+    shippingAddress { <i class="conum" data-value="1"></i><b>(1)</b>
         street order.shippingAddress.street
         street2 order.shippingAddress.street2
         city order.shippingAddress.city
@@ -207,7 +211,7 @@ json {
         zip order.shippingAddress.zip
     }
 
-    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="3"></i><b>(3)</b>
+    products order.products.collect { [<span class="key">id</span>: <span class="local-variable">it</span>.id] } <i class="conum" data-value="2"></i><b>(2)</b>
 
     customer {
         id order.customer.id
@@ -219,14 +223,10 @@ json {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Note that we are using Groovy&#8217;s <code>format</code> method on the <code>Date</code> class to customize the format of the <code>orderPlaced</code> property</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Here we&#8217;re filling out our <code>shippingAddress</code> with the fields from the <code>Address</code> class</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Notice that we&#8217;re iterating over a collect (<code>order.products</code>) with the <code>collect</code> method and returning a map - this will create a JSON array of objects</td>
 </tr>
 </table>
