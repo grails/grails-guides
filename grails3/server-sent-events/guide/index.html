@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Sending Server Sent Events with Grails  | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Sending Server Sent Events with Grails . This guide walks you through how to send Server Sent Events using Grails and RxJava.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/server-sent-events"><img src="https://travis-ci.org/grails-guides/server-sent-events.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/server-sent-events&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/server-sent-events.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/server-sent-events.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/server-sent-events.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/server-sent-events/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#gradleConfig"><strong>3.1</strong><span>Add RxJava dependency</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#createController"><strong>3.2</strong><span>Create a Controller</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#implementController"><strong>3.3</strong><span>Implement the Controller</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#implementTheClient"><strong>3.4</strong><span>Implement the Client</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>4</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Sending Server Sent Events with Grails </h1>
+        <p>This guide walks you through how to send Server Sent Events using Grails and RxJava.</p>
+        <p><strong>Authors:</strong> Graeme Rocher</p>
+        <p><strong>Grails Version:</strong> 3.3.1</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to build a Grails application that communicates with a JavaScript client via <a href="https://en.wikipedia.org/wiki/Server-sent_events">Server Sent Events</a>.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/server-sent-events/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/server-sent-events.git" class="bare">https://github.com/grails-guides/server-sent-events.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/server-sent-events/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/server-sent-events/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="gradleConfig">3.1 Add RxJava dependency</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/gradleConfig.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The first step is to configure the necessary Gradle dependencies. This basically means adding a dependency on the <a href="http://plugins.grails.org/plugin/rxjava">RxJava plugin</a> for Grails in the <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:rxjava</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>RxJava is used to facilitate a reactive programming model for sending events to the JavaScript client.</p>
+</div>
+
+
+<h2 id="createController">3.2 Create a Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/createController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Next create a new controller called <code>TickTock</code>. If you have Grails installed you can do this by running the <code>grails create-controller</code> command, otherwise you can use the included <code>grailsw</code> wrapper:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="error">$</span> .<span class="regexp"><span class="delimiter">/</span><span class="content">grailsw create-controller TickTock</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The first time you run the <code>grails</code> command, application dependencies will be downloaded from the internet. Subsequent calls will be much faster.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The output of the command will look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>| Created grails-app/controllers/example/TickTockController.groovy
+| Created src/test/groovy/example/TickTockControllerSpec.groovy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see a new controller was created in the <code>grails-app/controllers/example</code> directory. Grails will use the value defined by the <code>grails.codegen.defaultPackage</code> value in <code>grails-app/conf/application.yml</code> to decide which package to use.</p>
+</div>
+
+
+<h2 id="implementController">3.3 Implement the Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/implementController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Now that you have a controller you need to modify it to take advantage of RxJava features. To do this add the necessary imports and make the controller implement the <code>grails.rx.web.RxController</code> trait:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.Observer</span>
+<span class="keyword">import</span> <span class="include">rx.Observable</span>
+<span class="keyword">import</span> <span class="include">grails.rx.web.RxController</span>
+<span class="keyword">import</span> <span class="include">java.util.concurrent.TimeUnit</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="comment">/**
+ * Demo Server Sent Events Controller
+ */</span>
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">TickTockController</span> <span class="directive">implements</span> RxController {</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next step is to implement the <code>index</code> action. This is the default action that gets executed by the controller if no explicit action is specified.</p>
+</div>
+<div class="paragraph">
+<p>The <code>RxController</code> trait adds a helper called <code>rx</code> that allows you to control the responses sent to the client from the controller.</p>
+</div>
+<div class="paragraph">
+<p>In order to start sending Server Sent Events we will use the <code>rx.stream(..)</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>() {
+    rx.stream { <span class="predefined-type">Observer</span> observer -&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>stream</code> method accepts a closure that receives a <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">rx.Observer</a> instance which you can use to send events to the client when the data is ready to be sent via the <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">rx.Observer</a> interface.</p>
+</div>
+<div class="paragraph">
+<p>By using the <code>rx</code> helper&#8217;s various methods you can pass values to the Observer&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onNext(T)">onNext</a> method. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">for</span> (i <span class="keyword">in</span> (<span class="integer">0</span> .. <span class="integer">5</span>)) {
+    <span class="keyword">if</span> (i % <span class="integer">2</span> == <span class="integer">0</span>) {
+        observer.onNext(
+            rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tick</span><span class="delimiter">'</span></span>)
+        )
+    }
+    <span class="keyword">else</span> {
+        observer.onNext(
+            rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tock</span><span class="delimiter">'</span></span>)
+        )
+    }
+    sleep <span class="integer">1000</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example we loop through values between 0 and 5 and call <code>rx.render(..)</code> for odd and even values in order to output "Tick" or "Tock" respectively. The call to <code>sleep(..)</code> is there to simulate a slow request like for example if the values were being obtained from an external web service.</p>
+</div>
+<div class="paragraph">
+<p>Once you are done sending events you can use the Observer&#8217;s <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html#onCompleted()">onCompleted</a> event to finish-up:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">observer.onCompleted()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The final completed logic can be seen below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">index</span>() {
+    rx.stream { <span class="predefined-type">Observer</span> observer -&gt;
+
+        <span class="keyword">for</span> (i <span class="keyword">in</span> (<span class="integer">0</span> .. <span class="integer">5</span>)) {
+            <span class="keyword">if</span> (i % <span class="integer">2</span> == <span class="integer">0</span>) {
+                observer.onNext(
+                    rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tick</span><span class="delimiter">'</span></span>)
+                )
+            }
+            <span class="keyword">else</span> {
+                observer.onNext(
+                    rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tock</span><span class="delimiter">'</span></span>)
+                )
+            }
+            sleep <span class="integer">1000</span>
+        }
+        observer.onCompleted()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if the call to <code>sleep(1000)</code> was actually a concrete requirement for the application a more idiomatic way to write that would be with the <code>interval</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/TickTockController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@SuppressWarnings</span>(<span class="string"><span class="delimiter">'</span><span class="content">DuplicateNumberLiteral</span><span class="delimiter">'</span></span>)
+<span class="keyword">def</span> <span class="function">example</span>() {
+    <span class="type">int</span> i = <span class="integer">0</span>
+    rx.stream(<span class="predefined-type">Observable</span>
+                .interval(<span class="integer">1</span>, <span class="predefined-type">TimeUnit</span>.SECONDS)
+                .map {
+        i++
+        <span class="keyword">if</span> (i % <span class="integer">2</span> == <span class="integer">0</span>) {
+            rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tick</span><span class="delimiter">'</span></span>)
+        }
+        <span class="keyword">else</span> {
+            rx.render(<span class="string"><span class="delimiter">'</span><span class="content">Tock</span><span class="delimiter">'</span></span>)
+        }
+    })
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="implementTheClient">3.4 Implement the Client</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/implementTheClient.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To implement the client first open up the <code>grails-app/views/index.gsp</code> file and add an additional header below the "Welcome to Grails" <code>&lt;h1&gt;</code> tag:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;h1&gt;</span>Welcome to Grails<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2</span> <span class="attribute-name">style</span>=<span class="string"><span class="delimiter">&quot;</span><span class="key">text-align</span>:<span class="value">center</span>;<span class="key">font-size</span>:<span class="float">50px</span><span class="delimiter">&quot;</span></span> <span class="attribute-name">id</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/h2&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will be using this header to place the content received from the Server Sent Events.</p>
+</div>
+<div class="paragraph">
+<p>Next add the following <code>&lt;script&gt;</code> block at the bottom of the page:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;script</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">text/javascript</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span>
+<span class="inline">    (<span class="keyword">function</span>() {
+        <span class="keyword">var</span> eventSource = <span class="keyword">new</span> EventSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">tickTock</span><span class="delimiter">&quot;</span></span>);
+        eventSource.<span class="function">onmessage</span> = <span class="keyword">function</span>(event) {
+            console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">data: </span><span class="delimiter">&quot;</span></span>+event.data)
+            document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">message</span><span class="delimiter">'</span></span>).innerHTML = event.data;
+        };
+    })();</span>
+<span class="tag">&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The JavaScript code above using the Server Sent Event specification&#8217;s <code>EventSource</code> object to start receiving events from the controller:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">var</span> eventSource = <span class="keyword">new</span> EventSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">tickTock</span><span class="delimiter">&quot;</span></span>);</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You will need a <a href="http://caniuse.com/#feat=eventsource">modern browser</a> to use the <code>EventSource</code> object
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>It then registers a listener that will update the previously defined <code>&lt;h2&gt;</code> header with the response from the server:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/index.gsp</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">eventSource.<span class="function">onmessage</span> = <span class="keyword">function</span>(event) {
+    console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">data: </span><span class="delimiter">&quot;</span></span>+event.data)
+    document.getElementById(<span class="string"><span class="delimiter">'</span><span class="content">message</span><span class="delimiter">'</span></span>).innerHTML = event.data;
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And that is it! You are now ready to run the application!</p>
+</div>
+
+
+<h1 id="runningTheApp">4 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+<div class="paragraph">
+<p>You can then navigate to <code><a href="http://localhost:8080" class="bare">http://localhost:8080</a></code> and you will see below the "Welcome to Grails!" message the messages "Tick" and "Tock" alternating as the browser receives events from the server.</p>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/server-sent-events/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
