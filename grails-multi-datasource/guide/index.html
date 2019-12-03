@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='icon' href='../img/favicon.ico' />
     <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
@@ -13,41 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grailsblog.objectcomputing.com'>Blog</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/books.html'>Books</a>
-  </li>
-  <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Learning</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -111,7 +109,7 @@
         <h1>Grails Multi-datasource</h1>
         <p>Learn how to consume and handle transactions to multiple data sources from a Grails application. </p>
         <p><strong>Authors:</strong> Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.1</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -143,15 +141,14 @@ var getJSON = function(url, callback) {
     };
     xhr.send();
 };
-var ociTrainingTrack = 11;
-getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
   var msg = '';
   if (err != null) {
       msg = 'Something went wrong while retrieving OCI training offerings';
 
   } else {
       if ( data.length == 0 ) {
-         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
 
       } else {
         msg += '<table>';
@@ -159,8 +156,15 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -207,7 +211,7 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -475,18 +479,6 @@ In previous versions of Grails for multiple data sources a best effort transacti
 </tr>
 </table>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-If you used <code>@ReadOnly</code> instead of <code>@ReadOnly('books')</code> you will get the exception: <code>org.hibernate.HibernateException: No Session found for current thread</code>
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
 <p>Add a regular service:</p>
 </div>
@@ -556,6 +548,18 @@ If you used <code>@ReadOnly</code> instead of <code>@ReadOnly('books')</code> yo
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>you can specify query joins using the <code>@Join</code> annotation.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If you used <code>@ReadOnly</code> instead of <code>@ReadOnly('books')</code> you will get the exception: <code>org.hibernate.HibernateException: No Session found for current thread</code>
+</td>
 </tr>
 </table>
 </div>
@@ -695,9 +699,11 @@ the data source <code>ConnectionSource.DEFAULT</code>, the first specified, is u
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
 <span class="annotation">@CompileStatic</span>
+<span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">BookController</span> {
 
     <span class="directive">static</span> allowedMethods = [<span class="key">save</span>: <span class="string"><span class="delimiter">'</span><span class="content">POST</span><span class="delimiter">'</span></span>, <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>]
@@ -820,7 +826,7 @@ model {
 
 json {
     title book.title
-    keywords book.keywords*.name
+    keywords book.keywords*.name.unique().sort()
 }</code></pre>
 </div>
 </div>
@@ -847,7 +853,7 @@ model {
 
 json {
     title movie.title
-    keywords movie.keywords*.name
+    keywords movie.keywords*.name.unique().sort()
 }</code></pre>
 </div>
 </div>
@@ -889,12 +895,12 @@ json {
 
 
 <div class="paragraph">
-<p>Add <em>grails-datastore-rest-client</em> as a <em>testCompile</em> dependency:</p>
+<p>Add <em>micronaut-http-client</em> as a <em>testCompile</em> dependency:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -905,9 +911,13 @@ json {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.type.Argument</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
@@ -915,154 +925,91 @@ json {
 <span class="type">class</span> <span class="class">MultipleDataSourceSpec</span> <span class="directive">extends</span> Specification {
 
     <span class="annotation">@Shared</span>
-    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+    HttpClient client
 
-    <span class="directive">private</span> RestResponse saveResource(<span class="predefined-type">String</span> resource, <span class="predefined-type">String</span> itemTitle, <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; itemKeywords) {
-        rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>resource<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                title = itemTitle
-                keywords = itemKeywords
-            }
-        }
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
     }
 
-    <span class="directive">private</span> RestResponse deleteResource(<span class="predefined-type">String</span> resource, <span class="predefined-type">String</span> itemTitle) {
-        rest.delete(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>resource<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                title = itemTitle
-            }
-        }
+    <span class="directive">private</span> HttpResponse&lt;<span class="predefined-type">Map</span>&gt; saveResource(<span class="predefined-type">String</span> resource, <span class="predefined-type">String</span> itemTitle, <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; itemKeywords) {
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>resource</span><span class="delimiter">&quot;</span></span>, [<span class="key">title</span>: itemTitle, <span class="key">keywords</span>: itemKeywords])
+        client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
     }
 
-    <span class="directive">private</span> RestResponse fetchResource(<span class="predefined-type">String</span> resource) {
-        rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>resource<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-        }
+    <span class="directive">private</span> HttpResponse deleteResource(<span class="predefined-type">String</span> resource, <span class="predefined-type">String</span> itemTitle) {
+        HttpRequest request = HttpRequest.DELETE(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>resource</span><span class="delimiter">&quot;</span></span>, [<span class="key">title</span>: itemTitle])
+        client.toBlocking().exchange(request)
     }
 
-    <span class="directive">private</span> RestResponse resourceKeywords(<span class="predefined-type">String</span> resource) {
-        rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/</span><span class="inline"><span class="inline-delimiter">${</span>resource<span class="inline-delimiter">}</span></span><span class="content">/keywords</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-        }
+    <span class="directive">private</span> HttpResponse&lt;<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;&gt; fetchResource(<span class="predefined-type">String</span> resource) {
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>resource</span><span class="delimiter">&quot;</span></span>)
+        client.toBlocking().exchange(request, Argument.of(<span class="predefined-type">List</span>, <span class="predefined-type">Map</span>))
+    }
+
+    <span class="directive">private</span> HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resourceKeywords(<span class="predefined-type">String</span> resource) {
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>resource</span><span class="content">/keywords</span><span class="delimiter">&quot;</span></span>)
+        client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
     }
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test Multi-Datasource support saving and retrieving books and movies</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">when</span>:
-        RestResponse resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Change Agent</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">dna</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
-
-        <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Influx</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
-
-        <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Kill Decision</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">drone</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
-
-        <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Freedom (TM)</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
+        <span class="key">given</span>:
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; books = [
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Change Agent</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">dna</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Influx</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Kill Decision</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">drone</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Freedom (TM)</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+        ]
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt; movies = [
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Pirates of Silicon Valley</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">apple</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">microsoft</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">technology</span><span class="delimiter">'</span></span>]],
+                [<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">Inception</span><span class="delimiter">'</span></span>, <span class="key">tags</span>: [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]],
+        ]
+        books.each { book -&gt;
+            HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, book.title <span class="keyword">as</span> <span class="predefined-type">String</span>, book.tags <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;)
+            <span class="keyword">assert</span> resp.status == HttpStatus.CREATED
+        }
+        movies.each { movie -&gt;
+            HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, movie.title <span class="keyword">as</span> <span class="predefined-type">String</span>, movie.tags <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;)
+            <span class="keyword">assert</span> resp.status == HttpStatus.CREATED
+        }
 
         <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
+        HttpResponse&lt;<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;&gt; resourceResp = fetchResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
+        resourceResp.status == HttpStatus.OK
+        resourceResp.body().collect { <span class="local-variable">it</span>.title }.sort() == books.collect { <span class="local-variable">it</span>.title }.sort()
 
         <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Pirates of Silicon Valley</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">apple</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">microsoft</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">technology</span><span class="delimiter">'</span></span>])
+        resourceResp = fetchResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
+        resourceResp.status == HttpStatus.OK
+        resourceResp.body().collect { <span class="local-variable">it</span>.title }.sort() == movies.collect { <span class="local-variable">it</span>.title }.sort()
 
         <span class="key">when</span>:
-        resp = saveResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Inception</span><span class="delimiter">'</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>])
+        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = resourceKeywords(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">201</span>
-
-        <span class="key">when</span>:
-        resp = fetchResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">200</span>
-        resp.json.collect { <span class="local-variable">it</span>.title }.sort() == [<span class="string"><span class="delimiter">'</span><span class="content">Change Agent</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Freedom (TM)</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Influx</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Kill Decision</span><span class="delimiter">'</span></span>]
-
-        <span class="key">when</span>:
-        resp = fetchResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">200</span>
-        resp.json.collect { <span class="local-variable">it</span>.title }.sort() == [<span class="string"><span class="delimiter">'</span><span class="content">Inception</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Pirates of Silicon Valley</span><span class="delimiter">'</span></span>]
-
-        <span class="key">when</span>:
-        resp = resourceKeywords(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">200</span>
-        resp.json.keywords == [<span class="string"><span class="delimiter">'</span><span class="content">dna</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">drone</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>]
+        resp.status == HttpStatus.OK
+        (resp.body().keywords <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;).sort() == books.collect { <span class="local-variable">it</span>.tags }.flatten().unique().sort()
 
         <span class="key">when</span>:
         resp = resourceKeywords(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">200</span>
-        resp.json.keywords == [<span class="string"><span class="delimiter">'</span><span class="content">apple</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">microsoft</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sci-fi</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">technology</span><span class="delimiter">'</span></span>]
+        resp.status == HttpStatus.OK
+        (resp.body().keywords <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;).sort() == movies.collect { <span class="local-variable">it</span>.tags }.flatten().unique().sort()
 
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Change Agent</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Influx</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Kill Decision</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Freedom (TM)</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Pirates of Silicon Valley</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
-
-        <span class="key">when</span>:
-        resp = deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Inception</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        resp.statusCode.value() == <span class="integer">204</span>
+        <span class="key">cleanup</span>:
+        books.each { book -&gt;
+            <span class="keyword">assert</span> deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, book.title <span class="keyword">as</span> <span class="predefined-type">String</span>).status() == HttpStatus.NO_CONTENT
+        }
+        movies.each { movie -&gt;
+            <span class="keyword">assert</span> deleteResource(<span class="string"><span class="delimiter">'</span><span class="content">movie</span><span class="delimiter">'</span></span>, movie.title <span class="keyword">as</span> <span class="predefined-type">String</span>).status() == HttpStatus.NO_CONTENT
+        }
     }
 }</code></pre>
 </div>
@@ -1225,27 +1172,27 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails.slack.com'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
-  <li>Grails' repositories is hosted by
+  <li>Grails' repositories are hosted by
     <a href='http://artifactoryonline.com/'>Artifactory</a>
   </li>
   <li>Website hosting provided by
@@ -1256,6 +1203,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
