@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails with Micronaut HTTP Client | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails with Micronaut HTTP Client. In this guide, we will learn how to use the Micronaut HTTP Client in a Grails app.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-micronaut-http.git"><img src="https://travis-ci.org/grails-guides/grails-micronaut-http.git.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-micronaut-http.git&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-micronaut-http.git.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-micronaut-http.git.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-micronaut-http.git.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-micronaut-http.git/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#micronautHttpClient"><strong>4</strong><span>Micronaut HTTP Client</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#lowLevelClient"><strong>4.1</strong><span>Use the Low-Level Micronaut HTTP Client API</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#declarativeClient"><strong>4.2</strong><span>Use the Declarative Micronaut HTTP Client</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#test"><strong>5</strong><span>Test with Micronaut HTTP Client</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>6</strong><span>Running the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>7</strong><span>Help with Grails</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails with Micronaut HTTP Client</h1>
+        <p>In this guide, we will learn how to use the Micronaut HTTP Client in a Grails app.</p>
+        <p><strong>Authors:</strong> Nirav Assar</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to learn how to execute an HTTP client to make external rest API calls as well perform spock testing.
+You will use <a href="https://docs.micronaut.io/snapshot/guide/index.html#httpClient">Micronaut&#8217;s HTTP Client</a>, which has both a low-level API
+and a higher level AOP-driven API.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-micronaut-http.git/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-micronaut-http.git.git" class="bare">https://github.com/grails-guides/grails-micronaut-http.git.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-micronaut-http.git/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-micronaut-http.git/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>/initial</code> folder is a grails app created with the <code>rest-api</code> profile. It is a simple app that queries the
+<a href="https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api">Apple iTunes API</a>.
+The app takes in a <code>searchTerm</code> and is layered with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>example.grails.SearchController</code></p>
+</li>
+<li>
+<p><code>example.grails.ItunesSearchService</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The call is stubbed out until we implement it in this guide.</p>
+</div>
+<div class="paragraph">
+<p>Verify the functionality by running <code>./gradlew bootRun</code> and then going to the URL <code><a href="http://localhost:8080/search/searchWithApi?searchTerm=U2" class="bare">http://localhost:8080/search/searchWithApi?searchTerm=U2</a></code>.</p>
+</div>
+<div class="paragraph">
+<p>You should see dummy data JSON returned.</p>
+</div>
+
+
+<h1 id="micronautHttpClient">4 Micronaut HTTP Client</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/micronautHttpClient.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Micronaut HTTP Client dependency is included in the grails <code>rest-api</code> profile and replaces the <code>datastore-rest-client</code>.
+As of Grails 4, it is the recommended HTTP Client for Grails. (The old HTTP client is still backward compatible in Grails 4).</p>
+</div>
+<div class="paragraph">
+<p>In our music app we will be using the Micronaut HTTP client in both service functionality and testing so we must change
+the qualifier in <code>build.gradle</code> to <code>compile</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    ...
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="lowLevelClient">4.1 Use the Low-Level Micronaut HTTP Client API</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/lowLevelClient.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will query the iTunes repository for the artist and expect to receive several pieces of information in the form of JSON, such
+as album name and a URL link to the album. In order to capture the return data easily, we can create POJOs with properties
+named exactly the same as the JSON structure.  The iTunes API will return <code>resultCount</code> with a list of albums that contain:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>artistName</code></p>
+</li>
+<li>
+<p><code>collectionName</code></p>
+</li>
+<li>
+<p><code>collectionViewUrl</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note the following POJOs are already created:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/SearchResult.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">SearchResult</span> {
+    <span class="type">int</span> resultCount
+    <span class="predefined-type">List</span>&lt;Album&gt; results = <span class="type">[]</span>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/Album.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">Album</span> {
+    <span class="predefined-type">String</span> artistName
+    <span class="predefined-type">String</span> collectionName
+    <span class="predefined-type">String</span> collectionViewUrl
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We need to configure Micronaut to accept the <code>text/javascript</code> MIME type from the iTunes API.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">---
+<span class="key">micronaut</span>:
+    <span class="key">codec</span>:
+        <span class="key">json</span>:
+            <span class="key">additionalTypes</span>:
+                - text/javascript</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the <code>ItunesSearchService</code>, we create the low level client and use the API to contact <code>iTunes.apple.com</code>.  Conceptually we are
+going to create a client with a <code>baseUrl</code>, then form a request object that sends a <code>GET</code> request with URL params.
+Subsequently, we will issue a blocking request and received a String response. <code>ObjectMapper</code> from Jackson Databind will
+map the incoming JSON to the POJOs. Add the following to <code>ItunesSearchService</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/ItunesSearchService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Album&gt; searchWithApi(<span class="predefined-type">String</span> searchTerm) {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">https://itunes.apple.com/</span><span class="delimiter">&quot;</span></span>
+        HttpClient client = HttpClient.create(baseUrl.toURL())
+        HttpRequest request = HttpRequest.GET(UriBuilder.of(<span class="string"><span class="delimiter">'</span><span class="content">/search</span><span class="delimiter">'</span></span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">limit</span><span class="delimiter">'</span></span>, <span class="integer">25</span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">media</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">music</span><span class="delimiter">'</span></span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">entity</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">album</span><span class="delimiter">'</span></span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">term</span><span class="delimiter">'</span></span>, searchTerm)
+                .build())
+        HttpResponse&lt;<span class="predefined-type">String</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">String</span>) <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">String</span> json = resp.body()
+        ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper()
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, <span class="predefined-constant">false</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">SearchResult</span> searchResult = objectMapper.readValue(json, <span class="predefined-type">SearchResult</span>) <i class="conum" data-value="3"></i><b>(3)</b>
+        searchResult.results
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Issue the request with a blocking call, and accept a String response.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Ignore extra properties.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Map the JSON into the POJOs.</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>Run <code>./gradlew bootRun</code> and hit <code><a href="http://localhost:8080/search/searchWithApi?searchTerm=U2" class="bare">http://localhost:8080/search/searchWithApi?searchTerm=U2</a></code> and see the results.</p>
+</div>
+
+
+<h2 id="declarativeClient">4.2 Use the Declarative Micronaut HTTP Client</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/declarativeClient.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The same functionality can be implemented with Micronaut&#8217;s Declarative HTTP Client.  The <code>@Client</code> annotation can be declared
+on an interface and at compilation time a client will be created for you.  The interface method can be declared with a <code>@Get</code> and return
+the data-binded POJO.  This simple and elegant approach cuts down on much of the code in the previous example.</p>
+</div>
+<div class="paragraph">
+<p>Create a declarative client:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/ItunesClient.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">io.micronaut.http.annotation.Get</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.annotation.Client</span>
+
+<span class="annotation">@Client</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://itunes.apple.com/</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="type">interface</span> ItunesClient {
+
+    <span class="annotation">@Get</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/search?limit=25&amp;media=music&amp;entity=album&amp;term={term}</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="predefined-type">SearchResult</span> search(<span class="predefined-type">String</span> term)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare with <code>@Client</code> and set the URL.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define a <code>@Get</code> request with parameters.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Inject the client into the service, and add the call to the interface method.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/ItunesSearchService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+    <span class="annotation">@Autowired</span>
+    ItunesClient itunesClient
+
+    <span class="predefined-type">List</span>&lt;Album&gt; searchWithDeclarativeClient(<span class="predefined-type">String</span> searchTerm) {
+        <span class="predefined-type">SearchResult</span> searchResult = itunesClient.search(searchTerm)
+        searchResult.results
+    }
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a controller method that routes to the service method:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/SearchController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+    def searchWithDeclarativeClient(<span class="predefined-type">String</span> searchTerm) {
+        <span class="keyword">if</span>(searchTerm) {
+            <span class="predefined-type">List</span>&lt;Album&gt; albums = itunesSearchService.searchWithDeclarativeClient(searchTerm)
+            respond([<span class="key">searchTerm</span>: searchTerm, <span class="key">albums</span>: albums])
+        }
+    }
+...</code></pre>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>Run <code>./gradlew bootRun</code> and hit <a href="http://localhost:8080/search/searchWithDeclarativeClient?searchTerm=U2" class="bare">http://localhost:8080/search/searchWithDeclarativeClient?searchTerm=U2</a> and see the results.</p>
+</div>
+
+
+<h1 id="test">5 Test with Micronaut HTTP Client</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Micronaut Client can also be used for testing purposes with Spock. In our music app let&#8217;s create a domain object to capture
+record labels. We will use the grails built-in <a href="https://docs.grails.org/latest/guide/REST.html#domainResources">REST API for domain classes</a>.</p>
+</div>
+<div class="paragraph">
+<p>Create a domain object and tag it with <code>@Resource</code> and a given URI. This will expose REST functionality for the object.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/RecordLabel.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.rest.Resource</span>
+
+<span class="annotation">@Resource</span>(uri=<span class="string"><span class="delimiter">'</span><span class="content">/recordlabels</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">RecordLabel</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the <code>BootStrap.groovy</code>, add some seed data for testing purposes:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/RecordLabelService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(RecordLabel)
+<span class="type">interface</span> RecordLabelService {
+    RecordLabel save(<span class="predefined-type">String</span> name)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/example/grails/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    RecordLabelService recordLabelService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        recordLabelService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Warner</span><span class="delimiter">&quot;</span></span>)
+        recordLabelService.save(<span class="string"><span class="delimiter">&quot;</span><span class="content">Sony</span><span class="delimiter">&quot;</span></span>)
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s create an integration test suite that first does a <code>GET</code> request to retrieve the existing list of RecordLabels. The test will
+also issue a <code>POST</code> to insert one more record label, with a map of data passed in. In both tests, we will verify that the response comes back correctly.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/example/grails/RecordLabelControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Rollback</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.type.Argument</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="annotation">@Rollback</span>
+<span class="type">class</span> <span class="class">RecordLabelControllerSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span>
+    HttpClient client
+
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() { <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test rest get record labels</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">record labels exist</span><span class="delimiter">&quot;</span></span>
+        HttpResponse&lt;<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;&gt; resp = client.toBlocking().exchange(HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/recordlabels</span><span class="delimiter">&quot;</span></span>), Argument.of(<span class="predefined-type">List</span>, <span class="predefined-type">Map</span>)) <i class="conum" data-value="2"></i><b>(2)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">client can retrieve them</span><span class="delimiter">&quot;</span></span>
+        resp.status == HttpStatus.OK  <i class="conum" data-value="3"></i><b>(3)</b>
+        resp.body().size() == <span class="integer">2</span>
+        resp.body()[<span class="integer">0</span>].name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Warner</span><span class="delimiter">&quot;</span></span>
+        resp.body()[<span class="integer">1</span>].name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Sony</span><span class="delimiter">&quot;</span></span>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test rest post record labels</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">a post is issued</span><span class="delimiter">&quot;</span></span>
+        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(HttpRequest.POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/recordlabels</span><span class="delimiter">&quot;</span></span>, [<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Universal</span><span class="delimiter">&quot;</span></span>]), <span class="predefined-type">Map</span>) <i class="conum" data-value="4"></i><b>(4)</b>
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">element is created</span><span class="delimiter">&quot;</span></span>
+        resp.status == HttpStatus.CREATED <i class="conum" data-value="5"></i><b>(5)</b>
+        resp.body().size() == <span class="integer">2</span>
+        resp.body().id
+        resp.body().name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Universal</span><span class="delimiter">&quot;</span></span>
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Initialize the client once for all tests. Give it a URL with <code>serverPort</code> which is the assigned port of the integration test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Issue a <code>GET</code>. The expected body type will be a List of Maps.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verify the status and body elements of the JSON.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Send a map of data to the <code>POST</code>, which will be interpreted as JSON.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Verify the status and returned data for the test.</td>
+</tr>
+</table>
+</div>
+<hr>
+<div class="paragraph">
+<p>Test the app with <code>./gradlew check</code>.</p>
+</div>
+
+
+<h1 id="runningTheApp">6 Running the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To run the application use the <code>./gradlew bootRun</code> command which will start the application on port 8080.</p>
+</div>
+
+
+<h1 id="helpWithGrails">7 Help with Grails</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-http.git/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
