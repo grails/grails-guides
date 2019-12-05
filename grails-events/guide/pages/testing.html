@@ -39,6 +39,9 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>3</strong><span>Running the Tests</span></a>
                         </div>
                         
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>4</strong><span>Help with Grails</span></a>
+                        </div>
+                        
                     </div>
                 </div>
             </li>
@@ -79,6 +82,34 @@ function addJsClass() {
 <p>Create a functional test which verifies that a <code>Notification</code> instance is created, due to the event triggering, when a <code>User</code> is created.</p>
 </div>
 <div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/SignUpPage.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">geb.Page</span>
+<span class="keyword">import</span> <span class="include">geb.module.TextInput</span>
+
+<span class="type">class</span> <span class="class">SignUpPage</span> <span class="directive">extends</span> Page {
+
+    <span class="directive">static</span> url = <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>
+
+    <span class="directive">static</span> content = {
+        firstNameInput { <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>).module(TextInput) }
+        lastNameInput { <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>).module(TextInput) }
+        emailInput { <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>).module(TextInput) }
+        submitButton {  <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>) }
+    }
+
+    <span class="type">void</span> submit(<span class="predefined-type">String</span> firstName, <span class="predefined-type">String</span> lastName, <span class="predefined-type">String</span> email) {
+        firstNameInput.text = firstName
+        lastNameInput.text = lastName
+        emailInput.text = email
+        submitButton.click()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
 <div class="title">src/integration-test/groovy/demo/RegisterControllerSpec.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
@@ -86,9 +117,7 @@ function addJsClass() {
 <span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
 <span class="keyword">import</span> <span class="include">grails.gorm.transactions.Rollback</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 
-<span class="annotation">@IgnoreIf</span>({ !<span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>) })
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">RegisterControllerSpec</span> <span class="directive">extends</span> GebSpec {
 
@@ -99,28 +128,21 @@ function addJsClass() {
     <span class="annotation">@Rollback</span>
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">If you signup a User, an Event triggers which causes a Notification to be saved</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">you signup with a non existing user</span><span class="delimiter">'</span></span>
-        go <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>).click()
+        SignUpPage page = to SignUpPage
+        page.submit(<span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the user gets created and a notification is saved due to the event being triggered</span><span class="delimiter">'</span></span>
         userService.count() == old(userService.count()) + <span class="integer">1</span>
         notificationService.count() == old(notificationService.count()) + <span class="integer">1</span>
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">you try to signup with a user which is already in the database</span><span class="delimiter">'</span></span>
-        go <span class="string"><span class="delimiter">'</span><span class="content">/signup</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">firstName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">lastName</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">email</span><span class="delimiter">&quot;</span></span>) &lt;&lt; <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>
-        <span class="error">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">#submit</span><span class="delimiter">'</span></span>).click()
+        page = to SignUpPage
+        page.submit(<span class="string"><span class="delimiter">'</span><span class="content">Sergio</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">del Amo</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>)
 
         <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">The user is not saved and no event gets triggered</span><span class="delimiter">'</span></span>
         noExceptionThrown()
         userService.count() == old(userService.count())
         notificationService.count() == old(notificationService.count())
-
 
         <span class="key">cleanup</span>:
         userService.deleteByEmail(<span class="string"><span class="delimiter">'</span><span class="content">delamos@email.com</span><span class="delimiter">'</span></span>)
