@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4.1 TVMLKit JS Utils</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheTvOSApp.html"><strong>3</strong><span>Writing the TVML Client</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>4</strong><span>Writing the TVML Grails Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>6</strong><span>Do you need help with Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheTvOSApp.html">&lt;&lt; <strong>3</strong><span>Writing the TVML Client</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="tvmlUtils">4.1 TVMLKit JS Utils</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-tvmlapp/edit/grails3/src/main/docs/guide/tvmlUtils.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="https://developer.apple.com/reference/tvmljs">TVMLKit JS</a></p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>TVMLKit JS is a JavaScript API framework specifically designed to work with Apple TV and TVML. TVMLKit JS incorporates the basic functionality found in JavaScript along with specialized APIs designed for Apple TV. Using TVMLKit JS, you are able to load and display TVML templates, play media streams, load customized content, and control the flow of your app. For more information, see TVJS Framework Reference.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Add a JavaScript file to our project. It defines a series of methods nearly identical as those described in the section Playing Media of
+<a href="https://developer.apple.com/library/prerelease/content/documentation/TVMLKitJS/Conceptual/TVMLProgrammingGuide/PlayingVideo.html">TVML Programming Guide</a>.</p>
+</div>
+<div class="paragraph">
+<p>These methods allow to push pages into the navigation stack, fetch documents and play media.</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/assets/javascripts/tvmlkit.js</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">function</span> <span class="function">loadingTemplate</span>() {
+    <span class="keyword">var</span> template = <span class="string"><span class="delimiter">'</span><span class="content">&lt;document&gt;&lt;loadingTemplate&gt;&lt;activityIndicator&gt;&lt;text&gt;Loading&lt;/text&gt;&lt;/activityIndicator&gt;&lt;/loadingTemplate&gt;&lt;/document&gt;</span><span class="delimiter">'</span></span>;
+    <span class="keyword">var</span> templateParser = <span class="keyword">new</span> DOMParser();
+    <span class="keyword">var</span> parsedTemplate = templateParser.parseFromString(template, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/xml</span><span class="delimiter">&quot;</span></span>);
+    navigationDocument.pushDocument(parsedTemplate);
+}
+
+<span class="keyword">function</span> <span class="function">getDocument</span>(extension) {
+    <span class="keyword">var</span> templateXHR = <span class="keyword">new</span> XMLHttpRequest();
+    <span class="keyword">var</span> url = baseURL + extension;
+
+    loadingTemplate();
+    templateXHR.responseType = <span class="string"><span class="delimiter">&quot;</span><span class="content">document</span><span class="delimiter">&quot;</span></span>;
+    templateXHR.addEventListener(<span class="string"><span class="delimiter">&quot;</span><span class="content">load</span><span class="delimiter">&quot;</span></span>, <span class="keyword">function</span>() {pushPage(templateXHR.responseXML);}, <span class="predefined-constant">false</span>);
+    templateXHR.open(<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>, url, <span class="predefined-constant">true</span>);
+    templateXHR.send();
+}
+
+<span class="keyword">function</span> <span class="function">pushPage</span>(document) {
+    <span class="keyword">var</span> currentDoc = getActiveDocument();
+    <span class="keyword">if</span> (currentDoc.getElementsByTagName(<span class="string"><span class="delimiter">&quot;</span><span class="content">loadingTemplate</span><span class="delimiter">&quot;</span></span>).item(<span class="integer">0</span>) == <span class="predefined-constant">null</span>) {
+        navigationDocument.pushDocument(document);
+    } <span class="keyword">else</span> {
+        navigationDocument.replaceDocument(document, currentDoc);
+    }
+}
+
+<span class="keyword">function</span> <span class="function">playMedia</span>(videourl, mediaType) {
+    <span class="keyword">var</span> singleVideo = <span class="keyword">new</span> MediaItem(mediaType, videourl);
+    <span class="keyword">var</span> videoList = <span class="keyword">new</span> Playlist();
+    videoList.push(singleVideo);
+    <span class="keyword">var</span> myPlayer = <span class="keyword">new</span> Player();
+    myPlayer.playlist = videoList;
+    myPlayer.play();
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/writingTheTvOSApp.html">&lt;&lt; <strong>3</strong><span>Writing the TVML Client</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>5</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-tvmlapp"><img src="https://travis-ci.org/grails-guides/grails-tvmlapp.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-tvmlapp">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-tvmlapp.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-tvmlapp.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-tvmlapp'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-tvmlapp.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-tvmlapp/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing.
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
