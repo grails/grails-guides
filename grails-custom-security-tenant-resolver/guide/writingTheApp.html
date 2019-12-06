@@ -169,9 +169,7 @@ This guide uses Multi-Tenancy DISCRIMINATOR mode. To learn more, read <a href="h
 
 <span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.CurrentTenant</span>
 <span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
-<span class="annotation">@CompileStatic</span>
 <span class="annotation">@Service</span>(Plan) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="annotation">@CurrentTenant</span> <i class="conum" data-value="2"></i><b>(2)</b>
 <span class="type">interface</span> PlanDataService {
@@ -405,6 +403,11 @@ beans = {
 <span class="key">grails</span>:
     <span class="key">plugin</span>:
         <span class="key">springsecurity</span>:
+            <span class="key">rest</span>:
+                <span class="key">token</span>:
+                    <span class="key">storage</span>:
+                        <span class="key">jwt</span>:
+                            <span class="key">secret</span>: <span class="string"><span class="content">pleaseChangeThisSecretForANewOne</span></span>
             <span class="key">securityConfigType</span>: <span class="string"><span class="content">InterceptUrlMap</span></span>
             <span class="key">userLookup</span>:
                 <span class="key">userDomainClassName</span>: <span class="string"><span class="content">demo.User</span></span>
@@ -452,9 +455,7 @@ beans = {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 
-<span class="annotation">@CompileStatic</span>
 <span class="annotation">@Service</span>(<span class="predefined-type">Role</span>)
 <span class="type">interface</span> RoleDataService {
     <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
@@ -863,6 +864,10 @@ create a custom resolver by the current logged in user.</p>
     <span class="annotation">@Lazy</span>
     SpringSecurityService springSecurityService
 
+    <span class="annotation">@Autowired</span>
+    <span class="annotation">@Lazy</span>
+    UserDataService userDataService
+
     <span class="annotation">@Override</span>
     <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
         <span class="predefined-type">String</span> username = loggedUsername()
@@ -884,9 +889,7 @@ create a custom resolver by the current logged in user.</p>
 
     <span class="annotation">@Override</span>
     <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
-        <span class="keyword">new</span> DetachedCriteria(User)
-                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
-                .list()
+        userDataService.findUserUsername() <span class="keyword">as</span> <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt;
     }
 }</code></pre>
 </div>
@@ -1044,8 +1047,13 @@ beans = {
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.Tenants</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 <span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 
@@ -1058,19 +1066,20 @@ beans = {
     UserService userService
     RoleDataService roleDataService
 
-    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+    <span class="annotation">@Shared</span>
+    HttpClient client
+
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
+    }
 
     <span class="predefined-type">String</span> accessToken(<span class="predefined-type">String</span> u, <span class="predefined-type">String</span> p) {
-        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                username = u
-                password = p
-            }
-        }
-        <span class="keyword">if</span> ( resp.status == <span class="integer">200</span> ) {
-            <span class="keyword">return</span> resp.json.access_token
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">&quot;</span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>, [<span class="key">username</span>: u, <span class="key">password</span>: p])
+        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
+        <span class="keyword">if</span> ( resp.status == HttpStatus.OK) {
+            <span class="keyword">return</span> resp.body().access_token
         }
         <span class="predefined-constant">null</span>
     }
@@ -1093,14 +1102,12 @@ beans = {
         gruAccessToken
 
         <span class="key">when</span>:
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>gruAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-        }
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>).bearerAuth(gruAccessToken)
+        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
-        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
+        resp.status == HttpStatus.OK
+        resp.body().toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the vector</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> vectorAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
@@ -1109,14 +1116,12 @@ beans = {
         vectorAccessToken
 
         <span class="key">when</span>:
-        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>vectorAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-        }
+        request = HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>).bearerAuth(vectorAccessToken)
+        resp = client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
-        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
+        resp.status == HttpStatus.OK
+        resp.body().toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">cleanup</span>:
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
