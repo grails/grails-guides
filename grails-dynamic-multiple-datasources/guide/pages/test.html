@@ -91,10 +91,14 @@ that a new connection source is created when a new <code>User</code> is inserted
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
 <span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.Tenants</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
 <span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 <span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 
@@ -109,7 +113,13 @@ that a new connection source is created when a new <code>User</code> is inserted
     <span class="annotation">@Autowired</span>
     HibernateDatastore hibernateDatastore
 
-    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+    <span class="annotation">@Shared</span> HttpClient client
+
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
+    }
 
     <span class="predefined-type">String</span> accessToken(<span class="predefined-type">String</span> u, <span class="predefined-type">String</span> p) {
         <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
@@ -153,14 +163,12 @@ that a new connection source is created when a new <code>User</code> is inserted
         gruAccessToken
 
         <span class="key">when</span>:
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>gruAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-        }
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/plan</span><span class="delimiter">'</span></span>).bearerAuth(gruAccessToken)
+        HttpResponse&lt;<span class="predefined-type">String</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">String</span>)
 
         <span class="key">then</span>:
         resp.status == <span class="integer">200</span>
-        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
+        resp.body() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the vector</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> vectorAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
@@ -169,14 +177,13 @@ that a new connection source is created when a new <code>User</code> is inserted
         vectorAccessToken
 
         <span class="key">when</span>:
-        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>vectorAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-        }
+        request = HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/plan</span><span class="delimiter">'</span></span>).bearerAuth(vectorAccessToken)
+        resp = client.toBlocking().exchange(request, <span class="predefined-type">String</span>)
+
 
         <span class="key">then</span>:
         resp.status == <span class="integer">200</span>
-        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
+        resp.body() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">cleanup</span>:
         Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) {
