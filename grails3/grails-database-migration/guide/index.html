@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Grails Database Migration | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Grails Database Migration. In this guide we will learn how to use the Grails Database Migration Plugin' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-database-migration"><img src="https://travis-ci.org/grails-guides/grails-database-migration.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-database-migration&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-database-migration.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-database-migration.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-database-migration.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-database-migration/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheApp"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#installDatabase"><strong>3.1</strong><span>Install Database</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#domainClassAndController"><strong>3.2</strong><span>Domain Class</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#installPlugin"><strong>3.3</strong><span>Install Database Migration Plugin</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#databaseMigrationInAction"><strong>3.4</strong><span>Database Migration In Action</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#baseline"><strong>3.5</strong><span>Baseline for Database Migration</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#makeColumnNullable"><strong>3.6</strong><span>Make Column Nullable</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#addAttributes"><strong>3.7</strong><span>Add Attributes</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#redesignTables"><strong>3.8</strong><span>Redesign Tables</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#summary"><strong>4</strong><span>Summary</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>5</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Grails Database Migration</h1>
+        <p>In this guide we will learn how to use the Grails Database Migration Plugin</p>
+        <p><strong>Authors:</strong> Nirav Assar, Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.1</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide you are going to learn how to use the Grails Database Migration Plugin. We will create an application with
+simple domain classes and extend them to achieve the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Baseline the database for database migration</p>
+</li>
+<li>
+<p>Change a column to nullable</p>
+</li>
+<li>
+<p>Add columns to an existing table</p>
+</li>
+<li>
+<p>Redesign the table and migrate the existing data</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-database-migration/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-database-migration.git" class="bare">https://github.com/grails-guides/grails-database-migration.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-database-migration/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-database-migration/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We are going to write a simple application involving a class <code>Person</code>. The <code>Person</code> class will initially have its own
+attributes that also contain information for an address. As we evolve the domain we will split attributes into its own
+<code>Address</code> domain class. We will use Grails Database Migration Plugin to manage these transitions.</p>
+</div>
+
+
+<h2 id="installDatabase">3.1 Install Database</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/installDatabase.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect2">
+<h3 id="_create_a_mysql_database">Create a MySQL Database</h3>
+<div class="paragraph">
+<p>Let&#8217;s setup a physical database with MySql, instead of relying on the default H2 in memory database.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Go to <a href="http://www.mysql.com/downloads">MySql</a> to install a database</p>
+</li>
+<li>
+<p>Create your admin access with id of <code>root</code> and password <code>root</code></p>
+</li>
+<li>
+<p>Open the MySql Command Line Client</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Run these commands in the command line client in order to create and use the database. The <code>show tables</code> command should
+return an empty set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setup_grails_to_use_a_mysql_database">Setup Grails to use a MySQL database</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; create database dbmigration character set utf8 collate utf8_general_ci;
+&gt; use dbmigration;
+&gt; show databases;
+&gt; show tables;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we need to configure the Grails application to point to the new <code>dbmigration</code> database. We will be editing
+the <code>build.gradle</code> and <code>application.yml</code> files.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+...
+    runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:5.1.36</span><span class="delimiter">'</span></span>
+...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">jmxExport</span>: <span class="string"><span class="content">true</span></span>
+    <span class="key">driverClassName</span>: <span class="string"><span class="content">com.mysql.jdbc.Driver</span></span>
+    <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.MySQL5InnoDBDialect</span></span>
+    <span class="key">username</span>: <span class="string"><span class="content">root</span></span>
+    <span class="key">password</span>: <span class="string"><span class="content">root</span></span>
+<span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">dataSource</span>:
+            <span class="key">dbCreate</span>: <span class="string"><span class="content">none </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="key">url</span>: <span class="string"><span class="content">jdbc:mysql://localhost:3306/dbmigration?useUnicode=yes&amp;characterEncoding=UTF-8</span></span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>dbCreate</code> defines whether we want to auto-generate the database from the domain model. We set it to <code>none</code> since we are going to manage the
+management of the database schema with Grails Database Migration Plugin.</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+<h2 id="domainClassAndController">3.2 Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/domainClassAndController.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a domain class in the appropriate package:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="installPlugin">3.3 Install Database Migration Plugin</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/installPlugin.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To install the <a href="http://grails-plugins.github.io/grails-database-migration/3.0.x/index.html">Grails Database Migration Plugin</a>
+we need to add to <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">buildscript {
+   dependencies {
+      ...
+        classpath <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:database-migration:3.0.3</span><span class="delimiter">'</span></span>
+   }
+}
+
+dependencies {
+    ...
+    compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:database-migration:3.0.3</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">'</span><span class="content">org.liquibase:liquibase-core:3.5.3</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Tell Gradle about the migrations folder location too:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">sourceSets {
+    main {
+        resources {
+            srcDir <span class="string"><span class="delimiter">'</span><span class="content">grails-app/migrations</span><span class="delimiter">'</span></span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Checkout the <a href="http://grails-plugins.github.io/grails-database-migration/latest/index.html">Grails Database Migration Plugin</a> documentation.</p>
+</div>
+
+
+<h2 id="databaseMigrationInAction">3.4 Database Migration In Action</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/databaseMigrationInAction.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Database migrations are schema changes to the database while preserving the existing data.
+Without a tool to manage database migrations, teams may rely on manual sql, error prone communication processes, and
+costly risk management to implement solutions. The database migration plugin lets you manage structural changes made to the database.
+It automates incremental changes, makes them repeatable, visible and trackable. You can commit these changes in to source control.</p>
+</div>
+<div class="paragraph">
+<p>The general workflow involved in using the plugin is as follow:</p>
+</div>
+<div class="paragraph">
+<p><strong>Baseline</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Define the current state of the domain</p>
+</li>
+<li>
+<p>Create the database from the changelog using liquibase</p>
+</li>
+<li>
+<p>Set configuration options in the application to use the database migration plugin</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Development Workflow</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make changes to domain objects</p>
+</li>
+<li>
+<p>Use the plugin to generate changelog additions for the database</p>
+</li>
+<li>
+<p>Update the database using the plugin</p>
+</li>
+</ol>
+</div>
+
+
+<h2 id="baseline">3.5 Baseline for Database Migration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/baseline.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Instead of using GORM schema auto-generation, the database schema is going to changed with <a href="http://www.liquibase.org">Liquibase</a>; the database migration tool which the Grails Database Migration Plugin uses.</p>
+</div>
+<div class="paragraph">
+<p>We want to run migrations on startup and our migrations are going to be located in <code>changelog.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+grails:
+    <span class="key">plugin</span>:
+        <span class="key">databasemigration</span>:
+            <span class="key">updateOnStart</span>: <span class="predefined-constant">true</span>
+            <span class="key">updateOnStartFileName</span>: changelog.groovy
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The plugin comes with several commands, one of those commands, <code>dbm-generate-gorm-changelog</code> generates an initial changelog with a Groovy DSL file from current GORM classes</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails dbm-generate-gorm-changelog changelog.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will generate a changelog such as:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/changelog.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497549057046-1</span><span class="delimiter">&quot;</span></span>) {
+        createTable(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">autoIncrement</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">primaryKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">primaryKeyName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">personPK</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">age</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">INT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may see the below INFO log statement. It is a non-error:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>INFO 7/24/17 11:29 AM: liquibase: Can not use class org.grails.plugins.databasemigration.liquibase.GormDatabase as a
+Liquibase service because it does not have a no-argument constructor</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Move the initial changelog to its own file and reference it from the main changelog file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cp grails-app/migrations/changelog.groovy grails-app/migrations/create-person-table.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace the content of <em>changelog.groovy</em> with:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/changelog.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">create-person-table.groovy</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Apply the migration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails dbm-update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The database tables are created:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql">&gt; <span class="class">show</span> <span class="type">tables</span>;</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tables in dbmigration</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DATABASECHANGELOG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DATABASECHANGELOGLOCK</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">person</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The tables <code>DATABASECHANGELOG</code>, <code>DATABASECHANGELOGLOCK</code> are used by the Database Migration Plugin to keep track of database migrations.</p>
+</div>
+<div class="paragraph">
+<p>The <code>person</code> table correspond to the <code>Person</code> Domain Class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql">&gt; describe person;</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">auto_increment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">age</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int(11)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2 id="makeColumnNullable">3.6 Make Column Nullable</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/makeColumnNullable.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this section we will do a simple change to make a column nullable. The <code>age</code> column currently requires a value. We
+make it nullable, and proceed to migrate the database to reflect that.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/migration1.jpg" alt="400" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>In the <code>Person</code> domain object, make the age attribute nullable:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+
+    <span class="directive">static</span> constraints = {
+        age <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that making the change in the domain object does not affect the database. We must generate additions to the <code>changelog.groovy</code>
+for the change to take affect. Run the next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails dbm-gorm-diff change-age-constraint-to-nullable.groovy --add</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A new include statement has been added to <code>changelog.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/changelog.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">create-person-table.groovy</span><span class="delimiter">'</span></span>
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">change-age-constraint-to-nullable.groovy</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An individual changeset is created too:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/change-age-constraint-to-nullable.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497551594095-1</span><span class="delimiter">&quot;</span></span>) {
+        dropNotNullConstraint(<span class="key">columnDataType</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">int</span><span class="delimiter">&quot;</span></span>, <span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">age</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>if we run the migration</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails dbm-update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The column <code>age</code> in the <code>person</code> table is nullable as expressed in the constraint:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">auto_increment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">age</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int(11)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2 id="addAttributes">3.7 Add Attributes</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/addAttributes.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We will add some attributes to the <code>Person</code> class for an address to demonstrate our second migration.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/migration2.jpg" alt="400" width="400">
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+    <span class="predefined-type">String</span> streetName
+    <span class="predefined-type">String</span> city
+    <span class="predefined-type">String</span> zipCode
+
+    <span class="directive">static</span> constraints = {
+        age <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        streetName <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        city <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        zipCode <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we generate a changeset for these changes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails dbm-gorm-diff add-address-fields-to-person.groovy --add</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The command adds a new include statement to <code>changelog.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/changelog.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">create-person-table.groovy</span><span class="delimiter">'</span></span>
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">change-age-constraint-to-nullable.groovy</span><span class="delimiter">'</span></span>
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">add-address-fields-to-person.groovy</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An individual changeset is created too:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/add-address-fields-to-person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497552798178-1</span><span class="delimiter">&quot;</span></span>) {
+        addColumn(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">varchar(255)</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497552798178-2</span><span class="delimiter">&quot;</span></span>) {
+        addColumn(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">street_name</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">varchar(255)</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497552798178-3</span><span class="delimiter">&quot;</span></span>) {
+        addColumn(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">zip_code</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">varchar(255)</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>if we run the migration</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails dbm-update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>New columns <code>streetName</code>, <code>city</code>, <code>zipCode</code> are created in the <code>person</code> table;</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="error">$</span> describe person</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">auto_increment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">age</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int(11)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">city</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">street_name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zip_code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+
+<h2 id="redesignTables">3.8 Redesign Tables</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/redesignTables.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s say we would like to redesign <code>Person</code> to split the address fields into its own domain object.  The idea behind this
+would be that now a <code>Person</code> can have many <code>Address</code> 's. When doing this type of domain object redesign we have to consider a few aspects:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The database table schema definition will change</p>
+</li>
+<li>
+<p>Existing data in the table will have to be split amongst the new database tables created</p>
+</li>
+<li>
+<p>We can write custom sql in the changelog files to transfer existing data</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The image below depicts the redesign:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../img/migration3.jpg" alt="400" width="400">
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Person</code> and <code>Address</code> domain objects can be coded as below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Person.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Person</span> {
+
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> age
+    <span class="directive">static</span> hasMany = [<span class="key">addresses</span>: Address]
+
+    <span class="directive">static</span> constraints = {
+        age <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+
+
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Address.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="type">class</span> <span class="class">Address</span> {
+    Person person
+    <span class="predefined-type">String</span> streetName
+    <span class="predefined-type">String</span> city
+    <span class="predefined-type">String</span> zipCode
+
+    <span class="directive">static</span> belongsTo = [<span class="key">person</span>: Person]
+
+    <span class="directive">static</span> constraints = {
+        streetName <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        city <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+        zipCode <span class="key">nullable</span>: <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Run the database migration command that will compare the new domain objects to the existing database and generate
+the liquibase declarations to migrate the schema:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&gt; grails dbm-gorm-diff create-address-table.groovy –add</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The command adds a new include statement to <code>changelog.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/changelog.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">databaseChangeLog = {
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">create-person-table.groovy</span><span class="delimiter">'</span></span>
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">change-age-constraint-to-nullable.groovy</span><span class="delimiter">'</span></span>
+    include <span class="key">file</span>: <span class="string"><span class="delimiter">'</span><span class="content">add-address-fields-to-person.groovy</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An individual changeset is created too:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/create-address-table.groovy.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-1</span><span class="delimiter">&quot;</span></span>) {
+        createTable(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">address</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">autoIncrement</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">primaryKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">primaryKeyName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">addressPK</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person_id</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">street_name</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">zip_code</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-2</span><span class="delimiter">&quot;</span></span>) {
+        addForeignKeyConstraint(<span class="key">baseColumnNames</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person_id</span><span class="delimiter">&quot;</span></span>, <span class="key">baseTableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">address</span><span class="delimiter">&quot;</span></span>, <span class="key">constraintName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">FK81ihijcn1kdfwffke0c0sjqeb</span><span class="delimiter">&quot;</span></span>, <span class="key">deferrable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>, <span class="key">initiallyDeferred</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>, <span class="key">referencedColumnNames</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>, <span class="key">referencedTableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-3</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-4</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">street_name</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-5</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">zip_code</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We are going to add manually a changeset to move the existing data from the old tables to the new.</p>
+</div>
+<div class="paragraph">
+<p>The final version of <code>create-address-table.groovy.groovy</code> looks like:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/migrations/create-address-table.groovy.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-1</span><span class="delimiter">&quot;</span></span>) {
+        createTable(<span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">address</span><span class="delimiter">&quot;</span></span>) {
+            column(<span class="key">autoIncrement</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">primaryKey</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">true</span><span class="delimiter">&quot;</span></span>, <span class="key">primaryKeyName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">addressPK</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">version</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person_id</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">BIGINT</span><span class="delimiter">&quot;</span></span>) {
+                constraints(<span class="key">nullable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>)
+            }
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">street_name</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+
+            column(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">zip_code</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">VARCHAR(255)</span><span class="delimiter">&quot;</span></span>)
+        }
+    }
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-2</span><span class="delimiter">&quot;</span></span>) {
+        addForeignKeyConstraint(<span class="key">baseColumnNames</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person_id</span><span class="delimiter">&quot;</span></span>, <span class="key">baseTableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">address</span><span class="delimiter">&quot;</span></span>, <span class="key">constraintName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">FK81ihijcn1kdfwffke0c0sjqeb</span><span class="delimiter">&quot;</span></span>, <span class="key">deferrable</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>, <span class="key">initiallyDeferred</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">false</span><span class="delimiter">&quot;</span></span>, <span class="key">referencedColumnNames</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>, <span class="key">referencedTableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+    <i class="conum" data-value="1"></i><b>(1)</b>
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">a488338 (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">migrate-person-data</span><span class="delimiter">&quot;</span></span>) {
+        sql(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">insert into address (version, person_id, street_name, city, zip_code)
+              select 0, id, street_name, city, zip_code from person</span><span class="delimiter">&quot;&quot;&quot;</span></span>)
+    }
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-3</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">city</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-4</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">street_name</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    changeSet(<span class="key">author</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Nirav Assar (generated)</span><span class="delimiter">&quot;</span></span>, <span class="key">id</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">1497553930799-5</span><span class="delimiter">&quot;</span></span>) {
+        dropColumn(<span class="key">columnName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">zip_code</span><span class="delimiter">&quot;</span></span>, <span class="key">tableName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">person</span><span class="delimiter">&quot;</span></span>)
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The changeset we added, executes after the creation of the <code>Address</code> table but before the
+dropping of columns from the <code>Person</code> table.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Run the migration</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails dbm-update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The person table looks like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="error">$</span> describe person</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">auto_increment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">age</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int(11)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The address table looks like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="error">$</span> describe address</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Null</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">auto_increment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">person_id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bigint(20)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MUL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">city</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">street_name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">zip_code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">YES</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;null&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+
+<h1 id="summary">4 Summary</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/summary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To summarize this guide, we learned how use the database migration plugin to change column names, add columns, and potentially
+redesign tables while migration existing data. It is important to note that database migration consists of a typical workflow:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make changes to Domain objects.</p>
+</li>
+<li>
+<p>Generate the changelog which will identify database structure differences between the existing database and the edited
+domain objects.</p>
+</li>
+<li>
+<p>Consider any existing data to migrate.</p>
+</li>
+<li>
+<p>Execute the database migration scripts.</p>
+</li>
+</ol>
+</div>
+
+
+<h1 id="helpWithGrails">5 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-database-migration/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
