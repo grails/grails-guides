@@ -153,6 +153,24 @@ mapped onto an underlying database table. In Grails a domain is a class that liv
 </div>
 </div>
 <div class="paragraph">
+<p>Create a GORM Data Service:</p>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/com/ociweb/quickcasts/QuickcastService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> com.ociweb.quickcasts
+
+<span class="reserved">import</span> grails.gorm.services.Service
+
+<span class="error">@</span>Service(Quickcast)
+<span class="reserved">interface</span> QuickcastService {
+    List&lt;Quickcast&gt; findAll()
+    Quickcast findById(Long id)
+    Quickcast save(Quickcast quickcast)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>We then load some test data in <code>BootStrap.groovy</code>.</p>
 </div>
 <div class="listingblock">
@@ -160,11 +178,16 @@ mapped onto an underlying database table. In Grails a domain is a class that liv
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="javascript"><span class="reserved">package</span> com.ociweb.quickcasts
 
+<span class="reserved">import</span> groovy.transform.CompileStatic
+
+<span class="error">@</span>CompileStatic
 <span class="reserved">class</span> BootStrap {
+
+    QuickcastService quickcastService
 
     def init = { servletContext -&gt;
 
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Interceptors - Grails 3</span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Interceptors - Grails 3</span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#1 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">durationMinutes</span>: <span class="integer">17</span>,
                 <span class="key">durationSeconds</span>: <span class="octal">01</span>,
@@ -173,11 +196,11 @@ mapped onto an underlying database table. In Grails a domain is a class that liv
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_interceptor.png</span><span class="delimiter">'</span></span>,
                 <span class="comment">// end::dataServerLink[]</span>
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_1_interceptors.mp4</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>],
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;,
                 <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">This Quickcast assumes only basic familiarity with Groovy (which is pretty darn expressive anyway) and the MVC concept (which you already know). Also serves as an excellent introduction to the interceptor pattern in any language, because Grails</span><span class="char">\'</span><span class="content"> behind-the-scenes legwork lets you focus on the logic of the pattern.</span><span class="delimiter">'</span></span>
-        ).save()
+        ))
 
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">JSON Views - Grails 3 </span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">JSON Views - Grails 3 </span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#2 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_jsonviews.png</span><span class="delimiter">'</span></span>,
@@ -193,9 +216,9 @@ Brown uses music examples, including Space Oddity by David Bowie (RIP), and Clos
 
 This Quickcast assumes basic knowledge of Grails, JSON, and REST APIs. Check out Brown’s neat intro to JSON views!
 </span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;))
 
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Multi-Project Builds - Grails 3</span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Multi-Project Builds - Grails 3</span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#3 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_multiprojectbuilds.png</span><span class="delimiter">'</span></span>,
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
@@ -205,9 +228,9 @@ This Quickcast assumes basic knowledge of Grails, JSON, and REST APIs. Check out
                 <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
 In this Quickcast, Graeme Rocher, Head of Grails Development at OCI, walks you through multi-project builds in Grails. Grails does a few handy things with multi-project builds and plugins, not the least of which being that Grails compiles your plugins first and puts the class and resources of those plugins directly in the classpath. This lets you make changes to your plugins and instantly see those changes in your build.
 </span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Graeme Rocher</span><span class="delimiter">'</span></span>]).save()
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Graeme Rocher</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;))
 
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Angular Scaffolding - Grails 3</span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Angular Scaffolding - Grails 3</span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#4 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_angularscaffolding.png</span><span class="delimiter">'</span></span>,
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
@@ -217,9 +240,9 @@ In this Quickcast, Graeme Rocher, Head of Grails Development at OCI, walks you t
                 <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="content">
 In this Quickcast, OCI Engineer James Kleeh walks you through using the Angular Scaffolding for Grails to build a fully functional web app, using a simple blog format for demonstration. The tutorial explains how to have Grails set up a REST endpoint and all the Angular modules needed to get the web app running.
 </span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">James Kleeh</span><span class="delimiter">'</span></span>]).save()
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">James Kleeh</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;))
 
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Retrieving Runtime Config Values - Grails 3</span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Retrieving Runtime Config Values - Grails 3</span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#5 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_retrievingruntimeconfigvalues.png</span><span class="delimiter">'</span></span>,
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
@@ -233,10 +256,9 @@ Grails leverages the “Convention Over Configuration” design paradigm, which 
 
 While Grails applications often involve considerably less configuration than similar applications built with other frameworks, some configuration may still be necessary. In this short video, Jeff shares a number of mechanisms that make it easy for Grails developers to define configuration values, and to gain access to those configuration values at runtime.
 </span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;))
 
-
-        <span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Developing Grails Application with IntelliJ IDEA - Grails 3</span><span class="delimiter">'</span></span>,
+        quickcastService.save(<span class="keyword">new</span> Quickcast(title: <span class="string"><span class="delimiter">'</span><span class="content">Developing Grails Application with IntelliJ IDEA - Grails 3</span><span class="delimiter">'</span></span>,
                 <span class="key">subtitle</span>: <span class="string"><span class="delimiter">'</span><span class="content">#6 - Grails Quickcast from OCI</span><span class="delimiter">'</span></span>,
                 <span class="key">heroImg</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/quickcast_developinggrailsappswithintellij.png</span><span class="delimiter">'</span></span>,
                 <span class="key">videoUrl</span>: <span class="string"><span class="delimiter">'</span><span class="content">http://localhost:8888/grails_quickcast_2_jsonviews.mp4</span><span class="delimiter">'</span></span>,
@@ -248,9 +270,7 @@ In the sixth Grails QuickCast, Grails co-founder, Jeff Scott Brown, introduces s
 
 Grails 3 is a high productivity framework for building web applications for the JVM. IntelliJ IDEA is a high productivity Integrated Development Environment (IDE) for building a variety of types of applications. IDEA has always had really great support for building Grails applications and, in particular, has the very best support of any IDE for doing development with Grails 3.
 </span><span class="delimiter">'</span></span><span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>,
-                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>]).save()
-
-
+                <span class="key">authors</span>: [<span class="string"><span class="delimiter">'</span><span class="content">Jeff Scott Brown</span><span class="delimiter">'</span></span>] as Set&lt;String&gt;))
     }
     def destroy = {
     }

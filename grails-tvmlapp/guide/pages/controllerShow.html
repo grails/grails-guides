@@ -104,15 +104,27 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
 
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">QuickcastController</span> {
+    QuickcastService quickcastService
     <span class="directive">static</span> responseFormats = [<span class="string"><span class="delimiter">'</span><span class="content">xml</span><span class="delimiter">'</span></span>]
 
-    <span class="keyword">def</span> relatedQuickcastsService
-    <span class="keyword">def</span> <span class="function">show</span>() {
-        <span class="keyword">def</span> quickcast = Quickcast.get(params.id)
-        <span class="keyword">def</span> relatedQuickcasts = relatedQuickcastsService.findAllRelatedQuickcasts(quickcast)
-        [<span class="key">quickcast</span>: quickcast, <span class="key">relatedQuickcasts</span>: relatedQuickcasts]
-    }</code></pre>
+    RelatedQuickcastsService relatedQuickcastsService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">quickcasts</span>: quickcastService.findAll()]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">Long</span> id) {
+        Quickcast quickcast = quickcastService.findById(id)
+        [
+                <span class="key">quickcast</span>: quickcast,
+                <span class="key">relatedQuickcasts</span>: relatedQuickcastsService.findAllRelatedQuickcasts(quickcast)
+        ]
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -124,11 +136,9 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">/grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="head"><span class="head">---</span></span>
-<span class="key">ociweb</span>:
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">ociweb</span>:
     <span class="key">quickcasts</span>:
-        <span class="key">numberOfRelatedQuickcasts</span>: <span class="string"><span class="content">3</span></span>
-<span class="head"><span class="head">---</span></span></code></pre>
+        <span class="key">numberOfRelatedQuickcasts</span>: <span class="string"><span class="content">3</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -141,9 +151,8 @@ function addJsClass() {
 
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
 
-<span class="annotation">@Transactional</span>
 <span class="type">class</span> <span class="class">RelatedQuickcastsService</span> <span class="directive">implements</span> GrailsConfigurationAware {
 
     <span class="type">int</span> numberOfRelatedQuickcasts
@@ -153,6 +162,7 @@ function addJsClass() {
         numberOfRelatedQuickcasts = co.getRequiredProperty(<span class="string"><span class="delimiter">'</span><span class="content">ociweb.quickcasts.numberOfRelatedQuickcasts</span><span class="delimiter">'</span></span>, <span class="predefined-type">Integer</span>)
     }
 
+    <span class="annotation">@ReadOnly</span>
     <span class="predefined-type">List</span>&lt;Quickcast&gt; findAllRelatedQuickcasts(Quickcast quickcast) {
         <span class="keyword">def</span> criteria = Quickcast.createCriteria()
         criteria.list {
@@ -232,18 +242,25 @@ document {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> com.ociweb.quickcasts
 
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
 <span class="keyword">import</span> <span class="include">grails.gorm.transactions.*</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
 <span class="keyword">import</span> <span class="include">groovy.xml.XmlUtil</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
 <span class="keyword">import</span> <span class="include">org.custommonkey.xmlunit.XMLUnit</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
 
 <span class="annotation">@Rollback</span>
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">QuickcastControllerShowSpec</span> <span class="directive">extends</span> Specification {
+    <span class="annotation">@Shared</span> HttpClient client
 
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client  = HttpClient.create(baseUrl.toURL())
+    }
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test product template is rendered correctly</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">given</span>:
         <span class="keyword">def</span> expected = <span class="string"><span class="delimiter">'''</span><span class="content">&lt;document&gt;
@@ -297,15 +314,13 @@ document {
 &lt;/document&gt;
 </span><span class="delimiter">'''</span></span>
         <span class="key">when</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/quickcast/1</span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">String</span> xml = client.toBlocking().retrieve(<span class="string"><span class="delimiter">'</span><span class="content">/quickcast/1</span><span class="delimiter">'</span></span>)
 
         XMLUnit.setIgnoreWhitespace(<span class="predefined-constant">true</span>)
         XMLUnit.setNormalizeWhitespace(<span class="predefined-constant">true</span>)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
-        XMLUnit.compareXML(XmlUtil.serialize(resp.xml), expected).identical()
+        XMLUnit.compareXML(XmlUtil.serialize(xml), expected).identical()
     }
 }</code></pre>
 </div>
