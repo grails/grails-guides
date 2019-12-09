@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Querying the Database using GORM Dynamic Finders | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Querying the Database using GORM Dynamic Finders. This guide will demostrate how to efficiently query your database using GORM's dynamic finders.' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/querying-gorm-dynamic-finders"><img src="https://travis-ci.org/grails-guides/querying-gorm-dynamic-finders.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/querying-gorm-dynamic-finders&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/querying-gorm-dynamic-finders.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/querying-gorm-dynamic-finders.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/querying-gorm-dynamic-finders.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/querying-gorm-dynamic-finders/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#testingTheService"><strong>3</strong><span>Testing the Service</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#updatingTheService"><strong>4</strong><span>Updating the Service</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findByProp"><strong>4.1</strong><span>Find One By Value</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findAllByProp"><strong>4.2</strong><span>Find Many By Value</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findByInequality"><strong>4.3</strong><span>Find By Inequality</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#countingMatches"><strong>4.4</strong><span>Counting Matching Instances</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findByRange"><strong>4.5</strong><span>Find By Value Range</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findByStringComp"><strong>4.6</strong><span>Find by Similar Strings</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findByNull"><strong>4.7</strong><span>Find By Null/Non-Null</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#findInList"><strong>4.8</strong><span>Find Property In List</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#combinators"><strong>4.9</strong><span>Combining Query Clauses</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#queryParameters"><strong>4.10</strong><span>Parameterizing Queries</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#specialForms"><strong>5</strong><span>Convenient Exceptional Forms</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#createOrSaveBy"><strong>5.1</strong><span>Query, Then Create/Save</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#simplerBooleans"><strong>5.2</strong><span>Simplifying Boolean Matching</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#chainingDCAndNQ"><strong>5.3</strong><span>Chaining with Detatched Criteria and Named Queries</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#dynamicFinderSummary"><strong>6</strong><span>Summary of Dynamic Finders</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>7</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Querying the Database using GORM Dynamic Finders</h1>
+        <p>This guide will demostrate how to efficiently query your database using GORM's dynamic finders.</p>
+        <p><strong>Authors:</strong> Matthew Moss</p>
+        <p><strong>Grails Version:</strong> 3.3.1</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you are going to update a Grails service to more efficiently query a
+database. The service methods currently load all records from a table and search
+through them in-memory; you will change those methods to use
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html">GORM</a>
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#finders">Dynamic Finders</a>,
+which are more efficient all around.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/querying-gorm-dynamic-finders/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/querying-gorm-dynamic-finders.git" class="bare">https://github.com/grails-guides/querying-gorm-dynamic-finders.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/querying-gorm-dynamic-finders/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/querying-gorm-dynamic-finders/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="testingTheService">3 Testing the Service</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/testingTheService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <code>initial</code> and <code>complete</code> projects are <strong>not</strong> full Grails applications.
+Instead, there is the Grails service <code>QueryService</code> which you will edit.
+With any changes you make, you should strive to ensure all of the unit tests
+in <code>QueryServiceSpec</code> continue to pass.</p>
+</div>
+<div class="paragraph">
+<p>To run the unit tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew :initial:test
+Starting a Gradle Daemon (subsequent builds will be faster)
+:initial:compileJava NO-SOURCE
+:initial:compileGroovy
+:initial:buildProperties
+:initial:processResources
+:initial:classes
+:initial:compileTestJava NO-SOURCE
+:initial:compileTestGroovy
+:initial:processTestResources NO-SOURCE
+:initial:testClasses
+:initial:test
+
+BUILD SUCCESSFUL</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above is what you should see if all the unit tests pass. A full HTML report can be found at<br>
+<code>initial/build/reports/tests/test/index.html</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you make changes to the service that cause the unit tests to fail, you will
+see output like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ ./gradlew test
+Starting a Gradle Daemon (subsequent builds will be faster)
+:initial:compileJava NO-SOURCE
+:initial:compileGroovy
+:initial:buildProperties
+:initial:processResources
+:initial:classes
+:initial:compileTestJava NO-SOURCE
+:initial:compileTestGroovy
+:initial:processTestResources NO-SOURCE
+:initial:testClasses
+:initial:test
+
+
+demo.QueryServiceSpec &gt; test what players have last name Klein FAILED
+    org.spockframework.runtime.ConditionFailedWithExceptionError at QueryServiceSpec.groovy:123
+        Caused by: groovy.lang.MissingPropertyException at QueryServiceSpec.groovy:123
+
+demo.QueryServiceSpec &gt; test what players have last name King FAILED
+    org.spockframework.runtime.ConditionFailedWithExceptionError at QueryServiceSpec.groovy:123
+        Caused by: groovy.lang.MissingPropertyException at QueryServiceSpec.groovy:123
+
+37 tests completed, 2 failed
+:initial:test FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':initial:test'.
+&gt; There were failing tests. See the report at:
+  file:///&lt;...path...&gt;/querying-gorm-dynamic-finders/initial/build/reports/tests/test/index.html
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output.
+
+BUILD FAILED</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In that case, open the HTML report file to see which tests are failing and why.</p>
+</div>
+<div class="paragraph">
+<p>Your goal for this guide is to update every <code>QueryService</code> method with an implementation
+that uses Dynamic Finders and still passes all of the <code>QueryServiceSpec</code> unit tests.</p>
+</div>
+
+
+<h1 id="updatingTheService">4 Updating the Service</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://gorm.grails.org/latest/hibernate/manual/index.html#finders">Dynamic finders</a> are methods generated
+at runtime. Though the methods don&#8217;t exist initially, Grails uses the Groovy metaprogramming hooks
+<a href="http://groovy-lang.org/metaprogramming.html#_methodmissing"><code>methodMissing</code></a> and
+<a href="http://groovy-lang.org/metaprogramming.html#_propertymissing"><code>propertyMissing</code></a> to recognize when you
+attempt to call one. Grails will then examine the method name you use and generate an appropriate
+implementation, including the corresponding database query.</p>
+</div>
+<div class="paragraph">
+<p>Dynamic finders read like English commands. For example, if I want to find all the board games with an
+average play duration between 30 and 90 minutes, it might look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> games = Game.findAllByAverageDurationBetween(<span class="integer">30</span>, <span class="integer">90</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This guide will explore ways to build dynamic finders by updating all the methods in
+<code>QueryService</code> with implementations that use dynamic finders, such that the new
+implementations continue to pass all unit tests in <code>QueryServiceSpec</code>.</p>
+</div>
+
+
+<h2 id="findByProp">4.1 Find One By Value</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findByProp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The first method to update is <code>QueryService.queryGame</code> which takes a single <code>name</code> parameter.
+The existing code loads all instances of the <code>Game</code> domain class, and searches for the single
+instance whose name matches the parameter. (We only expect to find one, since the <code>name</code> property
+of <code>Game</code> is unique.)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Game queryGame(<span class="predefined-type">String</span> name) {
+    Game.all.find {
+        <span class="local-variable">it</span>.name == name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>all</code> property on <code>Game</code> does exactly what it sounds like: it fetches all of the instances
+from the database into memory. This terrible implementation fetches all of the instances
+when only one is needed; this is highly inefficient code! Let&#8217;s get exactly the one instance we
+want (i.e. the one with the provided name) using a dynamic finder.</p>
+</div>
+<div class="paragraph">
+<p>Every dynamic finder starts with a prefix. Since we expect to find only one game (because
+the name is constrained to be unique), we can use <code>findBy</code>, which will
+return the matching instance if one is found or a <code>null</code> if no match is found.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>findBy</code> can also be used to retrieve only the first of many matching instances.
+However, you should consider adding a sort column, described in
+<a href="#queryParameters">Parameterizing Queries</a>, to make your query robust.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After determining the prefix, next we need the property to match against. The <code>Game</code> domain class
+has a <code>name</code> property that the inefficient implementation used; by appending (using camel-case) the
+property name to the prefix, we create the dynamic finder <code>findByName</code> to find the desired game.
+This method should be called on the domain class of interest: in this case, <code>Game</code>. So our dynamic
+finder call will be <code>Game.findByName(&#8230;&#8203;)</code>.</p>
+</div>
+<div class="paragraph">
+<p>At the same time we add a property name to the dynamic finder method <em>name</em>, we should also add an
+argument to the dynamic finder method <em>call</em>; in this case, we want to use the <code>name</code> parameter
+provided by the <code>queryGame</code> method. So the final, efficient implementation of <code>queryGame</code> is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Game queryGame(<span class="predefined-type">String</span> name) {
+    Game.findByName(name)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Change the implementation and run the tests to see that they still pass.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When you append a property name to a dynamic finder method, you also append a corresponding
+argument to the method call <strong>in most cases</strong>. The few cases that differ in this respect will be
+pointed out in later sections of this guide.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="findAllByProp">4.2 Find Many By Value</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findAllByProp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Knowing how to find one instance by a property value, we can find multiple instances by a
+(non-unique) property value by changing the prefix. Instead of <code>findBy</code>, use <code>findAllBy</code> to
+return a list of matching instances. If none match, the list will be empty.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s update <code>QueryService.queryGamesWithAverageDuration</code>, a method used to collect all of
+the board games with the provided average duration. Here is the existing, inefficient implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithAverageDuration(<span class="predefined-type">Integer</span> averageDuration) {
+    Game.all.findAll {
+        <span class="local-variable">it</span>.averageDuration == averageDuration
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As before, this slow implementation loads all records into memory, then searches over them.
+The database engine is much quicker and the memory load is much lower if only the matching records
+are returned, so let&#8217;s change this to a dynamic finder.</p>
+</div>
+<div class="paragraph">
+<p>To find multiple records, use the <code>findAllBy</code> prefix. Append the property name <code>averageDuration</code>
+(updating capitalization for consistent camel-case of the dynamic finder method name), and pass
+the <code>averageDuration</code> parameter from <code>queryGamesWithAverageDuration</code> as an argument to the
+dynamic finder method call.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithAverageDuration(<span class="predefined-type">Integer</span> averageDuration) {
+    Game.findAllByAverageDuration(averageDuration)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="findByInequality">4.3 Find By Inequality</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findByInequality.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The previous methods searched for matching instances by value equality. Dynamic finders
+can search also by inequality: whether the property is not equal to, is greater than,
+or is less than the provided value.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s look at <code>QueryService.queryGamesNotConsideredStrategy</code> which attempts to find all
+games that, according to the database, are not marked as strategy games.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesNotConsideredStrategy() {
+    Game.all.findAll {
+        <span class="local-variable">it</span>.strategy != <span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+It would be more idiomatic to write the predicate as <code>!it.strategy</code>, but for this
+demo, the not-equal comparison against <code>true</code> is made explicit to better illustrate the
+similarity between the inefficient version and the dynamic finder version.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Since we expect there will be more than one result, we still need to use the prefix
+<code>findAllBy</code>. The property of interest is <code>strategy</code>, a boolean flag. But using the dynamic
+finder <code>findAllByStrategy(true)</code> finds all of the strategy games, and we want the non-strategy
+games. In order to find those, we need to add a <strong>comparator</strong>. A comparator changes the query
+from an equality test to something else. You&#8217;ll see many of
+these in the sections to follow. Here, we will use the comparator <code>NotEqual</code> which, when
+appended to the property name in the dynamic finder method name, generates a query that
+matches on non-equality.</p>
+</div>
+<div class="paragraph">
+<p>Our improved query to find non-strategy games is then:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesNotConsideredStrategy() {
+    <span class="comment">// General case: using the NotEqual comparator.</span>
+    Game.findAllByStrategyNotEqual(<span class="predefined-constant">true</span>)    <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="comment">// Special case: using exceptional form for Boolean properties.</span>
+    Game.findAllNotStrategy()    <i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This query demonstrates the general form of a dynamic finder using the <code>NotEqual</code> comparator.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This query demonstrates the <a href="#simplerBooleans">exceptional form</a> of dynamic finders for boolean properties.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Though the second form shown here is more compact and readable, the first form
+using the <code>NotEqual</code> comparator will work equally well for any database types; it is used
+here with a boolean property simply to demonstrate how the comparator works.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>What if we want a greater than or less than comparison? Let&#8217;s look at
+<code>QueryService.queryGamesExpectedShorterThan</code>, which will return a list of
+games with an average duration shorter than the provided value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesExpectedShorterThan(<span class="predefined-type">Integer</span> duration) {
+    Game.all.findAll {
+        <span class="local-variable">it</span>.averageDuration &lt; duration
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, we know to start with <code>findAllByAverageDuration</code>. Since we want to
+match property values that are <strong>less than</strong> the provided value, we should use the
+<code>LessThan</code> comparator. Again, this comparator is appended after the property name,
+so our final, improved implementation is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesExpectedShorterThan(<span class="predefined-type">Integer</span> duration) {
+    Game.findAllByAverageDurationLessThan(duration)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is a similar comparator when you need instances with property values <strong>greater than</strong> the
+supplied argument: use <code>GreaterThan</code>. For example, <code>QueryService.queryGamesRatedMoreThan</code> will
+find all games with a rating higher than the provided rating. The original implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesRatedMoreThan(<span class="predefined-type">BigDecimal</span> rating) {
+    Game.all.findAll {
+        <span class="local-variable">it</span>.rating &gt; rating
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Our dynamic finder for this query will be called <code>findAllByRatingGreaterThan</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesRatedMoreThan(<span class="predefined-type">BigDecimal</span> rating) {
+    Game.findAllByRatingGreaterThan(rating)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>LessThan</code> and <code>GreaterThan</code> comparators are <em>strict</em> inequality comparisons; that is,
+if the values compared are equal, the instance is <strong>not</strong> considered a match. If you need to
+also include equality, use the non-strict <code>LessThanEquals</code> and <code>GreaterThanEquals</code> comparators.</p>
+</div>
+
+
+<h2 id="countingMatches">4.4 Counting Matching Instances</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/countingMatches.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Sometimes, you don&#8217;t need the actual results of a query, but rather just
+how many instances <strong>did</strong> match. As before, this inefficient implementation loads
+all the records, then counts how many match a predicate.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyGamesRatedAtLeast(<span class="predefined-type">BigDecimal</span> rating) {
+    Game.all.count {
+        <span class="local-variable">it</span>.rating &gt;= rating
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A more efficient implementation of the above would call the dynamic finder
+<code>Game.findAllByRatingGreaterThanEquals(rating)</code>, then return the size of the
+resulting list. But if all you need is a single number&#8201;&#8212;&#8201;the count of matching
+records&#8201;&#8212;&#8201;it is inefficient to fetch the results of the database query into memory.</p>
+</div>
+<div class="paragraph">
+<p>In this case, use the prefix <code>countBy</code>. It works very much like <code>findAllBy</code>, but
+instead of returning the matching instances, it returns the number of instances matched.
+So to count how many games rated a certain value or higher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyGamesRatedAtLeast(<span class="predefined-type">BigDecimal</span> rating) {
+    Game.countByRatingGreaterThanEquals(rating)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By now, you&#8217;ve probably noticed that the <code>QueryService</code> methods, when implemented
+efficiently using dynamic finders, is not really useful as-is. That said, Grails services
+often do much more business logic that what this guide attempts to teach. The use of the
+service here helps to separate the work from the tests.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="findByRange">4.5 Find By Value Range</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findByRange.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>What if you need to find instances where some property falls in between two values?
+Maybe you want to know all the games played (represented by the domain class <code>Match</code>) between two dates?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMatchesPlayedBetweenDates(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
+    Match.all.findAll {
+        startDate &lt;= <span class="local-variable">it</span>.started &amp;&amp; <span class="local-variable">it</span>.started &lt;= finishDate
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the comparator <code>Between</code>. As mentioned earlier, most comparators expect a matching argument
+in the dynamic finder call. However, <code>Between</code> is one of the exceptions, and it expects <strong>two</strong> arguments:
+the lower and upper bounds. In the case of <code>QueryService.queryMatchesPlayedBetweenDates</code>, the lower and
+upper bounds are the start and finish dates.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+We will use the <code>started</code> property of <code>Match</code> as the property to examine. We could
+have chosen to look at the <code>finished</code> property, but that could be null while <code>started</code>
+cannot be null according to the constraints of <code>Match</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now we know the parts to build up our dynamic finder call: <code>findAllBy</code> to look for multiple,
+matching instances; <code>started</code> as the property to examine; and <code>Between</code> as the operator to
+find values of the property between provided lower and upper bounds. Here is the efficient
+implementation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMatchesPlayedBetweenDates(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
+    Match.findAllByStartedBetween(startDate, finishDate)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A similar comparator is <code>InRange</code>, which works like <code>Between</code> but accepts a Groovy range as
+the argument. As an example, we want to find out how many high scores there are across all
+played games. Let&#8217;s define high scores to be in the range 90-100.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Range highScore = <span class="integer">90</span>..<span class="integer">100</span>
+<span class="keyword">def</span> numHighScores = queryService.queryHowManyScoresWithinRange(highScore)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s the old, inefficient implementation of <code>queryHowManyScoresWithinRange</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyScoresWithinRange(Range range) {
+    Score.all.count {
+        <span class="local-variable">it</span>.score <span class="keyword">in</span> range
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since we only want to know how many high scores there are (and not the scores themselves),
+we&#8217;ll use the <code>countBy</code> prefix. We need to look at the <code>score</code> property of the <code>Score</code>
+domain class, and we&#8217;ll use <code>InRange</code> to compare against the provided range. Here is
+the improved implementation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyScoresWithinRange(Range range) {
+    Score.countByScoreInRange(range)
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="findByStringComp">4.6 Find by Similar Strings</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findByStringComp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In addition to inequality comparisons (with types such as numbers and dates), we want to
+do inexact string comparisons&#8230;&#8203; to know that one string is similar or "like" another string.
+Here follows three examples that we should improve with a dynamic finder.</p>
+</div>
+<div class="paragraph">
+<p>First, find all players having a certain last name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryPlayersWithLastName(<span class="predefined-type">String</span> lastName) {
+    Player.all.findAll {
+        <span class="local-variable">it</span>.name.endsWith <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="inline"><span class="inline-delimiter">${</span>lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM provides the dynamic finder comparator <code>Like</code> for string comparisons, and it
+uses the character <code>%</code> in the search string as a wildcard. So the above can more
+efficiently be written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Player&gt; queryPlayersWithLastName(<span class="predefined-type">String</span> lastName) {
+    Player.findAllByNameLike(<span class="string"><span class="delimiter">&quot;</span><span class="content">% </span><span class="inline"><span class="inline-delimiter">${</span>lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>%</code> wildcard can go anywhere in the search string: front, back, middle, even
+multiple locations. It can match any string, even empty.</p>
+</div>
+<div class="paragraph">
+<p>The second example finds all game mechanics whose name contains a snippet of text,
+case-insensitive.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMechanicsContaining(<span class="predefined-type">String</span> text) {
+    Mechanic.all.findAll {
+        StringUtils.containsIgnoreCase <span class="local-variable">it</span>.name, text
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The earlier comparator <code>Like</code> was case-sensitive; it matched anything where the <code>%</code>
+wildcards appeared, but other text was an exact match. If you want to search
+ignoring case, use the <code>Ilike</code> comparator. You can still use wildcards, as is done here.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Mechanic&gt; queryMechanicsContaining(<span class="predefined-type">String</span> text) {
+    Mechanic.findAllByNameIlike(<span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="inline"><span class="inline-delimiter">${</span>text<span class="inline-delimiter">}</span></span><span class="content">%</span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In our third example, we find all games where the name matches a regular expression pattern.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesMatching(<span class="predefined-type">String</span> pattern) {
+    Game.all.findAll {
+        <span class="local-variable">it</span>.name ==~ pattern
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<a href="https://en.wikipedia.org/wiki/Regular_expression">Regular expressions</a> are a handy tool for
+developers to define complex search expressions in a compact form. Groovy provides
+<a href="http://docs.groovy-lang.org/latest/html/documentation/#_regular_expression_operators">support for regular expressions</a>
+built upon the
+<a href="https://docs.oracle.com/javase/tutorial/essential/regex/">Regular Expression APIs in Java</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To do regular expression matching, use the <code>Rlike</code> comparator in your dynamic finder.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesMatching(<span class="predefined-type">String</span> pattern) {
+    Game.findAllByNameRlike(pattern)      <span class="comment">// Rlike: not universally supported</span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The <code>Rlike</code> comparator is not universally supported! It is only supported if the underlying
+database supports regular expressions. If the database does not support regular expressions, then
+<code>Rlike</code> will fall back to <code>Like</code> behavior.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="findByNull">4.7 Find By Null/Non-Null</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findByNull.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Since our databases and Grails domain classes can contain properties that might
+hold null values, we need ways to query those situations. For example, in our original
+service implementations, we have two methods used to find which games played are complete
+and which are still ongoing.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyMatchesInProgress() {
+    Match.all.count {
+        <span class="local-variable">it</span>.finished == <span class="predefined-constant">null</span>
+    }
+}
+
+<span class="type">int</span> queryHowManyMatchesCompleted() {
+    Match.all.count {
+        <span class="local-variable">it</span>.finished != <span class="predefined-constant">null</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The comparators for checking null values are <code>IsNull</code> and <code>IsNotNull</code>. These are
+special in that they require no arguments for the dynamic finder. Here is the
+improved implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyMatchesInProgress() {
+    Match.countByFinishedIsNull()
+}
+
+<span class="type">int</span> queryHowManyMatchesCompleted() {
+    Match.countByFinishedIsNotNull()
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="findInList">4.8 Find Property In List</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/findInList.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In the above sections, we have been able to find instances through a property: by equality,
+by inequality, by values between bounds. Sometimes, though, the matching values for a property
+do not form a simple range. With dynamic finders, you can find records where a property is
+tested against items from a provided list: use the <code>InList</code> comparator.</p>
+</div>
+<div class="paragraph">
+<p>Here are two examples. The first finds all of the <code>Game</code> records that match a list of <code>String</code> game
+names, while the second example finds all <code>Match</code> records that track the game play of the games
+listed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesForNames(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
+        Game.all.findAll {
+            <span class="local-variable">it</span>.name <span class="keyword">in</span> names
+        }
+    }
+
+    <span class="predefined-type">List</span>&lt;Game&gt; queryMatchesForGames(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+        Match.all.findAll {
+            <span class="local-variable">it</span>.game <span class="keyword">in</span> games
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By using the <code>InList</code> comparator and passing in the list of items to match against, we can
+reduce these methods to be more efficient.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesForNames(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
+        Game.findAllByNameInList(names)
+    }
+
+    <span class="predefined-type">List</span>&lt;Match&gt; queryMatchesForGames(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+        Match.findAllByGameInList(games)
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the second example, <code>QueryService.queryMatchesForGames</code>, note that the list does not
+contain simple types (like <code>Number</code> or <code>String</code>), but actually contains a list of <code>Game</code>
+domain objects. This is reasonable, since the property <code>game</code> of <code>Match</code> <strong>is an instance
+of <code>Game</code></strong>.</p>
+</div>
+<div class="paragraph">
+<p>Anytime you have a relationship like this, you can use domain class instances as part of
+your query. As another example, the <code>Score</code> domain references the <code>Player</code> domain, and so,
+for example, to find all of the scores by a particular player:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> jeffBrown = Player.findByName(<span class="string"><span class="delimiter">'</span><span class="content">Jeff Brown</span><span class="delimiter">'</span></span>)
+    <span class="keyword">def</span> scores = Score.findByPlayer(jeffBrown)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Related to the <code>InList</code> comparator is the <code>NotInList</code> comparator which, as it sounds, finds
+matching instances where the property under test is <strong>not</strong> found in the provided list. So, for
+the inefficient implementation of <code>QueryService.queryGamesOtherThan</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesOtherThan(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+        Game.all.findAll {
+            !(<span class="local-variable">it</span> <span class="keyword">in</span> games)
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This can be replaced using the <code>NotInList</code> comparator:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesOtherThan(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+        Game.findAllByNameNotInList(games*.name)
+    }</code></pre>
+</div>
+</div>
+
+
+<h2 id="combinators">4.9 Combining Query Clauses</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/combinators.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>There will be times when you want to find records by more than one property. Let&#8217;s take
+an example: we want to find all the board games that support a certain number of players.
+Our inefficient implementation looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">int</span> queryHowManyGamesSupportPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
+        Game.all.count {
+            <span class="local-variable">it</span>.minPlayers &lt;= playerCount &amp;&amp; playerCount &lt;= <span class="local-variable">it</span>.maxPlayers
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These implementation use equality and less-than-or-equals operators; we already know how
+to search for these things independently. For example, to find where the minimum number of
+players is no higher than the requested player count, we would do this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByMinPlayersLessThanEqual(playerCount)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or to find those games where the maximum number of players is no less than the requested
+player count, we would do this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByMaxPlayersGreaterThanEqual(playerCount)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Because <code>minPlayers</code> and <code>maxPlayers</code> are different properties, we can&#8217;t use the <code>Between</code>
+or <code>InRange</code> comparators, as they operate on a single property.</p>
+</div>
+<div class="paragraph">
+<p>Instead, we introduce here <strong>combinators</strong>. These are the boolean operators <code>And</code> and <code>Or</code>.
+So if we want to combine two requirements (i.e. a property and its comparator), we join them
+using <code>And</code> if we require both requirements to pass, or <code>Or</code> if only one is required to pass.</p>
+</div>
+<div class="paragraph">
+<p>For our current example, we want to combine <code>findAllByMinPlayersLessThanEqual</code> and
+<code>findAllByMaxPlayersGreaterThanEqual</code>, requiring both statements to pass (which matches the
+boolean-and operator <code>&amp;&amp;</code> of the inefficient implementation). When joining these, the prefix
+(e.g. <code>findAllBy</code>) only needs to be specified once; then, our <code>And</code> combined query becomes
+<code>findAllByMinPlayersLessThanEqualAndMaxPlayersGreaterThanEqual</code>, and the final dynamic finder
+method call will take two arguments: one for <code>minPlayers</code> and one for <code>maxPlayers</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">int</span> queryHowManyGamesSupportPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
+        Game.countByMinPlayersLessThanEqualsAndMaxPlayersGreaterThanEquals(playerCount, playerCount)
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another similar example: find all board games supporting an exact number of players (i.e.
+where <code>minPlayers</code> and <code>maxPlayers</code> are equal to the same number). The original implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesSupportExactPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
+        Game.all.findAll {
+            <span class="local-variable">it</span>.minPlayers == playerCount &amp;&amp; <span class="local-variable">it</span>.maxPlayers == playerCount
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and the improved implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesSupportExactPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
+        Game.findAllByMinPlayersAndMaxPlayers(playerCount, playerCount)
+    }</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You are not limited to two predicates in your dynamic finder. You can use the <code>And</code> multiple
+times to join as many predicates (i.e. query requirements) as you need. However, past two or
+three predicates, you may find that your dynamic finder becomes difficult to read. Complex queries
+may be implemented more legibly by using
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#querying">other query techniques</a>; these will
+be the topics of future guides.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If we don&#8217;t require <strong>both</strong> parts of the combination to pass, we can use the <code>Or</code> combiner
+(which compares to the boolean-or operator <code>||</code>). In <code>QueryService.queryGamesConsideredFamilyOrParty</code>,
+the original implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesConsideredFamilyOrParty() {
+        Game.all.findAll {
+            <span class="local-variable">it</span>.family || <span class="local-variable">it</span>.party
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>can be replaced with an improved implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesConsideredFamilyOrParty() {
+        Game.findAllByFamilyOrParty(<span class="predefined-constant">true</span>, <span class="predefined-constant">true</span>)
+    }</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+While a dynamic finder may use any number of <code>And</code> combiners or any number of <code>Or</code>
+combiners, you <strong>cannot</strong> use <code>And</code> and <code>Or</code> together in the same dynamic finder. So this query
+and those like it are invalid: <code>Game.findByMinPlayersAndMaxPlayersOrParty(2, 5, true)</code>. To
+specify a condition such as this, you need to use
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#querying">other query techniques</a>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="queryParameters">4.10 Parameterizing Queries</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/updatingTheService/queryParameters.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Any database query is made more useful when the results are sorted and paginated.
+With any dynamic finder, beyond the arguments required by the properties/comparators used,
+an additional <code>Map</code> argument can be added to manage sorting and pagination. (This argument
+map is the same used for the <code>list()</code> method.)</p>
+</div>
+<div class="paragraph">
+<p>To sort results as part of your query, use <code>sort</code>, <code>order</code>, and <code>ignoreCase</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>sort</code> specifies the property to use to sort all instances.</p>
+</li>
+<li>
+<p><code>order</code> is a string that specifies whether the sort should be ascending/increasing (<code>asc</code>) or
+descending/decreasing (<code>desc</code>).</p>
+</li>
+<li>
+<p><code>ignoreCase</code> specifies whether case should be ignored during sorting.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To paginate results as part of your query, use <code>offset</code> and <code>max</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>offset</code> specifies the index of the first result to return.</p>
+</li>
+<li>
+<p><code>max</code> specifies the maximum number of results to return.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Pagination parameters are applied <strong>after</strong> sorting parameters.</p>
+</div>
+<div class="paragraph">
+<p>As an example, let&#8217;s say I want to find all strategy games supporting at least two players.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s modify that to order the results, showing first the games supporting the highest
+maximum number of players. Since we&#8217;re changing the ordering (and not the conditions to be
+included in the results), we add <code>sort</code>/<code>order</code> query parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, let&#8217;s just show the first group of ten results. Add <code>offset</code>/<code>max</code> parameters.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">0</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Assuming a user of the application clicked the <code>Next</code> button, we can modify the
+last call to show the next group of ten results by updating the <code>offset</code> value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">10</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, as was noted <a href="#findByProp">earlier</a>, the prefix <code>findBy</code> will return the first matching
+result of a query. For robust code, you should consider adding a <code>sort</code> parameter, or even replacing
+<code>findBy</code> with <code>findAllBy</code> and using <code>max: 1</code> in your parameters. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="comment">// This:</span>
+    Game bestTwoPlayerGame = Game.findByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])
+
+    <span class="comment">// is equivalent to this:</span>
+    <span class="predefined-type">List</span>&lt;Game&gt; bestTwoPlayerGame = Game.findAllByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">max</span>: <span class="integer">1</span>])</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+There are a few more parameters available than are listed here. Please
+refer to the documentation for
+<a href="http://docs.grails.org/latest/ref/Domain%20Classes/list.html"><code>list</code></a> to see if they
+apply to your situation.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="specialForms">5 Convenient Exceptional Forms</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/specialForms.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Dynamic finders are a great tool for building simple database queries: readable, full
+efficiency, with little hassle. In addition to all the possibilities described in earlier
+sections, there are a couple of special, convenient forms to add to your toolbox.</p>
+</div>
+
+
+<h2 id="createOrSaveBy">5.1 Query, Then Create/Save</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/specialForms/createOrSaveBy.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Often, a developer will need to query the database to see if a particular instance
+exists and, if it does not, wants it created or saved before additional work is done.
+How many times have you seen or written this sort of code?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> category = Category.findByName(<span class="string"><span class="delimiter">'</span><span class="content">Zombies</span><span class="delimiter">'</span></span>)
+    <span class="keyword">if</span> (!category) {
+        category = <span class="keyword">new</span> Category(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Zombies</span><span class="delimiter">'</span></span>)
+        category.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+    }
+    <span class="comment">// Now do something useful with `category`.</span>
+
+    <span class="keyword">def</span> game = Game.findByNameAndMinPlayersAndMaxPlayers(<span class="string"><span class="delimiter">'</span><span class="content">SET</span><span class="delimiter">'</span></span>, <span class="integer">2</span>, <span class="integer">20</span>)
+    <span class="keyword">if</span> (!game) {
+        game = <span class="keyword">new</span> Game(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">SET</span><span class="delimiter">'</span></span>, <span class="key">minPlayers</span>: <span class="integer">2</span>, <span class="key">maxPlayers</span>: <span class="integer">20</span>)
+    }
+    <span class="comment">// Now do something useful with `game`.</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM provides two prefixes for dynamic finders that help to eliminate this sort of
+boilerplate: <code>findOrCreateBy</code> and <code>findOrSaveBy</code>. Both of these attempt to use the query
+specified to find a matching instance. If found, that instance is returned. If not found,
+a new instance is created and its properties set with the query-named property values. If
+<code>findOrSaveBy</code> is used, the instance is also saved. The following is equivalent to the
+above:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    Category category = Category.findOrSaveByName(<span class="string"><span class="delimiter">'</span><span class="content">Zombies</span><span class="delimiter">'</span></span>)
+
+    Game game = Game.findOrCreateByNameAndMinPlayersAndMaxPlayers(<span class="string"><span class="delimiter">'</span><span class="content">SET</span><span class="delimiter">'</span></span>, <span class="integer">2</span>, <span class="integer">20</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Often, <code>findOrCreateBy</code> may be more appropriate, if you need to fill in additional properties,
+build relationships, or ensure certain constraints are met before saving. Remember, though, that
+<code>findOrCreateBy</code> does <strong>not</strong> save, so call <code>save</code> on the instance to persist your changes.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+When using the prefixes <code>findOrCreateBy</code> and <code>findOrSaveBy</code>, only exact matches are allowed,
+since if not found, your dynamic finder will attempt to create a new instance using the values
+provided in the query. So, for example, <code>Game.findOrCreateByRating(5.5)</code> is a valid, but the
+creating dynamic finder <code>Game.findOrCreateByRatingGreaterThan(5.5)</code> is not.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="simplerBooleans">5.2 Simplifying Boolean Matching</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/specialForms/simplerBooleans.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Previously, we saw that you could match instances by their boolean properties like these examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="comment">// Finds all strategy games.</span>
+    Game.findAllByStrategy(<span class="predefined-constant">true</span>)
+
+    <span class="comment">// Finds all non-party games.</span>
+    Game.findAllByPartyNotEqual(<span class="predefined-constant">true</span>)
+
+    <span class="comment">// Finds all family games the support at least four players.</span>
+    Game.findAllByFamilyAndMinPlayersGreaterThanEquals(<span class="predefined-constant">true</span>, <span class="integer">4</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dynamic finders with one boolean property as part of the query can be shorted by incorporating
+the property name into the prefix and dropping the corresponding argument. So the above examples
+can be shortened to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="comment">// Finds all strategy games.</span>
+    Game.findAllStrategy()
+
+    <span class="comment">// Finds all non-party games.</span>
+    Game.findAllNotParty()
+
+    <span class="comment">// Finds all family games the support at least four players.</span>
+    Game.findAllFamilyByMinPlayersGreaterThanEquals(<span class="integer">4</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are only examining the boolean property, you can drop the <code>By</code> portion of the
+prefix (so <code>findAllByBooleanProperty</code> becomes <code>findAllBooleanProperty</code>).</p>
+</div>
+<div class="paragraph">
+<p>Checking against a <code>true</code> values uses the property name appended to <code>findAll</code>, while checking
+against a <code>false</code> value uses the property name appended to <code>findAllNot</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you have other conditions (like the third example above), then append those conditions
+after <code>By</code> in the prefix as earlier.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Only <strong>one</strong> boolean property can be incorporated into the prefix in this manner. If you
+have other boolean properties to match against in the same query, add them as before, such as
+<code>Game.findAllStrategyByFamily(true)</code> to find all games considered both strategy and family.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="chainingDCAndNQ">5.3 Chaining with Detatched Criteria and Named Queries</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/specialForms/chainingDCAndNQ.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>While dynamic finders are very convenient for simple queries, more complex queries
+will require other techniques. While these advanced query techniques are not discussed
+here, it can be useful to further restrict the results of these advanced techniques
+by <em>chaining</em> (i.e. appending) dynamic finders to them.</p>
+</div>
+<div class="paragraph">
+<p>For example, let us find all the games that
+use involve the "Hand Management" mechanic and have an average duration of less than 120
+minutes. Finding all games using a specific mechanic can be done with the <code>Game</code> domain class
+<a href="http://docs.grails.org/latest/ref/Domain%20Classes/namedQueries.html">Named Query</a>, <code>gamesWithMechanic</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="directive">static</span> namedQueries = {
+        gamesWithMechanic { aMechanic -&gt;
+            mechanics {
+                eq <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, aMechanic.id
+            }
+        }
+    }
+
+    <span class="comment">// Find all games using the &quot;Hand Management&quot; game mechanic.</span>
+    Mechanic m = Mechanic.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hand Management</span><span class="delimiter">&quot;</span></span>)
+    <span class="keyword">def</span> games = Game.gamesWithMechanic(m)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To find games with an average duration of less than 120 minutes, we know to use the
+call <code>Game.findAllByAverageDurationLessThan(120)</code>. But that searches for <strong>all</strong> games under
+120 minutes, regardless of the game&#8217;s mechanics. To find games that match both conditions,
+append the dynamic finder to the named query.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithMechanicNoLongerThanDuration(Mechanic mechanic, <span class="type">int</span> duration) {
+        <span class="comment">// Games provides a named query, 'gamesWithMechanic', to find all games that employ the provided game mechanic.</span>
+        <span class="comment">// Dynamic finders can be chained onto named queries to narrow the results.</span>
+        Game.gamesWithMechanic(mechanic).findAllByAverageDurationLessThan(duration)
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similarly, dynamic finders can be appended to
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#detachedCriteria">Detached Criteria</a> and
+<a href="http://gorm.grails.org/latest/hibernate/manual/index.html#whereQueries">Where Queries</a>
+to further restrict the results of the criteria query.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesInCategoryWithAverageDuration(Category category, <span class="type">int</span> duration) {
+        <span class="comment">// Here is a detached criteria to find all games within the specific category.</span>
+        DetachedCriteria&lt;Game&gt; detachedCriteria = <span class="keyword">new</span> DetachedCriteria(Game).build {
+            categories {
+                eq <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, category.id
+            }
+        }
+
+        <span class="comment">// Dynamic finders can be chained onto detached criteria to narrow the results.</span>
+        detachedCriteria.findAllByAverageDuration(duration)
+    }
+
+    <span class="comment">// Find all &quot;Economic&quot; games of approximately 120 minutes.</span>
+    <span class="keyword">def</span> category = Category.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Economic</span><span class="delimiter">&quot;</span></span>)
+    <span class="keyword">def</span> games = queryGamesInCategoryWithAverageDuration(category, <span class="integer">120</span>)</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+These various, more advanced techniques&#8201;&#8212;&#8201;Named Queries, Where Queries, Criteria
+and Detached Criteria Queries, and HQL&#8201;&#8212;&#8201;will be explored in depth in future Grails Guides.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="dynamicFinderSummary">6 Summary of Dynamic Finders</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/dynamicFinderSummary.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_prefixes">Prefixes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In these prefixes, <code>Flag</code> represents some Boolean property of a domain class; replace it
+with the name of the Boolean property to be tested.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 75%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Prefix</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Find a single instance that matches the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Find multiple instances that match the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>countBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Count how many instances match the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findOrCreateBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Special form: creates a new instance if an existing match is not found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findOrSaveBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Special form: creates and saves a new instance if an existing match is not found.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllFlag[By]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Special form for boolean properties: finds all instances where named property is true. Append 'By' to extend the query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllNotFlag[By]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Special form for boolean properties: finds all instances where named property is false. Append 'By' to extend the query.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comparators">Comparators</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the following table, <code>prop</code> represents some property of a domain class; replace it with
+the name of the actual property to be tested. Replace <code>val</code> (or similar) with the actual
+value to compare against.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Comparator</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Equivalent Groovy Code</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;none&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByProp(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop == val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is equal to value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NotEqual</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropNotEqual(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop != val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is not equal to value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>LessThan</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropLessThan(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop &lt; val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is less than value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>LessThanEquals</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropLessThanEquals(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop &lt;= val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is less than or equal to value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GreaterThan</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropGreaterThan(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop &gt; val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is greater than value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>GreaterThanEquals</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropGreaterThanEquals(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop &gt;= val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is greater than or equal to value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Between</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropBetween(lowerVal, upperVal)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(lowerVal &lt;= prop) &amp;&amp; (prop &lt;= upperVal)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is between lowerVal and upperVal. Requires two arguments.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>InRange</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropInRange(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop in val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is in range specified by val (of <code>Range</code> type).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Like</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropLike(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No exact equivalent. Similar to <code>prop.endsWith(val)</code>, <code>prop.startsWith(val)</code>,
+ <code>prop.contains(val)</code>, depending on search string.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property matches using wildcard string comparison. Use <code>%</code> for wildcard.
+ Case-sensitive.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Ilike</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropIlike(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same as <code>Like</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same as <code>Like</code>, but case-insensitive.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Rlike</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropRlike(val)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop ==~ val</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property matches using regular expression.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IsNull</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropIsNull()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop == null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is null. Requires no arguments.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>IsNotNull</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByPropIsNull()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>prop != null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tests property is not null. Requires no arguments.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_combiners">Combiners</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Within a single dynamic finder method name, you may use either <code>And</code> or <code>Or</code> multiple
+times to combine multiple criteria, but you cannot use both <code>And</code> and <code>Or</code> in the same
+dynamic finder.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Combiner</th>
+<th class="tableblock halign-left valign-top">Example</th>
+<th class="tableblock halign-left valign-top">Equivalent Groovy Code</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>And</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findByNameAndYearLessThan('Foo', 2017)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(name == 'Foo') &amp;&amp; (year &lt; 2017)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Both expressions must match for the instance to match.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Or</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findAllByAgeLessThanOrAgeGreaterThan(8,88)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(age &lt; 8) || (age &gt; 88)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">At least one expression must match for the instance to match.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_parameters">Parameters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Pagination and sorting are done by adding a final <code>Map</code> argument to any dynamic finder.
+The map may contain the following parameters:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 57.1428%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All matching instances are sorted according to the property specified.
+ Sorting is done <em>before</em> the <code>offset</code> and <code>max</code> parameters are applied.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No default; if not specified, results are unsorted.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>order</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the sorting order to either ascending/increasing (<code>'asc'</code>) or
+ descending/decreasing (<code>'desc'</code>).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>asc</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ignoreCase</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sorting is case-insensitive if <code>true</code>, case-sensitive if <code>false</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>offset</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">From all matching, sorted instances, <code>offset</code> specifies the index of the first
+ instance to be returned. Used for paginating results.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">From all matching, sorted instances, <code>max</code> specifies the upper limit of how
+ many instances to return. Used for paginating results.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No default; if not specified, returns all results.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For example, the following finds all games with an average duration between 30 and
+90 minutes, sorted by their average duration (<code>sort: 'averageDuration'</code>), starting
+with the longest (order: 'desc'), and returning only the first five
+(<code>offset: 0, max: 5</code>) results.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>    Game.findAllByAverageDurationInRange(30..90, [sort: 'averageDuration', order: 'desc', offset: 0, max: 5])</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h1 id="helpWithGrails">7 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/querying-gorm-dynamic-finders/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
