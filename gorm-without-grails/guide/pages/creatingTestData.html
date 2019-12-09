@@ -95,14 +95,11 @@ function addJsClass() {
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.boot.ApplicationRunner</span>
 <span class="keyword">import</span> <span class="include">org.springframework.boot.SpringApplication</span>
-<span class="keyword">import</span> <span class="include">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span>
 <span class="keyword">import</span> <span class="include">org.springframework.boot.autoconfigure.SpringBootApplication</span>
-<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.ComponentScan</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration</span>
 
-<span class="annotation">@EnableAutoConfiguration</span>
-<span class="annotation">@ComponentScan</span>
 <span class="annotation">@CompileStatic</span>
-<span class="annotation">@SpringBootApplication</span>
+<span class="annotation">@SpringBootApplication</span>(exclude = HibernateJpaAutoConfiguration.class) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="type">class</span> <span class="class">Application</span> <span class="directive">implements</span> ApplicationRunner {
 
     <span class="annotation">@Autowired</span>
@@ -118,6 +115,14 @@ function addJsClass() {
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Disable Auto-configuration for Hibernate JPA.</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="title">/src/main/groovy/demo/init/BootStrap.groovy</div>
 <div class="content">
@@ -125,24 +130,29 @@ function addJsClass() {
 
 <span class="keyword">import</span> <span class="include">demo.domain.Manufacturer</span>
 <span class="keyword">import</span> <span class="include">demo.domain.Vehicle</span>
+<span class="keyword">import</span> <span class="include">demo.service.ManufacturerService</span>
 <span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.stereotype.Component</span>
 
 <span class="annotation">@Component</span>
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">BootStrap</span> {
 
+    <span class="annotation">@Autowired</span>
+    ManufacturerService manufacturerService
+
     <span class="annotation">@Transactional</span>
     <span class="type">void</span> init() {
         Manufacturer audi = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">audi</span><span class="delimiter">'</span></span>)
         audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A3</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
         audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A4</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1994</span>))
-        audi.save()
+        manufacturerService.save(audi)
 
         Manufacturer ford = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">ford</span><span class="delimiter">'</span></span>)
         ford.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ford KA</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
-        ford.save()
+        manufacturerService.save(ford)
     }
 }</code></pre>
 </div>

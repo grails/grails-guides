@@ -116,7 +116,6 @@ the following annotations</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo.controller
 
-<span class="keyword">import</span> <span class="include">demo.domain.Vehicle</span>
 <span class="keyword">import</span> <span class="include">demo.service.VehicleService</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.web.bind.annotation.PathVariable</span>
@@ -131,6 +130,32 @@ the following annotations</p>
     <span class="annotation">@RequestMapping</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/{manufacturerName}/vehicles</span><span class="delimiter">&quot;</span></span>)
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; vehiclesByManufacturer(<span class="annotation">@PathVariable</span> <span class="predefined-type">String</span> manufacturerName) {
         vehicleService.findAllByManufacturer(manufacturerName)*.name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/controller/VehicleControllerTest.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo.controller
+
+<span class="keyword">import</span> <span class="include">org.junit.jupiter.api.Test</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.test.context.SpringBootTest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.web.reactive.server.WebTestClient</span>
+
+<span class="annotation">@SpringBootTest</span>(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+<span class="type">class</span> <span class="class">VehicleControllerTest</span> {
+
+    <span class="annotation">@Autowired</span>
+    WebTestClient webClient
+
+    <span class="annotation">@Test</span>
+    <span class="type">void</span> fetchAudiVehicles() {
+        <span class="local-variable">this</span>.webClient.get().uri(<span class="string"><span class="delimiter">&quot;</span><span class="content">/audi/vehicles</span><span class="delimiter">&quot;</span></span>).exchange().expectBody(<span class="predefined-type">String</span>).isEqualTo(<span class="string"><span class="delimiter">'</span><span class="content">[&quot;A3&quot;,&quot;A4&quot;]</span><span class="delimiter">'</span></span>)
     }
 }</code></pre>
 </div>
@@ -158,8 +183,32 @@ the following annotations</p>
 }</code></pre>
 </div>
 </div>
-<div class="openblock">
+<div class="paragraph">
+<p>Add a test:</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/test/groovy/demo/controller/ManufacturerControllerTest.groovy</div>
 <div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo.controller
+
+<span class="keyword">import</span> <span class="include">org.junit.jupiter.api.Test</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.test.context.SpringBootTest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.web.reactive.server.WebTestClient</span>
+
+<span class="annotation">@SpringBootTest</span>(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+<span class="type">class</span> <span class="class">ManufacturerControllerTest</span> {
+
+    <span class="annotation">@Autowired</span>
+    WebTestClient webClient
+
+    <span class="annotation">@Test</span>
+    <span class="type">void</span> fetchManufacturer() {
+        <span class="local-variable">this</span>.webClient.get().uri(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>).exchange().expectBody(<span class="predefined-type">String</span>).isEqualTo(<span class="string"><span class="delimiter">'</span><span class="content">[&quot;audi&quot;,&quot;ford&quot;]</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Run the app:</p>
 </div>
@@ -189,8 +238,6 @@ the following annotations</p>
 </div>
 <div class="paragraph">
 <p><code>["A3","A4"]</code></p>
-</div>
-</div>
 </div>
 
 
