@@ -14,38 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grails.org/learning.html'>Learning</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Guides</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -127,7 +127,7 @@
         <h1>Querying the Database using GORM Dynamic Finders</h1>
         <p>This guide will demostrate how to efficiently query your database using GORM's dynamic finders.</p>
         <p><strong>Authors:</strong> Matthew Moss</p>
-        <p><strong>Grails Version:</strong> 3.3.1</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -174,8 +174,15 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -227,7 +234,7 @@ which are more efficient all around.</p>
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -446,7 +453,7 @@ of <code>Game</code> is unique.)</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGame</span>(<span class="predefined-type">String</span> name) {
+<pre class="CodeRay highlight"><code data-lang="groovy">Game queryGame(<span class="predefined-type">String</span> name) {
     Game.all.find {
         <span class="local-variable">it</span>.name == name
     }
@@ -492,7 +499,7 @@ provided by the <code>queryGame</code> method. So the final, efficient implement
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGame</span>(<span class="predefined-type">String</span> name) {
+<pre class="CodeRay highlight"><code data-lang="groovy">Game queryGame(<span class="predefined-type">String</span> name) {
     Game.findByName(name)
 }</code></pre>
 </div>
@@ -536,7 +543,7 @@ the board games with the provided average duration. Here is the existing, ineffi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesWithAverageDuration</span>(<span class="predefined-type">Integer</span> averageDuration) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithAverageDuration(<span class="predefined-type">Integer</span> averageDuration) {
     Game.all.findAll {
         <span class="local-variable">it</span>.averageDuration == averageDuration
     }
@@ -556,7 +563,7 @@ dynamic finder method call.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesWithAverageDuration</span>(<span class="predefined-type">Integer</span> averageDuration) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithAverageDuration(<span class="predefined-type">Integer</span> averageDuration) {
     Game.findAllByAverageDuration(averageDuration)
 }</code></pre>
 </div>
@@ -583,7 +590,7 @@ games that, according to the database, are not marked as strategy games.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesNotConsideredStrategy</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesNotConsideredStrategy() {
     Game.all.findAll {
         <span class="local-variable">it</span>.strategy != <span class="predefined-constant">true</span>
     }
@@ -619,7 +626,7 @@ matches on non-equality.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesNotConsideredStrategy</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesNotConsideredStrategy() {
     <span class="comment">// General case: using the NotEqual comparator.</span>
     Game.findAllByStrategyNotEqual(<span class="predefined-constant">true</span>)    <i class="conum" data-value="1"></i><b>(1)</b>
 
@@ -661,7 +668,7 @@ games with an average duration shorter than the provided value.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesExpectedShorterThan</span>(<span class="predefined-type">Integer</span> duration) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesExpectedShorterThan(<span class="predefined-type">Integer</span> duration) {
     Game.all.findAll {
         <span class="local-variable">it</span>.averageDuration &lt; duration
     }
@@ -676,7 +683,7 @@ so our final, improved implementation is:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesExpectedShorterThan</span>(<span class="predefined-type">Integer</span> duration) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesExpectedShorterThan(<span class="predefined-type">Integer</span> duration) {
     Game.findAllByAverageDurationLessThan(duration)
 }</code></pre>
 </div>
@@ -688,7 +695,7 @@ find all games with a rating higher than the provided rating. The original imple
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesRatedMoreThan</span>(<span class="predefined-type">BigDecimal</span> rating) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesRatedMoreThan(<span class="predefined-type">BigDecimal</span> rating) {
     Game.all.findAll {
         <span class="local-variable">it</span>.rating &gt; rating
     }
@@ -700,7 +707,7 @@ find all games with a rating higher than the provided rating. The original imple
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesRatedMoreThan</span>(<span class="predefined-type">BigDecimal</span> rating) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesRatedMoreThan(<span class="predefined-type">BigDecimal</span> rating) {
     Game.findAllByRatingGreaterThan(rating)
 }</code></pre>
 </div>
@@ -728,7 +735,7 @@ all the records, then counts how many match a predicate.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyGamesRatedAtLeast</span>(<span class="predefined-type">BigDecimal</span> rating) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyGamesRatedAtLeast(<span class="predefined-type">BigDecimal</span> rating) {
     Game.all.count {
         <span class="local-variable">it</span>.rating &gt;= rating
     }
@@ -748,7 +755,7 @@ So to count how many games rated a certain value or higher:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyGamesRatedAtLeast</span>(<span class="predefined-type">BigDecimal</span> rating) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyGamesRatedAtLeast(<span class="predefined-type">BigDecimal</span> rating) {
     Game.countByRatingGreaterThanEquals(rating)
 }</code></pre>
 </div>
@@ -785,7 +792,7 @@ Maybe you want to know all the games played (represented by the domain class <co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryMatchesPlayedBetweenDates</span>(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMatchesPlayedBetweenDates(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
     Match.all.findAll {
         startDate &lt;= <span class="local-variable">it</span>.started &amp;&amp; <span class="local-variable">it</span>.started &lt;= finishDate
     }
@@ -820,7 +827,7 @@ implementation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryMatchesPlayedBetweenDates</span>(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMatchesPlayedBetweenDates(<span class="predefined-type">Date</span> startDate, <span class="predefined-type">Date</span> finishDate) {
     Match.findAllByStartedBetween(startDate, finishDate)
 }</code></pre>
 </div>
@@ -841,7 +848,7 @@ played games. Let&#8217;s define high scores to be in the range 90-100.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyScoresWithinRange</span>(Range range) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyScoresWithinRange(Range range) {
     Score.all.count {
         <span class="local-variable">it</span>.score <span class="keyword">in</span> range
     }
@@ -856,7 +863,7 @@ the improved implementation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyScoresWithinRange</span>(Range range) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyScoresWithinRange(Range range) {
     Score.countByScoreInRange(range)
 }</code></pre>
 </div>
@@ -882,7 +889,7 @@ Here follows three examples that we should improve with a dynamic finder.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryPlayersWithLastName</span>(<span class="predefined-type">String</span> lastName) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryPlayersWithLastName(<span class="predefined-type">String</span> lastName) {
     Player.all.findAll {
         <span class="local-variable">it</span>.name.endsWith <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="inline"><span class="inline-delimiter">${</span>lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
     }
@@ -896,7 +903,7 @@ efficiently be written as:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryPlayersWithLastName</span>(<span class="predefined-type">String</span> lastName) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Player&gt; queryPlayersWithLastName(<span class="predefined-type">String</span> lastName) {
     Player.findAllByNameLike(<span class="string"><span class="delimiter">&quot;</span><span class="content">% </span><span class="inline"><span class="inline-delimiter">${</span>lastName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
 }</code></pre>
 </div>
@@ -911,7 +918,7 @@ case-insensitive.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryMechanicsContaining</span>(<span class="predefined-type">String</span> text) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryMechanicsContaining(<span class="predefined-type">String</span> text) {
     Mechanic.all.findAll {
         StringUtils.containsIgnoreCase <span class="local-variable">it</span>.name, text
     }
@@ -925,7 +932,7 @@ ignoring case, use the <code>Ilike</code> comparator. You can still use wildcard
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryMechanicsContaining</span>(<span class="predefined-type">String</span> text) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Mechanic&gt; queryMechanicsContaining(<span class="predefined-type">String</span> text) {
     Mechanic.findAllByNameIlike(<span class="string"><span class="delimiter">&quot;</span><span class="content">%</span><span class="inline"><span class="inline-delimiter">${</span>text<span class="inline-delimiter">}</span></span><span class="content">%</span><span class="delimiter">&quot;</span></span>)
 }</code></pre>
 </div>
@@ -935,7 +942,7 @@ ignoring case, use the <code>Ilike</code> comparator. You can still use wildcard
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesMatching</span>(<span class="predefined-type">String</span> pattern) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesMatching(<span class="predefined-type">String</span> pattern) {
     Game.all.findAll {
         <span class="local-variable">it</span>.name ==~ pattern
     }
@@ -963,7 +970,7 @@ built upon the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryGamesMatching</span>(<span class="predefined-type">String</span> pattern) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Game&gt; queryGamesMatching(<span class="predefined-type">String</span> pattern) {
     Game.findAllByNameRlike(pattern)      <span class="comment">// Rlike: not universally supported</span>
 }</code></pre>
 </div>
@@ -1001,13 +1008,13 @@ and which are still ongoing.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyMatchesInProgress</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyMatchesInProgress() {
     Match.all.count {
         <span class="local-variable">it</span>.finished == <span class="predefined-constant">null</span>
     }
 }
 
-<span class="keyword">def</span> <span class="function">queryHowManyMatchesCompleted</span>() {
+<span class="type">int</span> queryHowManyMatchesCompleted() {
     Match.all.count {
         <span class="local-variable">it</span>.finished != <span class="predefined-constant">null</span>
     }
@@ -1021,11 +1028,11 @@ improved implementation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> <span class="function">queryHowManyMatchesInProgress</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">int</span> queryHowManyMatchesInProgress() {
     Match.countByFinishedIsNull()
 }
 
-<span class="keyword">def</span> <span class="function">queryHowManyMatchesCompleted</span>() {
+<span class="type">int</span> queryHowManyMatchesCompleted() {
     Match.countByFinishedIsNotNull()
 }</code></pre>
 </div>
@@ -1054,13 +1061,13 @@ listed.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesForNames</span>(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesForNames(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
         Game.all.findAll {
             <span class="local-variable">it</span>.name <span class="keyword">in</span> names
         }
     }
 
-    <span class="keyword">def</span> <span class="function">queryMatchesForGames</span>(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+    <span class="predefined-type">List</span>&lt;Game&gt; queryMatchesForGames(<span class="predefined-type">List</span>&lt;Game&gt; games) {
         Match.all.findAll {
             <span class="local-variable">it</span>.game <span class="keyword">in</span> games
         }
@@ -1073,11 +1080,11 @@ reduce these methods to be more efficient.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesForNames</span>(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesForNames(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; names) {
         Game.findAllByNameInList(names)
     }
 
-    <span class="keyword">def</span> <span class="function">queryMatchesForGames</span>(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+    <span class="predefined-type">List</span>&lt;Match&gt; queryMatchesForGames(<span class="predefined-type">List</span>&lt;Game&gt; games) {
         Match.findAllByGameInList(games)
     }</code></pre>
 </div>
@@ -1106,7 +1113,7 @@ the inefficient implementation of <code>QueryService.queryGamesOtherThan</code>:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesOtherThan</span>(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesOtherThan(<span class="predefined-type">List</span>&lt;Game&gt; games) {
         Game.all.findAll {
             !(<span class="local-variable">it</span> <span class="keyword">in</span> games)
         }
@@ -1118,7 +1125,7 @@ the inefficient implementation of <code>QueryService.queryGamesOtherThan</code>:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesOtherThan</span>(<span class="predefined-type">List</span>&lt;Game&gt; games) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesOtherThan(<span class="predefined-type">List</span>&lt;Game&gt; games) {
         Game.findAllByNameNotInList(games*.name)
     }</code></pre>
 </div>
@@ -1141,7 +1148,7 @@ Our inefficient implementation looks like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryHowManyGamesSupportPlayerCount</span>(<span class="predefined-type">Integer</span> playerCount) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">int</span> queryHowManyGamesSupportPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
         Game.all.count {
             <span class="local-variable">it</span>.minPlayers &lt;= playerCount &amp;&amp; playerCount &lt;= <span class="local-variable">it</span>.maxPlayers
         }
@@ -1155,7 +1162,7 @@ players is no higher than the requested player count, we would do this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByMinPlayersLessThanEqual(playerCount)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByMinPlayersLessThanEqual(playerCount)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1164,7 +1171,7 @@ player count, we would do this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByMaxPlayersGreaterThanEqual(playerCount)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByMaxPlayersGreaterThanEqual(playerCount)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1186,7 +1193,7 @@ method call will take two arguments: one for <code>minPlayers</code> and one for
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryHowManyGamesSupportPlayerCount</span>(<span class="predefined-type">Integer</span> playerCount) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="type">int</span> queryHowManyGamesSupportPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
         Game.countByMinPlayersLessThanEqualsAndMaxPlayersGreaterThanEquals(playerCount, playerCount)
     }</code></pre>
 </div>
@@ -1197,7 +1204,7 @@ where <code>minPlayers</code> and <code>maxPlayers</code> are equal to the same 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesSupportExactPlayerCount</span>(<span class="predefined-type">Integer</span> playerCount) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesSupportExactPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
         Game.all.findAll {
             <span class="local-variable">it</span>.minPlayers == playerCount &amp;&amp; <span class="local-variable">it</span>.maxPlayers == playerCount
         }
@@ -1209,7 +1216,7 @@ where <code>minPlayers</code> and <code>maxPlayers</code> are equal to the same 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesSupportExactPlayerCount</span>(<span class="predefined-type">Integer</span> playerCount) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesSupportExactPlayerCount(<span class="predefined-type">Integer</span> playerCount) {
         Game.findAllByMinPlayersAndMaxPlayers(playerCount, playerCount)
     }</code></pre>
 </div>
@@ -1238,7 +1245,7 @@ the original implementation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesConsideredFamilyOrParty</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesConsideredFamilyOrParty() {
         Game.all.findAll {
             <span class="local-variable">it</span>.family || <span class="local-variable">it</span>.party
         }
@@ -1250,7 +1257,7 @@ the original implementation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesConsideredFamilyOrParty</span>() {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesConsideredFamilyOrParty() {
         Game.findAllByFamilyOrParty(<span class="predefined-constant">true</span>, <span class="predefined-constant">true</span>)
     }</code></pre>
 </div>
@@ -1326,7 +1333,7 @@ descending/decreasing (<code>desc</code>).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1336,7 +1343,7 @@ included in the results), we add <code>sort</code>/<code>order</code> query para
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1344,7 +1351,7 @@ included in the results), we add <code>sort</code>/<code>order</code> query para
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">0</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">0</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1353,7 +1360,7 @@ last call to show the next group of ten results by updating the <code>offset</co
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">10</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; games = Game.findAllByStrategyAndMinPlayers(<span class="predefined-constant">true</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">maxPlayers</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">offset</span>: <span class="integer">10</span>, <span class="key">max</span>: <span class="integer">10</span>])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1364,10 +1371,10 @@ result of a query. For robust code, you should consider adding a <code>sort</cod
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">    <span class="comment">// This:</span>
-    <span class="keyword">def</span> bestTwoPlayerGame = Game.findByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])
+    Game bestTwoPlayerGame = Game.findByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>])
 
     <span class="comment">// is equivalent to this:</span>
-    <span class="keyword">def</span> bestTwoPlayerGame = Game.findAllByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">max</span>: <span class="integer">1</span>])</code></pre>
+    <span class="predefined-type">List</span>&lt;Game&gt; bestTwoPlayerGame = Game.findAllByMinPlayerAndMaxPlayer(<span class="integer">2</span>, <span class="integer">2</span>, [<span class="key">sort</span>: <span class="string"><span class="delimiter">'</span><span class="content">rating</span><span class="delimiter">'</span></span>, <span class="key">order</span>: <span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>, <span class="key">max</span>: <span class="integer">1</span>])</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -1443,9 +1450,9 @@ above:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> category = Category.findOrSaveByName(<span class="string"><span class="delimiter">'</span><span class="content">Zombies</span><span class="delimiter">'</span></span>)
+<pre class="CodeRay highlight"><code data-lang="groovy">    Category category = Category.findOrSaveByName(<span class="string"><span class="delimiter">'</span><span class="content">Zombies</span><span class="delimiter">'</span></span>)
 
-    <span class="keyword">def</span> game = Game.findOrCreateByNameAndMinPlayersAndMaxPlayers(<span class="string"><span class="delimiter">'</span><span class="content">SET</span><span class="delimiter">'</span></span>, <span class="integer">2</span>, <span class="integer">20</span>)</code></pre>
+    Game game = Game.findOrCreateByNameAndMinPlayersAndMaxPlayers(<span class="string"><span class="delimiter">'</span><span class="content">SET</span><span class="delimiter">'</span></span>, <span class="integer">2</span>, <span class="integer">20</span>)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1571,7 +1578,7 @@ minutes. Finding all games using a specific mechanic can be done with the <code>
     }
 
     <span class="comment">// Find all games using the &quot;Hand Management&quot; game mechanic.</span>
-    <span class="keyword">def</span> m = Mechanic.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hand Management</span><span class="delimiter">&quot;</span></span>)
+    Mechanic m = Mechanic.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Hand Management</span><span class="delimiter">&quot;</span></span>)
     <span class="keyword">def</span> games = Game.gamesWithMechanic(m)</code></pre>
 </div>
 </div>
@@ -1583,7 +1590,7 @@ append the dynamic finder to the named query.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesWithMechanicNoLongerThanDuration</span>(Mechanic mechanic, <span class="type">int</span> duration) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesWithMechanicNoLongerThanDuration(Mechanic mechanic, <span class="type">int</span> duration) {
         <span class="comment">// Games provides a named query, 'gamesWithMechanic', to find all games that employ the provided game mechanic.</span>
         <span class="comment">// Dynamic finders can be chained onto named queries to narrow the results.</span>
         Game.gamesWithMechanic(mechanic).findAllByAverageDurationLessThan(duration)
@@ -1598,9 +1605,9 @@ to further restrict the results of the criteria query.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="keyword">def</span> <span class="function">queryGamesInCategoryWithAverageDuration</span>(Category category, <span class="type">int</span> duration) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="predefined-type">List</span>&lt;Game&gt; queryGamesInCategoryWithAverageDuration(Category category, <span class="type">int</span> duration) {
         <span class="comment">// Here is a detached criteria to find all games within the specific category.</span>
-        <span class="keyword">def</span> detachedCriteria = <span class="keyword">new</span> DetachedCriteria(Game).build {
+        DetachedCriteria&lt;Game&gt; detachedCriteria = <span class="keyword">new</span> DetachedCriteria(Game).build {
             categories {
                 eq <span class="string"><span class="delimiter">'</span><span class="content">id</span><span class="delimiter">'</span></span>, category.id
             }
@@ -2031,23 +2038,23 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
@@ -2062,6 +2069,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
