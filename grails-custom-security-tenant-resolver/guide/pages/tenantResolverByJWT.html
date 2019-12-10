@@ -107,7 +107,6 @@ curl &quot;http://localhost:8080/plan&quot; \
 <span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.storage.TokenStorageService</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.AllTenantsResolver</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
@@ -156,9 +155,11 @@ curl &quot;http://localhost:8080/plan&quot; \
 
     <span class="annotation">@Override</span>
     <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
-        <span class="keyword">new</span> DetachedCriteria(User)
-                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
-                .list()
+        User.withTransaction(<span class="key">readOnly</span>: <span class="predefined-constant">true</span>) {
+            <span class="keyword">new</span> DetachedCriteria(User)
+                    .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                    .list()  <span class="keyword">as</span> <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt;
+        }
     }
 }</code></pre>
 </div>
@@ -191,10 +192,14 @@ beans = {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.AccessToken</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.generation.TokenGenerator</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
 <span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
 <span class="keyword">import</span> <span class="include">org.springframework.mock.web.MockHttpServletRequest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
 <span class="keyword">import</span> <span class="include">org.springframework.web.context.request.RequestContextHolder</span>
 <span class="keyword">import</span> <span class="include">org.springframework.web.context.request.ServletWebRequest</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
@@ -206,6 +211,9 @@ beans = {
 
     <span class="annotation">@Autowired</span>
     CurrentUserByJwtTenantResolver currentUserTenantResolver
+
+    TokenGenerator tokenGenerator
+
 
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test HttpHeader resolver throws an exception outside a web request</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
@@ -237,20 +245,15 @@ beans = {
 
         <span class="key">setup</span>:
         MockHttpServletRequest request = <span class="keyword">new</span> MockHttpServletRequest(<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/foo</span><span class="delimiter">&quot;</span></span>)
-        <span class="predefined-type">String</span> jwt = <span class="string"><span class="delimiter">'''</span><span class="content">\
-</span><span class="content">eyJhbGciOiJIUzI1NiJ9.eyJwcmluY2lwYWwiOiJINHNJQUFBQUFBQUFBSlZTdjA4VVFSUitleHhDZ2xF</span><span class="content">\
-</span><span class="content">d2tjUUNHN0V6ZXdtV1Z3RkJBcGtjeHZNc01OSE03VDZXZ2RtWmRXYjJ1R3ZJVlZKUVFGUVNFbHBMXC9oT</span><span class="content">\
-</span><span class="content">nRcL0FPTUZMVFV0THhaT1BhMElVNjFlZlB0OSt2TjZRV01XZ012RThPRnRHRW04MFNvMEdaR3FNUmlsQn</span><span class="content">\
-</span><span class="content">ZoZW1GdTBjVG9Dc1J5QVd6UkJLNVBVSUdBUVVYRURoNnhMZDdoTmNsVlVsdHJiMkhrNmwwRGM5b2tONHd</span><span class="content">\
-</span><span class="content">iaHFlNG84MTJlTXNkYVlOXC9DWlRVd2ZjS2pLM0RGSThpblN2WDBHcXBtd21EOFRwTWxqT21vMjBcL2Vo</span><span class="content">\
-</span><span class="content">elJEU29udUxURDBERlV2QzB4WmpEQmM3ZXBTVldnZGZEdzJtenVoS3cxMGRVWmpHZmNXbkwzVDVLbTg5Yj</span><span class="content">\
-</span><span class="content">l2YmVwS01FbjJJVnFOd3ZvVUhmUFBUVDBQT0dpbHBKU0M2M3NiRXVsT2hZYndvc1RmM1wvbXk2K0RrMzZy</span><span class="content">\
-</span><span class="content">QWtDZHZMajduM0wrWkFINlB6NWNQaTJLRGlJSDAwUFdTMWk5bTVHYnFaTDVyVUd2XC9QdjQ5ZGVqaTczM0</span><span class="content">\
-</span><span class="content">k2VHNFYVwvK2Z4K3o4emZOOVJaMW1uSERuUjdhRWRIdVZQMDNrU1wvY1RUN1lRaTlzaWpTVFNDOUtPWXh2</span><span class="content">\
-</span><span class="content">SlVwaWlsczFXZzc2ZG5EXC96UnBiK3ZodWhiSDVsWVlmM090UWRtMUkrRUdSMnk4c1pKcld0WDkrK1BQZ</span><span class="content">\
-</span><span class="content">zJSOGlXWVhSRHBjNVV1MlRKYWlScDIwMG4wK1BaaWErbmUwWElRWVArZ3JPZUdRVkZBTUFBQT09Iiwic3</span><span class="content">\
-</span><span class="content">ViIjoidmVjdG9yIiwicm9sZXMiOlsiUk9MRV9WSUxMQUlOIl0sImlhdCI6MTUwNDc4MTEyNX0.cf5rGNrNolchQ3QyMsPB544fwzYGiihBkRF8KU6soxc</span><span class="delimiter">'''</span></span>
-
+        <span class="keyword">def</span> userDetails = <span class="predefined-type">Stub</span>(UserDetails) {
+            getUsername() &gt;&gt; <span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>
+            isAccountNonExpired() &gt;&gt; <span class="predefined-constant">true</span>
+            isAccountNonLocked() &gt;&gt; <span class="predefined-constant">true</span>
+            isCredentialsNonExpired() &gt;&gt; <span class="predefined-constant">true</span>
+            isEnabled() &gt;&gt; <span class="predefined-constant">true</span>
+        }
+        AccessToken accessToken = tokenGenerator.generateAccessToken(userDetails, <span class="integer">3600</span>)
+        <span class="predefined-type">String</span> jwt = accessToken.accessToken
         request.addHeader(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">$</span>jwt</span><span class="delimiter">&quot;</span></span>)
         RequestContextHolder.setRequestAttributes(<span class="keyword">new</span> ServletWebRequest(request))
 

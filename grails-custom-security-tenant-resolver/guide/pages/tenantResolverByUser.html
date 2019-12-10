@@ -109,10 +109,6 @@ create a custom resolver by the current logged in user.</p>
     <span class="annotation">@Lazy</span>
     SpringSecurityService springSecurityService
 
-    <span class="annotation">@Autowired</span>
-    <span class="annotation">@Lazy</span>
-    UserDataService userDataService
-
     <span class="annotation">@Override</span>
     <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
         <span class="predefined-type">String</span> username = loggedUsername()
@@ -134,7 +130,11 @@ create a custom resolver by the current logged in user.</p>
 
     <span class="annotation">@Override</span>
     <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
-        userDataService.findUserUsername() <span class="keyword">as</span> <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt;
+        User.withTransaction(<span class="key">readOnly</span>: <span class="predefined-constant">true</span>) {
+            <span class="keyword">new</span> DetachedCriteria(User)
+                    .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                    .list()  <span class="keyword">as</span> <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt;
+        }
     }
 }</code></pre>
 </div>
@@ -253,11 +253,7 @@ beans = {
     <span class="key">gorm</span>:
         <span class="key">multiTenancy</span>:
             <span class="key">mode</span>: <span class="string"><span class="content">DISCRIMINATOR </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">demo.CurrentUserTenantResolver </span></span><i class="conum" data-value="2"></i><b>(2)</b>
-        <span class="key">reactor</span>:
-            <span class="comment"># Whether to translate GORM events into Reactor events</span>
-            <span class="comment"># Disabled by default for performance reasons</span>
-            <span class="key">events</span>: <span class="string"><span class="content">false</span></span></code></pre>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">demo.CurrentUserTenantResolver </span></span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
