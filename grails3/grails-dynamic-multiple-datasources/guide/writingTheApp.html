@@ -1,0 +1,644 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#configuration"><strong>3.1</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#domain"><strong>3.2</strong><span>Domain Class</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#gormevents"><strong>3.3</strong><span>GORM Events</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#test"><strong>3.4</strong><span>Functional Test</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#bootstrap"><strong>3.5</strong><span>Add Connection Source on Start-up</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This guide uses Multi-Tenancy DATABASE mode. To learn more, read <a href="http://guides.grails.org/database-per-tenant/guide/index.html">Database per Tenant Multi-Tenancy</a> Guide.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This guides shows a typical flow you will see when creating a SaaS ( Software as a Service ) application using Multi-Tenancy <code>DATABASE</code> mode.</p>
+</div>
+<div class="paragraph">
+<p>To simplify this guide, the Database provising process is simplified.</p>
+</div>
+<div class="paragraph">
+<p>Create two MySQL databases with the following schema.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sql"><span class="class">CREATE</span> <span class="type">TABLE</span> <span class="string"><span class="delimiter">`</span><span class="content">plan</span><span class="delimiter">`</span></span> (
+  <span class="string"><span class="delimiter">`</span><span class="content">id</span><span class="delimiter">`</span></span> <span class="predefined-type">bigint</span>(<span class="integer">20</span>) <span class="keyword">NOT</span> <span class="predefined-constant">NULL</span>,
+  <span class="string"><span class="delimiter">`</span><span class="content">version</span><span class="delimiter">`</span></span> <span class="predefined-type">bigint</span>(<span class="integer">20</span>) <span class="keyword">NOT</span> <span class="predefined-constant">NULL</span>,
+  <span class="string"><span class="delimiter">`</span><span class="content">title</span><span class="delimiter">`</span></span> <span class="predefined-type">varchar</span>(<span class="integer">255</span>) <span class="keyword">NOT</span> <span class="predefined-constant">NULL</span>
+) <span class="directive">ENGINE</span>=InnoDB <span class="directive">DEFAULT</span> <span class="directive">CHARSET</span>=utf8;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first database should be called <code>gru</code> and the second <code>vector</code>.</p>
+</div>
+<div class="paragraph">
+<p>In the guide application, when a user registers, a database with identical name as the username is provisioned for the user, thus each registered user will have their own unique database.</p>
+</div>
+<div class="paragraph">
+<p>In a real-world app, you will probably have a more complicated setup which may involve creating the database, creating the schema, saving the database url and credentials of each user&#8217;s database in a secured way in a database table of the default datasource etc.</p>
+</div>
+
+
+<h2 id="configuration">3.1 Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/configuration.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we&#8217;ll be using MySQL, so the MySQL dependency should be added to <code>build.gradle</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    runtime <span class="string"><span class="delimiter">'</span><span class="content">mysql:mysql-connector-java:5.1.40</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Within the MySQL database create a database named <code>minions</code>.</p>
+</div>
+<div class="paragraph">
+<p>In <code>application.yml</code> configure just the default datasource to point to this database.
+The schema of this database will be generated by Hibernate because of the configuration <code>dbCreate: update</code>.</p>
+</div>
+<div class="paragraph">
+<p>The settings for the dataSource of each user of the application will be configured dynamically and inherit from the default one.</p>
+</div>
+<div class="paragraph">
+<p>Domain classes dealing with security <code>User</code>, <code>UserRole</code>, <code>Role</code> are mapped to the default dataSource.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">hibernate</span>:
+    <span class="key">cache</span>:
+        <span class="key">queries</span>: <span class="predefined-constant">false</span>
+        <span class="key">use_second_level_cache</span>: <span class="predefined-constant">false</span>
+        <span class="key">use_query_cache</span>: <span class="predefined-constant">false</span>
+<span class="key">dataSource</span>:
+    <span class="key">pooled</span>: <span class="predefined-constant">true</span>
+    <span class="key">jmxExport</span>: <span class="predefined-constant">true</span>
+    <span class="key">driverClassName</span>: com.mysql.jdbc.Driver
+    <span class="key">dialect</span>: org.hibernate.dialect.MySQL5InnoDBDialect
+    <span class="key">username</span>: root <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">password</span>: root <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">dbCreate</span>: update
+    <span class="key">url</span>: <span class="key">jdbc</span>:<span class="key">mysql</span>:<span class="comment">//127.0.0.1:8889/minions </span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configure these settings according to your MySQL installation.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Change Multi-Tenancy mode to <code>DATABASE</code> within <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: DATABASE <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="key">tenantResolverClass</span>: demo.CurrentUserByJwtTenantResolver <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="key">reactor</span>:
+            <span class="error">#</span> Whether to translate GORM events into Reactor events
+            <span class="error">#</span> Disabled by <span class="keyword">default</span> <span class="keyword">for</span> performance reasons
+            <span class="key">events</span>: <span class="predefined-constant">false</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define Multi-Tenancy mode as <code>DATABASE</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set the Tenant Resolver class to a custom class which you wrote in the <a href="http://guides.grails.org/grails-custom-security-tenant-resolver/guide/index.html">Custom Tenant Resolver by JWT</a> guide.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="domain">3.2 Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/domain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Since this guide utilizes <code>DATABASE</code> Multi-Tenancy where each tenants has a separate database, you no longer need to configure a column to deal with <code>tenantId</code>, hence the <code>tenantId</code> property can be removed:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Plan.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.MultiTenant</span>
+
+<span class="type">class</span> <span class="class">Plan</span> <span class="directive">implements</span> MultiTenant&lt;Plan&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> title
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement <a href="http://gorm.grails.org/latest/hibernate/api/grails/gorm/MultiTenant.html">MultiTenant</a> trait to regard this domain class as multi tenant.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="gormevents">3.3 GORM Events</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/gormevents.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a class named <code>UserInsertedListener</code>. It creates a new connection source when a new user is inserted.</p>
+</div>
+<div class="paragraph">
+<p>It uses the <code>@Listener</code> annotation to listen <strong>synchronously</strong> to <a href="https://async.grails.org/latest/guide/index.html#gormEvents">Events from GORM</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/UserInsertedListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">groovy.util.logging.Slf4j</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PostInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Slf4j</span>
+<span class="type">class</span> <span class="class">UserInsertedListener</span> {
+
+    <span class="annotation">@Autowired</span>
+    HibernateDatastore hibernateDatastore
+
+    <span class="annotation">@Autowired</span>
+    DatabaseProvisioningService databaseProvisioningService
+
+    <span class="annotation">@Listener</span>(User) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> onUserPostInsertEvent(PostInsertEvent event) { <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="predefined-type">String</span> username = event.getEntityAccess().getPropertyValue(<span class="string"><span class="delimiter">&quot;</span><span class="content">username</span><span class="delimiter">&quot;</span></span>)
+        DatabaseConfiguration databaseConfiguration = databaseProvisioningService.findDatabaseConfigurationByUsername(username) <i class="conum" data-value="3"></i><b>(3)</b>
+        hibernateDatastore.getConnectionSources().addConnectionSource(databaseConfiguration.dataSourceName, databaseConfiguration.configuration) <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Listen Synchrounsly to GORM events of the domain class <code>User</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Listen to <code>PostInsertEvent</code> events</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use a collaborator to retrieve a <code>DatabaseConfiguration</code> object (see below).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Use <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#connectionSources">ConnectionSources API</a> to configure the new dataSource dynamically.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Define the <code>UserInsertedListener</code> as a Bean</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+import demo.UserInsertedListener
+...
+beans = {
+...
+    userInsertedListener(UserInsertedListener)
+...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous listener uses a couple of classes as collaborators:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/DatabaseConfiguration.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">DatabaseConfiguration</span> {
+    <span class="predefined-type">String</span> dataSourceName
+    <span class="predefined-type">Map</span> configuration
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/DatabaseProvisioningService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">DatabaseProvisioningService</span> {
+
+    UserRoleService userRoleService
+
+    <span class="predefined-type">List</span>&lt;DatabaseConfiguration&gt; findAllDatabaseConfiguration() {
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; usernames = userRoleService.findAllUsernameByAuthority(VillainService.ROLE_VILLAIN)
+        usernames.collect { findDatabaseConfigurationByUsername(<span class="local-variable">it</span>) }
+    }
+
+    DatabaseConfiguration findDatabaseConfigurationByUsername(<span class="predefined-type">String</span> username) {
+        <span class="keyword">new</span> DatabaseConfiguration(<span class="key">dataSourceName</span>: username, <span class="key">configuration</span>: configurationByUsername(username))
+    }
+
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; configurationByUsername(<span class="predefined-type">String</span> username) {
+        [
+                <span class="string"><span class="delimiter">'</span><span class="content">hibernate.hbm2ddl.auto</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">none</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+                <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">root</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">root</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="string"><span class="delimiter">'</span><span class="content">url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:mysql://127.0.0.1:8889/</span><span class="inline"><span class="inline-delimiter">$</span>username</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+        ] <span class="keyword">as</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Equivalent of <code>dbCreate: none</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Change these configuration settings to match your system.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The previous settings do not specify the MySQL Driver or Dialect. Those are inherited from the default Datasource which was configured in <code>application.yml</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="test">3.4 Functional Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>We have modified slightly the functional test of <a href="http://guides.grails.org/grails-custom-security-tenant-resolver/guide/index.html#test">Custom Tenant Resolver by JWT</a> Guide to verify
+that a new connection source is created when a new <code>User</code> is inserted.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/PlanControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.Tenants</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">PlanControllerSpec</span> <span class="directive">extends</span> Specification {
+    PlanService planService
+    UserService userService
+    VillainService villainService
+    RoleService roleService
+
+    <span class="annotation">@Autowired</span>
+    HibernateDatastore hibernateDatastore
+
+    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+    <span class="predefined-type">String</span> accessToken(<span class="predefined-type">String</span> u, <span class="predefined-type">String</span> p) {
+        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            json {
+                username = u
+                password = p
+            }
+        }
+        <span class="keyword">if</span> ( resp.status == <span class="integer">200</span> ) {
+            <span class="keyword">return</span> resp.json.access_token
+        }
+        <span class="predefined-constant">null</span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Plans for current logged user are retrieved</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        User vector = villainService.saveVillain(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        hibernateDatastore.connectionSources.size() == old(hibernateDatastore.connectionSources.size()) + <span class="integer">1</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="key">when</span>:
+        User gru = villainService.saveVillain(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        hibernateDatastore.connectionSources.size() == old(hibernateDatastore.connectionSources.size()) + <span class="integer">1</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) {
+            planService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+        }
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
+            planService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal a Pyramid</span><span class="delimiter">'</span></span>)
+        }
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the gru</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> gruAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        gruAccessToken
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>gruAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the vector</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> vectorAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        vectorAccessToken
+
+        <span class="key">when</span>:
+        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>vectorAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
+
+        <span class="key">cleanup</span>:
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) {
+            planService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+        }
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
+            planService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal a Pyramid</span><span class="delimiter">'</span></span>)
+        }
+        userService.deleteUser(gru)
+        userService.deleteUser(vector)
+        roleService.delete(VillainService.ROLE_VILLAIN)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Verify a new connection source exists</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="bootstrap">3.5 Add Connection Source on Start-up</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/edit/grails3/src/main/docs/guide/bootstrap.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>When the app restarts, we want to wire-up a dataSource for every registered user. Modify <code>BootStrap.groovy</code> to achieve that:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/demo/BootStrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    HibernateDatastore hibernateDatastore
+    DatabaseProvisioningService databaseProvisioningService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        <span class="keyword">for</span> (DatabaseConfiguration databaseConfiguration : databaseProvisioningService.findAllDatabaseConfiguration() ) { <i class="conum" data-value="1"></i><b>(1)</b>
+            hibernateDatastore.getConnectionSources().addConnectionSource(databaseConfiguration.dataSourceName, databaseConfiguration.configuration)
+        }
+    }
+
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-dynamic-multiple-datasources"><img src="https://travis-ci.org/grails-guides/grails-dynamic-multiple-datasources.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-dynamic-multiple-datasources">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-dynamic-multiple-datasources.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-dynamic-multiple-datasources.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-dynamic-multiple-datasources'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-dynamic-multiple-datasources.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-dynamic-multiple-datasources/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
