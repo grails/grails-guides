@@ -95,6 +95,7 @@ that a new connection source is created when a new <code>User</code> is inserted
 <span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
 <span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
 <span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
 <span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
 <span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
 <span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
@@ -122,16 +123,10 @@ that a new connection source is created when a new <code>User</code> is inserted
     }
 
     <span class="predefined-type">String</span> accessToken(<span class="predefined-type">String</span> u, <span class="predefined-type">String</span> p) {
-        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
-            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
-            json {
-                username = u
-                password = p
-            }
-        }
-        <span class="keyword">if</span> ( resp.status == <span class="integer">200</span> ) {
-            <span class="keyword">return</span> resp.json.access_token
+        HttpRequest request = HttpRequest.POST(<span class="string"><span class="delimiter">'</span><span class="content">/api/login</span><span class="delimiter">'</span></span>, [<span class="key">username</span>: u, <span class="key">password</span>: p])
+        HttpResponse&lt;<span class="predefined-type">Map</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">Map</span>)
+        <span class="keyword">if</span> ( resp.status == HttpStatus.OK ) {
+            <span class="keyword">return</span> resp.body().access_token
         }
         <span class="predefined-constant">null</span>
     }
@@ -167,7 +162,7 @@ that a new connection source is created when a new <code>User</code> is inserted
         HttpResponse&lt;<span class="predefined-type">String</span>&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">String</span>)
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
+        resp.status == HttpStatus.OK
         resp.body() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the vector</span><span class="delimiter">'</span></span>
@@ -182,7 +177,7 @@ that a new connection source is created when a new <code>User</code> is inserted
 
 
         <span class="key">then</span>:
-        resp.status == <span class="integer">200</span>
+        resp.status == HttpStatus.OK
         resp.body() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
 
         <span class="key">cleanup</span>:
