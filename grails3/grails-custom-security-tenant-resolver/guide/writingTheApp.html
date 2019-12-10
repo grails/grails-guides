@@ -1,0 +1,1198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#domain"><strong>3.1</strong><span>Create Domain Class</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#controller"><strong>3.2</strong><span>Controller</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#security"><strong>3.3</strong><span>Wire up Security</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tenantResolver"><strong>3.4</strong><span>Custom Tenant Resolver</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tenantResolverByJWT"><strong>3.5</strong><span>Tenant Resolver by JWT</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tenantResolverByUser"><strong>3.6</strong><span>Tenant Resolver by User</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#test"><strong>3.7</strong><span>Functional Test</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheApp">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/writingTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This guide uses Multi-Tenancy DISCRIMINATOR mode. To learn more, read <a href="http://guides.grails.org/discriminator-per-tenant/guide/index.html">Single Database Multi-Tenancy Discriminator Column</a> Guide.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="domain">3.1 Create Domain Class</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/domain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Plan.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.MultiTenant</span>
+
+<span class="type">class</span> <span class="class">Plan</span> <span class="directive">implements</span> MultiTenant&lt;Plan&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> username
+
+    <span class="directive">static</span> mapping = {
+        tenantId <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement <a href="http://gorm.grails.org/latest/hibernate/api/grails/gorm/MultiTenant.html">MultiTenant</a> trait to regard this domain class as multi tenant.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Setup the tenant identifier as a column named <code>username</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create an interface <code>PlanService</code> which is a <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Service</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/PlanDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.CurrentTenant</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Service</span>(Plan) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@CurrentTenant</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="type">interface</span> PlanDataService {
+    <span class="predefined-type">List</span>&lt;Plan&gt; findAll()
+    Plan save(<span class="predefined-type">String</span> title)
+    <span class="type">void</span> deleteByTitle(<span class="predefined-type">String</span> title)
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Annotate it with the <code>grails.gorm.services.Service</code> annotation with the domain class the service applies to.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Resolve the current tenant for the context of this class</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="controller">3.2 Controller</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/controller.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a simple controller which uses with the previously defined <code>PlanService</code> service.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/PlanController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">PlanController</span> {
+    PlanDataService planDataService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">planList</span>: planDataService.findAll()]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We render the <code>Plan</code> instances as JSON with the help of <a href="http://views.grails.org">JSON Views</a></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/plan/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.Plan</span>
+
+model {
+    <span class="predefined-type">Iterable</span>&lt;Plan&gt; planList
+}
+
+json tmpl.plan(<span class="string"><span class="delimiter">'</span><span class="content">plan</span><span class="delimiter">'</span></span>, planList)</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/plan/_plan.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.Plan</span>
+
+model {
+    Plan plan
+}
+
+json {
+    title plan.title
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="security">3.3 Wire up Security</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/security.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create security domain classes. You could create these classes with Spring Security Core <code>s2-quickstart</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/User.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">User</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+    <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+    <span class="predefined-type">String</span> username
+    <span class="predefined-type">String</span> password
+    <span class="type">boolean</span> enabled = <span class="predefined-constant">true</span>
+    <span class="type">boolean</span> accountExpired
+    <span class="type">boolean</span> accountLocked
+    <span class="type">boolean</span> passwordExpired
+
+    <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt; getAuthorities() {
+        (UserRole.findAllByUser(<span class="local-variable">this</span>) <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;UserRole&gt;)*.role <span class="keyword">as</span> <span class="predefined-type">Set</span>&lt;<span class="predefined-type">Role</span>&gt;
+    }
+
+    <span class="directive">static</span> constraints = {
+        password <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">password</span>: <span class="predefined-constant">true</span>
+        username <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+    }
+
+    <span class="directive">static</span> mapping = {
+            password <span class="key">column</span>: <span class="string"><span class="delimiter">'</span><span class="content">`password`</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/demo/Role.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">groovy.transform.EqualsAndHashCode</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">grails.compiler.GrailsCompileStatic</span>
+
+<span class="annotation">@GrailsCompileStatic</span>
+<span class="annotation">@EqualsAndHashCode</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>)
+<span class="annotation">@ToString</span>(includes=<span class="string"><span class="delimiter">'</span><span class="content">authority</span><span class="delimiter">'</span></span>, includeNames=<span class="predefined-constant">true</span>, includePackage=<span class="predefined-constant">false</span>)
+<span class="type">class</span> <span class="class">Role</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="type">long</span> serialVersionUID = <span class="integer">1</span>
+
+        <span class="predefined-type">String</span> authority
+
+        <span class="directive">static</span> constraints = {
+                authority <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">unique</span>: <span class="predefined-constant">true</span>
+        }
+
+        <span class="directive">static</span> mapping = {
+                cache <span class="predefined-constant">true</span>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a class <code>UserPasswordEncoderListener</code> which deals with the User&#8217;s password encoding.</p>
+</div>
+<div class="paragraph">
+<p>It uses the <code>@Listener</code> annotation to listen <strong>synchronously</strong> to <a href="https://async.grails.org/latest/guide/index.html#gormEvents">Events from GORM</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/UserPasswordEncoderListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreInsertEvent</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.event.PreUpdateEvent</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">grails.events.annotation.gorm.Listener</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserPasswordEncoderListener</span> {
+
+    <span class="annotation">@Autowired</span>
+    SpringSecurityService springSecurityService
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreInsertEvent(PreInsertEvent event) {
+        encodePasswordForEvent(event)
+    }
+
+    <span class="annotation">@Listener</span>(User)
+    <span class="type">void</span> onPreUpdateEvent(PreUpdateEvent event) {
+        encodePasswordForEvent(event)
+    }
+
+    <span class="directive">private</span> <span class="type">void</span> encodePasswordForEvent(AbstractPersistenceEvent event) {
+        <span class="keyword">if</span> (event.entityObject <span class="keyword">instanceof</span> User) {
+            User u = event.entityObject <span class="keyword">as</span> User
+            <span class="keyword">if</span> (u.password &amp;&amp; ((event <span class="keyword">instanceof</span> PreInsertEvent) || (event <span class="keyword">instanceof</span> PreUpdateEvent &amp;&amp; u.isDirty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>)))) {
+                event.getEntityAccess().setProperty(<span class="string"><span class="delimiter">'</span><span class="content">password</span><span class="delimiter">'</span></span>, encodePassword(u.password))
+            }
+        }
+    }
+
+    <span class="directive">private</span> <span class="predefined-type">String</span> encodePassword(<span class="predefined-type">String</span> password) {
+        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Define the previous listener as a bean:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.UserPasswordEncoderListener</span>
+beans = {
+    userPasswordEncoderListener(UserPasswordEncoderListener)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configure Spring Security Core in <code>application.yml</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="error">grails</span>
+<span class="key">grails</span>:
+    <span class="key">plugin</span>:
+        <span class="key">springsecurity</span>:
+            <span class="key">securityConfigType</span>: <span class="string"><span class="content">InterceptUrlMap</span></span>
+            <span class="key">userLookup</span>:
+                <span class="key">userDomainClassName</span>: <span class="string"><span class="content">demo.User</span></span>
+                <span class="key">authorityJoinClassName</span>: <span class="string"><span class="content">demo.UserRole</span></span>
+            <span class="key">authority</span>:
+                <span class="key">className</span>: <span class="string"><span class="content">demo.Role</span></span>
+            <span class="key">filterChain</span>:
+                <span class="key">chainMap</span>:
+                    - <span class="comment"># Stateless chain</span>
+                        <span class="key">pattern</span>: <span class="string"><span class="content">/**</span></span>
+                        <span class="key">filters</span>: <span class="string"><span class="content">'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'</span></span>
+            <span class="key">interceptUrlMap</span>:
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">ROLE_VILLAIN</span></span>
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/error</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">permitAll</span></span>
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/api/login</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">ROLE_ANONYMOUS</span></span>
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/api/validate</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">ROLE_ANONYMOUS</span></span>
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/oauth/access_token</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">ROLE_ANONYMOUS</span></span>
+                -
+                    <span class="key">pattern</span>: <span class="string"><span class="content">/plan</span></span>
+                    <span class="key">access</span>:
+                        - <span class="string"><span class="content">ROLE_VILLAIN</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create several <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM Data Services</a> to work with the Domain Classes involved in the securization of our app.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/RoleDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Service</span>(<span class="predefined-type">Role</span>)
+<span class="type">interface</span> RoleDataService {
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    <span class="type">void</span> deleteByAuthority(<span class="predefined-type">String</span> authority)
+    <span class="predefined-type">Role</span> findByAuthority(<span class="predefined-type">String</span> authority)
+    <span class="predefined-type">Role</span> saveByAuthority(<span class="predefined-type">String</span> authority)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/UserDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Service</span>(User)
+<span class="type">interface</span> UserDataService {
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password)
+    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
+    User findByUsername(<span class="predefined-type">String</span> username)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/UserRoleDataService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@Service</span>(UserRole)
+<span class="annotation">@CompileStatic</span>
+<span class="type">interface</span> UserRoleDataService {
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>user</span><span class="content">.username from </span><span class="inline"><span class="inline-delimiter">${</span>UserRole userRole<span class="inline-delimiter">}</span></span><span class="content">
+    inner join </span><span class="inline"><span class="inline-delimiter">${</span>User user = userRole.user<span class="inline-delimiter">}</span></span><span class="content">
+    inner join </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Role</span> role = userRole.role<span class="inline-delimiter">}</span></span><span class="content">
+    where </span><span class="inline"><span class="inline-delimiter">$</span>role</span><span class="content">.authority = </span><span class="inline"><span class="inline-delimiter">$</span>authority</span><span class="delimiter">&quot;&quot;&quot;</span></span>)
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllUsernameByAuthority(<span class="predefined-type">String</span> authority)
+
+    UserRole save(User user, <span class="predefined-type">Role</span> role)
+
+    <span class="type">void</span> delete(User user, <span class="predefined-type">Role</span> role)
+
+    <span class="type">void</span> deleteByUser(User user)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a service to handle User creation with a specific role.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/demo/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">UserService</span> {
+    RoleDataService roleDataService
+
+    UserRoleDataService userRoleDataService
+
+    UserDataService userDataService
+
+    <span class="annotation">@Transactional</span>
+    User save(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> password, <span class="predefined-type">String</span> authority) {
+        <span class="predefined-type">Role</span> role = roleDataService.findByAuthority(authority)
+        <span class="keyword">if</span> ( !role ) {
+            role = roleDataService.saveByAuthority(authority)
+        }
+        User user = userDataService.save(username, password)
+        userRoleDataService.save(user, role)
+        user
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="tenantResolver">3.4 Custom Tenant Resolver</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/tenantResolver.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The following table contains all of the <code>TenantResolver</code> implementations that ship with GORM and are usable out of the box. The package name has been shorted from <code>org.grails.datastore.mapping</code> to <code>o.g.d.m</code> for brevity:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.resolvers.FixedTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves against a fixed tenant id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.resolvers.SystemPropertyTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from a system property called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SubDomainTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the subdomain via DNS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.CookieTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from an HTTP cookie named <code>gorm.tenantId</code> by default</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SessionTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the HTTP session using the attribute <code>gorm.tenantId</code> by default</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>However, you have the flexibility to create your a custom tenant resolver is easy. In order to do that, create a class which implements
+<code>org.grails.datastore.mapping.multitenancy.TenantResolver</code>.</p>
+</div>
+<div class="paragraph">
+<p>The next sections will show you how to create two custom tenant resolvers.</p>
+</div>
+
+
+<h2 id="tenantResolverByJWT">3.5 Tenant Resolver by JWT</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/tenantResolverByJWT.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><a href="http://alvarosanchez.github.io/grails-spring-security-rest/latest/docs/">Grails Spring Security REST plugin</a> allows you to authenticate your application with a JWT token present in the <code>Authorization</code> header.</p>
+</div>
+<div class="paragraph">
+<p>Example: A request to <code>/plan</code> contains a JWT token in the <code>Authorization</code> header.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">## Request Duplicate
+curl &quot;http://localhost:8080/plan&quot; \
+     -H &quot;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.....&quot; \
+     -H &quot;Accept: application/json&quot;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can create Custom Tenant Resolver which extracts the JWT token, re-hydrates it and extracts the username.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/CurrentUserByJwtTenantResolver.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.rest.token.storage.TokenStorageService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.AllTenantsResolver</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.context.request.RequestAttributes</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.context.request.RequestContextHolder</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.context.request.ServletWebRequest</span>
+
+<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletRequest</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CurrentUserByJwtTenantResolver</span> <span class="directive">implements</span> AllTenantsResolver { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_NAME = <span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> HEADER_VALUE_PREFFIX = <span class="string"><span class="delimiter">'</span><span class="content">Bearer </span><span class="delimiter">'</span></span>
+
+    <span class="predefined-type">String</span> headerName = HEADER_NAME
+    <span class="predefined-type">String</span> headerValuePreffix = HEADER_VALUE_PREFFIX
+
+    <span class="annotation">@Autowired</span>
+    TokenStorageService tokenStorageService
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
+
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes()
+        <span class="keyword">if</span>(requestAttributes <span class="keyword">instanceof</span> ServletWebRequest) {
+
+            HttpServletRequest httpServletRequest = ((ServletWebRequest) requestAttributes).getRequest()
+            <span class="predefined-type">String</span> token = httpServletRequest.getHeader(headerName.toLowerCase())
+            <span class="keyword">if</span> ( !token ) {
+                <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved from HTTP Header: </span><span class="inline"><span class="inline-delimiter">${</span>headerName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+            }
+
+            <span class="keyword">if</span> (token.startsWith(headerValuePreffix)) {
+                token = token.substring(headerValuePreffix.length())
+            }
+            UserDetails userDetails = tokenStorageService.loadUserByToken(token)
+            <span class="predefined-type">String</span> username = userDetails?.username
+            <span class="keyword">if</span> ( username ) {
+                <span class="keyword">return</span> username
+            }
+            <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved from HTTP Header: </span><span class="inline"><span class="inline-delimiter">${</span>headerName<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        }
+        <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved outside a web request</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
+        <span class="keyword">new</span> DetachedCriteria(User)
+                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                .list()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>When using discriminator-based multi-tenancy then you may need to implement the <a href="http://gorm.grails.org/latest/hibernate/api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your TenantResolver implentation if you want to at any point iterate over all available tenants. <code>AllTenantsResolver extends `TenantResolver</code>. To create your own tenant resolver implement <code>org.grails.datastore.mapping.multitenancy.TenantResolver</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Define the Custom Tenant Resolver as a bean:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.CurrentUserByJwtTenantResolver</span>
+beans = {
+    currentUserByJwtTenantResolver(CurrentUserByJwtTenantResolver)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create an Integration Test to test the custom Tenant Resolver.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/CurrentUserByJwtTenantResolverSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.mock.web.MockHttpServletRequest</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.context.request.RequestContextHolder</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.context.request.ServletWebRequest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">CurrentUserByJwtTenantResolverSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Autowired</span>
+    CurrentUserByJwtTenantResolver currentUserTenantResolver
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test HttpHeader resolver throws an exception outside a web request</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        currentUserTenantResolver.resolveTenantIdentifier()
+
+        <span class="key">then</span>:
+        <span class="keyword">def</span> e = thrown(TenantNotFoundException)
+        e.message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved outside a web request</span><span class="delimiter">&quot;</span></span>
+    }
+
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test not tenant id found</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">setup</span>:
+        <span class="keyword">def</span> request = <span class="keyword">new</span> MockHttpServletRequest(<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/foo</span><span class="delimiter">&quot;</span></span>)
+        RequestContextHolder.setRequestAttributes(<span class="keyword">new</span> ServletWebRequest(request))
+
+        <span class="key">when</span>:
+        currentUserTenantResolver.resolveTenantIdentifier()
+
+        <span class="key">then</span>:
+        <span class="keyword">def</span> e = thrown(TenantNotFoundException)
+        e.message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved from HTTP Header: </span><span class="inline"><span class="inline-delimiter">${</span>CurrentUserByJwtTenantResolver.HEADER_NAME<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+
+        <span class="key">cleanup</span>:
+        RequestContextHolder.setRequestAttributes(<span class="predefined-constant">null</span>)
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test HttpHeader value is the tenant id when a request is present</span><span class="delimiter">&quot;</span></span>() {
+
+        <span class="key">setup</span>:
+        MockHttpServletRequest request = <span class="keyword">new</span> MockHttpServletRequest(<span class="string"><span class="delimiter">&quot;</span><span class="content">GET</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/foo</span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">String</span> jwt = <span class="string"><span class="delimiter">'''</span><span class="content">\
+</span><span class="content">eyJhbGciOiJIUzI1NiJ9.eyJwcmluY2lwYWwiOiJINHNJQUFBQUFBQUFBSlZTdjA4VVFSUitleHhDZ2xF</span><span class="content">\
+</span><span class="content">d2tjUUNHN0V6ZXdtV1Z3RkJBcGtjeHZNc01OSE03VDZXZ2RtWmRXYjJ1R3ZJVlZKUVFGUVNFbHBMXC9oT</span><span class="content">\
+</span><span class="content">nRcL0FPTUZMVFV0THhaT1BhMElVNjFlZlB0OSt2TjZRV01XZ012RThPRnRHRW04MFNvMEdaR3FNUmlsQn</span><span class="content">\
+</span><span class="content">ZoZW1GdTBjVG9Dc1J5QVd6UkJLNVBVSUdBUVVYRURoNnhMZDdoTmNsVlVsdHJiMkhrNmwwRGM5b2tONHd</span><span class="content">\
+</span><span class="content">iaHFlNG84MTJlTXNkYVlOXC9DWlRVd2ZjS2pLM0RGSThpblN2WDBHcXBtd21EOFRwTWxqT21vMjBcL2Vo</span><span class="content">\
+</span><span class="content">elJEU29udUxURDBERlV2QzB4WmpEQmM3ZXBTVldnZGZEdzJtenVoS3cxMGRVWmpHZmNXbkwzVDVLbTg5Yj</span><span class="content">\
+</span><span class="content">l2YmVwS01FbjJJVnFOd3ZvVUhmUFBUVDBQT0dpbHBKU0M2M3NiRXVsT2hZYndvc1RmM1wvbXk2K0RrMzZy</span><span class="content">\
+</span><span class="content">QWtDZHZMajduM0wrWkFINlB6NWNQaTJLRGlJSDAwUFdTMWk5bTVHYnFaTDVyVUd2XC9QdjQ5ZGVqaTczM0</span><span class="content">\
+</span><span class="content">k2VHNFYVwvK2Z4K3o4emZOOVJaMW1uSERuUjdhRWRIdVZQMDNrU1wvY1RUN1lRaTlzaWpTVFNDOUtPWXh2</span><span class="content">\
+</span><span class="content">SlVwaWlsczFXZzc2ZG5EXC96UnBiK3ZodWhiSDVsWVlmM090UWRtMUkrRUdSMnk4c1pKcld0WDkrK1BQZ</span><span class="content">\
+</span><span class="content">zJSOGlXWVhSRHBjNVV1MlRKYWlScDIwMG4wK1BaaWErbmUwWElRWVArZ3JPZUdRVkZBTUFBQT09Iiwic3</span><span class="content">\
+</span><span class="content">ViIjoidmVjdG9yIiwicm9sZXMiOlsiUk9MRV9WSUxMQUlOIl0sImlhdCI6MTUwNDc4MTEyNX0.cf5rGNrNolchQ3QyMsPB544fwzYGiihBkRF8KU6soxc</span><span class="delimiter">'''</span></span>
+
+        request.addHeader(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">$</span>jwt</span><span class="delimiter">&quot;</span></span>)
+        RequestContextHolder.setRequestAttributes(<span class="keyword">new</span> ServletWebRequest(request))
+
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> tenantId = currentUserTenantResolver.resolveTenantIdentifier()
+
+        <span class="key">then</span>:
+        tenantId == <span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>
+
+        <span class="key">cleanup</span>:
+        RequestContextHolder.setRequestAttributes(<span class="predefined-constant">null</span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next were are going to configure our app to use this custom tenant resolver.</p>
+</div>
+<div class="paragraph">
+<p>Configure Multi-Tenancy by modifying <code>application.yml</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="error">grails</span>
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DISCRIMINATOR </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">demo.CurrentUserByJwtTenantResolver </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="key">reactor</span>:
+            <span class="comment"># Whether to translate GORM events into Reactor events</span>
+            <span class="comment"># Disabled by default for performance reasons</span>
+            <span class="key">events</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define Multi-Tenancy mode as <code>DISCRIMINATOR</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set the Tenant Resolver class with a custom class which you will write later in this guide.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="tenantResolverByUser">3.6 Tenant Resolver by User</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/tenantResolverByUser.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Alternatively, you may want to use a combination of Stateless
+endpoints secured by Spring Security REST and Stateful endpoints secured by Spring Security Core. You will be interested to
+create a custom resolver by the current logged in user.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/CurrentUserTenantResolver.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.DetachedCriteria</span>
+<span class="keyword">import</span> <span class="include">grails.plugin.springsecurity.SpringSecurityService</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.AllTenantsResolver</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.TenantResolver</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.Lazy</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.userdetails.UserDetails</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">CurrentUserTenantResolver</span> <span class="directive">implements</span> AllTenantsResolver { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Autowired</span>
+    <span class="annotation">@Lazy</span>
+    SpringSecurityService springSecurityService
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Serializable</span> resolveTenantIdentifier() <span class="directive">throws</span> TenantNotFoundException {
+        <span class="predefined-type">String</span> username = loggedUsername()
+        <span class="keyword">if</span> ( username ) {
+            <span class="keyword">return</span> username
+        }
+        <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved from Spring Security Principal</span><span class="delimiter">&quot;</span></span>)
+    }
+
+    <span class="predefined-type">String</span> loggedUsername() {
+        <span class="keyword">if</span> ( springSecurityService.principal <span class="keyword">instanceof</span> <span class="predefined-type">String</span> ) {
+            <span class="keyword">return</span> springSecurityService.principal
+        }
+        <span class="keyword">if</span> (springSecurityService.principal <span class="keyword">instanceof</span> UserDetails) {
+            <span class="keyword">return</span> ((UserDetails) springSecurityService.principal).username
+        }
+        <span class="predefined-constant">null</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
+        <span class="keyword">new</span> DetachedCriteria(User)
+                .distinct(<span class="string"><span class="delimiter">'</span><span class="content">username</span><span class="delimiter">'</span></span>)
+                .list()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>When using discriminator-based multi-tenancy then you may need to implement the <a href="http://gorm.grails.org/latest/hibernate/api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your TenantResolver implentation if you want to at any point iterate over all available tenants. <code>AllTenantsResolver extends `TenantResolver</code>. To create your own tenant resolver implement <code>org.grails.datastore.mapping.multitenancy.TenantResolver</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Define the Custom Tenant Resolver as a bean:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/spring/resources.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.CurrentUserTenantResolver</span>
+beans = {
+    currentUserTenantResolver(CurrentUserTenantResolver)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create an Integration Test to test the custom Tenant Resolver.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/CurrentUserTenantResolverSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.authentication.UsernamePasswordAuthenticationToken</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.GrantedAuthority</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.authority.AuthorityUtils</span>
+<span class="keyword">import</span> <span class="include">org.springframework.security.core.context.SecurityContextHolder</span>
+<span class="keyword">import</span> <span class="include">org.springframework.test.annotation.Rollback</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">CurrentUserTenantResolverSpec</span> <span class="directive">extends</span> Specification {
+
+    UserDataService userDataService
+    RoleDataService roleDataService
+    UserRoleDataService userRoleDataService
+
+    <span class="annotation">@Autowired</span>
+    CurrentUserTenantResolver currentUserTenantResolver
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test Current User throws a TenantNotFoundException if not logged in</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        currentUserTenantResolver.resolveTenantIdentifier()
+
+        <span class="key">then</span>:
+        <span class="keyword">def</span> e = thrown(TenantNotFoundException)
+        e.message == <span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved from Spring Security Principal</span><span class="delimiter">&quot;</span></span>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test current logged in user is resolved </span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        <span class="predefined-type">Role</span> role = roleDataService.saveByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>)
+        User user = userDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">admin</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">admin</span><span class="delimiter">'</span></span>)
+        userRoleDataService.save(user, role)
+
+        <span class="key">when</span>:
+        loginAs(<span class="string"><span class="delimiter">'</span><span class="content">admin</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_USER</span><span class="delimiter">'</span></span>)
+        <span class="predefined-type">Serializable</span> username = currentUserTenantResolver.resolveTenantIdentifier()
+
+        <span class="key">then</span>:
+        username == user.username
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">verify AllTenantsResolver::resolveTenantIds</span><span class="delimiter">&quot;</span></span>
+        <span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; tenantIds
+        demo.User.withNewSession {
+            tenantIds = currentUserTenantResolver.resolveTenantIds()
+        }
+
+        <span class="key">then</span>:
+        tenantIds.toList().size() == <span class="integer">1</span>
+        tenantIds.toList().get(<span class="integer">0</span>) == <span class="string"><span class="delimiter">'</span><span class="content">admin</span><span class="delimiter">'</span></span>
+
+        <span class="key">cleanup</span>:
+        userRoleDataService.delete(user, role)
+        roleDataService.delete(role)
+        userDataService.delete(user.id)
+    }
+
+    <span class="type">void</span> loginAs(<span class="predefined-type">String</span> username, <span class="predefined-type">String</span> authority) {
+        User user = userDataService.findByUsername(username)
+        <span class="keyword">if</span> ( user ) {
+            <span class="comment">// have to be authenticated as an admin to create ACLs</span>
+            <span class="predefined-type">List</span>&lt;GrantedAuthority&gt; authorityList = AuthorityUtils.createAuthorityList(authority)
+            SecurityContextHolder.context.authentication = <span class="keyword">new</span> UsernamePasswordAuthenticationToken(user.username,
+                    user.password,
+                    authorityList)
+        }
+    }
+
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next were are going to configure our app to use this custom tenant resolver.</p>
+</div>
+<div class="paragraph">
+<p>Configure Multi-Tenancy by modifying <code>application.yml</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="error">grails</span>
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DISCRIMINATOR </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">demo.CurrentUserTenantResolver </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="key">reactor</span>:
+            <span class="comment"># Whether to translate GORM events into Reactor events</span>
+            <span class="comment"># Disabled by default for performance reasons</span>
+            <span class="key">events</span>: <span class="string"><span class="content">false</span></span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define Multi-Tenancy mode as <code>DISCRIMINATOR</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Set the Tenant Resolver class with a custom class which you will write later in this guide.</td>
+</tr>
+</table>
+</div>
+
+
+<h2 id="test">3.7 Functional Test</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/edit/grails3/src/main/docs/guide/test.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a functional test which verifies that we can consume the API switching users.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/integration-test/groovy/demo/PlanControllerSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.Tenants</span>
+<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
+<span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
+
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
+<span class="annotation">@Integration</span>
+<span class="type">class</span> <span class="class">PlanControllerSpec</span> <span class="directive">extends</span> Specification {
+    PlanDataService planDataService
+    UserDataService userDataService
+    UserRoleDataService userRoleDataService
+    UserService userService
+    RoleDataService roleDataService
+
+    RestBuilder rest = <span class="keyword">new</span> RestBuilder()
+
+    <span class="predefined-type">String</span> accessToken(<span class="predefined-type">String</span> u, <span class="predefined-type">String</span> p) {
+        <span class="keyword">def</span> resp = rest.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/api/login</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            contentType(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            json {
+                username = u
+                password = p
+            }
+        }
+        <span class="keyword">if</span> ( resp.status == <span class="integer">200</span> ) {
+            <span class="keyword">return</span> resp.json.access_token
+        }
+        <span class="predefined-constant">null</span>
+    }
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Plans for current logged user are retrieved</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        User vector = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
+        User gru = userService.save(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            planDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+        }
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
+            planDataService.save(<span class="string"><span class="delimiter">'</span><span class="content">Steal a Pyramid</span><span class="delimiter">'</span></span>)
+        }
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the gru</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> gruAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">gru</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        gruAccessToken
+
+        <span class="key">when</span>:
+        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>gruAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal the Moon&quot;}]</span><span class="delimiter">'</span></span>
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">login with the vector</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> vectorAccessToken = accessToken(<span class="string"><span class="delimiter">'</span><span class="content">vector</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">secret</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        vectorAccessToken
+
+        <span class="key">when</span>:
+        resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/plan</span><span class="delimiter">&quot;</span></span>) {
+            accept(<span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+            header(<span class="string"><span class="delimiter">'</span><span class="content">Authorization</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Bearer </span><span class="inline"><span class="inline-delimiter">${</span>vectorAccessToken<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+        }
+
+        <span class="key">then</span>:
+        resp.status == <span class="integer">200</span>
+        resp.json.toString() == <span class="string"><span class="delimiter">'</span><span class="content">[{&quot;title&quot;:&quot;Steal a Pyramid&quot;}]</span><span class="delimiter">'</span></span>
+
+        <span class="key">cleanup</span>:
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">gru</span><span class="delimiter">&quot;</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            planDataService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Moon</span><span class="delimiter">'</span></span>)
+        }
+        Tenants.withId(<span class="string"><span class="delimiter">&quot;</span><span class="content">vector</span><span class="delimiter">&quot;</span></span>) {
+            planDataService.deleteByTitle(<span class="string"><span class="delimiter">'</span><span class="content">Steal the Pyramid</span><span class="delimiter">'</span></span>)
+        }
+        userRoleDataService.deleteByUser(gru)
+        userDataService.delete(gru.id)
+        userRoleDataService.deleteByUser(vector)
+        userDataService.delete(vector.id)
+        roleDataService.deleteByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_VILLAIN</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You can use a specific tenant id using the withId method</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/runTests.html"><strong>4</strong><span>Run the tests</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-custom-security-tenant-resolver"><img src="https://travis-ci.org/grails-guides/grails-custom-security-tenant-resolver.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-custom-security-tenant-resolver">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-custom-security-tenant-resolver.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-custom-security-tenant-resolver.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-custom-security-tenant-resolver'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-custom-security-tenant-resolver.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-custom-security-tenant-resolver/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
