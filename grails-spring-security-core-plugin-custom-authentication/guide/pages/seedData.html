@@ -85,6 +85,50 @@ function addJsClass() {
 <p>We are going to populate our database with some seed data:</p>
 </div>
 <div class="listingblock">
+<div class="title">/grails-app/services/demo/RoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Role</span>)
+<span class="type">interface</span> RoleService {
+    <span class="predefined-type">Role</span> save(<span class="predefined-type">String</span> authority)
+    <span class="predefined-type">Role</span> findByAuthority(<span class="predefined-type">String</span> authority)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/UserService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(User)
+<span class="type">interface</span> UserService {
+
+    User findByUsername(<span class="predefined-type">String</span> username)
+
+    User save(User user)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">/grails-app/services/demo/UserRoleService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(UserRole)
+<span class="type">interface</span> UserRoleService {
+
+    UserRole save(User user, <span class="predefined-type">Role</span> role)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
 <div class="title">/grails-app/init/demo/BootStrap.groovy</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
@@ -94,6 +138,9 @@ function addJsClass() {
 <span class="annotation">@GrailsCompileStatic</span>
 <span class="type">class</span> <span class="class">BootStrap</span> {
 
+    RoleService roleService
+    UserService userService
+    UserRoleService userRoleService
     <span class="directive">static</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; BANKCARD =
             [<span class="string"><span class="delimiter">'</span><span class="content">A1</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">10</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A2</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">84</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A3</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">93</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A4</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">12</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A5</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">92</span><span class="delimiter">'</span></span>,
              <span class="string"><span class="delimiter">'</span><span class="content">A6</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">58</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A7</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">38</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A8</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">28</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A9</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">36</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">A10</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">02</span><span class="delimiter">'</span></span>,
@@ -106,20 +153,19 @@ function addJsClass() {
             ]
 
     <span class="keyword">def</span> init = { servletContext -&gt;
-        <span class="keyword">def</span> authorities = [<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>]
-        authorities.each {
-            <span class="keyword">if</span> ( !<span class="predefined-type">Role</span>.findByAuthority(<span class="local-variable">it</span>) ) {
-                <span class="keyword">new</span> <span class="predefined-type">Role</span>(<span class="key">authority</span>: <span class="local-variable">it</span>).save()
+        <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; authorities = [<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>]
+        authorities.each { authority -&gt;
+            <span class="keyword">if</span> ( !roleService.findByAuthority(authority) ) {
+                roleService.save(authority)
             }
         }
-        <span class="keyword">if</span> ( !User.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>) ) {
-            <span class="keyword">def</span> u = <span class="keyword">new</span> User(<span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
+        <span class="keyword">if</span> ( !userService.findByUsername(<span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>) ) {
+            User u = <span class="keyword">new</span> User(<span class="key">username</span>: <span class="string"><span class="delimiter">'</span><span class="content">sherlock</span><span class="delimiter">'</span></span>, <span class="key">password</span>: <span class="string"><span class="delimiter">'</span><span class="content">elementary</span><span class="delimiter">'</span></span>)
             BANKCARD.each { k, v -&gt;
                 u.addToCoordinates(<span class="keyword">new</span> SecurityCoordinate(<span class="key">position</span>: k, <span class="key">value</span>: v, <span class="key">user</span>: u))
             }
-            u.save()
-            <span class="keyword">def</span> ur = <span class="keyword">new</span> UserRole(<span class="key">user</span>: u, <span class="key">role</span>:  <span class="predefined-type">Role</span>.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>))
-            ur.save()
+            u = userService.save(u)
+            userRoleService.save(u, roleService.findByAuthority(<span class="string"><span class="delimiter">'</span><span class="content">ROLE_CLIENT</span><span class="delimiter">'</span></span>))
         }
     }
 
