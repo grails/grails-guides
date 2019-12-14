@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Defining URL Mappings</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>1</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/creatingTheApp.html"><strong>2</strong><span>Creating our Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/controllers.html"><strong>3</strong><span>Creating Controllers</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/urlMappings.html"><strong>4</strong><span>Defining URL Mappings</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/splitUrlMappings.html"><strong>5</strong><span>Organize URL Mappings</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>6</strong><span>Testing URL Mappings</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/conclusion.html"><strong>7</strong><span>Conclusion</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>8</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/controllers.html">&lt;&lt; <strong>3</strong><span>Creating Controllers</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/splitUrlMappings.html"><strong>5</strong><span>Organize URL Mappings</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h1 id="urlMappings">4 Defining URL Mappings</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails_url_mappings/edit/master/src/main/docs/guide/urlMappings.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Let&#8217;s look at the default <code>UrlMappings.groovy</code> file (under <code>grails-app/controllers/demo</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UrlMappings</span> {
+
+    <span class="directive">static</span> mappings = {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>{
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/index</span><span class="delimiter">&quot;</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">500</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">404</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/notFound</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The very first mapping in the <code>mappings</code> block is pretty straightforward. It has two components: a string, defining the URL pattern, and a closure, where options (such as <strong>constraints</strong>) can be specified to change the behavior of the mapping.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See how to use URL constraints <a href="http://docs.grails.org/latest/guide/theWebLayer.html#applyingConstraints">here in the Grails documentation</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The URL pattern can include variables, which are denoted by Groovy Strings within the pattern (e.g., <code>$controller</code> or <code>${controller}</code>. Grails has a few special wildcards which it supports out of the box. For example, <code>$controller</code> will be mapped to the name of a given controller, <code>$action</code> will be mapped to an action within that controller, and so forth. Optional variables are suffixed with a <code>?</code>. E.g., <code>/controller/$action?</code></p>
+</div>
+<div class="paragraph">
+<p>Using the variables for all the parts of the URL pattern means this particular mapping will match <strong>any</strong> URL. See the table below:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. URL Mapping Resolution</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">URL</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/talk/show/1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TalkController</code>, <code>show</code> action, <code>id</code> parameter of <code>1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/talk/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TalkController</code>,  default action (typically an`index` action)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>/speaker/show/1.json</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SpeakerController</code>, <code>show</code> action, <code>id</code> parameter of <code>1</code>, <code>format</code> parameter of <code>json</code> (can be used for content-negotiation)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In addition to mapping to controller actions, URL mappings can also map directly to a view (without specifying a controller or action), or an arbitrary URI (useful for redirects). For example, the default URL mapping for the root context, <code>/</code>, points to the default <code>index.gsp</code> page under <code>grails-app/views</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/index</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can use the <code>uri</code> argument to map to a different URI:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="string"><span class="delimiter">&quot;</span><span class="content">/hello</span><span class="delimiter">&quot;</span></span>(<span class="key">uri</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">/hello.dispatch</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another useful kind of mapping are HTTP error code mappings, also seen in the default <code>UrlMappings.groovy</code> file. The default mappings simply load a default error view, however you could easily redirect these requests to an error-handling or logging controller to apply custom error handling logic and recovery in your app. E.g.,</p>
+</div>
+<div class="listingblock groovy">
+<div class="content">
+<pre class="CodeRay highlight"><code>    "500"(controller:'myErrorController', action: 'somethingBroke')
+    "404"(controller:'myErrorController', action: 'notFound')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default URL mappings will cover most of our needs in this sample app. However, to give us finer grained control, we are going to add a few of our own mappings for the <code>ConferenceController</code> actions we stubbed out above.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The default set of URL mappings cover many use cases. However, when it&#8217;s time to secure your application, you may want to remove the default mapping and replace it with more specific mappings (so that users cannot access any controller action they like simply by figuring out the names).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Edit the <code>UrlMappings.groovy</code> file as shown below:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UrlMappings</span> {
+
+    <span class="directive">static</span> mappings = {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>{
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }
+
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/talks/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">talks</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/speakers/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">speakers</span><span class="delimiter">'</span></span>)
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/agenda</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">agenda</span><span class="delimiter">'</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/index</span><span class="delimiter">&quot;</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">500</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">404</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/notFound</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We are mapping a custom URL pattern <code>/talks/$id?</code> to our <code>ConferenceController</code> actions. The <code>$id</code> variable means that this component of the URL pattern will be mapped to the <code>id</code> parameter of the <code>talks</code> action. The suffix of <code>?</code> makes this variable optional.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Note that we&#8217;re not using any variables in this patterns, so the request must match the URL pattern exactly. Otherwise, it will be handled by the default URL mapping at the top of the file.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you start up the application now and make a request to <code><a href="http://localhost:8080/talks" class="bare">http://localhost:8080/talks</a></code>, you should see this text rendered to the browser:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>    Returning conference talks...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Try another URL: <code><a href="http://localhost:8080/talks/1" class="bare">http://localhost:8080/talks/1</a></code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>    Returning conference talk 1...</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http_methods">HTTP Methods</h3>
+<div class="paragraph">
+<p>There&#8217;s one more feature to note on URL mappings before we move on. In addition to specifying URL patterns and constraints, mappings can also specify the specific HTTP method required to match the mapping. This is as simple as prefixing the pattern with the required HTTP verb, such as <code>get</code>, <code>post</code>, or <code>put</code>.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s update our <code>UrlMappings.groovy</code> file one more time, to specify that we only accept <code>GET</code> requests to our <code>ConferenceController</code> actions.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/demo/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="type">class</span> <span class="class">UrlMappings</span> {
+
+    <span class="directive">static</span> mappings = {
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>controller</span><span class="content">/</span><span class="inline"><span class="inline-delimiter">$</span>action</span><span class="content">?/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?(.</span><span class="inline"><span class="inline-delimiter">$</span>format</span><span class="content">)?</span><span class="delimiter">&quot;</span></span>{
+            constraints {
+                <span class="comment">// apply constraints here</span>
+            }
+        }
+
+        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/talks/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">talks</span><span class="delimiter">'</span></span>)
+        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/speakers/</span><span class="inline"><span class="inline-delimiter">$</span>id</span><span class="content">?</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">speakers</span><span class="delimiter">'</span></span>)
+        get <span class="string"><span class="delimiter">&quot;</span><span class="content">/agenda</span><span class="delimiter">&quot;</span></span>(<span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">conference</span><span class="delimiter">'</span></span>, <span class="key">action</span>: <span class="string"><span class="delimiter">'</span><span class="content">agenda</span><span class="delimiter">'</span></span>)
+
+
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/index</span><span class="delimiter">&quot;</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">500</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/error</span><span class="delimiter">'</span></span>)
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">404</span><span class="delimiter">&quot;</span></span>(<span class="key">view</span>:<span class="string"><span class="delimiter">'</span><span class="content">/notFound</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you now use <code>curl</code> (or another HTTP client) to make a non-GET request to one of these URLs, you&#8217;ll receive a 404 page. Try it with the below <code>curl</code> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">~ curl -X PUT localhost:8080/talks</code></pre>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/controllers.html">&lt;&lt; <strong>3</strong><span>Creating Controllers</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/splitUrlMappings.html"><strong>5</strong><span>Organize URL Mappings</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails_url_mappings"><img src="https://travis-ci.org/grails-guides/grails_url_mappings.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails_url_mappings">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails_url_mappings.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails_url_mappings.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails_url_mappings'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails_url_mappings.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails_url_mappings/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
