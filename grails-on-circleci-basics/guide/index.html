@@ -14,38 +14,38 @@
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grails.org/learning.html'>Learning</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Guides</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -111,7 +111,7 @@
         <h1>Grails on Circle CI Basics</h1>
         <p>In this guide, we will learn how to setup Circle CI to build and test a Grails application.</p>
         <p><strong>Authors:</strong> Nirav Assar, Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.6</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -158,8 +158,15 @@ getJSON('https://oci-training.cfapps.io/training', function(err, data) {
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -230,7 +237,7 @@ to build and test an open source Grails Plugin which you may wish to contribute 
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -334,14 +341,13 @@ instead.</p>
 <div class="listingblock">
 <div class="title">gradle.properties</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.6</span>
-gormVersion=<span class="float">6.1</span><span class="float">.10</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.5</span>
-assetPipelineVersion=<span class="float">2.14</span><span class="float">.8</span>
+<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">4.0</span><span class="float">.1</span>
+gormVersion=<span class="float">7.0</span><span class="float">.2</span>.RELEASE
+assetPipelineVersion=<span class="float">3.0</span><span class="float">.11</span>
 webdriverBinariesVersion=<span class="float">1.4</span>
-seleniumVersion=<span class="float">3.6</span><span class="float">.0</span>
-chromedriverVersion=<span class="float">2.40</span>
-geckodriverVersion=<span class="float">0.21</span><span class="float">.0</span></code></pre>
+seleniumVersion=<span class="float">3.141</span><span class="float">.59</span>
+chromeDriverVersion=<span class="float">78.0</span><span class="float">.3904</span><span class="float">.105</span>
+geckodriverVersion=<span class="float">0.26</span><span class="float">.0</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -351,13 +357,13 @@ geckodriverVersion=<span class="float">0.21</span><span class="float">.0</span><
 ...
     dependencies {
     ...
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.energizedwork.webdriver-binaries:webdriver-binaries-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>webdriverBinariesVersion</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.1</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
     }
 }
 ...
 ...
 ...
-apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.energizedwork.webdriver-binaries</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
+apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.erdi.webdriver-binaries</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="1"></i><b>(1)</b>
 
 ...
 ...
@@ -367,6 +373,8 @@ dependencies {
     ...
     ...
     testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:htmlunit-driver:2.35.1</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">'</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.35.0</span><span class="delimiter">'</span></span>
     testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="3"></i><b>(3)</b>
     testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="4"></i><b>(4)</b>
     testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-remote-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="5"></i><b>(5)</b>
@@ -375,7 +383,7 @@ dependencies {
 }
 
 webdriverBinaries {
-    chromedriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>chromedriverVersion<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="6"></i><b>(6)</b>
+    chromedriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>chromeDriverVersion<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>  <i class="conum" data-value="6"></i><b>(6)</b>
     geckodriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>geckodriverVersion<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="7"></i><b>(7)</b>
 }</code></pre>
 </div>
@@ -465,9 +473,7 @@ displays the sentence <code>Welcome to Grails</code>.</p>
 
 <span class="keyword">import</span> <span class="include">geb.spock.GebSpec</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 
-<span class="annotation">@IgnoreIf</span>( { !sys[<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>] }) <i class="conum" data-value="1"></i><b>(1)</b>
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">DefaultHomePageSpec</span> <span class="directive">extends</span> GebSpec {
 
@@ -545,7 +551,7 @@ example.grails.UrlMappingsSpec &gt; test forward mappings PASSED</code></pre>
 <p>Verify everything executes correctly up to this point.</p>
 </div>
 <div class="paragraph">
-<p><code>./gradlew check</code>.
+<p><code>./gradlew -Dgeb.env=chromeHeadless check</code>.
 To run the tests:</p>
 </div>
 <div class="listingblock">
@@ -895,23 +901,23 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails-slack.cfapps.io'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
@@ -926,6 +932,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
