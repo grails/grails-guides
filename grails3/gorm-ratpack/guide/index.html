@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='../img/favicon.ico' />
+    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Build a Ratpack application which uses GORM | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Build a Ratpack application which uses GORM. Learn how to build a Ratpack application which uses GORM as data access toolkit' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/gorm-ratpack"><img src="https://travis-ci.org/grails-guides/gorm-ratpack.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/gorm-ratpack&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-ratpack.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-ratpack.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/gorm-ratpack.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/gorm-ratpack/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Grails Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#writingTheAppPartOne"><strong>3</strong><span>Writing the Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#configuringTheApp"><strong>3.1</strong><span>Configuring your Build</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#application"><strong>3.2</strong><span>GORM Configuration</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#creatingTheDomain"><strong>3.3</strong><span>Creating the domain</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#creatingTestData"><strong>3.4</strong><span>Seed Data</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#creatingTheServices"><strong>3.5</strong><span>Creating a Handler</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#creatingTheControllers"><strong>3.6</strong><span>Ratpack.groovy</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>4</strong><span>Do you need help with GORM or Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Build a Ratpack application which uses GORM</h1>
+        <p>Learn how to build a Ratpack application which uses GORM as data access toolkit</p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 3.3.1</p>
+    </header>
+    
+
+<h1 id="training">1 Grails Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, you are going to build a <a href="http://ratpack.io">Ratpack</a> application using GORM.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/gorm-ratpack/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/gorm-ratpack.git" class="bare">https://github.com/grails-guides/gorm-ratpack.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain two folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code> A completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/gorm-ratpack/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/gorm-ratpack/complete</code>
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="writingTheAppPartOne">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/writingTheAppPartOne.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="configuringTheApp">3.1 Configuring your Build</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/configuringTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Edit <em>build.gradle</em> file to include GORM dependencies.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-hibernate5:6.1.6.RELEASE</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2:1.4.192</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat:tomcat-jdbc:8.5.0</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.slf4j:slf4j-api:1.7.10</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For this guide, use H2; an in-memory database.</p>
+</div>
+<div class="paragraph">
+<p>Read <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#outsideGrails">GORM documentation</a> to learn more.</p>
+</div>
+
+
+<h2 id="application">3.2 GORM Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/application.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Ratpack app developed during this guide uses Google Guice.
+<a href="https://code.google.com/p/google-guice/wiki/GettingStarted">Google Guice provides the concept of a module</a>, which is a kind of recipe for providing object.</p>
+</div>
+<div class="paragraph">
+<p>Create a module to configure GORM.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/GormModule.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.google.inject.AbstractModule</span>
+<span class="keyword">import</span> <span class="include">com.google.inject.Provides</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">GormModule</span> <span class="directive">extends</span> AbstractModule {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure() {}
+
+    <span class="annotation">@Provides</span>
+    HibernateDatastore hibernateDatastore() {
+        <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; configuration = [
+            <span class="string"><span class="delimiter">'</span><span class="content">hibernate.hbm2ddl.auto</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">create-drop</span><span class="delimiter">'</span></span>,
+            <span class="string"><span class="delimiter">'</span><span class="content">dataSource.url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">jdbc:h2:mem:myDB</span><span class="delimiter">'</span></span>
+        ] <span class="keyword">as</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;
+
+        <span class="keyword">new</span> HibernateDatastore(configuration, getClass().getPackage())
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM for Hibernate can be configured by passing a Map or instanceof the <code>PropertyResolver</code> interface to the <code>org.grails.orm.hibernate.HibernateDatastore</code> class when used standalone.</p>
+</div>
+
+
+<h2 id="creatingTheDomain">3.3 Creating the domain</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheDomain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create two domain objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Manufacturer.groovy</code></p>
+</li>
+<li>
+<p><code>Vehicle.groovy</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Feel free to use your favorite IDE to create these or execute the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd complete/src/main/groovy/demo
+$ touch Manufacturer.groovy
+$ touch Vehicle.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that all our class stubs are in place lets go ahead and edit them.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/Manufacturer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.GormEntity</span>
+
+<span class="annotation">@ToString</span>
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Manufacturer</span> <span class="directive">implements</span> GormEntity&lt;Manufacturer&gt; {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> hasMany = [<span class="key">vehicles</span>: Vehicle]
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/domain/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.GormEntity</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="annotation">@ToString</span>
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Vehicle</span> <span class="directive">implements</span> GormEntity&lt;Vehicle&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> year
+    <span class="directive">static</span> belongsTo = [<span class="key">manufacturer</span>: Manufacturer]
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Manufacturer</code> and <code>Vehicle</code> have a one-to-many relationship.</p>
+</div>
+<div class="paragraph">
+<p>We are using GORM outside of Grails. Because of that, we need to annotate our domain classes with the <code>grails.gorm.annotation.Entity</code>. Additionally we implement the <code>GormEntity</code> trait. It is merely to aid IDE support of GORM outside of Grails.</p>
+</div>
+
+
+<h2 id="creatingTestData">3.4 Seed Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTestData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <code>Service</code> to encapsulate the creation of sample data when the application starts.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/BootStrapService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">ratpack.exec.Blocking</span>
+<span class="keyword">import</span> <span class="include">ratpack.service.Service</span>
+<span class="keyword">import</span> <span class="include">ratpack.service.StartEvent</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrapService</span> <span class="directive">implements</span> Service {
+    <span class="type">void</span> onStart(StartEvent e) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        e.getRegistry().get(HibernateDatastore)
+        Blocking.exec {
+            populateWithSampleData()
+        }
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> populateWithSampleData() {
+        Manufacturer audi = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">audi</span><span class="delimiter">'</span></span>)
+        audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A3</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
+        audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A4</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1994</span>))
+        audi.save()
+
+        Manufacturer ford = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">ford</span><span class="delimiter">'</span></span>)
+        ford.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ford KA</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
+        ford.save()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="creatingTheServices">3.5 Creating a Handler</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheServices.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <code>Handler</code>. We handle two requests.</p>
+</div>
+<div class="paragraph">
+<p>Requests to <code>/</code> return a list of manufacturers. Requests to <code>/audi/vehicles</code> returns a list of vehicles of the manufacturer named <code>audi</code></p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/ManufacturerHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">ratpack.exec.Blocking</span>
+<span class="keyword">import</span> <span class="include">ratpack.groovy.handling.GroovyContext</span>
+<span class="keyword">import</span> <span class="include">ratpack.groovy.handling.GroovyHandler</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">ratpack.jackson.Jackson.json</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">ManufacturerHandler</span> <span class="directive">extends</span> GroovyHandler {
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> handle(GroovyContext context) {
+        <span class="predefined-type">String</span> manufacturerName = context.pathTokens.id
+        Blocking.get {
+            manufacturerName ? findAllVehicleNameByManufacturerName(manufacturerName) : findAllManufacturerName()
+        } then { names -&gt;
+            context.render(json(names))
+        }
+    }
+
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllVehicleNameByManufacturerName(<span class="predefined-type">String</span> manufacturerName) {
+        Vehicle.where { manufacturer.name == manufacturerName }.projections {
+            property(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+        }.list() <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;
+    }
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllManufacturerName() {
+        Manufacturer.where {}.projections {
+            property(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+        }.list() <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="creatingTheControllers">3.6 Ratpack.groovy</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheControllers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Replace the content of <code>src/ratpack/Ratpack.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/ratpack/Ratpack.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.BootStrapService</span>
+<span class="keyword">import</span> <span class="include">demo.GormModule</span>
+<span class="keyword">import</span> <span class="include">demo.ManufacturerHandler</span>
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">ratpack.groovy.Groovy.ratpack</span>
+
+ratpack {
+  bindings {
+    module GormModule
+    bindInstance <span class="keyword">new</span> BootStrapService()
+    add(<span class="keyword">new</span> ManufacturerHandler())
+  }
+  handlers {
+    get(<span class="string"><span class="delimiter">&quot;</span><span class="content">:id/vehicles</span><span class="delimiter">&quot;</span></span>, ManufacturerHandler)
+    get(ManufacturerHandler)
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous code registers the <code>Module</code> which configures GORM, the <code>Service</code> which populates the database on start-up and the <code>Handler</code>.</p>
+</div>
+<div class="paragraph">
+<p>Run the app:</p>
+</div>
+<div class="paragraph">
+<p><code>./gradlew run</code></p>
+</div>
+<div class="paragraph">
+<p>You should be able to call the endpoints:</p>
+</div>
+<div class="paragraph">
+<p><code>curl "http://localhost:5050"</code></p>
+</div>
+<div class="paragraph">
+<p>and get the response:</p>
+</div>
+<div class="paragraph">
+<p><code>["audi","ford"]</code></p>
+</div>
+<div class="paragraph">
+<p>Or retrieve the vehicles of a manufacturer:</p>
+</div>
+<div class="paragraph">
+<p><code>curl "http://localhost:5050/audi/vehicles"</code></p>
+</div>
+<div class="paragraph">
+<p>and get the response:</p>
+</div>
+<div class="paragraph">
+<p><code>["A3","A4"]</code></p>
+</div>
+
+
+<h1 id="helpWithGrails">4 Do you need help with GORM or Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333;">OCI sponsored the creation of this Guide. OCI offers several <a href="https://objectcomputing.com/products/grails/consulting-support/">Grails services</a>:</h3>
+
+<img src="../img/oci-grails-services.svg"/>
+
+<h3>Free consultation </h3>
+
+<!-- This is the code that is needed to run the form -->
+
+<!--Copy and paste into the document's head or body.-->
+
+<script type="text/javascript">
+
+    /** This section is only needed once per page if manually copying **/
+    if (typeof MauticSDKLoaded == 'undefined') {
+        var MauticSDKLoaded = true;
+        var head            = document.getElementsByTagName('head')[0];
+        var script          = document.createElement('script');
+        script.type         = 'text/javascript';
+        script.src          = 'https://mautic.objectcomputing.com/media/js/mautic-form.js';
+        script.onload       = function() {
+            MauticSDK.onLoad();
+        };
+        head.appendChild(script);
+        var MauticDomain = 'https://mautic.objectcomputing.com';
+        var MauticLang   = {
+            'submittingMessage': "Please wait..."
+        }
+    }
+</script>
+
+<!--Copy and paste into the document's body.-->
+
+<style type="text/css" scoped>
+    .mauticform_wrapper { max-width: 600px; margin: 10px auto; }
+    .mauticform-innerform {}
+    .mauticform-post-success {}
+    .mauticform-name { font-weight: bold; font-size: 1.5em; margin-bottom: 3px; }
+    .mauticform-description { margin-top: 2px; margin-bottom: 10px; }
+    .mauticform-error { margin-bottom: 10px; color: red; }
+    .mauticform-message { margin-bottom: 10px;color: green; }
+    .mauticform-row { display: block; margin-bottom: 20px; }
+    .mauticform-label { font-size: 1.1em; display: block; font-weight: bold; margin-bottom: 5px; }
+    .mauticform-row.mauticform-required .mauticform-label:after { color: #e32; content: " *"; display: inline; }
+    .mauticform-helpmessage { display: block; font-size: 0.9em; margin-bottom: 3px; }
+    .mauticform-errormsg { display: block; color: red; margin-top: 2px; }
+    .mauticform-selectbox, .mauticform-input, .mauticform-textarea { width: 100%; padding: 0.5em 0.5em; border: 1px solid #CCC; background: #fff; box-shadow: 0px 0px 0px #fff inset; border-radius: 4px; box-sizing: border-box; }
+    .mauticform-checkboxgrp-row {}
+    .mauticform-checkboxgrp-label { font-weight: normal; }
+    .mauticform-checkboxgrp-checkbox {}
+    .mauticform-radiogrp-row {}
+    .mauticform-radiogrp-label { font-weight: normal; }
+    .mauticform-radiogrp-radio {}
+    .mauticform-button-wrapper .mauticform-button.btn-default, .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default { font-size: 14px; color: #fff;background-color: #feb672 ;border-color: #dddddd; padding: 15px 30px;}
+    .mauticform-button-wrapper .mauticform-button, .mauticform-pagebreak-wrapper .mauticform-pagebreak { display: inline-block;margin-bottom: 0;font-weight: 600;text-align: center;vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.3856;border-radius: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}
+    .mauticform-button-wrapper .mauticform-button.btn-default[disabled], .mauticform-pagebreak-wrapper .mauticform-pagebreak.btn-default[disabled] { background-color:#feb672; border-color: #dddddd; opacity: 0.75; cursor: not-allowed; font-size: 14px; color: #fff; padding: 15px 30px;}
+    .mauticform-pagebreak-wrapper .mauticform-button-wrapper {  display: inline; }
+</style>
+<div id="mauticform_wrapper_grailsorgconsultationform" class="mauticform_wrapper">
+    <form autocomplete="false" role="form" method="post" action="https://mautic.objectcomputing.com/form/submit?formId=3" id="mauticform_grailsorgconsultationform" data-mautic-form="grailsorgconsultationform">
+
+        <div class="mauticform-innerform">
+
+          <div class="mauticform-page-wrapper mauticform-page-1" data-mautic-form-page="1">
+
+            <div id="mauticform_grailsorgconsultationform_first_name"  data-validate="first_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-1 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_first_name" name="mauticform[first_name]" value="" placeholder="First Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_last_name"  data-validate="last_name" data-validation-type="text" class="mauticform-row mauticform-text mauticform-field-2 mauticform-required col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_last_name" name="mauticform[last_name]" value="" placeholder="Last Name *" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_email"  data-validate="email" data-validation-type="email" class="mauticform-row mauticform-email mauticform-field-3 mauticform-required col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_email" name="mauticform[email]" value="" placeholder="Email *" class="mauticform-input" type="email" />
+                <span class="mauticform-errormsg" style="display: none;">This is required.</span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_phone"  class="mauticform-row mauticform-tel mauticform-field-4 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_phone" name="mauticform[phone]" value="" placeholder="Phone" class="mauticform-input" type="tel" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_company"  class="mauticform-row mauticform-text mauticform-field-5 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <input id="mauticform_input_grailsorgconsultationform_company" name="mauticform[company]" value="" placeholder="Company" class="mauticform-input" type="text" />
+                <span class="mauticform-errormsg" style="display: none;"></span>
+            </div>
+
+            <div id="mauticform_grailsorgconsultationform_submit"  class="mauticform-row mauticform-button-wrapper mauticform-field-6" style="">
+                <button type="submit" name="mauticform[submit]" id="mauticform_input_grailsorgconsultationform_submit" name="mauticform[submit]" value="" class="mauticform-button btn btn-default" value="1" style="border: none; margin-left: 14px;">SUBMIT</button>
+            </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="mauticform[formId]" id="mauticform_grailsorgconsultationform_id" value="3"/>
+        <input type="hidden" name="mauticform[return]" id="mauticform_grailsorgconsultationform_return" value=""/>
+        <input type="hidden" name="mauticform[formName]" id="mauticform_grailsorgconsultationform_name" value="grailsorgconsultationform"/>
+</form>
+</div>
+
+<!--The code below is the message that appears when someone hits submit. Feel free to style this how you see fit for Grails.org. All CSS is handled in the above code.-->
+
+<div class="mauticform-error" id="mauticform_grailsorgconsultationform_error"></div>
+<div class="mauticform-message" id="mauticform_grailsorgconsultationform_message"></div>
+
+<h3 style="color: #333;">The <a href="https://objectcomputing.com/products/grails/consulting-support/">OCI Grails Team</a>
+includes Grails co-founders, <b>Jeff Scott Brown and Graeme Rocher</b>.
+Check our <a href="https://objectcomputing.com/training/catalog/grails/">Grails courses</a> and learn from the engineers who developed,
+matured and maintain Grails.</h3>
+
+<img src="../img/ocigrailsteam.png" style="max-width: 748px; width: 100%;" alt="Grails OCI Team">
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='http://run.pivotal.io/'>Pivotal</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>

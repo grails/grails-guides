@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Writing the Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/writingTheAppPartOne.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Do you need help with GORM or Grails?</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Do you need help with GORM or Grails?</span> >></a></div>
+                
+
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#configuringTheApp"><strong>3.1</strong><span>Configuring your Build</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#application"><strong>3.2</strong><span>GORM Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#creatingTheDomain"><strong>3.3</strong><span>Creating the domain</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#creatingTestData"><strong>3.4</strong><span>Seed Data</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#creatingTheServices"><strong>3.5</strong><span>Creating a Handler</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#creatingTheControllers"><strong>3.6</strong><span>Ratpack.groovy</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="writingTheAppPartOne">3 Writing the Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/writingTheAppPartOne.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+
+
+
+<h2 id="configuringTheApp">3.1 Configuring your Build</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/configuringTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Edit <em>build.gradle</em> file to include GORM dependencies.</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-hibernate5:6.1.6.RELEASE</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2:1.4.192</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat:tomcat-jdbc:8.5.0</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0</span><span class="delimiter">&quot;</span></span>
+    runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.slf4j:slf4j-api:1.7.10</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For this guide, use H2; an in-memory database.</p>
+</div>
+<div class="paragraph">
+<p>Read <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#outsideGrails">GORM documentation</a> to learn more.</p>
+</div>
+
+
+<h2 id="application">3.2 GORM Configuration</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/application.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Ratpack app developed during this guide uses Google Guice.
+<a href="https://code.google.com/p/google-guice/wiki/GettingStarted">Google Guice provides the concept of a module</a>, which is a kind of recipe for providing object.</p>
+</div>
+<div class="paragraph">
+<p>Create a module to configure GORM.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/GormModule.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">com.google.inject.AbstractModule</span>
+<span class="keyword">import</span> <span class="include">com.google.inject.Provides</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">GormModule</span> <span class="directive">extends</span> AbstractModule {
+
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> configure() {}
+
+    <span class="annotation">@Provides</span>
+    HibernateDatastore hibernateDatastore() {
+        <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt; configuration = [
+            <span class="string"><span class="delimiter">'</span><span class="content">hibernate.hbm2ddl.auto</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">create-drop</span><span class="delimiter">'</span></span>,
+            <span class="string"><span class="delimiter">'</span><span class="content">dataSource.url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">jdbc:h2:mem:myDB</span><span class="delimiter">'</span></span>
+        ] <span class="keyword">as</span> <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">Object</span>&gt;
+
+        <span class="keyword">new</span> HibernateDatastore(configuration, getClass().getPackage())
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM for Hibernate can be configured by passing a Map or instanceof the <code>PropertyResolver</code> interface to the <code>org.grails.orm.hibernate.HibernateDatastore</code> class when used standalone.</p>
+</div>
+
+
+<h2 id="creatingTheDomain">3.3 Creating the domain</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheDomain.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create two domain objects.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Manufacturer.groovy</code></p>
+</li>
+<li>
+<p><code>Vehicle.groovy</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Feel free to use your favorite IDE to create these or execute the following</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd complete/src/main/groovy/demo
+$ touch Manufacturer.groovy
+$ touch Vehicle.groovy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that all our class stubs are in place lets go ahead and edit them.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/Manufacturer.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.GormEntity</span>
+
+<span class="annotation">@ToString</span>
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Manufacturer</span> <span class="directive">implements</span> GormEntity&lt;Manufacturer&gt; {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> hasMany = [<span class="key">vehicles</span>: Vehicle]
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/domain/Vehicle.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.GormEntity</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.ToString</span>
+
+<span class="annotation">@ToString</span>
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Vehicle</span> <span class="directive">implements</span> GormEntity&lt;Vehicle&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Integer</span> year
+    <span class="directive">static</span> belongsTo = [<span class="key">manufacturer</span>: Manufacturer]
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">nullable</span>: <span class="predefined-constant">false</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Manufacturer</code> and <code>Vehicle</code> have a one-to-many relationship.</p>
+</div>
+<div class="paragraph">
+<p>We are using GORM outside of Grails. Because of that, we need to annotate our domain classes with the <code>grails.gorm.annotation.Entity</code>. Additionally we implement the <code>GormEntity</code> trait. It is merely to aid IDE support of GORM outside of Grails.</p>
+</div>
+
+
+<h2 id="creatingTestData">3.4 Seed Data</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTestData.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <code>Service</code> to encapsulate the creation of sample data when the application starts.</p>
+</div>
+<div class="listingblock">
+<div class="title">/src/main/groovy/demo/BootStrapService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.Transactional</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">ratpack.exec.Blocking</span>
+<span class="keyword">import</span> <span class="include">ratpack.service.Service</span>
+<span class="keyword">import</span> <span class="include">ratpack.service.StartEvent</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrapService</span> <span class="directive">implements</span> Service {
+    <span class="type">void</span> onStart(StartEvent e) <span class="directive">throws</span> <span class="exception">Exception</span> {
+        e.getRegistry().get(HibernateDatastore)
+        Blocking.exec {
+            populateWithSampleData()
+        }
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> populateWithSampleData() {
+        Manufacturer audi = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">audi</span><span class="delimiter">'</span></span>)
+        audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A3</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
+        audi.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">A4</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1994</span>))
+        audi.save()
+
+        Manufacturer ford = <span class="keyword">new</span> Manufacturer(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">ford</span><span class="delimiter">'</span></span>)
+        ford.addToVehicles(<span class="keyword">new</span> Vehicle(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ford KA</span><span class="delimiter">'</span></span>, <span class="key">year</span>: <span class="integer">1996</span>))
+        ford.save()
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="creatingTheServices">3.5 Creating a Handler</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheServices.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a <code>Handler</code>. We handle two requests.</p>
+</div>
+<div class="paragraph">
+<p>Requests to <code>/</code> return a list of manufacturers. Requests to <code>/audi/vehicles</code> returns a list of vehicles of the manufacturer named <code>audi</code></p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/demo/ManufacturerHandler.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
+
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">ratpack.exec.Blocking</span>
+<span class="keyword">import</span> <span class="include">ratpack.groovy.handling.GroovyContext</span>
+<span class="keyword">import</span> <span class="include">ratpack.groovy.handling.GroovyHandler</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">ratpack.jackson.Jackson.json</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">ManufacturerHandler</span> <span class="directive">extends</span> GroovyHandler {
+    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="type">void</span> handle(GroovyContext context) {
+        <span class="predefined-type">String</span> manufacturerName = context.pathTokens.id
+        Blocking.get {
+            manufacturerName ? findAllVehicleNameByManufacturerName(manufacturerName) : findAllManufacturerName()
+        } then { names -&gt;
+            context.render(json(names))
+        }
+    }
+
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllVehicleNameByManufacturerName(<span class="predefined-type">String</span> manufacturerName) {
+        Vehicle.where { manufacturer.name == manufacturerName }.projections {
+            property(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+        }.list() <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;
+    }
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; findAllManufacturerName() {
+        Manufacturer.where {}.projections {
+            property(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+        }.list() <span class="keyword">as</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt;
+    }
+}</code></pre>
+</div>
+</div>
+
+
+<h2 id="creatingTheControllers">3.6 Ratpack.groovy</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/gorm-ratpack/edit/grails3/src/main/docs/guide/creatingTheControllers.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Replace the content of <code>src/ratpack/Ratpack.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/ratpack/Ratpack.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">demo.BootStrapService</span>
+<span class="keyword">import</span> <span class="include">demo.GormModule</span>
+<span class="keyword">import</span> <span class="include">demo.ManufacturerHandler</span>
+
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">ratpack.groovy.Groovy.ratpack</span>
+
+ratpack {
+  bindings {
+    module GormModule
+    bindInstance <span class="keyword">new</span> BootStrapService()
+    add(<span class="keyword">new</span> ManufacturerHandler())
+  }
+  handlers {
+    get(<span class="string"><span class="delimiter">&quot;</span><span class="content">:id/vehicles</span><span class="delimiter">&quot;</span></span>, ManufacturerHandler)
+    get(ManufacturerHandler)
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The previous code registers the <code>Module</code> which configures GORM, the <code>Service</code> which populates the database on start-up and the <code>Handler</code>.</p>
+</div>
+<div class="paragraph">
+<p>Run the app:</p>
+</div>
+<div class="paragraph">
+<p><code>./gradlew run</code></p>
+</div>
+<div class="paragraph">
+<p>You should be able to call the endpoints:</p>
+</div>
+<div class="paragraph">
+<p><code>curl "http://localhost:5050"</code></p>
+</div>
+<div class="paragraph">
+<p>and get the response:</p>
+</div>
+<div class="paragraph">
+<p><code>["audi","ford"]</code></p>
+</div>
+<div class="paragraph">
+<p>Or retrieve the vehicles of a manufacturer:</p>
+</div>
+<div class="paragraph">
+<p><code>curl "http://localhost:5050/audi/vehicles"</code></p>
+</div>
+<div class="paragraph">
+<p>and get the response:</p>
+</div>
+<div class="paragraph">
+<p><code>["A3","A4"]</code></p>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/helpWithGrails.html"><strong>4</strong><span>Do you need help with GORM or Grails?</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/gorm-ratpack"><img src="https://travis-ci.org/grails-guides/gorm-ratpack.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/gorm-ratpack">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/gorm-ratpack.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-ratpack.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/gorm-ratpack'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/gorm-ratpack.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/gorm-ratpack/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
