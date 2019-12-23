@@ -103,15 +103,14 @@ function addJsClass() {
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> demo
 
-<span class="keyword">import</span> <span class="include">grails.transaction.Transactional</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.ReadOnly</span>
 
-<span class="annotation">@Transactional</span>
-<span class="type">class</span> <span class="class">PersonGormService</span> {
+<span class="annotation">@Service</span>(Person)
+<span class="type">interface</span> PersonGormService {
 
-    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
-    <span class="predefined-type">List</span>&lt;Person&gt; findAllActive() {
-        Person.where { active == <span class="predefined-constant">true</span> }.list()
-    }
+    <span class="annotation">@ReadOnly</span>
+    <span class="predefined-type">List</span>&lt;Person&gt; findAllByActive()
 }</code></pre>
 </div>
 </div>
@@ -151,7 +150,7 @@ guesses the <code>firstName</code> and <code>lastName</code> of each of the <cod
     PersonGormService personGormService
 
     <span class="predefined-type">List</span>&lt;<span class="predefined-type">Name</span>&gt; findAllPersonNames() {
-        personGormService.findAllActive().collect { Person person -&gt;
+        personGormService.findAllByActive().collect { Person person -&gt;
           nameWithFullName(person.name)
         }
     }
@@ -197,7 +196,7 @@ guesses the <code>firstName</code> and <code>lastName</code> of each of the <cod
 
         <span class="key">given</span>:
         service.personGormService = <span class="predefined-type">Stub</span>(PersonGormService) {
-            findAllActive() &gt;&gt; [
+            findAllByActive() &gt;&gt; [
                     <span class="comment">// new Person(name: 'Sergio del Amo', active: true), </span><i class="conum" data-value="1"></i><b>(1)</b>
                     <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Graeme Rocher</span><span class="delimiter">'</span></span>, <span class="key">active</span>: <span class="predefined-constant">true</span>),]
         }
