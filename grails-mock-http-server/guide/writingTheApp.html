@@ -75,28 +75,25 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0px"><a href="#openweather"><strong>3.1</strong><span>Open Weather Map</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#pogos"><strong>3.2</strong><span>Parse Response into Groovy classes</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#pogos"><strong>3.2</strong><span>Parse Response into JAVA classes</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0px"><a href="#service"><strong>3.3</strong><span>Open Weather Service</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#parse"><strong>3.4</strong><span>Parse Response into Groovy Classes</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#ersatz"><strong>3.4</strong><span>Ersatz</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#ersatz"><strong>3.5</strong><span>Ersatz</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#testapp"><strong>3.5</strong><span>Run Tests</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#testapp"><strong>3.6</strong><span>Run Tests</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#controller"><strong>3.6</strong><span>Root Url to Weather Controller</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#controller"><strong>3.7</strong><span>Root Url to Weather Controller</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#taglib"><strong>3.7</strong><span>TagLib</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0px"><a href="#taglib"><strong>3.8</strong><span>TagLib</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0px"><a href="#view"><strong>3.9</strong><span>View</span></a>
+                    <div class="toc-item" style="margin-left:0px"><a href="#view"><strong>3.8</strong><span>View</span></a>
                     </div>
                     
                 </div>
@@ -114,12 +111,12 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>The first step is to add a HTTP client library to our project. Add the next dependency:</p>
+<p>The first step is to add the Micronaut HTTP client library to our project. Add the next dependency:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 
@@ -168,7 +165,7 @@ the API key may take several minutes to become active.
 </div>
 
 
-<h2 id="pogos">3.2 Parse Response into Groovy classes</h2>
+<h2 id="pogos">3.2 Parse Response into JAVA classes</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/pogos.adoc"'>
@@ -178,140 +175,199 @@ the API key may take several minutes to become active.
 
 
 <div class="paragraph">
-<p>Create several Groovy POGOs (Plain Old Groovy Objects) to map the <code>OpenWeatherMap</code> JSON response to classes.</p>
+<p>Create several JAVA POJOs (Plain Old Java Objects) to map the <code>OpenWeatherMap</code> JSON response to classes.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/CurrentWeather.groovy</div>
+<div class="title">src/main/java/org/openweathermap/CurrentWeather.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">CurrentWeather</span> {
-    Main main
-    Coordinate coordinate
-    <span class="predefined-type">List</span>&lt;Weather&gt; weatherList
-    Wind wind
-    Sys sys
-    Rain rain
-    Clouds clouds
-    <span class="predefined-type">String</span> base
-    <span class="predefined-type">Integer</span> dt
-    <span class="predefined-type">Long</span> cityId
-    <span class="predefined-type">String</span> cityName
-    <span class="predefined-type">Integer</span> code
-    <span class="predefined-type">Integer</span> visibility
+<span class="keyword">import</span> <span class="include">java.util.List</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">CurrentWeather</span> {
+    <span class="directive">private</span> Main main;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">coord</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> Coordinate coordinate;
+
+    <span class="directive">private</span> <span class="predefined-type">List</span>&lt;Weather&gt; weather;
+    <span class="directive">private</span> Wind wind;
+    <span class="directive">private</span> Sys sys;
+    <span class="directive">private</span> Rain rain;
+    <span class="directive">private</span> Clouds clouds;
+    <span class="directive">private</span> <span class="predefined-type">String</span> base;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> dt;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Long</span> cityId;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">String</span> cityName;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">cod</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> code;
+
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> visibility;
+
+    <span class="directive">public</span> CurrentWeather() {
+    }
+
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Clouds.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Clouds.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="type">class</span> <span class="class">Clouds</span> {
-    <span class="predefined-type">Integer</span> cloudiness
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Clouds</span> {
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> cloudiness;
+
+    <span class="directive">public</span> Clouds() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Coordinate.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Coordinate.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Coordinate</span> {
-    <span class="predefined-type">BigDecimal</span> longitude
-    <span class="predefined-type">BigDecimal</span> latitude
+<span class="keyword">import</span> <span class="include">java.math.BigDecimal</span>;
 
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Coordinate</span> {
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">long</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> longitude;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">lat</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> latitude;
+
+    <span class="directive">public</span> Coordinate() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Rain.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Rain.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Rain</span> {
-    <span class="predefined-type">Integer</span> lastThreeHours
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Rain</span> {
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> lastThreeHours;
+
+    <span class="directive">public</span> Rain() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Unit.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Unit.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="directive">public</span> <span class="type">enum</span> Unit {
+    Standard, Imperial, Metric;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">enum</span> Unit {
-    Standard, Imperial, Metric
-
-    <span class="directive">static</span> Unit unitWithString(<span class="predefined-type">String</span> str) {
-        <span class="keyword">if</span> ( str ) {
-            <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span> ) {
-                <span class="keyword">return</span> Unit.Metric
-            } <span class="keyword">else</span> <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span> ) {
-                <span class="keyword">return</span> Unit.Imperial
+    <span class="directive">public</span> <span class="directive">static</span> Unit unitWithString(<span class="predefined-type">String</span> str) {
+        <span class="keyword">if</span> ( str != <span class="predefined-constant">null</span>) {
+            <span class="keyword">if</span> ( str.toLowerCase().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">metric</span><span class="delimiter">&quot;</span></span>) ) {
+                <span class="keyword">return</span> Unit.Metric;
+            } <span class="keyword">else</span> <span class="keyword">if</span> ( str.toLowerCase().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">imperial</span><span class="delimiter">&quot;</span></span>) ) {
+                <span class="keyword">return</span> Unit.Imperial;
             }
         }
-        Unit.Standard
+        <span class="keyword">return</span> Unit.Standard;
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> toString() {
+        <span class="keyword">return</span> <span class="local-variable">this</span>.name().toLowerCase();
     }
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Weather.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Weather.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Weather</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> main
-    <span class="predefined-type">String</span> description
-    <span class="predefined-type">String</span> icon
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Weather</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> main;
+    <span class="directive">private</span> <span class="predefined-type">String</span> description;
+    <span class="directive">private</span> <span class="predefined-type">String</span> icon;
+
+    <span class="directive">public</span> Weather() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Sys.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Sys.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Sys</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> type
-    <span class="predefined-type">String</span> message
-    <span class="predefined-type">String</span> country
-    <span class="predefined-type">Integer</span> sunrise
-    <span class="predefined-type">Integer</span> sunset
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Sys</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> type;
+    <span class="directive">private</span> <span class="predefined-type">String</span> message;
+    <span class="directive">private</span> <span class="predefined-type">String</span> country;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> sunrise;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> sunset;
+
+    <span class="directive">public</span> Sys() {
+
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Wind.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Wind.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Wind</span> {
-    <span class="predefined-type">BigDecimal</span> speed
-    <span class="predefined-type">BigDecimal</span> deg
+<span class="keyword">import</span> <span class="include">java.math.BigDecimal</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Wind</span> {
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> speed;
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> deg;
+
+    <span class="directive">public</span> Wind() {
+
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
@@ -336,63 +392,64 @@ the API key may take several minutes to become active.
 
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.BlockingHttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.exceptions.HttpClientResponseException</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.uri.UriBuilder</span>
+<span class="keyword">import</span> <span class="include">org.grails.web.json.JSONObject</span>
+
+
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">OpenweathermapService</span> <span class="directive">implements</span> GrailsConfigurationAware {
     <span class="predefined-type">String</span> appid
     <span class="predefined-type">String</span> cityName
     <span class="predefined-type">String</span> countryCode
-    <span class="predefined-type">String</span> openWeatherUrl
+    BlockingHttpClient client
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> setConfiguration(Config co) {
-        openWeatherUrl = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.url</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, <span class="string"><span class="delimiter">'</span><span class="content">http://api.openweathermap.org</span><span class="delimiter">'</span></span>)
+        setupHttpClient(co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.url</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, <span class="string"><span class="delimiter">'</span><span class="content">http://api.openweathermap.org</span><span class="delimiter">'</span></span>))
         appid = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.appid</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
         cityName = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.cityName</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
         countryCode = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.countryCode</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
     }
-    <span class="annotation">@CompileDynamic</span>
+
+    <span class="type">void</span> setupHttpClient(<span class="predefined-type">String</span> url) {
+        <span class="local-variable">this</span>.client = HttpClient.create(url.toURL()).toBlocking()
+    }
     CurrentWeather currentWeather(Unit units = Unit.Standard) {
         currentWeather(cityName, countryCode, units)
     }
 
-
-    <span class="annotation">@CompileDynamic</span>
     CurrentWeather currentWeather(<span class="predefined-type">String</span> cityName, <span class="predefined-type">String</span> countryCode, Unit unit = Unit.Standard) {
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-        <span class="predefined-type">String</span> url = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>openWeatherUrl<span class="inline-delimiter">}</span></span><span class="content">/data/2.5/weather?q={city},{countryCode}&amp;appid={appid}</span><span class="delimiter">&quot;</span></span>
-        <span class="predefined-type">Map</span> params = [<span class="key">city</span>: cityName, <span class="key">countryCode</span>: countryCode, <span class="key">appid</span>: appid]
-        <span class="predefined-type">String</span> unitParam = unitParameter(unit)
-        <span class="keyword">if</span> ( unitParam ) {
-            params.units = unitParam
-            url += <span class="string"><span class="delimiter">&quot;</span><span class="content">&amp;units={units}</span><span class="delimiter">&quot;</span></span>
-        }
-        RestResponse restResponse = rest.get(url) { <i class="conum" data-value="1"></i><b>(1)</b>
-            urlVariables params
-        }
+        <span class="keyword">try</span> {
+            HttpRequest request = HttpRequest.GET(currentWeatherUri(cityName, countryCode, unit))
+            <span class="keyword">return</span> client.retrieve(request, CurrentWeather)
 
-        <span class="keyword">if</span> ( restResponse.statusCode.value() == <span class="integer">200</span> &amp;&amp; restResponse.json ) {
-            <span class="keyword">return</span> OpenweathermapParser.currentWeatherFromJSONElement(restResponse.json) <i class="conum" data-value="2"></i><b>(2)</b>
+        } <span class="keyword">catch</span> (HttpClientResponseException e) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
         }
-        <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
     }
 
-  <span class="comment">/**
-    * @return null if Standard Unit
-    */</span>
-    <span class="predefined-type">String</span> unitParameter(Unit unit)  {
-        <span class="keyword">switch</span> ( unit ) {
-            <span class="keyword">case</span> Unit.Metric:
-                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span>
-            <span class="keyword">case</span> Unit.Imperial:
-                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span>
-            <span class="keyword">default</span>:
-                <span class="keyword">return</span> <span class="predefined-constant">null</span>
+    <span class="predefined-type">URI</span> currentWeatherUri(<span class="predefined-type">String</span> cityName, <span class="predefined-type">String</span> countryCode, Unit unit = Unit.Standard) {
+        UriBuilder uriBuilder = UriBuilder.of(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cityName<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toString())
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+        <span class="predefined-type">String</span> unitParam = unitParameter(unit)
+        <span class="keyword">if</span> (unitParam) {
+            uriBuilder = uriBuilder.queryParam(<span class="string"><span class="delimiter">'</span><span class="content">units</span><span class="delimiter">'</span></span>, unitParam)
         }
+        uriBuilder.build()
+    }
+
+    <span class="predefined-type">String</span> unitParameter(Unit unit)  {
+        unit == Unit.Standard ? <span class="predefined-constant">null</span> : unit?.toString()
     }
 }</code></pre>
 </div>
@@ -427,179 +484,7 @@ the API key may take several minutes to become active.
 </div>
 
 
-<h2 id="parse">3.4 Parse Response into Groovy Classes</h2>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/parse.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>Create the next class to encapsulte the parsing of JSON payload into Groovy Classes.</p>
-</div>
-<div class="listingblock">
-<div class="title">grails-app/utils/org/openweathermap/OpenweathermapParser.groovy</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
-
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
-<span class="keyword">import</span> <span class="include">org.grails.web.json.JSONElement</span>
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
-
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">OpenweathermapParser</span>  {
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> Coordinate coordinateFromJsonElement(JSONElement json) {
-        Coordinate coordinate = <span class="keyword">new</span> Coordinate()
-        <span class="keyword">if</span> ( json.long ) {
-            coordinate.longitude = json.long <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.lat ) {
-            coordinate.latitude = json.lat <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        coordinate
-    }
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> Main mainFromJsonElement(JSONElement json) {
-        Main main = <span class="keyword">new</span> Main()
-        <span class="keyword">if</span> ( json.temp ) {
-            main.temperature = json.temp <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.pressure ) {
-            main.pressure = json.pressure <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.humidity ) {
-            main.humidity = json.humidity <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-        }
-        <span class="keyword">if</span> ( json.temp_min ) {
-            main.tempMin = json.temp_min <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.temp_max ) {
-            main.tempMax = json.temp_max <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.seaLevel ) {
-            main.seaLevel = json.seaLevel <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.groundLevel ) {
-            main.groundLevel = json.groundLevel <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        main
-    }
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> Wind windFromJsonElement(JSONElement json) {
-        Wind wind = <span class="keyword">new</span> Wind()
-        <span class="keyword">if</span> ( json.speed ) {
-            wind.speed = json.speed <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        <span class="keyword">if</span> ( json.deg ) {
-            wind.deg = json.deg <span class="keyword">as</span> <span class="predefined-type">BigDecimal</span>
-        }
-        wind
-    }
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> Sys sysFromJsonElement(JSONElement json) {
-        Sys sys = <span class="keyword">new</span> Sys()
-        <span class="keyword">if</span> ( json.id ) {
-            sys.id = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
-        }
-        <span class="keyword">if</span> ( json.type ) {
-            sys.type = json.type
-        }
-        <span class="keyword">if</span> ( json.message ) {
-            sys.message = json.message
-        }
-        <span class="keyword">if</span> ( json.country ) {
-            sys.country = json.country
-        }
-        <span class="keyword">if</span> ( json.sunrise ) {
-            sys.sunrise = json.sunrise <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-        }
-        <span class="keyword">if</span> ( json.sunset ) {
-            sys.sunset = json.sunset <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-        }
-        sys
-    }
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> Weather weatherFromJsonElement(JSONElement json) {
-        Weather weather = <span class="keyword">new</span> Weather()
-        <span class="keyword">if</span> ( json.id ) {
-            weather.id = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
-        }
-        <span class="keyword">if</span> ( json.main ) {
-            weather.main = json.main
-        }
-        <span class="keyword">if</span> ( json.description ) {
-            weather.description = json.description
-        }
-        <span class="keyword">if</span> ( json.icon ) {
-            weather.icon = json.icon
-        }
-        weather
-    }
-
-    <span class="annotation">@CompileDynamic</span>
-    <span class="directive">static</span> CurrentWeather currentWeatherFromJSONElement(JSONElement json) {
-        CurrentWeather currentWeather = <span class="keyword">new</span> CurrentWeather()
-
-        <span class="keyword">if</span> ( json.coord ) {
-            currentWeather.coordinate = coordinateFromJsonElement(json.coord)
-        }
-        <span class="keyword">if</span> ( json.main ) {
-            currentWeather.main = mainFromJsonElement(json.main)
-        }
-        <span class="keyword">if</span> ( json.wind ) {
-            currentWeather.wind = windFromJsonElement(json.wind)
-        }
-        <span class="keyword">if</span> ( json.clouds ) {
-            currentWeather.clouds = <span class="keyword">new</span> Clouds()
-            <span class="keyword">if</span> ( json.clouds.all ) {
-                currentWeather.clouds.cloudiness = json.clouds.all <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-            }
-        }
-        <span class="keyword">if</span> ( json.sys ) {
-            currentWeather.sys = sysFromJsonElement(json.sys)
-        }
-        <span class="keyword">if</span> ( json.id ) {
-            currentWeather.cityId = json.id <span class="keyword">as</span> <span class="predefined-type">Long</span>
-        }
-        <span class="keyword">if</span> ( json.base ) {
-            currentWeather.base = json.base
-        }
-        <span class="keyword">if</span> ( json.name ) {
-            currentWeather.cityName = json.name
-        }
-        <span class="keyword">if</span> ( json.cod ) {
-            currentWeather.code = json.cod <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-        }
-        <span class="keyword">if</span> ( json.visibility ) {
-            currentWeather.visibility = json.visibility
-        }
-        <span class="keyword">if</span> ( json.dt ) {
-            currentWeather.dt = json.dt <span class="keyword">as</span> <span class="predefined-type">Integer</span>
-        }
-
-        <span class="keyword">if</span> ( json.weather ) {
-            currentWeather.weatherList = <span class="type">[]</span>
-            <span class="keyword">for</span> ( <span class="predefined-type">Object</span> obj : json.weather ) {
-                Weather weather = weatherFromJsonElement(obj)
-                currentWeather.weatherList &lt;&lt; weather
-            }
-        }
-        currentWeather
-    }
-}</code></pre>
-</div>
-</div>
-
-
-<h2 id="ersatz">3.5 Ersatz</h2>
+<h2 id="ersatz">3.4 Ersatz</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/ersatz.adoc"'>
@@ -614,7 +499,7 @@ the API key may take several minutes to become active.
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.5.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:2.0.0</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="quoteblock">
@@ -633,12 +518,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.cfg.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.encdec.Encoders</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
 <span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">For an unauthorized key, null is return</span><span class="delimiter">&quot;</span></span>() {
@@ -648,7 +535,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
         ersatz.expectations {
-            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            GET(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
                 query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
                 query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
                 called(<span class="integer">1</span>) <i class="conum" data-value="2"></i><b>(2)</b>
@@ -657,7 +544,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
                 }
             }
         }
-        service.openWeatherUrl = ersatz.httpUrl <i class="conum" data-value="4"></i><b>(4)</b>
+        service.setupHttpClient(ersatz.httpUrl) <i class="conum" data-value="4"></i><b>(4)</b>
         service.appid = appid
 
         <span class="key">when</span>:
@@ -711,12 +598,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.cfg.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.encdec.Encoders</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
 <span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">A CurrentWeather object is built from JSON Payload</span><span class="delimiter">&quot;</span></span>() {
@@ -726,14 +615,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
         ersatz.expectations {
-            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
+            GET(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
                 query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
                 query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
                 called(<span class="integer">1</span>)
                 responder {
                     encoder(ContentType.APPLICATION_JSON, <span class="predefined-type">Map</span>, Encoders.json) <i class="conum" data-value="1"></i><b>(1)</b>
                     code(<span class="integer">200</span>)
-                    content([
+                    body([
                         coord     : [<span class="key">lon</span>: -<span class="float">0.13</span>, <span class="key">lat</span>: <span class="float">51.51</span>],
                         weather   : [[<span class="key">id</span>: <span class="integer">803</span>, <span class="key">main</span>: <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>, <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>, <span class="key">icon</span>: <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>]],
                         base      : <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>,
@@ -750,7 +639,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
                 }
             }
         }
-        service.openWeatherUrl = ersatz.httpUrl
+        service.setupHttpClient(ersatz.httpUrl)
         service.appid = appid
 
         <span class="key">when</span>:
@@ -758,7 +647,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 
         <span class="key">then</span>:
         currentWeather
-        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+
         currentWeather.cityName == <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
         currentWeather.code == <span class="integer">200</span>
         currentWeather.cityId == <span class="integer">2643743</span>
@@ -767,10 +656,12 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         currentWeather.main.humidity == <span class="integer">53</span>
         currentWeather.main.tempMin == <span class="integer">19</span>
         currentWeather.main.tempMax == <span class="integer">22</span>
-        currentWeather.weatherList[<span class="integer">0</span>].id == <span class="integer">803</span>
-        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
-        currentWeather.weatherList[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
-        currentWeather.weatherList[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
+        currentWeather.weather
+        currentWeather.weather[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].id == <span class="integer">803</span>
+        currentWeather.weather[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
         currentWeather.visibility == <span class="integer">10000</span>
         currentWeather.wind.speed == <span class="float">3.6</span>
         currentWeather.wind.deg == <span class="integer">180</span>
@@ -801,21 +692,15 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 </tr>
 </table>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-As of Ersatz version 1.5.0 the internal Undertow embedded server version is out of sync with Grails. If you use Undertow as your server for Grails you may have classpath collisions or odd errors. This can be avoided by using the "safe" (shadowed) version of the Ersatz dependency (see the <a href="http://stehno.com/ersatz/asciidoc/html5/#_shadow_jar">Shadow Jar section of the Ersatz User Guide</a> for more details).
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p><a href="http://stehno.com/ersatz/guide/#" class="bare">http://stehno.com/ersatz/guide/#</a><em>shadow_jar[Shadow Jar section of the Ersatz User Guide]:
+<em></em>
+The embedded version of Undertow used by Ersatz has caused issues with some server frameworks which also use Undertow (e.g. Grails, and Spring-boot). If you run into errors using the standard jar distribution, please try using the safe distribution, which is a shadowed jar which includes the Undertow library and its JBoss dependencies repackaged in the jar.
+</em>_</p>
 </div>
 
 
-<h2 id="testapp">3.6 Run Tests</h2>
+<h2 id="testapp">3.5 Run Tests</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/testapp.adoc"'>
@@ -845,7 +730,7 @@ open build/reports/tests/index.html</code></pre>
 </div>
 
 
-<h2 id="controller">3.7 Root Url to Weather Controller</h2>
+<h2 id="controller">3.6 Root Url to Weather Controller</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/controller.adoc"'>
@@ -889,7 +774,7 @@ open build/reports/tests/index.html</code></pre>
 </div>
 
 
-<h2 id="taglib">3.8 TagLib</h2>
+<h2 id="taglib">3.7 TagLib</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/taglib.adoc"'>
@@ -926,7 +811,7 @@ open build/reports/tests/index.html</code></pre>
 </div>
 
 
-<h2 id="view">3.9 View</h2>
+<h2 id="view">3.8 View</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/view.adoc"'>

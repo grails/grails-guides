@@ -91,63 +91,64 @@ function addJsClass() {
 
 <span class="keyword">import</span> <span class="include">grails.config.Config</span>
 <span class="keyword">import</span> <span class="include">grails.core.support.GrailsConfigurationAware</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestResponse</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileDynamic</span>
 <span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.BlockingHttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.exceptions.HttpClientResponseException</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.uri.UriBuilder</span>
+<span class="keyword">import</span> <span class="include">org.grails.web.json.JSONObject</span>
+
+
 
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">OpenweathermapService</span> <span class="directive">implements</span> GrailsConfigurationAware {
     <span class="predefined-type">String</span> appid
     <span class="predefined-type">String</span> cityName
     <span class="predefined-type">String</span> countryCode
-    <span class="predefined-type">String</span> openWeatherUrl
+    BlockingHttpClient client
 
     <span class="annotation">@Override</span>
     <span class="type">void</span> setConfiguration(Config co) {
-        openWeatherUrl = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.url</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, <span class="string"><span class="delimiter">'</span><span class="content">http://api.openweathermap.org</span><span class="delimiter">'</span></span>)
+        setupHttpClient(co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.url</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>, <span class="string"><span class="delimiter">'</span><span class="content">http://api.openweathermap.org</span><span class="delimiter">'</span></span>))
         appid = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.appid</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
         cityName = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.cityName</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
         countryCode = co.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">openweather.countryCode</span><span class="delimiter">'</span></span>, <span class="predefined-type">String</span>)
     }
-    <span class="annotation">@CompileDynamic</span>
+
+    <span class="type">void</span> setupHttpClient(<span class="predefined-type">String</span> url) {
+        <span class="local-variable">this</span>.client = HttpClient.create(url.toURL()).toBlocking()
+    }
     CurrentWeather currentWeather(Unit units = Unit.Standard) {
         currentWeather(cityName, countryCode, units)
     }
 
-
-    <span class="annotation">@CompileDynamic</span>
     CurrentWeather currentWeather(<span class="predefined-type">String</span> cityName, <span class="predefined-type">String</span> countryCode, Unit unit = Unit.Standard) {
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-        <span class="predefined-type">String</span> url = <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>openWeatherUrl<span class="inline-delimiter">}</span></span><span class="content">/data/2.5/weather?q={city},{countryCode}&amp;appid={appid}</span><span class="delimiter">&quot;</span></span>
-        <span class="predefined-type">Map</span> params = [<span class="key">city</span>: cityName, <span class="key">countryCode</span>: countryCode, <span class="key">appid</span>: appid]
-        <span class="predefined-type">String</span> unitParam = unitParameter(unit)
-        <span class="keyword">if</span> ( unitParam ) {
-            params.units = unitParam
-            url += <span class="string"><span class="delimiter">&quot;</span><span class="content">&amp;units={units}</span><span class="delimiter">&quot;</span></span>
-        }
-        RestResponse restResponse = rest.get(url) { <i class="conum" data-value="1"></i><b>(1)</b>
-            urlVariables params
-        }
+        <span class="keyword">try</span> {
+            HttpRequest request = HttpRequest.GET(currentWeatherUri(cityName, countryCode, unit))
+            <span class="keyword">return</span> client.retrieve(request, CurrentWeather)
 
-        <span class="keyword">if</span> ( restResponse.statusCode.value() == <span class="integer">200</span> &amp;&amp; restResponse.json ) {
-            <span class="keyword">return</span> OpenweathermapParser.currentWeatherFromJSONElement(restResponse.json) <i class="conum" data-value="2"></i><b>(2)</b>
+        } <span class="keyword">catch</span> (HttpClientResponseException e) {
+            <span class="keyword">return</span> <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
         }
-        <span class="predefined-constant">null</span> <i class="conum" data-value="3"></i><b>(3)</b>
     }
 
-  <span class="comment">/**
-    * @return null if Standard Unit
-    */</span>
-    <span class="predefined-type">String</span> unitParameter(Unit unit)  {
-        <span class="keyword">switch</span> ( unit ) {
-            <span class="keyword">case</span> Unit.Metric:
-                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span>
-            <span class="keyword">case</span> Unit.Imperial:
-                <span class="keyword">return</span> <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span>
-            <span class="keyword">default</span>:
-                <span class="keyword">return</span> <span class="predefined-constant">null</span>
+    <span class="predefined-type">URI</span> currentWeatherUri(<span class="predefined-type">String</span> cityName, <span class="predefined-type">String</span> countryCode, Unit unit = Unit.Standard) {
+        UriBuilder uriBuilder = UriBuilder.of(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>)
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>cityName<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>.toString())
+                .queryParam(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+        <span class="predefined-type">String</span> unitParam = unitParameter(unit)
+        <span class="keyword">if</span> (unitParam) {
+            uriBuilder = uriBuilder.queryParam(<span class="string"><span class="delimiter">'</span><span class="content">units</span><span class="delimiter">'</span></span>, unitParam)
         }
+        uriBuilder.build()
+    }
+
+    <span class="predefined-type">String</span> unitParameter(Unit unit)  {
+        unit == Unit.Standard ? <span class="predefined-constant">null</span> : unit?.toString()
     }
 }</code></pre>
 </div>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.5 Ersatz</title>
+    <title>3.4 Ersatz</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -72,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="ersatz">3.5 Ersatz</h2>
+<h2 id="ersatz">3.4 Ersatz</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/ersatz.adoc"'>
@@ -87,7 +87,7 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.5.0</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:2.0.0</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="quoteblock">
@@ -106,12 +106,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.cfg.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.encdec.Encoders</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
 <span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">For an unauthorized key, null is return</span><span class="delimiter">&quot;</span></span>() {
@@ -121,7 +123,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
         ersatz.expectations {
-            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+            GET(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
                 query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
                 query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
                 called(<span class="integer">1</span>) <i class="conum" data-value="2"></i><b>(2)</b>
@@ -130,7 +132,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
                 }
             }
         }
-        service.openWeatherUrl = ersatz.httpUrl <i class="conum" data-value="4"></i><b>(4)</b>
+        service.setupHttpClient(ersatz.httpUrl) <i class="conum" data-value="4"></i><b>(4)</b>
         service.appid = appid
 
         <span class="key">when</span>:
@@ -184,12 +186,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
 
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
-<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
 <span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.cfg.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.encdec.Encoders</span>
 <span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.IgnoreIf</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
 
+<span class="annotation">@IgnoreIf</span>( { <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">TRAVIS</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> <span class="type">boolean</span> } )
 <span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
 
     <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">A CurrentWeather object is built from JSON Payload</span><span class="delimiter">&quot;</span></span>() {
@@ -199,14 +203,14 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
         <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
         ersatz.expectations {
-            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
+            GET(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
                 query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
                 query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
                 called(<span class="integer">1</span>)
                 responder {
                     encoder(ContentType.APPLICATION_JSON, <span class="predefined-type">Map</span>, Encoders.json) <i class="conum" data-value="1"></i><b>(1)</b>
                     code(<span class="integer">200</span>)
-                    content([
+                    body([
                         coord     : [<span class="key">lon</span>: -<span class="float">0.13</span>, <span class="key">lat</span>: <span class="float">51.51</span>],
                         weather   : [[<span class="key">id</span>: <span class="integer">803</span>, <span class="key">main</span>: <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>, <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>, <span class="key">icon</span>: <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>]],
                         base      : <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>,
@@ -223,7 +227,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
                 }
             }
         }
-        service.openWeatherUrl = ersatz.httpUrl
+        service.setupHttpClient(ersatz.httpUrl)
         service.appid = appid
 
         <span class="key">when</span>:
@@ -231,7 +235,7 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 
         <span class="key">then</span>:
         currentWeather
-        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+
         currentWeather.cityName == <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
         currentWeather.code == <span class="integer">200</span>
         currentWeather.cityId == <span class="integer">2643743</span>
@@ -240,10 +244,12 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
         currentWeather.main.humidity == <span class="integer">53</span>
         currentWeather.main.tempMin == <span class="integer">19</span>
         currentWeather.main.tempMax == <span class="integer">22</span>
-        currentWeather.weatherList[<span class="integer">0</span>].id == <span class="integer">803</span>
-        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
-        currentWeather.weatherList[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
-        currentWeather.weatherList[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
+        currentWeather.weather
+        currentWeather.weather[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].id == <span class="integer">803</span>
+        currentWeather.weather[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weather[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
         currentWeather.visibility == <span class="integer">10000</span>
         currentWeather.wind.speed == <span class="float">3.6</span>
         currentWeather.wind.deg == <span class="integer">180</span>
@@ -274,17 +280,11 @@ null when the REST API returns <code>401</code>. For example, when the API Key i
 </tr>
 </table>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-As of Ersatz version 1.5.0 the internal Undertow embedded server version is out of sync with Grails. If you use Undertow as your server for Grails you may have classpath collisions or odd errors. This can be avoided by using the "safe" (shadowed) version of the Ersatz dependency (see the <a href="http://stehno.com/ersatz/asciidoc/html5/#_shadow_jar">Shadow Jar section of the Ersatz User Guide</a> for more details).
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p><a href="http://stehno.com/ersatz/guide/#" class="bare">http://stehno.com/ersatz/guide/#</a><em>shadow_jar[Shadow Jar section of the Ersatz User Guide]:
+<em></em>
+The embedded version of Undertow used by Ersatz has caused issues with some server frameworks which also use Undertow (e.g. Grails, and Spring-boot). If you run into errors using the standard jar distribution, please try using the safe distribution, which is a shadowed jar which includes the Undertow library and its JBoss dependencies repackaged in the jar.
+</em>_</p>
 </div>
 
 

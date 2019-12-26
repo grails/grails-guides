@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.2 Parse Response into Groovy classes</title>
+    <title>3.2 Parse Response into JAVA classes</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
@@ -72,7 +72,7 @@ function addJsClass() {
 
                 
 
-<h2 id="pogos">3.2 Parse Response into Groovy classes</h2>
+<h2 id="pogos">3.2 Parse Response into JAVA classes</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/master/src/main/docs/guide/pogos.adoc"'>
@@ -82,140 +82,199 @@ function addJsClass() {
 
 
 <div class="paragraph">
-<p>Create several Groovy POGOs (Plain Old Groovy Objects) to map the <code>OpenWeatherMap</code> JSON response to classes.</p>
+<p>Create several JAVA POJOs (Plain Old Java Objects) to map the <code>OpenWeatherMap</code> JSON response to classes.</p>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/CurrentWeather.groovy</div>
+<div class="title">src/main/java/org/openweathermap/CurrentWeather.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">CurrentWeather</span> {
-    Main main
-    Coordinate coordinate
-    <span class="predefined-type">List</span>&lt;Weather&gt; weatherList
-    Wind wind
-    Sys sys
-    Rain rain
-    Clouds clouds
-    <span class="predefined-type">String</span> base
-    <span class="predefined-type">Integer</span> dt
-    <span class="predefined-type">Long</span> cityId
-    <span class="predefined-type">String</span> cityName
-    <span class="predefined-type">Integer</span> code
-    <span class="predefined-type">Integer</span> visibility
+<span class="keyword">import</span> <span class="include">java.util.List</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">CurrentWeather</span> {
+    <span class="directive">private</span> Main main;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">coord</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> Coordinate coordinate;
+
+    <span class="directive">private</span> <span class="predefined-type">List</span>&lt;Weather&gt; weather;
+    <span class="directive">private</span> Wind wind;
+    <span class="directive">private</span> Sys sys;
+    <span class="directive">private</span> Rain rain;
+    <span class="directive">private</span> Clouds clouds;
+    <span class="directive">private</span> <span class="predefined-type">String</span> base;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> dt;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Long</span> cityId;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">String</span> cityName;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">cod</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> code;
+
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> visibility;
+
+    <span class="directive">public</span> CurrentWeather() {
+    }
+
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Clouds.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Clouds.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="type">class</span> <span class="class">Clouds</span> {
-    <span class="predefined-type">Integer</span> cloudiness
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Clouds</span> {
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">all</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> cloudiness;
+
+    <span class="directive">public</span> Clouds() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Coordinate.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Coordinate.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonProperty</span>;
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Coordinate</span> {
-    <span class="predefined-type">BigDecimal</span> longitude
-    <span class="predefined-type">BigDecimal</span> latitude
+<span class="keyword">import</span> <span class="include">java.math.BigDecimal</span>;
 
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Coordinate</span> {
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">long</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> longitude;
+
+    <span class="annotation">@JsonProperty</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">lat</span><span class="delimiter">&quot;</span></span>)
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> latitude;
+
+    <span class="directive">public</span> Coordinate() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Rain.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Rain.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Rain</span> {
-    <span class="predefined-type">Integer</span> lastThreeHours
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Rain</span> {
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> lastThreeHours;
+
+    <span class="directive">public</span> Rain() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Unit.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Unit.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="directive">public</span> <span class="type">enum</span> Unit {
+    Standard, Imperial, Metric;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">enum</span> Unit {
-    Standard, Imperial, Metric
-
-    <span class="directive">static</span> Unit unitWithString(<span class="predefined-type">String</span> str) {
-        <span class="keyword">if</span> ( str ) {
-            <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">metric</span><span class="delimiter">'</span></span> ) {
-                <span class="keyword">return</span> Unit.Metric
-            } <span class="keyword">else</span> <span class="keyword">if</span> ( str.toLowerCase() == <span class="string"><span class="delimiter">'</span><span class="content">imperial</span><span class="delimiter">'</span></span> ) {
-                <span class="keyword">return</span> Unit.Imperial
+    <span class="directive">public</span> <span class="directive">static</span> Unit unitWithString(<span class="predefined-type">String</span> str) {
+        <span class="keyword">if</span> ( str != <span class="predefined-constant">null</span>) {
+            <span class="keyword">if</span> ( str.toLowerCase().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">metric</span><span class="delimiter">&quot;</span></span>) ) {
+                <span class="keyword">return</span> Unit.Metric;
+            } <span class="keyword">else</span> <span class="keyword">if</span> ( str.toLowerCase().equals(<span class="string"><span class="delimiter">&quot;</span><span class="content">imperial</span><span class="delimiter">&quot;</span></span>) ) {
+                <span class="keyword">return</span> Unit.Imperial;
             }
         }
-        Unit.Standard
+        <span class="keyword">return</span> Unit.Standard;
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="directive">public</span> <span class="predefined-type">String</span> toString() {
+        <span class="keyword">return</span> <span class="local-variable">this</span>.name().toLowerCase();
     }
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Weather.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Weather.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Weather</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> main
-    <span class="predefined-type">String</span> description
-    <span class="predefined-type">String</span> icon
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Weather</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> main;
+    <span class="directive">private</span> <span class="predefined-type">String</span> description;
+    <span class="directive">private</span> <span class="predefined-type">String</span> icon;
+
+    <span class="directive">public</span> Weather() {
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Sys.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Sys.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Sys</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> type
-    <span class="predefined-type">String</span> message
-    <span class="predefined-type">String</span> country
-    <span class="predefined-type">Integer</span> sunrise
-    <span class="predefined-type">Integer</span> sunset
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Sys</span> {
+    <span class="directive">private</span> <span class="predefined-type">Long</span> id;
+    <span class="directive">private</span> <span class="predefined-type">String</span> type;
+    <span class="directive">private</span> <span class="predefined-type">String</span> message;
+    <span class="directive">private</span> <span class="predefined-type">String</span> country;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> sunrise;
+    <span class="directive">private</span> <span class="predefined-type">Integer</span> sunset;
+
+    <span class="directive">public</span> Sys() {
+
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">src/main/groovy/org/openweathermap/Wind.groovy</div>
+<div class="title">src/main/java/org/openweathermap/Wind.java</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap;
 
-<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.core.annotation.Introspected</span>;
 
-<span class="annotation">@CompileStatic</span>
-<span class="type">class</span> <span class="class">Wind</span> {
-    <span class="predefined-type">BigDecimal</span> speed
-    <span class="predefined-type">BigDecimal</span> deg
+<span class="keyword">import</span> <span class="include">java.math.BigDecimal</span>;
+
+<span class="annotation">@Introspected</span>
+<span class="directive">public</span> <span class="type">class</span> <span class="class">Wind</span> {
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> speed;
+    <span class="directive">private</span> <span class="predefined-type">BigDecimal</span> deg;
+
+    <span class="directive">public</span> Wind() {
+
+    }
+<span class="comment">//getters and setters</span>
 }</code></pre>
 </div>
 </div>
