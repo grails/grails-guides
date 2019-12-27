@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.5 Ersatz</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/guide.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />            
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Grails Framework Guide 
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/training.html"><strong>1</strong><span>Grails Training</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/writingTheApp.html"><strong>3</strong><span>Writing the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/helpWithGrails.html"><strong>5</strong><span>Help with Grails</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+
+
+                
+
+                
+
+<h2 id="ersatz">3.5 Ersatz</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-mock-http-server/edit/grails3/src/main/docs/guide/ersatz.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To test the networking code, add a dependency to <a href="http://stehno.com/ersatz/">Ersatz</a></p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    testCompile <span class="string"><span class="delimiter">'</span><span class="content">com.stehno.ersatz:ersatz:1.5.0</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Ersatz Server is a "mock" HTTP server library for testing HTTP clients. It allows for server-side request/response expectations to be configured so that your client library can make real HTTP calls and get back real pre-configured responses rather than fake stubs.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>First, implement a test which verifies that the <code>OpenweathermapService.currentWeather</code> method returns
+null when the REST API returns <code>401</code>. For example, when the API Key is invalid.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/openweathermap/OpenweathermapServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">For an unauthorized key, null is return</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        ErsatzServer ersatz = <span class="keyword">new</span> ErsatzServer()
+        <span class="predefined-type">String</span> city = <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
+        ersatz.expectations {
+            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) { <i class="conum" data-value="1"></i><b>(1)</b>
+                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+                called(<span class="integer">1</span>) <i class="conum" data-value="2"></i><b>(2)</b>
+                responder {
+                    code(<span class="integer">401</span>) <i class="conum" data-value="3"></i><b>(3)</b>
+                }
+            }
+        }
+        service.openWeatherUrl = ersatz.httpUrl <i class="conum" data-value="4"></i><b>(4)</b>
+        service.appid = appid
+
+        <span class="key">when</span>:
+        CurrentWeather currentWeather = service.currentWeather(city, countryCode)
+
+        <span class="key">then</span>:
+        !currentWeather
+
+        <span class="key">and</span>:
+        ersatz.verify() <i class="conum" data-value="5"></i><b>(5)</b>
+
+        <span class="key">cleanup</span>:
+        ersatz.stop() <i class="conum" data-value="6"></i><b>(6)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare expectations, a GET request to the <code>OpenWeather</code> path with query parameters.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Declare conditions to be verified, in this example we want to to verify the endpoint is hit only one time.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Tell the mock server to return 401 for this test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Ersatz starts an embedded Undertow server, root the networking requests to this server instead of to the OpenWeather API server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Verify the ersatz servers conditions.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Rember to stop the server</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next, test that when the server returns 200 and a JSON payload, the JSON payload is parsed correctly into Groovy classes.</p>
+</div>
+<div class="listingblock">
+<div class="title">src/test/groovy/org/openweathermap/OpenweathermapServiceSpec.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> org.openweathermap
+
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ContentType</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.Encoders</span>
+<span class="keyword">import</span> <span class="include">com.stehno.ersatz.ErsatzServer</span>
+<span class="keyword">import</span> <span class="include">grails.testing.services.ServiceUnitTest</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
+
+<span class="type">class</span> <span class="class">OpenweathermapServiceSpec</span> <span class="directive">extends</span> Specification <span class="directive">implements</span> ServiceUnitTest&lt;OpenweathermapService&gt; {
+
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">A CurrentWeather object is built from JSON Payload</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        ErsatzServer ersatz = <span class="keyword">new</span> ErsatzServer()
+        <span class="predefined-type">String</span> city = <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> countryCode = <span class="string"><span class="delimiter">'</span><span class="content">uk</span><span class="delimiter">'</span></span>
+        <span class="predefined-type">String</span> appid = <span class="string"><span class="delimiter">'</span><span class="content">XXXXX</span><span class="delimiter">'</span></span>
+        ersatz.expectations {
+            get(<span class="string"><span class="delimiter">'</span><span class="content">/data/2.5/weather</span><span class="delimiter">'</span></span>) {
+                query(<span class="string"><span class="delimiter">'</span><span class="content">q</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>city<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>countryCode<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+                query(<span class="string"><span class="delimiter">'</span><span class="content">appid</span><span class="delimiter">'</span></span>, appid)
+                called(<span class="integer">1</span>)
+                responder {
+                    encoder(ContentType.APPLICATION_JSON, <span class="predefined-type">Map</span>, Encoders.json) <i class="conum" data-value="1"></i><b>(1)</b>
+                    code(<span class="integer">200</span>)
+                    content([
+                        coord     : [<span class="key">lon</span>: -<span class="float">0.13</span>, <span class="key">lat</span>: <span class="float">51.51</span>],
+                        weather   : [[<span class="key">id</span>: <span class="integer">803</span>, <span class="key">main</span>: <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>, <span class="key">description</span>: <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>, <span class="key">icon</span>: <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>]],
+                        base      : <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>,
+                        main      : [<span class="key">temp</span>: <span class="float">20.81</span>, <span class="key">pressure</span>: <span class="integer">1017</span>, <span class="key">humidity</span>: <span class="integer">53</span>, <span class="key">temp_min</span>: <span class="integer">19</span>, <span class="key">temp_max</span>: <span class="integer">22</span>],
+                        <span class="key">visibility</span>: <span class="integer">10000</span>,
+                        wind      : [<span class="key">speed</span>: <span class="float">3.6</span>, <span class="key">deg</span>: <span class="integer">180</span>, <span class="key">gust</span>: <span class="float">9.8</span>],
+                        clouds    : [<span class="key">all</span>: <span class="integer">75</span>],
+                        dt        : <span class="integer">1502707800</span>,
+                        sys       : [<span class="key">type</span>: <span class="integer">1</span>, <span class="key">id</span>: <span class="integer">5091</span>, <span class="key">message</span>: <span class="float">0.0029</span>, <span class="key">country</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">GB</span><span class="delimiter">&quot;</span></span>, <span class="key">sunrise</span>: <span class="integer">1502685920</span>, <span class="key">sunset</span>: <span class="integer">1502738622</span>],
+                        id        : <span class="integer">2643743</span>,
+                        name      : <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>,
+                        cod       : <span class="integer">200</span>
+                    ], ContentType.APPLICATION_JSON) <i class="conum" data-value="2"></i><b>(2)</b>
+                }
+            }
+        }
+        service.openWeatherUrl = ersatz.httpUrl
+        service.appid = appid
+
+        <span class="key">when</span>:
+        CurrentWeather currentWeather = service.currentWeather(city, countryCode)
+
+        <span class="key">then</span>:
+        currentWeather
+        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.cityName == <span class="string"><span class="delimiter">'</span><span class="content">London</span><span class="delimiter">'</span></span>
+        currentWeather.code == <span class="integer">200</span>
+        currentWeather.cityId == <span class="integer">2643743</span>
+        currentWeather.main.temperature == <span class="float">20.81</span>
+        currentWeather.main.pressure == <span class="integer">1017</span>
+        currentWeather.main.humidity == <span class="integer">53</span>
+        currentWeather.main.tempMin == <span class="integer">19</span>
+        currentWeather.main.tempMax == <span class="integer">22</span>
+        currentWeather.weatherList[<span class="integer">0</span>].id == <span class="integer">803</span>
+        currentWeather.weatherList[<span class="integer">0</span>].main == <span class="string"><span class="delimiter">'</span><span class="content">Clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weatherList[<span class="integer">0</span>].description == <span class="string"><span class="delimiter">'</span><span class="content">broken clouds</span><span class="delimiter">'</span></span>
+        currentWeather.weatherList[<span class="integer">0</span>].icon == <span class="string"><span class="delimiter">'</span><span class="content">04d</span><span class="delimiter">'</span></span>
+        currentWeather.visibility == <span class="integer">10000</span>
+        currentWeather.wind.speed == <span class="float">3.6</span>
+        currentWeather.wind.deg == <span class="integer">180</span>
+        currentWeather.clouds.cloudiness == <span class="integer">75</span>
+        currentWeather.base == <span class="string"><span class="delimiter">'</span><span class="content">stations</span><span class="delimiter">'</span></span>
+        currentWeather.dt == <span class="integer">1502707800</span>
+        currentWeather.coordinate
+
+        <span class="key">and</span>:
+        ersatz.verify()
+
+        <span class="key">cleanup</span>:
+        ersatz.stop()
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare a response encoder to convert a <code>Map</code> into <code>application/json</code> content using an Ersatz-provided encoder.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Define the response content as a <code>Map</code> which will be converted to JSON by the defined encoder (above).</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+As of Ersatz version 1.5.0 the internal Undertow embedded server version is out of sync with Grails. If you use Undertow as your server for Grails you may have classpath collisions or odd errors. This can be avoided by using the "safe" (shadowed) version of the Ersatz dependency (see the <a href="http://stehno.com/ersatz/asciidoc/html5/#_shadow_jar">Shadow Jar section of the Ersatz User Guide</a> for more details).
+</td>
+</tr>
+</table>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/runningTheApp.html"><strong>4</strong><span>Running the Application</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title" style="text-align: right"><a href="https://travis-ci.org/grails-guides/grails-mock-http-server"><img src="https://travis-ci.org/grails-guides/grails-mock-http-server.svg?branch=master" /></a></div>            
+                 <div class="local-title">
+                    <a href="https://github.com/grails-guides/grails-mock-http-server">
+                    <svg height="35" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="35" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a> &nbsp;&nbsp;Get the Code
+                </div>
+                <div class="menu">
+                    <div class="input-group">                        
+                        <button href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-mock-http-server.git'" class="codeButton">SSH</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-http-server.git'" class="codeButton">HTTPS</button>
+                        <button onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-mock-http-server'" class="codeButton">Subversion</button>
+                    </div>
+       
+                    <div class="input-group">                    
+                        <!-- Target -->
+                        <input id="github-url" value="git@github.com:grails-guides/grails-mock-http-server.git" type="text" />
+
+                        <!-- Trigger -->
+                        <button class="clipbtn" type="button" data-clipboard-target="#github-url">
+
+                            <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+                        </button>       
+
+                    </div>
+                    <div class="input-group">
+                      <a href="https://github.com/grails-guides/grails-mock-http-server/archive/master.zip" class="downloadButton">Download ZIP</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically. All guides are released with an ASLv2 license for the code, and Creative Commons license for the writing. 
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
