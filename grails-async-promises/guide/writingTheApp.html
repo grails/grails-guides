@@ -268,7 +268,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">grails-app/services/org/openweathermap/OpenweathermapService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.async.Promises.*</span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.async.Promise</span>
+<span class="keyword">import</span> <span class="include">grails.async.PromiseList</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -277,7 +278,8 @@ function addJsClass() {
 <div class="listingblock">
 <div class="title">grails-app/services/org/openweathermap/OpenweathermapService.groovy</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; findCurrentWeatherByCitiesAndCountryCodeWithPromises(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; cities, <span class="predefined-type">String</span> countryCode, Unit unit) {
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@CompileDynamic</span>
+    Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; findCurrentWeatherByCitiesAndCountryCodeWithPromises(<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; cities, <span class="predefined-type">String</span> countryCode, Unit unit) {
         PromiseList&lt;CurrentWeather&gt; list = <span class="keyword">new</span> PromiseList&lt;CurrentWeather&gt;()
         cities.each { <span class="predefined-type">String</span> city -&gt;
             list &lt;&lt; task { <i class="conum" data-value="1"></i><b>(1)</b>
@@ -340,13 +342,14 @@ function addJsClass() {
 <span class="annotation">@CompileStatic</span>
 <span class="type">class</span> <span class="class">CitiesController</span> {
 
+    <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> US = <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>
     OpenweathermapService openweathermapService
 
     <span class="keyword">def</span> <span class="function">index</span>(<span class="predefined-type">String</span> unit, <span class="type">boolean</span> async) {
         Unit unitEnum = Unit.unitWithString(unit)
 
         <span class="keyword">if</span> ( async ) { <i class="conum" data-value="1"></i><b>(1)</b>
-            Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCodeWithPromises(LargestUSCities.CITIES, <span class="string"><span class="delimiter">'</span><span class="content">us</span><span class="delimiter">'</span></span>, unitEnum)
+            Promise&lt;<span class="predefined-type">List</span>&lt;CurrentWeather&gt;&gt; currentWeatherList = openweathermapService.findCurrentWeatherByCitiesAndCountryCodeWithPromises(LargestUSCities.CITIES, US, unitEnum)
             <span class="keyword">return</span> tasks( <i class="conum" data-value="2"></i><b>(2)</b>
                     <span class="key">currentWeatherList</span>: currentWeatherList,
                     <span class="key">unit</span>: createBoundPromise(unitEnum)
