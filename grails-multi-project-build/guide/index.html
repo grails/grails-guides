@@ -1,53 +1,51 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link rel='icon' href='../img/favicon.ico' />
-    <link rel='mask-icon' href='/../img/grails-pinned-icon.svg' color='feb672' />
+    <link rel='icon' href='/images/favicon.ico' />
+    <link rel='mask-icon' href='//images/grails-pinned-icon.svg' color='feb672' />
     <meta charset='UTF-8' />
     <title>Grails Multi-Project Build | Grails Guides | Grails Framework</title>
-    <meta name='description' content='Grails Multi-Project Build. Learn how to leverage Gradle capabilities in a Grails 3 application to create Multi-Project builds' />
+    <meta name='description' content='Grails Multi-Project Build. Learn how to leverage Gradle capabilities in a Grails application to create Multi-Project builds' />
     <link rel='stylesheet' href='../css/main.css' />
     <link rel='stylesheet' href='../css/screen.css' />
     <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
   </head>
   <body class='guide'><header class='mainheader'>
   <div class='content'>
-    <a href='http://grails.org/index.html'><img class='grailslogo' src='../img/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
     <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
     <div id='topmenus'>
       <nav class='secondarymenu' id='secondarymenu'><ul>
   <li>
-    <a href='http://grailsblog.objectcomputing.com'>Blog</a>
+    <a href='https://grails.org/learning.html'>Learning</a>
   </li>
   <li>
-    <a href='http://grails.org/community.html'>Community</a>
+    <a href='https://grails.org/community.html'>Community</a>
   </li>
   <li>
-    <a href='http://grails.org/books.html'>Books</a>
-  </li>
-  <li>
-    <a href='http://grails.org/search.html'>Search</a>
+    <a href='https://grails.org/search.html'>Search</a>
   </li>
 </ul></nav>
       <nav class='mainmenu' id='mainmenu'><ul>
   <li>
-    <a href='http://grails.org/documentation.html'>Documentation</a>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
   </li>
   <li>
-    <a href='http://grails.org/download.html'>Download</a>
+    <a href='https://grails.org/download.html'>Download</a>
   </li>
   <li>
-    <a href='http://plugins.grails.org'>Plugins</a>
+    <a href='https://plugins.grails.org'>Plugins</a>
   </li>
   <li>
-    <a href='http://guides.grails.org/index.html'>Learning</a>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
   </li>
   <li>
-    <a href='http://grails.org/faq.html'>FAQ</a>
+    <a href='https://grails.org/faq.html'>FAQ</a>
   </li>
   <li>
-    <a href='http://grails.org/support.html'>Support</a>
+    <a href='https://grails.org/support.html'>Support</a>
   </li>
 </ul></nav>
     </div>
@@ -111,9 +109,9 @@
     </aside>
     <header>
         <h1>Grails Multi-Project Build</h1>
-        <p>Learn how to leverage Gradle capabilities in a Grails 3 application to create Multi-Project builds</p>
+        <p>Learn how to leverage Gradle capabilities in a Grails application to create Multi-Project builds</p>
         <p><strong>Authors:</strong> Sergio del Amo</p>
-        <p><strong>Grails Version:</strong> 3.3.1</p>
+        <p><strong>Grails Version:</strong> 4.0.1</p>
     </header>
     
 
@@ -145,15 +143,14 @@ var getJSON = function(url, callback) {
     };
     xhr.send();
 };
-var ociTrainingTrack = 11;
-getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+getJSON('https://oci-training.cfapps.io/training', function(err, data) {
   var msg = '';
   if (err != null) {
       msg = 'Something went wrong while retrieving OCI training offerings';
 
   } else {
       if ( data.length == 0 ) {
-         msg = '<p><b>Currenlty, we don\'t have any training offerings available</b></p>.';
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
 
       } else {
         msg += '<table>';
@@ -161,8 +158,15 @@ getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(er
         msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
         msg += '</thead>';
         msg += '<tbody>';
-        for ( var i = 0; i < data.length; i++ ) {
-            msg += '<tr><td><a href="'+ data[i].enrollmentLink + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
         }
         msg += '</tbody>';
         msg += '</table>';
@@ -210,7 +214,7 @@ to combine a Grails App, a Grails Plugin, and simple Groovy Lib.</p>
 <p>A decent text editor or IDE</p>
 </li>
 <li>
-<p>JDK 1.7 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
 </li>
 </ul>
 </div>
@@ -296,7 +300,7 @@ You can go right to the <strong>completed example</strong> if you <code>cd</code
 
 
 <div class="paragraph">
-<p>Grails 3.x uses the <a href="https://gradle.org">Gradle Build System</a> for build related tasks such as compilation, runnings tests and producing binary distrubutions of your project. It is recommended to use Gradle 2.2 or above with Grails 3.1.</p>
+<p>Grails uses the <a href="https://gradle.org/">Gradle Build System</a> for build related tasks such as compilation, runnings tests and producing binary distrubutions of your project.</p>
 </div>
 <div class="paragraph">
 <p>Gradle powerful support for multi-project builds is one of Gradle&#8217;s unique selling points.</p>
@@ -393,12 +397,16 @@ multiproject/groovylib$ touch build.gradle</code></pre>
 <div class="listingblock">
 <div class="title">groovylib/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">apply <span class="key">plugin</span>: <span class="string"><span class="delimiter">'</span><span class="content">groovy</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+    id <span class="string"><span class="delimiter">'</span><span class="content">groovy</span><span class="delimiter">'</span></span>
+}
+
 repositories {
     jcenter()
 }
+
 dependencies {
-    compile <span class="string"><span class="delimiter">'</span><span class="content">org.codehaus.groovy:groovy-all:2.4.11</span><span class="delimiter">'</span></span>
+    implementation <span class="string"><span class="delimiter">'</span><span class="content">org.codehaus.groovy:groovy-all:2.5.8</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
@@ -476,8 +484,11 @@ multiproject$ rm app/.gitignore</code></pre>
 <img src="../img/dependencies.png" alt="dependencies">
 </div>
 </div>
+<div class="sect1">
+<h2 id="_app_dependencies">App dependencies</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p><code>app</code> depends on <code>plugin</code></p>
+<p><code>app</code> depends on <code>plugin</code>. You can express it in the <code>dependencies</code> block such as:</p>
 </div>
 <div class="listingblock">
 <div class="title">app/build.gradle</div>
@@ -488,6 +499,24 @@ multiproject$ rm app/.gitignore</code></pre>
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>or with:</p>
+</div>
+<div class="listingblock">
+<div class="title">app/build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    plugins {
+        compile project(<span class="string"><span class="delimiter">'</span><span class="content">:plugin</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_plugin_dependencies">Plugin dependencies</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><code>plugin</code> depends on <code>groovylib</code></p>
 </div>
@@ -497,34 +526,6 @@ multiproject$ rm app/.gitignore</code></pre>
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
   ...
     compile project(<span class="string"><span class="delimiter">'</span><span class="content">:groovylib</span><span class="delimiter">'</span></span>)
-}</code></pre>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_hot_reloading">Hot Reloading</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To get hot reloading for changes made in the Grails Plugin, replace the configuration</p>
-</div>
-<div class="listingblock">
-<div class="title">app/build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    ...
-    compile project(<span class="string"><span class="delimiter">'</span><span class="content">:plugin</span><span class="delimiter">'</span></span>)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>with:</p>
-</div>
-<div class="listingblock">
-<div class="title">app/build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    plugins {
-        compile project(<span class="string"><span class="delimiter">'</span><span class="content">:plugin</span><span class="delimiter">'</span></span>)
-    }
 }</code></pre>
 </div>
 </div>
@@ -634,7 +635,7 @@ Add the plugin to our <code>app</code> dependencies:</p>
 <div class="listingblock">
 <div class="title">app/build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">'</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span></code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -644,22 +645,32 @@ Add the plugin to our <code>app</code> dependencies:</p>
 
 <span class="keyword">import</span> <span class="include">demo.OCI</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">spock.lang.AutoCleanup</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 
 <span class="annotation">@Integration</span>
 <span class="type">class</span> <span class="class">PersonControllerSpec</span> <span class="directive">extends</span> Specification {
 
+    <span class="annotation">@Shared</span>
+    <span class="annotation">@AutoCleanup</span>
+    HttpClient client
+
+    <span class="annotation">@OnceBefore</span>
+    <span class="type">void</span> init() {
+        <span class="predefined-type">String</span> baseUrl = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">$</span>serverPort</span><span class="delimiter">&quot;</span></span>
+        <span class="local-variable">this</span>.client = HttpClient.create(<span class="keyword">new</span> <span class="predefined-type">URL</span>(baseUrl))
+    }
+
     <span class="keyword">def</span> <span class="string"><span class="delimiter">'</span><span class="content">/person endpoints return one of the names</span><span class="delimiter">'</span></span>() {
-
-        <span class="key">given</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-
         <span class="key">when</span>:
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/person</span><span class="delimiter">&quot;</span></span>)
+        <span class="predefined-type">String</span> text = client.toBlocking().retrieve(HttpRequest.GET(<span class="string"><span class="delimiter">'</span><span class="content">/person</span><span class="delimiter">'</span></span>), <span class="predefined-type">String</span>)
 
         <span class="key">then</span>:
-        OCI.PEOPLE.contains resp.text
+        OCI.PEOPLE.contains text
     }
 }</code></pre>
 </div>
@@ -689,8 +700,10 @@ To remove duplication, we are going to add a ROOT <code>build.gradle</code></p>
     }
     dependencies {
         classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gradle-plugin:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2</span><span class="delimiter">&quot;</span></span>
-        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">${</span>gormVersion-<span class="string"><span class="delimiter">&quot;</span><span class="content">.RELEASE</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-gradle:</span><span class="inline"><span class="inline-delimiter">$</span>assetPipelineVersion</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:7.0.0</span><span class="delimiter">&quot;</span></span>
+        classpath <span class="string"><span class="delimiter">&quot;</span><span class="content">gradle.plugin.com.github.erdi.webdriver-binaries:webdriver-binaries-gradle-plugin:2.1</span><span class="delimiter">&quot;</span></span>
+
     }
 }
 
@@ -712,7 +725,8 @@ subprojects { project -&gt;
             apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">war</span><span class="delimiter">&quot;</span></span>
             apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-web</span><span class="delimiter">&quot;</span></span>
             apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.grails-gsp</span><span class="delimiter">&quot;</span></span>
-            apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">asset-pipeline</span><span class="delimiter">&quot;</span></span>
+            apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.asset-pipeline</span><span class="delimiter">&quot;</span></span>
+            apply <span class="key">plugin</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">com.github.erdi.webdriver-binaries</span><span class="delimiter">&quot;</span></span>
         }
 
         <span class="keyword">if</span> ( isGrailsPlugin ) {
@@ -723,6 +737,13 @@ subprojects { project -&gt;
         repositories {
             mavenLocal()
             maven { url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://repo.grails.org/grails/core</span><span class="delimiter">&quot;</span></span> }
+            maven {
+                url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://oss.sonatype.org/content/repositories/snapshots/</span><span class="delimiter">&quot;</span></span>
+                content {
+                    includeVersionByRegex(<span class="string"><span class="delimiter">'</span><span class="content">io</span><span class="char">\\</span><span class="content">.micronaut.*</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">.*</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">.*BUILD-SNAPSHOT</span><span class="delimiter">'</span></span>)
+                }
+            }
+
         }
 
         dependencies {
@@ -733,7 +754,15 @@ subprojects { project -&gt;
         }
 
         <span class="keyword">if</span> ( isGrailsApp ) {
+            configurations {
+                developmentOnly
+                runtimeClasspath {
+                    extendsFrom developmentOnly
+                }
+            }
+
             dependencies {
+                developmentOnly(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-devtools</span><span class="delimiter">&quot;</span></span>)
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-actuator</span><span class="delimiter">&quot;</span></span>
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework.boot:spring-boot-starter-tomcat</span><span class="delimiter">&quot;</span></span>
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies</span><span class="delimiter">&quot;</span></span>
@@ -741,18 +770,17 @@ subprojects { project -&gt;
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:cache</span><span class="delimiter">&quot;</span></span>
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:scaffolding</span><span class="delimiter">&quot;</span></span>
                 compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>
-                compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.5.Final</span><span class="delimiter">&quot;</span></span>
+                compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.4.0.Final</span><span class="delimiter">&quot;</span></span>
+                compile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-inject-groovy</span><span class="delimiter">&quot;</span></span>
                 profile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.profiles:web</span><span class="delimiter">&quot;</span></span>
                 runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.glassfish.web:el-impl:2.1.2-b03</span><span class="delimiter">&quot;</span></span>
                 runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2</span><span class="delimiter">&quot;</span></span>
                 runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.apache.tomcat:tomcat-jdbc</span><span class="delimiter">&quot;</span></span>
-                runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:2.14.2</span><span class="delimiter">&quot;</span></span>
+                runtime <span class="string"><span class="delimiter">&quot;</span><span class="content">com.bertramlabs.plugins:asset-pipeline-grails:</span><span class="inline"><span class="inline-delimiter">$</span>assetPipelineVersion</span><span class="delimiter">&quot;</span></span>
                 testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-gorm-testing-support</span><span class="delimiter">&quot;</span></span>
-                testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
                 testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-web-testing-support</span><span class="delimiter">&quot;</span></span>
-                testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1</span><span class="delimiter">&quot;</span></span>
-                testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.18</span><span class="delimiter">&quot;</span></span>
             }
+            apply <span class="key">from</span>: <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">${</span>rootProject.projectDir<span class="inline-delimiter">}</span></span><span class="content">/gradle/geb.gradle</span><span class="delimiter">&quot;</span></span>
         }
 
         <span class="keyword">if</span> ( isGrailsPlugin ) {
@@ -765,13 +793,31 @@ subprojects { project -&gt;
         }
 
         bootRun {
-            jvmArgs(<span class="string"><span class="delimiter">'</span><span class="content">-Dspring.output.ansi.enabled=always</span><span class="delimiter">'</span></span>)
-            addResources = <span class="predefined-constant">true</span>
+            jvmArgs(
+                    <span class="string"><span class="delimiter">'</span><span class="content">-Dspring.output.ansi.enabled=always</span><span class="delimiter">'</span></span>,
+                    <span class="string"><span class="delimiter">'</span><span class="content">-noverify</span><span class="delimiter">'</span></span>,
+                    <span class="string"><span class="delimiter">'</span><span class="content">-XX:TieredStopAtLevel=1</span><span class="delimiter">'</span></span>,
+                    <span class="string"><span class="delimiter">'</span><span class="content">-Xmx1024m</span><span class="delimiter">'</span></span>)
+            sourceResources sourceSets.main
+        }
+
+        <span class="keyword">if</span> (isGrailsApp) {
+            webdriverBinaries {
+                chromedriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>chromeDriverVersion</span><span class="delimiter">&quot;</span></span>
+                geckodriver <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>geckodriverVersion</span><span class="delimiter">&quot;</span></span>
+            }
+
+            tasks.withType(Test) {
+                systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">geb.env</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">geb.env</span><span class="delimiter">'</span></span>)
+                systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">geb.build.reportsDir</span><span class="delimiter">&quot;</span></span>, reporting.file(<span class="string"><span class="delimiter">&quot;</span><span class="content">geb/integrationTest</span><span class="delimiter">&quot;</span></span>)
+                systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">webdriver.chrome.driver</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">webdriver.chrome.driver</span><span class="delimiter">'</span></span>)
+                systemProperty <span class="string"><span class="delimiter">&quot;</span><span class="content">webdriver.gecko.driver</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.getProperty(<span class="string"><span class="delimiter">'</span><span class="content">webdriver.gecko.driver</span><span class="delimiter">'</span></span>)
+            }
         }
 
         <span class="keyword">if</span> ( isGrailsPlugin ) {
             <span class="comment">// enable if you wish to package this plugin as a standalone application</span>
-            bootRepackage.enabled = <span class="predefined-constant">false</span>
+            bootJar.enabled = <span class="predefined-constant">false</span>
             grailsPublish {
                 <span class="comment">// TODO: Provide values here</span>
                 user = <span class="string"><span class="delimiter">'</span><span class="content">user</span><span class="delimiter">'</span></span>
@@ -788,15 +834,6 @@ subprojects { project -&gt;
             }
         }
     }
-
-    afterEvaluate {
-        <span class="keyword">if</span> ( isGrailsProject ) {
-            assets {
-                minifyJs = <span class="predefined-constant">true</span>
-                minifyCss = <span class="predefined-constant">true</span>
-            }
-        }
-    }
 }</code></pre>
 </div>
 </div>
@@ -809,7 +846,7 @@ subprojects { project -&gt;
 <pre class="CodeRay highlight"><code data-lang="groovy">version <span class="string"><span class="delimiter">&quot;</span><span class="content">0.1</span><span class="delimiter">&quot;</span></span>
 group <span class="string"><span class="delimiter">&quot;</span><span class="content">app</span><span class="delimiter">&quot;</span></span>
 dependencies {
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.grails:grails-datastore-rest-client</span><span class="delimiter">'</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-http-client</span><span class="delimiter">&quot;</span></span>
 }
 grails {
     plugins {
@@ -853,19 +890,17 @@ files for different features.</p>
 <div class="listingblock">
 <div class="title">gradle/geb.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">project.ext.seleniumVersion = <span class="string"><span class="delimiter">'</span><span class="content">2.53.1</span><span class="delimiter">'</span></span>
-project.ext.htmlUnitVersion = <span class="string"><span class="delimiter">'</span><span class="content">2.18</span><span class="delimiter">'</span></span>
-project.ext.htmlUnitDriverVersion = <span class="string"><span class="delimiter">'</span><span class="content">2.47.1</span><span class="delimiter">'</span></span>
-project.ext.phantomJsDriverVersion = <span class="string"><span class="delimiter">'</span><span class="content">1.3.0</span><span class="delimiter">'</span></span>
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
 
-dependencies {
-    testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">'</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">net.sourceforge.htmlunit:htmlunit:</span><span class="inline"><span class="inline-delimiter">$</span>htmlUnitVersion</span><span class="delimiter">&quot;</span></span>
-    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-htmlunit-driver:</span><span class="inline"><span class="inline-delimiter">$</span>htmlUnitDriverVersion</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">com.codeborne:phantomjsdriver:</span><span class="inline"><span class="inline-delimiter">$</span>phantomJsDriverVersion</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
-    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:geb</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-chrome-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-firefox-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:htmlunit-driver:2.35.1</span><span class="delimiter">&quot;</span></span>
+    testRuntime <span class="string"><span class="delimiter">'</span><span class="content">net.sourceforge.htmlunit:htmlunit:2.35.0</span><span class="delimiter">'</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-remote-driver:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-api:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+    testCompile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.seleniumhq.selenium:selenium-support:</span><span class="inline"><span class="inline-delimiter">$</span>seleniumVersion</span><span class="delimiter">&quot;</span></span>
+
 }</code></pre>
 </div>
 </div>
@@ -1033,27 +1068,27 @@ matured and maintain Grails.</h3>
   <div class='content'>
     <div class='ocihometograils'>
       <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='../img/oci_home_to_grails.svg' alt='OCI Home to Grails' /></a>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
     </div>
     <nav class='socialmedianav'><ul>
   <li>
-    <a href='https://grails.slack.com'><img class='' src='../img/slack.svg' alt='Slack Icon' /></a>
+    <a href='https://grails-slack.cfapps.io'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
   </li>
   <li>
-    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='../img/youtube.svg' alt='Youtube Icon' /></a>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
   </li>
   <li>
-    <a href='https://www.linkedin.com/groups/39757'><img class='' src='../img/linkedin.svg' alt='LinkedIn Icon' /></a>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
   </li>
   <li>
-    <a href='https://github.com/grails/'><img class='' src='../img/github.svg' alt='Github Icon' /></a>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
   </li>
   <li>
-    <a href='https://twitter.com/grailsframework'><img class='' src='../img/twitter.svg' alt='Twitter Icon' /></a>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
   </li>
 </ul></nav>
     <nav class='partnersnav'><ul>
-  <li>Grails' repositories is hosted by
+  <li>Grails' repositories are hosted by
     <a href='http://artifactoryonline.com/'>Artifactory</a>
   </li>
   <li>Website hosting provided by
@@ -1064,6 +1099,9 @@ matured and maintain Grails.</h3>
   </li>
   <li>Grails is Open Source
     <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
   </li>
 </ul></nav>
   </div>
