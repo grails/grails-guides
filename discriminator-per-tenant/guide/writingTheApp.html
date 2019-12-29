@@ -119,18 +119,7 @@ function addJsClass() {
 </div>
 
 
-<div class="paragraph">
-<p>The application requires GORM 6.1.x.
-include::/home/travis/build/grails-guides/discriminator-per-tenant/build/resources/grails-guides-master/src/main/docs/common-changegormversion.adoc[].</p>
-</div>
-<div class="listingblock">
-<div class="title">gradle.properties</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grailsVersion=<span class="float">3.3</span><span class="float">.0</span>
-gormVersion=<span class="float">6.1</span><span class="float">.6</span>.RELEASE
-gradleWrapperVersion=<span class="float">3.5</span></code></pre>
-</div>
-</div>
+
 
 
 <h2 id="setupMultitenancy">3.1 Setup Multi-Tenancy</h2>
@@ -450,7 +439,16 @@ to the two tenants supported by this application.</p>
 <p>To keep things simple for the example we are going to implement a simple mechanism that provides a UI to store the <code>tenantId</code> within the users HTTP session.</p>
 </div>
 <div class="paragraph">
-<p>First create a new <code>ManufacturerController</code> use <code>create-controller</code> or your preferred IDE:</p>
+<p>First, create a GORM Data service to <code>Manufacturer</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/ManufacturerService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> &lt;stdin&gt; - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails-guides/discriminator-per-tenant/complete/grails-app/init/example/ManufacturerService.groovy<span class="type">[]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, create a new <code>ManufacturerController</code> use <code>create-controller</code> or your preferred IDE:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -482,7 +480,7 @@ to the two tenants supported by this application.</p>
 <span class="type">class</span> <span class="class">ManufacturerController</span> {
     <span class="annotation">@ReadOnly</span>
     <span class="keyword">def</span> <span class="function">index</span>() {
-        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">manufacturers</span>: Manufacturer.list()]
+        render <span class="key">view</span>: <span class="string"><span class="delimiter">'</span><span class="content">/index</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">manufacturers</span>: manufacturerService.findAll()]
     }
 }</code></pre>
 </div>
@@ -513,9 +511,7 @@ to the two tenants supported by this application.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@ReadOnly</span>
 <span class="keyword">def</span> <span class="function">select</span>(<span class="predefined-type">String</span> id) {
-    Manufacturer m = Manufacturer.where {
-        name == id
-    }.first() <i class="conum" data-value="1"></i><b>(1)</b>
+    Manufacturer m = manufacturerService.findByName(id) <i class="conum" data-value="1"></i><b>(1)</b>
     <span class="keyword">if</span> ( m ) {
         session.setAttribute(SessionTenantResolver.ATTRIBUTE, m.name.toLowerCase()) <i class="conum" data-value="2"></i><b>(2)</b>
         redirect <span class="key">controller</span>: <span class="string"><span class="delimiter">'</span><span class="content">vehicle</span><span class="delimiter">'</span></span> <i class="conum" data-value="3"></i><b>(3)</b>
