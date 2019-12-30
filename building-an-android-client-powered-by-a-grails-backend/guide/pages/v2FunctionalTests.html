@@ -102,41 +102,42 @@ endpoint. The next functional test verifies that behaviour.</p>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> intranet.backend
 
-<span class="keyword">import</span> <span class="include">grails.plugins.rest.client.RestBuilder</span>
 <span class="keyword">import</span> <span class="include">grails.testing.mixin.integration.Integration</span>
-<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Value</span>
+<span class="keyword">import</span> <span class="include">grails.testing.spock.OnceBefore</span>
+<span class="keyword">import</span> <span class="include">grails.web.http.HttpHeaders</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpRequest</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpResponse</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.HttpStatus</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.http.client.HttpClient</span>
+<span class="keyword">import</span> <span class="include">spock.lang.AutoCleanup</span>
+<span class="keyword">import</span> <span class="include">spock.lang.Shared</span>
 <span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-<span class="keyword">import</span> <span class="include">javax.servlet.http.HttpServletResponse</span>
 
 
 <span class="annotation">@Integration</span>
-<span class="type">class</span> <span class="class">AnnouncementControllerSpec</span> <span class="directive">extends</span> Specification {
+        resp.headers.getFirst(HttpHeaders.CONTENT_TYPE).get() == <span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is present in announcements json payload of Api 1.0</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:
-        RestBuilder rest = <span class="keyword">new</span> RestBuilder()
-
-        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 2.0</span><span class="delimiter">'</span></span>
-        <span class="keyword">def</span> resp = rest.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:</span><span class="inline"><span class="inline-delimiter">${</span>serverPort<span class="inline-delimiter">}</span></span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>) {
-            header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>)
-        }
-
-        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
-        resp.status == HttpServletResponse.SC_OK
-
-        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
-        resp.headers.get(<span class="string"><span class="delimiter">'</span><span class="content">Content-Type</span><span class="delimiter">'</span></span>) == [<span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>]
-
-        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title</span><span class="delimiter">'</span></span>
-        resp.json.each {
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains an array of annoucements with id, title and body</span><span class="delimiter">'</span></span>
+        resp.body().each {
             <span class="keyword">assert</span> <span class="local-variable">it</span>.id
             <span class="keyword">assert</span> <span class="local-variable">it</span>.title
-            <span class="keyword">assert</span> !<span class="local-variable">it</span>.body <i class="conum" data-value="2"></i><b>(2)</b>
+            <span class="keyword">assert</span> <span class="local-variable">it</span>.body <i class="conum" data-value="4"></i><b>(4)</b>
         }
     }
 
-    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test detail of an announcement contains body in both version 1.0 and 2.0</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:</code></pre>
+    <span class="keyword">def</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test body is NOT present in announcements json payload of Api 2.0</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">given</span>:
+        HttpRequest request = HttpRequest.GET(<span class="string"><span class="delimiter">&quot;</span><span class="content">/announcements/</span><span class="delimiter">&quot;</span></span>).header(<span class="string"><span class="delimiter">&quot;</span><span class="content">Accept-Version</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">2.0</span><span class="delimiter">&quot;</span></span>)
+
+        <span class="key">when</span>: <span class="string"><span class="delimiter">'</span><span class="content">Requesting announcements for version 2.0</span><span class="delimiter">'</span></span>
+        HttpResponse&lt;<span class="predefined-type">List</span>&lt;<span class="predefined-type">Map</span>&gt;&gt; resp = client.toBlocking().exchange(request, <span class="predefined-type">List</span>)
+
+        <span class="key">then</span>: <span class="string"><span class="delimiter">'</span><span class="content">the request was successful</span><span class="delimiter">'</span></span>
+        resp.status == HttpStatus.OK <i class="conum" data-value="3"></i><b>(3)</b>
+
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">the response is a JSON Payload</span><span class="delimiter">'</span></span>
+        resp.headers.getFirst(HttpHeaders.CONTENT_TYPE).get() == <span class="string"><span class="delimiter">'</span><span class="content">application/json;charset=UTF-8</span><span class="delimiter">'</span></span>
+        <span class="key">and</span>: <span class="string"><span class="delimiter">'</span><span class="content">json payload contains the complete announcement</span><span class="delimiter">'</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
