@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' href='/images/favicon.ico' />
+    <link rel='mask-icon' href='//images/grails-pinned-icon.svg' color='feb672' />
+    <meta charset='UTF-8' />
+    <title>Message Queues with Grails and Micronaut Kafka | Grails Guides | Grails Framework</title>
+    <meta name='description' content='Message Queues with Grails and Micronaut Kafka. Learn how to use message queues with Grails and Micronaut Kafka' />
+    <link rel='stylesheet' href='../css/main.css' />
+    <link rel='stylesheet' href='../css/screen.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js'></script>
+  </head>
+  <body class='guide'><header class='mainheader'>
+  <div class='content'>
+    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/grails_logo.svg' alt='Grails Logo' /></a>
+    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
+    <div id='topmenus'>
+      <nav class='secondarymenu' id='secondarymenu'><ul>
+  <li>
+    <a href='https://grails.org/learning.html'>Learning</a>
+  </li>
+  <li>
+    <a href='https://grails.org/community.html'>Community</a>
+  </li>
+  <li>
+    <a href='https://grails.org/search.html'>Search</a>
+  </li>
+</ul></nav>
+      <nav class='mainmenu' id='mainmenu'><ul>
+  <li>
+    <a href='https://grails.org/documentation.html'>Documentation</a>
+  </li>
+  <li>
+    <a href='https://grails.org/download.html'>Download</a>
+  </li>
+  <li>
+    <a href='https://plugins.grails.org'>Plugins</a>
+  </li>
+  <li>
+    <a href='https://guides.grails.org/index.html'>Guides</a>
+  </li>
+  <li>
+    <a href='https://grails.org/faq.html'>FAQ</a>
+  </li>
+  <li>
+    <a href='https://grails.org/support.html'>Support</a>
+  </li>
+</ul></nav>
+    </div>
+  </div>
+</header><div class='fullwidth'><article class="guide">
+    <aside>
+        <a href="https://travis-ci.org/grails-guides/grails-micronaut-kakfa"><img src="https://travis-ci.org/grails-guides/grails-micronaut-kakfa.svg?branch=master"></a>
+
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-micronaut-kakfa&quot;"><img height="15" src="../img/github_white.svg" alt="Github"/><span>&nbsp;Get the Code</span></button>
+
+
+        <ul class="githublinks">
+            <li><button type="button" class="btn btn-default" href="#" onclick="document.getElementById('github-url').value='git@github.com:grails-guides/grails-micronaut-kakfa.git'" class="codeButton">SSH</button></li>
+            <li><button type="button" class="btn btn-default" onclick="document.getElementById('github-url').value='https://github.com/grails-guides/grails-micronaut-kakfa.git'" class="codeButton">HTTPS</button></li>
+        </ul>
+        <div class="input-group">
+            <!-- Target -->
+            <input id="github-url" value="git@github.com:grails-guides/grails-micronaut-kakfa.git" type="text" />
+            <!-- Trigger -->
+            <button type="button" class="clippy btn btn-default" type="button" data-clipboard-target="#github-url">
+                <img width="13" src="../img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+        <script>var clipboard = new Clipboard('.clippy');</script>
+        <button type="button" class="btn btn-large" onclick="window.location.href=&quot;https://github.com/grails-guides/grails-micronaut-kakfa/archive/master.zip&quot;">Download ZIP</button>
+        
+        <div id="table-of-content">
+            <h3>Table of Contents</h3>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#training"><strong>1</strong><span>Training</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#requirements"><strong>2.1</strong><span>What you will need</span></a></div>
+            
+            <div class="toc-item" style="margin-left:10px"><a href="#howto"><strong>2.2</strong><span>How to complete the guide</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#runningTheApp"><strong>3</strong><span>Application Overview</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#kakfaDocker"><strong>4</strong><span>Running Kafka</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#originalAppGrails"><strong>5</strong><span>Books Application</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#buildingAnalytics"><strong>6</strong><span>Building Analytics app</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#running"><strong>7</strong><span>Running the apps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#nextSteps"><strong>8</strong><span>Next Steps</span></a></div>
+            
+            <div class="toc-item" style="margin-left:0px"><a href="#helpWithGrails"><strong>9</strong><span>Do you need help with Grails?</span></a></div>
+            
+            <div style="clear:both" ></div>
+        </div>
+        
+    </aside>
+    <header>
+        <h1>Message Queues with Grails and Micronaut Kafka</h1>
+        <p>Learn how to use message queues with Grails and Micronaut Kafka</p>
+        <p><strong>Authors:</strong> Sergio del Amo</p>
+        <p><strong>Grails Version:</strong> 4.1.0.M5</p>
+    </header>
+    
+
+<h1 id="training">1 Training</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/training.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p><strong>Grails Training</strong> - Developed and delivered by the folks who created and actively maintain the Grails framework!.</p>
+</div>
+<div id="ocitraining"></div>
+<script type="text/javascript">
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status);
+      }
+    };
+    xhr.send();
+};
+getJSON('https://training.grails.org/training', function(err, data) {
+  var msg = '';
+  if (err != null) {
+      msg = 'Something went wrong while retrieving OCI training offerings';
+
+  } else {
+      if ( data.length == 0 ) {
+         msg = '<p><b>Nothing scheduled at the moment - please check back again soon!</b></p>.';
+
+      } else {
+        msg += '<table>';
+        msg += '<thead>';
+        msg += '<tr><th>Course</th><th>Date(s)</th><th>Instructor(s)</th><th>Hour(s)</th></tr>';
+        msg += '</thead>';
+        msg += '<tbody>';
+
+        var hrefs = new Array();
+        for (var i = 0; i < data.length; i++) {
+            var href = data[i].enrollmentLink;
+            if (hrefs.indexOf(href) == -1) {
+                msg += '<tr><td><a href="'+ href + '">'+ data[i].course + '</a></td><td>'+ data[i].dates + '</td><td>'+ data[i].instructors + '</td><td>'+ data[i].hours + '</td></tr>';
+                hrefs.push(href);
+            }
+
+        }
+        msg += '</tbody>';
+        msg += '</table>';
+      }
+  }
+  var ociTraining = document.getElementById("ocitraining");
+  ociTraining.innerHTML = msg;
+});
+</script>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/gettingStarted.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide we will show you how to setup and use <a href="https://micronaut-projects.github.io/micronaut-kafka/latest/guide/">Micronaut Kafka</a> with a Grails application.</p>
+</div>
+
+
+<h2 id="requirements">2.1 What you will need</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/requirements.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To complete this guide, you will need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some time on your hands</p>
+</li>
+<li>
+<p>A decent text editor or IDE</p>
+</li>
+<li>
+<p>JDK 1.8 or greater installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+</ul>
+</div>
+
+
+<h2 id="howto">2.2 How to complete the guide</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/howto.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To get started do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/grails-guides/grails-micronaut-kakfa/archive/master.zip">Download</a> and unzip the source</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Clone the <a href="https://git-scm.com/">Git</a> repository:<br>
+<code>git clone <a href="https://github.com/grails-guides/grails-micronaut-kakfa.git" class="bare">https://github.com/grails-guides/grails-micronaut-kakfa.git</a></code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grails guides repositories contain three folders:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>initial</code>  Initial project. Often a simple Grails app with some additional code to give you a head-start.</p>
+</li>
+<li>
+<p><code>complete</code></p>
+</li>
+<li>
+<p><code>complete-analytics</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this guide you are going to create two Grails Applications. Both <code>complete</code> and <code>complete-analytics</code> apps are a completed example. It is the result of working through the steps presented by the guide and applying those changes to the <code>initial</code> folder.</p>
+</div>
+<div class="paragraph">
+<p>To complete the guide, go to the <code>initial</code> folder</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cd</code> into <code>grails-guides/grails-micronaut-kakfa/initial</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>and follow the instructions in the next sections.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can go right to the <strong>completed example</strong> if you <code>cd</code> into <code>grails-guides/grails-micronaut-kakfa/complete</code> and <code>grails-guides/grails-micronaut-kakfa/complete-analytics</code>.
+</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="runningTheApp">3 Application Overview</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/runningTheApp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>In this guide, we setup a message queue to work across two different applications.
+In this guide, we have an app which lists books and book&#8217;s detail.
+We want to keep track of the number of times each book is viewed.
+We add a separate analytics app that keeps track of the number of times each one is viewed.</p>
+</div>
+
+
+<h1 id="kakfaDocker">4 Running Kafka</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/kakfaDocker.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A fast way to start using Kafka is via <a href="https://hub.docker.com/r/confluentinc/cp-kafka/">Docker</a>. Create this <code>docker-compose.yml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">docker/docker-compose.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">version</span>: <span class="string"><span class="content">'2'</span></span>
+<span class="key">services</span>:
+  <span class="key">zookeeper</span>:
+    <span class="key">image</span>: <span class="string"><span class="content">confluentinc/cp-zookeeper</span></span>
+    <span class="key">ports</span>:
+      - <span class="string"><span class="content">2181:2181 </span></span><i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="key">environment</span>:
+      <span class="key">ZOOKEEPER_CLIENT_PORT</span>: <span class="string"><span class="content">2181</span></span>
+      <span class="key">ZOOKEEPER_TICK_TIME</span>: <span class="string"><span class="content">2000</span></span>
+  <span class="key">kafka</span>:
+    <span class="key">image</span>: <span class="string"><span class="content">confluentinc/cp-kafka</span></span>
+    <span class="key">depends_on</span>:
+      - <span class="string"><span class="content">zookeeper</span></span>
+    <span class="key">ports</span>:
+      - <span class="string"><span class="content">9092:9092 </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="key">environment</span>:
+      <span class="key">KAFKA_ZOOKEEPER_CONNECT</span>: <span class="string"><span class="content">zookeeper:2181</span></span>
+      <span class="key">KAFKA_ADVERTISED_LISTENERS</span>: <span class="string"><span class="content">PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092</span></span>
+      <span class="key">KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</span>: <span class="string"><span class="content">PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</span></span>
+      <span class="key">KAFKA_INTER_BROKER_LISTENER_NAME</span>: <span class="string"><span class="content">PLAINTEXT</span></span>
+      <span class="key">KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</span>: <span class="string"><span class="content">1</span></span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Zookeeper uses port 2181 by default, but change the value if needed</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Kafka uses port 9092 by default, but change the value if needed
+Start Zookeeper and Kafka (use CTRL-C to stop both)</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ docker-compose up</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can <a href="https://kafka.apache.org/quickstart">install and run a local Kafka instance</a>.</p>
+</div>
+
+
+<h1 id="originalAppGrails">5 Books Application</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/originalAppGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a Grails application with the <code>rest-api</code> profile.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">grails create-app example.grails.complete --profile=rest-api</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First, add a <code>Book</code> domain.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/Book.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> isbn
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+        isbn <span class="key">unique</span>: <span class="predefined-constant">true</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create default CRUD actions for <code>Book</code> leveraging <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#dataServices">GORM data services</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/BookGormService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookGormService {
+    <span class="predefined-type">Book</span> saveBook(<span class="predefined-type">Book</span> book)
+
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findAll()
+
+    <span class="predefined-type">Book</span> findByIsbn(<span class="predefined-type">String</span> isbn)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we need to actually create the book data with our <code>Bootstrap.groovy</code></p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/init/example/grails/Bootstrap.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BootStrap</span> {
+
+    BookGormService bookGormService
+
+    <span class="keyword">def</span> init = { servletContext -&gt;
+        [
+                <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">isbn</span>: <span class="string"><span class="delimiter">'</span><span class="content">1491950358</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Building Microservices</span><span class="delimiter">'</span></span>),
+                <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">isbn</span>: <span class="string"><span class="delimiter">'</span><span class="content">1680502395</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Release It!</span><span class="delimiter">'</span></span>),
+                <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">isbn</span>: <span class="string"><span class="delimiter">'</span><span class="content">0321601912</span><span class="delimiter">'</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Continuous Delivery</span><span class="delimiter">'</span></span>)
+        ].each {book -&gt;
+            bookGormService.saveBook(book)
+        }
+    }
+    <span class="keyword">def</span> destroy = {
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the Micronaut Kafka dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">implementation <span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut:micronaut-inject-groovy</span><span class="delimiter">&quot;</span></span>
+implementation(<span class="string"><span class="delimiter">&quot;</span><span class="content">io.micronaut.kafka:micronaut-kafka:3.1.0</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The app connects to a Kafka broker running on localhost:9092. Add the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">kafka</span>:
+    <span class="key">bootstrap</span>:
+        <span class="key">servers</span>: <span class="key">localhost</span>:<span class="integer">9092</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create an interface to send messages to Kafka. The Micronaut framework will implement the interface at compilation time:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/AnalyticsClient.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaClient</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.Topic</span>
+
+<span class="annotation">@KafkaClient</span>
+<span class="type">interface</span> AnalyticsClient {
+
+    <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">'</span><span class="content">analytics</span><span class="delimiter">'</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">Map</span> updateAnalytics(<span class="predefined-type">Map</span> book) <i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the topic name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Send the book information. The Micronaut Framework will automatically convert it to JSON before sending it.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a controller which fetches books and notifies Kafka with the <code>AnalyticsClient</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/BooksController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">BooksController</span> {
+
+    BookGormService bookGormService
+
+    <span class="annotation">@Autowired</span>
+    AnalyticsClient analyticsClient
+
+    <span class="directive">static</span> allowedMethods = [
+            <span class="key">index</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>,
+            <span class="key">show</span>: <span class="string"><span class="delimiter">'</span><span class="content">GET</span><span class="delimiter">'</span></span>
+    ]
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">books</span>: bookGormService.findAll()]
+    }
+
+    <span class="keyword">def</span> <span class="function">show</span>(<span class="predefined-type">String</span> isbn) {
+        <span class="predefined-type">Book</span> book = bookGormService.findByIsbn(isbn)
+        <span class="keyword">if</span> (!book) {
+            response.status = <span class="integer">404</span>
+            <span class="keyword">return</span>
+        }
+        analyticsClient.updateAnalytics([<span class="key">isbn</span>: book.id, <span class="key">name</span>: book.name])
+        render(<span class="key">template</span>: <span class="string"><span class="delimiter">'</span><span class="content">book</span><span class="delimiter">'</span></span>, <span class="key">model</span>: [<span class="key">book</span>: book])
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the following mapping to <code>UrlMappings</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/UrlMappings.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">        <span class="string"><span class="delimiter">&quot;</span><span class="content">/books/</span><span class="inline"><span class="inline-delimiter">$</span>isbn</span><span class="delimiter">&quot;</span></span> {
+            controller = <span class="string"><span class="delimiter">'</span><span class="content">books</span><span class="delimiter">'</span></span>
+            action = <span class="string"><span class="delimiter">'</span><span class="content">show</span><span class="delimiter">'</span></span>
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create two <a href="http://views.grails.org/latest/#_json_views">JSON Views</a> for the Controller&#8217;s actions.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/books/_book.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">example.grails.Book</span>
+
+model {
+    <span class="predefined-type">Book</span> book
+}
+json {
+    isbn book.isbn
+    name book.name
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/books/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">example.grails.Book</span>
+model {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books = <span class="type">[]</span>
+}
+json tmpl.book(books)</code></pre>
+</div>
+</div>
+
+
+<h1 id="buildingAnalytics">6 Building Analytics app</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/buildingAnalytics.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Create a new Grails application for this additional app. For example by using
+<a href="http://start.grails.org/">Grails Application Forge</a> or the command line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ grails create-app example.grails.complete-analytics --profile=rest-api</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the multi app part of this guide we will need to be able to run both apps simultaneously. To avoid a running port conflict update your app&#8217;s <code>application.yml</code> to include the following.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yml"><span class="key">server</span>:
+    <span class="key">port</span>: <span class="string"><span class="content">8081</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a Domain class <code>BookAnalytics</code> which will keep track of how many times a book has been viewed.</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/domain/example/grails/BookAnalytics.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="type">class</span> <span class="class">BookAnalytics</span> {
+    <span class="predefined-type">String</span> isbn
+    <span class="predefined-type">Long</span> count
+
+    <span class="directive">static</span> constraints = {
+        isbn <span class="key">unique</span>: <span class="predefined-constant">true</span>, <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+        count <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">nullable</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a GORM Data service for this domain class:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/services/example/grails/BookAnalyticsGormService.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Query</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">javax.inject.Singleton</span>
+
+<span class="annotation">@Singleton</span>
+<span class="annotation">@Service</span>(BookAnalytics)
+<span class="type">interface</span> BookAnalyticsGormService {
+
+    <span class="predefined-type">List</span>&lt;BookAnalytics&gt; findAll()
+
+    BookAnalytics findByIsbn(<span class="predefined-type">String</span> isbn)
+
+    BookAnalytics saveBookAnalytics(BookAnalytics bookAnalytics)
+
+    <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span>BookAnalytics bookAnalytics<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>bookAnalytics.count<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">$</span>newCount</span><span class="content"> where bookAnalytics.isbn = </span><span class="inline"><span class="inline-delimiter">$</span>isbn</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="type">void</span> updateCount(<span class="predefined-type">String</span> isbn, <span class="predefined-type">Long</span> newCount)
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implement update operations using JPA-QL</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a Controller which uses the previous service:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/controllers/example/grails/AnalyticsController.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="type">class</span> <span class="class">AnalyticsController</span> {
+    BookAnalyticsGormService bookAnalyticsGormService
+
+    <span class="keyword">def</span> <span class="function">index</span>() {
+        [<span class="key">analytics</span>: bookAnalyticsGormService.findAll()]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create two JSON Views:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/analytics/_bookAnalytics.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">example.grails.BookAnalytics</span>
+model {
+    BookAnalytics bookAnalytics
+}
+json {
+    isbn bookAnalytics.id
+    count bookAnalytics.count
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/views/analytics/index.gson</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">example.grails.BookAnalytics</span>
+model {
+    <span class="predefined-type">List</span>&lt;BookAnalytics&gt; analytics = <span class="type">[]</span>
+}
+json tmpl.bookAnalytics(analytics)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new class to act as a consumer of the messages sent to Kafka by the books microservice. The Micronaut framework will implement logic to invoke the consumer at compile time. Create the <code>AnalyticsListener</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="title">src/main/groovy/example/grails/AnalyticsListener.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example.grails
+
+<span class="keyword">import</span> <span class="include">groovy.transform.CompileStatic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.KafkaListener</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.configuration.kafka.annotation.Topic</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.context.annotation.Requires</span>
+<span class="keyword">import</span> <span class="include">io.micronaut.context.env.Environment</span>
+<span class="keyword">import</span> <span class="include">org.springframework.beans.factory.annotation.Autowired</span>
+
+<span class="annotation">@CompileStatic</span>
+<span class="annotation">@Requires</span>(notEnv = Environment.TEST) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="annotation">@KafkaListener</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="type">class</span> <span class="class">AnalyticsListener</span> {
+
+    <span class="directive">private</span> <span class="directive">final</span> BookAnalyticsGormService bookAnalyticsGormService <i class="conum" data-value="3"></i><b>(3)</b>
+
+    AnalyticsListener(BookAnalyticsGormService bookAnalyticsGormService) { <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="local-variable">this</span>.bookAnalyticsGormService = bookAnalyticsGormService
+    }
+
+    <span class="annotation">@Topic</span>(<span class="string"><span class="delimiter">'</span><span class="content">analytics</span><span class="delimiter">'</span></span>) <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="type">void</span> updateAnalytics(<span class="predefined-type">Map</span> payload) {
+
+        <span class="keyword">if</span> (payload.containsKey(<span class="string"><span class="delimiter">'</span><span class="content">isbn</span><span class="delimiter">'</span></span>)) {
+            BookAnalytics bookAnalytics = bookAnalyticsGormService.findByIsbn(payload.isbn <span class="keyword">as</span> <span class="predefined-type">String</span>)
+            <span class="keyword">if</span> (bookAnalytics) {
+                bookAnalyticsGormService.updateCount(payload.isbn <span class="keyword">as</span> <span class="predefined-type">String</span>, bookAnalytics.count + <span class="integer">1</span>)
+            } <span class="keyword">else</span> {
+                bookAnalytics = <span class="keyword">new</span> BookAnalytics(<span class="key">isbn</span>: payload.isbn <span class="keyword">as</span> <span class="predefined-type">String</span>, <span class="key">count</span>: <span class="integer">1L</span>)
+                bookAnalyticsGormService.saveBookAnalytics(bookAnalytics)
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Do not load this bean for the test environment - this lets us run the tests without having Kafka running</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Annotate the class with @KafkaListener to indicate that this bean will consume messages from Kafka</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Constructor injection for <code>BookAnalyticsGormService</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Annotate the method with <code>@Topic</code> and specify the topic name to use</td>
+</tr>
+</table>
+</div>
+
+
+<h1 id="running">7 Running the apps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/running.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>Start Kafka:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd docker;
+docker$ docker-compose up</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start the <code>books</code> microservice:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd complete;
+complete$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Start the <code>analytics</code> microservice:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ cd complete-analytics;
+complete-analytics$ ./gradlew bootRun</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Execute a curl request to get one book:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl http://localhost:8080/books/1491950358
+{&quot;isbn&quot;:&quot;1491950358&quot;,&quot;name&quot;:&quot;Building Microservices&quot;}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, use curl to see the analytics:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl http://localhost:8081/analytics
+[{&quot;bookIsbn&quot;:&quot;1491950358&quot;,&quot;count&quot;:1}]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update the curl command to the books microservice to retrieve other books and repeat the invocations, then re-run the curl command to the analytics microservice to see that the counts increase.</p>
+</div>
+
+
+<h1 id="nextSteps">8 Next Steps</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/nextSteps.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>To further your understanding read through the <a href="https://micronaut-projects.github.io/micronaut-kafka/latest/guide/">Micronaut Kafka</a>
+plugin documentation.</p>
+</div>
+
+
+<h1 id="helpWithGrails">9 Do you need help with Grails?</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/grails-guides/grails-micronaut-kakfa/edit/master/src/main/docs/guide/helpWithGrails.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<h3 style="color: #333; margin-bottom:25px;"><a href="https://objectcomputing.com/" target="_blank">Object Computing, Inc.</a> (OCI) sponsored the creation of this Guide. A variety of consulting and support services are available.</h3>
+
+<!-- BEGIN HubSpot Consultation Form -->
+
+<!--[if lte IE 8]>
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2-legacy.js"></script>
+<![endif]-->
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
+<script>
+  hbspt.forms.create({
+	portalId: "4547412",
+	formId: "f8bc9b16-d5f6-4226-a24e-da0eb8b73363"
+});
+</script>
+
+<!-- END HubSpot Consultation Form -->
+
+<h3 style="color: #333;">OCI is Home to Grails</h3>
+
+<p><a href="https://objectcomputing.com/products/2gm-team" target="_blank">Meet the Team</a></p>
+
+</article></div><footer>
+  <div class='content'>
+    <div class='ocihometograils'>
+      <span>Sponsored by</span>
+      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
+    </div>
+    <nav class='socialmedianav'><ul>
+  <li>
+    <a href='https://slack.grails.org'><img class='' src='/images/slack.svg' alt='Slack Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.youtube.com/watch?v=XnRNfDGkBVg&amp;list=PLI74De5M9T73uH3WilDCePP2qfSDpMaGu'><img class='' src='/images/youtube.svg' alt='Youtube Icon' /></a>
+  </li>
+  <li>
+    <a href='https://www.linkedin.com/groups/39757'><img class='' src='/images/linkedin.svg' alt='LinkedIn Icon' /></a>
+  </li>
+  <li>
+    <a href='https://github.com/grails/'><img class='' src='/images/github.svg' alt='Github Icon' /></a>
+  </li>
+  <li>
+    <a href='https://twitter.com/grailsframework'><img class='' src='/images/twitter.svg' alt='Twitter Icon' /></a>
+  </li>
+</ul></nav>
+    <nav class='partnersnav'><ul>
+  <li>Grails' repositories are hosted by
+    <a href='http://artifactoryonline.com/'>Artifactory</a>
+  </li>
+  <li>Website hosting provided by
+    <a href='https://aws.amazon.com/'>AWS</a>
+  </li>
+  <li>JetBrains supports Grails with its 
+    <a href='https://www.jetbrains.com/idea/'>IntelliJ IDEA IDE</a>
+  </li>
+  <li>YourKit supports Grails with its 
+    <a href='https://www.yourkit.com/java/profiler/index.jsp'>Java Profiler</a>
+  </li>
+  <li>Grails is Open Source
+    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
+  </li>
+  <li>
+    <a href='https://grails.org/buildstatus.html'>Build Status</a>
+  </li>
+</ul></nav>
+  </div>
+</footer><div>
+  <script type='text/javascript'>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-82213539-2', 'auto');
+              ga('send', 'pageview');
+</script>
+  <script type='text/javascript'>
+adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
+adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
+/* OPTIONAL: provide email to improve user identification */
+/* adroll_email = "username@example.com"; */
+(function () {
+    var _onload = function(){
+        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+        var scr = document.createElement("script");
+        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+        scr.setAttribute('async', 'true');
+        scr.type = "text/javascript";
+        scr.src = host + "/j/roundtrip.js";
+        ((document.getElementsByTagName('head') || [null])[0] ||
+            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+    };
+    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+    else {window.attachEvent('onload', _onload)}
+}());            
+</script>
+</div></body>
+</html>
