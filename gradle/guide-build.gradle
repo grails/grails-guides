@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url = "http://repo.grails.org/grails/core" }
+        maven { url = "https://repo.grails.org/grails/core" }
     }
 
     dependencies {
@@ -99,7 +99,16 @@ task updateGuidesJson {
             }
         }
 
-        def existing = json.find { it.name == project.name }
+        def existing = json.find {
+            it.name == project.name && it.githubBranch == project.githubBranch
+        }
+        if (!existing) {
+            existing = json.find {
+                it.name == project.name &&
+                        'master' == project.githubBranch &&
+                        !it.githubBranch
+            }
+        }
         def data = [:]
         if(existing) {
             data = existing
@@ -108,13 +117,14 @@ task updateGuidesJson {
             json.add(data)
         }
         data.putAll(
+            githubBranch: project.githubBranch,
             name: project.name,
             title: project.title,
             subtitle: project.subtitle,
             authors:project.authors,
             githubSlug:project.githubSlug,
             category:project.category,
-	    publicationDate:project.publicationDate
+	        publicationDate:project.publicationDate
         )
 
         if(project.hasProperty('tags')) {
@@ -152,7 +162,7 @@ gradle.taskGraph.whenReady { graph ->
             throw new GradleException("Set project property `category` in gradle.properties")
         }
         if ( isPropertyUndefined('publicationDate') ) {        
-            throw new GradleException("Set project property `publication` dd MMM yyyy in gradle.properties")
+            throw new GradleException("Set project property `publicationDate` dd MMM yyyy in gradle.properties")
 	} else {
             try {
                 Date.parse('dd MMM yyyy', project.getProperty('publicationDate'))
