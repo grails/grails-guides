@@ -32,7 +32,7 @@ else
     git config --global user.name $GIT_NAME
     git config --global user.email $GIT_EMAIL
     git add .
-    git commit -m $COMMIT_DESC
+    git commit -a -m "$COMMIT_DESC"
     git push origin HEAD
 fi
 
