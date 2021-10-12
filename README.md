@@ -5,7 +5,7 @@ This is the base repository for the Grails guides infrastructure. The guides the
 The following describes the purpose of the various directories:
 
 * `gradle` - Contains the build logic used to build the guides
-* `travis` - Contains the Travis script used to build the guides
+* `action-scripts` - Contains the script used to build the guides with github actions
 * `src/main/docs` - Contains common content used by all guides
 * `src/main/project` - Contains a project template to get started
 * `src/main/resources` - Contains the template used to build the guides (CSS, images, HTML etc.)
