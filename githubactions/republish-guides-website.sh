@@ -37,6 +37,8 @@ else
     git push origin HEAD
 fi
 
+echo "Deleting directories"
+
 cd ..
 
 rm -rf grails-static-website
