@@ -33,7 +33,7 @@ if git diff --quiet; then
     echo "No changes in GUIDES Website"
 else
     git add *
-    git commit -a -m "Updating guides site for Travis build: https://travis-ci.org/$GITHUB_REPOSITORY/builds/$GITHUB_RUN_ID"
+    git commit -a -m "Updating guides site for Github actions run: https://github.com/$GITHUB_REPOSITORY/runs/$GITHUB_RUN_ID"
     git push origin HEAD
 fi
 
