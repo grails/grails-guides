@@ -14,7 +14,7 @@ cd grails-static-website
 
 chmod 777 gradlew
 
-./gradlew guides:runShadow || EXIT_STATUS=$?
+./gradlew buildGuide || EXIT_STATUS=$?
 
 if [[ $EXIT_STATUS -ne 0 ]]; then
     echo "Guides Website generation failed"
@@ -27,7 +27,7 @@ git clone https://${GH_TOKEN}@github.com/grails/grails-guides.git -b gh-pages gh
 
 cd gh-pages
 
-cp -r ../grails-static-website/guides/build/site/* .
+cp -r ../grails-static-website/build/dist/* .
 
 if git diff --quiet; then
     echo "No changes in GUIDES Website"
