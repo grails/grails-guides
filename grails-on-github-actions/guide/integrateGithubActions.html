@@ -93,34 +93,36 @@ function addJsClass() {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="comment">#.github/workflows/gradle.yml</span>
-<span class="key">name</span>: <span class="string"><span class="content">Java CI</span></span>
+<span class="key">name</span>: <span class="string"><span class="content">Java CI with Gradle</span></span>
 <span class="key">on</span>:
   <span class="key">push</span>:
-    <span class="key">branches</span>:
-      - <span class="string"><span class="content">master </span></span><i class="conum" data-value="1"></i><b>(1)</b>
-  <span class="key">pull_request</span>:
-    <span class="key">branches</span>:
-      - <span class="string"><span class="content">master </span></span><i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="key">branches</span>: <span class="string"><span class="content">[ master ]</span></span>
 <span class="key">jobs</span>:
   <span class="key">build</span>:
     <span class="key">runs-on</span>: <span class="string"><span class="content">ubuntu-latest</span></span>
     <span class="key">strategy</span>:
       <span class="key">matrix</span>:
-        <span class="key">java</span>: <span class="string"><span class="content">['1.8', '11.0.4'] </span></span><i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="key">java</span>: <span class="string"><span class="content">['8']</span></span>
+    <span class="key">env</span>:
+      <span class="key">JDK_VERSION</span>:  <span class="string"><span class="content">${{ matrix.java }}</span></span>
     <span class="key">steps</span>:
-      - <span class="string"><span class="content">uses: actions/checkout@v1</span></span>
-      - <span class="string"><span class="content">uses: actions/cache@v1 </span></span><i class="conum" data-value="4"></i><b>(4)</b>
-        <span class="key">with</span>:
-          <span class="key">path</span>: <span class="string"><span class="content">~/.gradle/caches  </span></span><i class="conum" data-value="4"></i><b>(4)</b>
-          <span class="key">key</span>: <span class="string"><span class="content">${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }} </span></span><i class="conum" data-value="4"></i><b>(4)</b>
-          <span class="key">restore-keys</span>: <span class="string"><span class="delimiter">|</span><span class="content">
-            ${{ runner.os }}-gradle-</span></span>
       - <span class="string"><span class="content">name: Set up JDK</span></span>
         <span class="key">uses</span>: <span class="string"><span class="content">actions/setup-java@v1</span></span>
         <span class="key">with</span>:
           <span class="key">java-version</span>: <span class="string"><span class="content">${{ matrix.java }}</span></span>
-      - <span class="string"><span class="content">name: Build with Gradle</span></span>
-        <span class="key">run</span>: <span class="string"><span class="content">./gradlew check --parallel --continue </span></span> <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+      - <span class="string"><span class="content">uses: actions/checkout@v2</span></span>
+      - <span class="string"><span class="content">uses: actions/cache@v2</span></span>
+        <span class="key">with</span>:
+          <span class="key">path</span>: <span class="string"><span class="content">~/.gradle/caches</span></span>
+          <span class="key">key</span>: <span class="string"><span class="content">${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}</span></span>
+          <span class="key">restore-keys</span>: <span class="string"><span class="delimiter">|</span><span class="content">
+            ${{ runner.os }}-gradle-</span></span>
+      - <span class="string"><span class="content">name: Run script</span></span>
+        <span class="key">run</span>: <span class="string"><span class="content">./githubactions-build.sh</span></span>
+        <span class="key">env</span>:
+          <span class="key">GH_TOKEN</span>: <span class="string"><span class="content">${{ secrets.GH_TOKEN }}</span></span>
+          <span class="key">GIT_NAME</span>: <span class="string"><span class="content">${{ secrets.GIT_NAME }}</span></span>
+          <span class="key">GIT_EMAIL</span>: <span class="string"><span class="content">${{ secrets.GIT_EMAIL }}</span></span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
