@@ -12,7 +12,8 @@ if [[ -n $GUIDE_NAME ]]; then
     mv $GUIDE_NAME initial
     mkdir complete
     cp -rf initial/* complete/
-    echo "include 'complete', 'initial'" > settings.gradle
+    # Replace rootProject.name="$GUIDE_NAME"  with  include 'complete', 'initial'
+    sed "s/rootProject.name=\"${GUIDE_NAME}\"/include 'complete', 'initial'/" initial/settings.gradle > settings.gradle
     cp -rf ../src/main/project/* .
     gradle wrapper
 
