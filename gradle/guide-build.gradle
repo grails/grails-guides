@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.grails:grails-docs:6.0.0-RC1"
+        classpath "org.grails:grails-docs:6.2.0"
     }
 }
 
@@ -49,7 +49,6 @@ task publishGuide(type: grails.doc.gradle.PublishGuide) {
     dependsOn prepareResources, copyLocalGuideImgResources
 
     def localResourcesDir = "${buildDir}/resources/${commonGithubSlug}-${commonBranch}"
-    // def localResourcesDir = "../grails-guides/"
     // No language setting because we want the English guide to be
     // generated with a 'en' in the path, but the source is in 'en'
     // so that it's easy to track with git.
@@ -59,6 +58,10 @@ task publishGuide(type: grails.doc.gradle.PublishGuide) {
     propertiesFiles = [ new File(projectDir, "gradle.properties"), new File(projectDir, "complete/gradle.properties") ]
     asciidoc = true
     resourcesDir = project.file("${localResourcesDir}/src/main/resources")
+    // Create the directory if it does not exist
+    if (!resourcesDir.exists()) {
+        resourcesDir.mkdirs()
+    }
     properties = [   
         'safe':'UNSAFE',
         'commondir':project.file("${localResourcesDir}/src/main/docs"),
