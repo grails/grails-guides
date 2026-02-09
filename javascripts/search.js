@@ -121,8 +121,8 @@ function onQueryChanged() {
     }
 
     const matchingGuides = []
-    for (let i = 0; i < allguides.length; i++) {
-        let guide = allguides[i]
+    for (let i = 0; i < allGuides.length; i++) {
+        let guide = allGuides[i]
         if (doesGuideMatchQuery(guide, query) ) {
             matchingGuides.push(guide)
         }
