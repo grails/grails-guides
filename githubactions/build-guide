@@ -1,70 +1,9 @@
 #!/bin/bash
-set -e
-
-export EXIT_STATUS=0
-export GUIDE_NAME=${PWD##*/} 
-
-echo "Publishing guide for branch $GITHUB_REF"
-
-./gradlew -Dgeb.env=chromeHeadless check || EXIT_STATUS=$?
-
-if [[ $EXIT_STATUS -ne 0 ]]; then
-    echo "Check failed" 
-    exit $EXIT_STATUS
-fi
-
-./gradlew publishGuide || EXIT_STATUS=$?
-if [[ $EXIT_STATUS -ne 0 ]]; then
-    echo "PublishGuide failed" 
-    exit $EXIT_STATUS
-fi  
-
-if [ "$GITHUB_REF" = "refs/heads/grails3" ] || [ "$GITHUB_REF" = "refs/heads/grails4" ] || [ "$GITHUB_REF" = "refs/heads/grails5" ] || [ "$GITHUB_REF" = "refs/heads/grails6" ]; then
-    if [[ -z "${GITHUB_HEAD_REF}" ]]; then
-        echo "Publishing Documentation"
-        git config --global user.name "$GIT_NAME"
-        git config --global user.email "$GIT_EMAIL"
-        git config --global credential.helper "store --file=~/.git-credentials"
-        echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
-
-        git clone https://${GH_TOKEN}@github.com/grails/grails-guides.git -b gh-pages gh-pages --single-branch > /dev/null
-    
-        echo "Updating Guides JSON"
-        ./gradlew updateGuidesJson || EXIT_STATUS=$?
-        if [[ $EXIT_STATUS -ne 0 ]]; then
-            echo "updateGuidesJson failed"
-            rm -rf gh-pages
-            exit $EXIT_STATUS
-        fi
-    
-        cd gh-pages
-
-        if [ "$GITHUB_REF" = "refs/heads/grails3" ]; then
-            mkdir -p "grails3/$GUIDE_NAME"
-            cp -r ../build/docs/. "./grails3/$GUIDE_NAME/"
-        fi
-        if [ "$GITHUB_REF" = "refs/heads/grails4" ]; then
-            mkdir -p "grails4/$GUIDE_NAME"
-            cp -r ../build/docs/. "./grails4/$GUIDE_NAME/"
-        fi
-        if [ "$GITHUB_REF" = "refs/heads/grails5" ]; then
-            mkdir -p "grails5/$GUIDE_NAME"
-            cp -r ../build/docs/. "./grails5/$GUIDE_NAME/"
-        fi
-        if [ "$GITHUB_REF" = "refs/heads/grails6" ]; then
-            mkdir -p "grails6/$GUIDE_NAME"
-            cp -r ../build/docs/. "./grails6/$GUIDE_NAME/"
-        fi
-
-        if git diff --quiet; then
-            echo "No changes in Guide"
-        else
-            git add .
-            git commit -a -m "Publishing Grails Guide for Github Action Build: https://github.com/$GITHUB_REPOSITORY/runs/$GITHUB_RUN_ID"
-            git push origin HEAD
-        fi
-        cd ..
-        rm -rf gh-pages
-    fi
-fi
+# FROZEN: This script is paused for the apache/grails-static-website
+# migration tracked in apache/grails-static-website#354.
+# Original content preserved in git history. Will be deleted permanently
+# in Phase 15 once migration is complete.
+echo "FROZEN: build-guide script is paused for migration #354"
+echo "If you are seeing this on a guide CI run, the migration is in progress."
+echo "No content will be published. Your push is recorded but not deployed."
 exit 0
